@@ -1,0 +1,152 @@
+plugins {
+    id 'groovy'
+    id 'maven'
+    // id 'signing'
+    // id 'codenarc'
+    id 'com.gradle.plugin-publish' version '0.9.8'
+    id 'java-gradle-plugin'
+}
+
+
+repositories {
+    // using JCenter for dependency resolution is recommended, see https://plugins.gradle.org/docs/publish-plugin
+    jcenter()
+}
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
+def sezpoz = 'net.java.sezpoz:sezpoz:1.12'
+
+dependencies {
+    annotationProcessor sezpoz
+    implementation gradleApi()
+    implementation 'org.jvnet.localizer:maven-localizer-plugin:1.13'
+    // implementation 'org.jenkins-ci:version-number:1.0'
+    implementation sezpoz
+    implementation localGroovy()
+    testAnnotationProcessor sezpoz
+    testImplementation('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude module: 'groovy-all' // use the version that is distributed with Gradle
+    }
+    testImplementation 'org.xmlunit:xmlunit-core:2.3.0'
+}
+
+artifacts {
+    archives jar
+}
+
+// signing {
+//     required { !version.toString().endsWith('SNAPSHOT') && gradle.taskGraph.hasTask(tasks.uploadArchives) }
+//     sign configurations.archives
+// }
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            pom.project {
+                name 'Gradle Morpheus Plugin Packager'
+                packaging 'jar'
+                description 'The Gradle Morpheus Plugin Packager is a Gradle plugin for building Morpheus plugins'
+                url 'http://github.com/gomorpheus/morpheus-plugin-core'
+
+                scm {
+                    url 'https://github.com/gomorpheus/morpheus-plugin-core'
+                }
+
+                licenses {
+                    license {
+                        name 'Apache 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'davydotcom'
+                        name 'David Estes'
+                    }
+                }
+            }
+
+            //mess with the generated pom to set the 'packaging' tag
+            pom.withXml { XmlProvider xmlProvider ->
+                def xml = xmlProvider.asString()
+                def pomXml = new XmlParser().parse(new ByteArrayInputStream(xml.toString().bytes))
+
+                pomXml.version[0] + { packaging('jar') }
+
+                def newXml = new StringWriter()
+                def printer = new XmlNodePrinter(new PrintWriter(newXml))
+                printer.preserveWhitespace = true
+                printer.print(pomXml)
+                xml.setLength(0)
+                xml.append(newXml.toString())
+            }
+        }
+    }
+}
+
+codenarc {
+    toolVersion = '1.1'
+    configFile = file('config/codenarc/rules.groovy')
+}
+
+codenarcTest {
+    configFile = file('config/codenarc/rules-test.groovy')
+}
+
+test {
+    jvmArgs += ['-XX:MaxPermSize=256m']
+    ignoreFailures = ciBuild
+}
+
+group = 'com.morpheusdata'
+archivesBaseName = 'morpheus-gradle-plugin'
+description = 'Gradle plugin for building and packaging Morpheus plugins'
+
+pluginBundle {
+    website = 'https://www.morpheusdata.com'
+    vcsUrl = 'https://github.com/gomorpheus/morpheus-plugin-core'
+    description = 'A plugin for building Morpheus plugins'
+    tags = ['morpheus']
+
+    plugins {
+        morpheusPlugin {
+            id = 'com.morpheusdata.morpheus-gradle-plugin'
+            displayName = 'Morpheus Gradle Plugin'
+        }
+    }
+}
+
+// gradle.taskGraph.whenReady { taskGraph ->
+//     if (taskGraph.hasTask(uploadArchives)) {
+//         uploadArchives {
+//             repositories {
+//                 mavenDeployer {
+//                     def credentials = loadCredentialsForJenkinsCommunityRepository()
+//                     repository(url: 'https://repo.jenkins-ci.org/releases') {
+//                         authentication(credentials)
+//                     }
+//                     snapshotRepository(url: 'https://repo.jenkins-ci.org/snapshots') {
+//                         authentication(credentials)
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     if (taskGraph.allTasks.any { it instanceof Sign && it.required }) {
+//         def console = System.console()
+//         console.printf '\n\nWe have to sign some things in this build.\n\n'
+
+//         def password = console.readPassword('PGP Private Key Password: ')
+
+//         allprojects { ext.'signing.password' = new String(password) }
+
+//         console.printf '\nThanks.\n\n'
+//     }
+// }
+

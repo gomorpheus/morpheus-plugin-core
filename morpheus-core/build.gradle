@@ -1,0 +1,135 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'com.morpheusdata'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+
+
+repositories {
+    mavenLocal()
+    jcenter()
+	mavenCentral()
+}
+
+configurations {
+    provided
+}
+ 
+
+dependencies {
+    compile 'io.reactivex.rxjava2:rxjava:2.2.0'
+	compile 'org.apache.httpcomponents:httpclient:4.5.3'
+	compile 'org.apache.httpcomponents:httpcore:4.4.5'
+
+    compile 'org.slf4j:slf4j-parent:1.7.25'
+    testCompile "org.codehaus.groovy:groovy-all:2.5.1"
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId 'morpheus-core'
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'morpheus-core'
+                    description 'Morpheus Core provides the core framework for implementing extension plugins for the morpheus platform'
+                    url 'https://github.com/bertramdev/morpheus-core'
+                    scm {
+                        url 'https://github.com/bertramdev/morpheus-core'
+                        connection 'scm:https://bertramdev@github.com/gomorpheus/morpheus-core.git'
+                        developerConnection 'scm:git://github.com/gomorpheus/morpheus-core.git'
+                    }
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'davydotcom'
+                            name 'David Estes'
+                            email 'davydotcom@gmail.com'
+                        }
+                    }
+                }
+            }
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+//Define bintrayUser and bintrayKey in ~/.gradle/gradle.properties
+bintray {
+    if(project.hasProperty('bintrayUser')) {
+        user = bintrayUser
+        key = bintrayKey
+    }
+    publications = ['maven']
+    pkg {
+        repo = 'gomorpheus'
+        userOrg = 'bertramlabs'
+        name = 'morpheus-core'
+        vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
+        licenses = ['Apache-2.0']
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+  source = sourceSets.main.allJava
+  title = "Morpheus Core Docs"
+}
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+  main = 'groovy.ui.Console'
+  classpath = sourceSets.main.runtimeClasspath
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
+
+bintrayUpload.dependsOn build, sourcesJar, javadocJar

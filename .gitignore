@@ -1,0 +1,7 @@
+build/
+.asscache
+.gradle/
+.idea
+*.iml
+*.iws
+.idea/

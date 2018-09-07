@@ -1,0 +1,1 @@
+include 'morpheus-core','morpheus-test-provider', 'morpheus-infoblox-plugin', 'morpheus-gradle-plugin'
