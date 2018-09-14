@@ -4,6 +4,7 @@ import com.morpheusdata.core.DNSProvider
 import com.morpheusdata.core.IPAMProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Network
@@ -80,6 +81,9 @@ import javax.net.ssl.SSLSession
 
 @Slf4j
 class InfobloxProvider implements IPAMProvider, DNSProvider {
+	static Integer WEB_CONNECTION_TIMEOUT = 120 * 1000
+	static Integer WEB_SOCKET_TIMEOUT = 120 * 1000
+
 	MorpheusContext morpheusContext
 	Plugin plugin
 
@@ -137,7 +141,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def apiUrlObj = new URL(apiUrl)
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
-			def hostOnline = morpheusComputeService.testHostConnection(apiHost, apiPort, true, true, null)
+			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, null)
 			log.debug("online: {} - {}", apiHost, hostOnline)
 			if(hostOnline) {
 				def testResults = testNetworkPoolServer(poolServer)

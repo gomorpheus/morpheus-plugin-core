@@ -6,6 +6,7 @@ This library provides a common framework for extending the Morpheus Ops Orchestr
 ## Things To Be Done
 
 * Morpheus Core interfaces and javadoc
+* Gradle Plugin packager implementation (Similar to Jenkins JPI Plugin for Gradle)
 * Test Provider implementation for allowing users to easily run automation testing on their provider
 * Option Type Specification for custom inputs
 * Rx Java 
