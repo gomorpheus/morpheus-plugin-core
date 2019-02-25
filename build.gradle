@@ -36,9 +36,9 @@ test {
 	}
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '3.3'
-}
+// task wrapper(type: Wrapper) {
+// 	gradleVersion = '5.2'
+// }
 tasks.withType(JavaExec) {
     // Assign all Java system properties from
     // the command line to the JavaExec task.
