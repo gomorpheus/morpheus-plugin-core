@@ -2,11 +2,15 @@ plugins {
     id 'groovy'
     id 'maven'
     // id 'signing'
-    // id 'codenarc'
+    id 'codenarc'
     id 'com.gradle.plugin-publish' version '0.9.8'
     id 'java-gradle-plugin'
 }
 
+ext.ciBuild = 'JENKINS_URL' in System.getenv()
+if (ciBuild) {
+    println 'Running a CI build'
+}
 
 repositories {
     // using JCenter for dependency resolution is recommended, see https://plugins.gradle.org/docs/publish-plugin

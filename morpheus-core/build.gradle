@@ -44,6 +44,43 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+//Define bintrayUser and bintrayKey in ~/.gradle/gradle.properties
+bintray {
+    if(project.hasProperty('bintrayUser')) {
+        user = bintrayUser
+        key = bintrayKey
+    }
+    publications = ['maven']
+    pkg {
+        repo = 'gomorpheus'
+        userOrg = 'bertramlabs'
+        name = 'morpheus-core'
+        vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
+        licenses = ['Apache-2.0']
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+  source = sourceSets.main.allJava
+  title = "Morpheus Core Docs"
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -80,43 +117,6 @@ publishing {
             artifact javadocJar
         }
     }
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-}
-
-//Define bintrayUser and bintrayKey in ~/.gradle/gradle.properties
-bintray {
-    if(project.hasProperty('bintrayUser')) {
-        user = bintrayUser
-        key = bintrayKey
-    }
-    publications = ['maven']
-    pkg {
-        repo = 'gomorpheus'
-        userOrg = 'bertramlabs'
-        name = 'morpheus-core'
-        vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
-        licenses = ['Apache-2.0']
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task morpheusJavaDoc(type: Javadoc) {
-  source = sourceSets.main.allJava
-  title = "Morpheus Core Docs"
 }
 
 task(console, dependsOn: 'classes', type: JavaExec) {

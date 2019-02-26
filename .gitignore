@@ -2,6 +2,7 @@ build/
 .asscache
 .gradle/
 .idea
+*.ipr
 *.iml
 *.iws
 .idea/

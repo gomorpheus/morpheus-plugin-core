@@ -45,6 +45,33 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+  source = sourceSets.main.allJava
+  title = "Morpheus Core Docs"
+}
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+  main = 'groovy.ui.Console'
+  classpath = sourceSets.main.runtimeClasspath
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -81,33 +108,6 @@ publishing {
             artifact javadocJar
         }
     }
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-}
-
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task morpheusJavaDoc(type: Javadoc) {
-  source = sourceSets.main.allJava
-  title = "Morpheus Core Docs"
-}
-
-task(console, dependsOn: 'classes', type: JavaExec) {
-  main = 'groovy.ui.Console'
-  classpath = sourceSets.main.runtimeClasspath
 }
 
 test {
