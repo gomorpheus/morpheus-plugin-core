@@ -1,5 +1,7 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.ComputeServerType;
+import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Zone;
 import com.morpheusdata.response.ServiceResponse;
 
@@ -13,6 +15,19 @@ import java.util.Collection;
  * @author David Estes
  */
 public interface CloudProvider extends PluginProvider {
+
+
+	/**
+	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration
+	 * @return
+	 */
+	public Collection<OptionType> getOptionTypes();
+
+	/**
+	 * Grabs all {@link ComputeServerType} objects that this CloudProvider can represent during a sync or during a provision.
+	 * @return
+	 */
+	public Collection<ComputeServerType> getComputeServerTypes();
 
 	/**
 	 * Grabs available provisioning providers related to the target Cloud Plugin. Some clouds have multiple provisioning
@@ -52,6 +67,15 @@ public interface CloudProvider extends PluginProvider {
 	 * @param zoneInfo
 	 */
 	void refresh(Zone zoneInfo);
+
+
+	/**
+	 * Zones/Clouds are refreshed periodically by the Morpheus Environment. This includes things like caching of brownfield
+	 * environments and resources such as Networks, Datastores, Resource Pools, etc. This represents the long term sync method that happens
+	 * daily instead of every 5-10 minute cycle
+	 * @param zoneInfo
+	 */
+	void refreshDaily(Zone zoneInfo);
 
 
 }

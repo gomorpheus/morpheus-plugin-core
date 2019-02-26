@@ -31,4 +31,10 @@ public interface MorpheusContext {
 	 */
 	MorpheusNetworkContext getNetwork();
 
+
+
+	//Common methods used across various contexts
+
+	//TODO: Add Locking Provider RPC Calls to acquire distributed locks when necessary
+
 }
