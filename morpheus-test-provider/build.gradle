@@ -36,8 +36,8 @@ configurations {
 
 dependencies {
     compile project(':morpheus-core')
-    testCompile "org.codehaus.groovy:groovy-all:2.5.1"
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    testCompile "org.codehaus.groovy:groovy-all:2.4.13"
+    testCompile "org.spockframework:spock-core:1.3-groovy-2.4"
 }
 
 sourceSets {

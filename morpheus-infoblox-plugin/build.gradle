@@ -9,6 +9,7 @@ buildscript {
 
 plugins {
     id "com.jfrog.bintray" version "1.6"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 apply plugin: 'java'
@@ -18,9 +19,8 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'com.morpheusdata'
+version = '7.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-
 
 repositories {
     mavenLocal()
@@ -31,23 +31,36 @@ repositories {
 configurations {
     provided
 }
- 
 
 dependencies {
     compile project(':morpheus-core')
-	compileOnly "org.codehaus.groovy:groovy:2.4.13"
-	compileOnly "org.codehaus.groovy:groovy-json:2.4.13"
-	compileOnly "org.codehaus.groovy:groovy-templates:2.4.13"
+    compile "org.codehaus.groovy:groovy-all:2.4.13"
+//	compileOnly "org.codehaus.groovy:groovy-json:2.4.13"
+//	compileOnly "org.codehaus.groovy:groovy-templates:2.4.13"
 	compile 'commons-beanutils:commons-beanutils:1.9.3'
+    compile 'org.slf4j:slf4j-api:1.7.26'
+    compile 'org.slf4j:slf4j-parent:1.7.26'
+
+    // to test class loading
+//    compile 'com.amazonaws:aws-java-sdk:1.11.602'
+
 	testCompile "org.codehaus.groovy:groovy-all:2.4.13"
     testCompile project(':morpheus-test-provider')
-
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
 sourceSets {
     main {
         compileClasspath += configurations.provided
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
+                'Plugin-Version': version
+        )
     }
 }
 

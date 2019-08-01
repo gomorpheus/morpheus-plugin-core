@@ -4,7 +4,6 @@ import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Workload;
 import com.morpheusdata.response.ServiceResponse;
 
-import javax.xml.ws.Service;
 import java.util.Collection;
 import java.util.Map;
 

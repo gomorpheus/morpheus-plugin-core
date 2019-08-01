@@ -1,7 +1,17 @@
 package com.morpheusdata.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 /**
  * This is the base implementation of a Plugin Manager responsible for loading all plugins on the Morpheus classpath
@@ -11,12 +21,13 @@ import java.util.Collection;
  */
 public class PluginManager {
 
-	private ArrayList<Plugin> plugins;
+	private ArrayList<Plugin> plugins = new ArrayList<>();
 	private MorpheusContext morpheusContext;
-
+	private final ClassLoader mainLoader = PluginManager.class.getClassLoader();
+	// Isolated classloader all plugins will use as a parent.
+	private final ClassLoader pluginManagerClassLoader = new ClassLoader(mainLoader){};
 
 	PluginManager(MorpheusContext context, Collection<Class<Plugin>> plugins) throws InstantiationException, IllegalAccessException {
-		this.plugins = new ArrayList<>(); //initialize plugin list
 		this.morpheusContext = context;
 
 		if(this.morpheusContext == null) {
@@ -34,7 +45,6 @@ public class PluginManager {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
 	}
-
 
 	/**
 	 * Returns the Morpheus Context assigned to the Plugin Manager. It is common for this to be referenced in sub {@link Plugin} initialization methods when it comes to
@@ -60,6 +70,27 @@ public class PluginManager {
 		plugin.setMorpheusContext(this.morpheusContext);
 		plugin.initialize();
 		plugins.add(plugin);
+	}
+
+	/**
+	 * Given a path to a plugin pathToJar file - create a child classloader, extract the Plugin Manifest and registers.
+	 * @param pathToJar
+	 * @throws Exception
+	 */
+	void registerPlugin(String pathToJar) throws Exception {
+		File jarFile = new File(pathToJar);
+		URLClassLoader pluginLoader = URLClassLoader.newInstance(new URL[]{jarFile.toURL()}, pluginManagerClassLoader);
+
+		JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFile));
+		Manifest mf = jarStream.getManifest();
+		Attributes attributes = mf.getMainAttributes();
+		String pluginClass = attributes.getValue("Plugin-Class");
+		String pluginVersion = attributes.getValue("Plugin-Version");
+
+		Class<Plugin> thing = (Class<Plugin>) pluginLoader.loadClass(pluginClass);
+
+		System.out.println("Loading Plugin " + pluginClass + ":" + pluginVersion +" from " +  pathToJar);
+		registerPlugin(thing);
 	}
 
 
