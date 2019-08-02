@@ -1,22 +1,22 @@
 package com.morpheusdata.model;
 
 public class NetworkPoolServer extends MorpheusModel {
-	String name;
-	String description;
-	String internalId;
-	String externalId;
-	String serviceUrl;
-	Boolean ignoreSsl = true;
-	String serviceHost;
-	Integer servicePort = 22;
-	String serviceMode;
-	String serviceUsername;
-	String servicePassword;
-	Integer apiPort;
-	Integer adminPort;
+	public String name;
+	public String description;
+	public String internalId;
+	public String externalId;
+	public String serviceUrl;
+	public Boolean ignoreSsl = true;
+	public String serviceHost;
+	public Integer servicePort = 22;
+	public String serviceMode;
+	public String serviceUsername;
+	public String servicePassword;
+	public Integer apiPort;
+	public Integer adminPort;
 
-	String config;
-	String networkFilter;
-	String tenantMatch;
-	Boolean enabled = true;
+	public String config;
+	public String networkFilter;
+	public String tenantMatch;
+	public Boolean enabled = true;
 }

@@ -25,7 +25,7 @@ public class ConnectionUtils {
 		return testHostConnectivity(hostname,port,doPingTest,true,null);
 	}
 
-	static Boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
+	public static Boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
 		Boolean rtn = false;
 		if(doPingTest == true && networkProxy == null) {
 			try {
