@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.Map;
+
 public class NetworkPoolServer extends MorpheusModel {
 	public String name;
 	public String description;
@@ -19,4 +21,5 @@ public class NetworkPoolServer extends MorpheusModel {
 	public String networkFilter;
 	public String tenantMatch;
 	public Boolean enabled = true;
+	public Map<String, String> configMap;
 }

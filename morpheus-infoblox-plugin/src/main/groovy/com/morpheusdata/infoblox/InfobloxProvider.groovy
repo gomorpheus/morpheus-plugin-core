@@ -15,7 +15,9 @@ import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
+import com.morpheusdata.response.ApiResponse
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Slf4j
@@ -81,7 +83,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	@Override
 	void refresh(NetworkPoolServer poolServer) {
-		def rtn = [success:false]
 		log.debug("refreshNetworkPoolServer: {}", poolServer)
 		try {
 			def apiUrl = cleanServiceUrl(poolServer.serviceUrl)
@@ -99,9 +100,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 //					cacheZones(poolServer,opts)
 //					cacheZoneRecords(poolServer,opts)
 					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'ok', null)
-					rtn.success = true
 				} else {
-					if(testResults.invalidLogin)
+					if(testResults.hasError('invalidLogin'))
 						morpheusContext.network.updateNetworkPoolStatus(poolServer,'error','invalid credentials')
 					else
 						morpheusContext.network.updateNetworkPoolStatus(poolServer,'error','error calling infoblox')
@@ -175,10 +175,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts) {
 		ServiceResponse response
 		try {
-			def results = [success:true]
-			if(ipAddress.externalId)
+			def results = ApiResponse.success()
+			if(ipAddress.externalId) {
 				results = releaseIpAddress(networkPoolServer, ipAddress, opts)
-			if(results.success == true) {
+			}
+			if(results.success) {
 				morpheusContext.network.removePoolIp(ipAddress)
 				response = ServiceResponse.success()
 			}
@@ -193,6 +194,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	@Override
 	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp) {
 		return null
+		// FIXME: no NetworkDomain?
+ 		// return createHostRecord(poolServer, networkPool, networkPoolIp, false, false) // TODO - Verify false is the correct default
 	}
 
 	@Override
@@ -246,7 +249,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 					def aRecordRef = results.content.substring(1, results.content.length() - 1)
 					def domainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: hostname, fqdn: hostname, source: 'user', type: 'A', externalId: aRecordRef)
-					domainRecord.addToContent(newIp)
+//					domainRecord.addToContent(newIp)
 					morpheusContext.network.saveDomainRecord(domainRecord)
 					networkPoolIp.internalId = aRecordRef
 				}
@@ -267,11 +270,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					if(!results.success) {
 						log.warn("PTR Record Creation Failed")
 					} else {
-						def prtRecordRef = results.content.substring(1, results.content.length() - 1)
+						String prtRecordRef = results.content.substring(1, results.content.length() - 1)
 						def ptrDomainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: ptrName, fqdn: hostname, source: 'user', type: 'PTR', externalId: prtRecordRef)
 						morpheusContext.network.saveDomainRecord(ptrDomainRecord)
 						log.info("got PTR record: {}",results)
-						networkPoolIp.ptrId = ptrRecordRef
+						networkPoolIp.ptrId = prtRecordRef
 					}
 				}
 				morpheusContext.network.saveNetworkPoolIp(networkPoolIp)
@@ -360,7 +363,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param opts
 	 * @return
 	 */
-	private generateExtraAttributes(NetworkPoolServer poolServer, Map opts) {
+	private Map generateExtraAttributes(NetworkPoolServer poolServer, Map opts) {
 		try {
 			def jsonBody = poolServer.configMap?.extraAttributes
 			def engine = new SimpleTemplateEngine()
@@ -368,7 +371,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def template = engine.createTemplate(escapeTask).make(opts)
 			jsonBody = template.toString()
 
-			def parsedObj = new groovy.json.JsonSlurper().parseText(jsonBody)
+			def parsedObj = new JsonSlurper().parseText(jsonBody)
 			def extraAttributes = [:]
 			parsedObj.each {key,value ->
 				extraAttributes[key] = [value: value]
@@ -383,7 +386,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	def getNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
-		def rtn = [success:false]
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -398,7 +401,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		if(poolServer.configMap?.extraAttributes) {
 			def attrOpts = [username: opts.createdBy?.username, userId: opts.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date())]
 			if(opts.container) {
-				attrOpts += standardProvisionService.getContainerScriptConfigMap(opts.container,'preprovision')
+//				attrOpts += standardProvisionService.getContainerScriptConfigMap(opts.container,'preprovision')
 			}
 			extraAttributes = generateExtraAttributes(poolServer,attrOpts)
 			body.extattrs = extraAttributes
@@ -409,10 +412,10 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		log.debug("body: ${body}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
-		if(results?.success && results?.error != true) {
+		if(results?.success && results?.hasErrors()) {
 			def ipPath = results.content.substring(1, results.content.length() - 1)
 			def ipResults = getItem(poolServer, ipPath, opts)
-			if(ipResults.success && !ipResults.error) {
+			if(ipResults.success && !ipResults.hasErrors()) {
 				rtn.success = true
 				rtn.results = ipResults.results
 				rtn.headers = ipResults.headers
@@ -476,7 +479,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	private reserveNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
-		def rtn = [success:false]
+		def rtn = new ApiResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -492,33 +495,29 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		log.debug("body: ${body}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
-		if(results?.success && results?.error != true) {
+		if(results?.success && !results?.hasErrors()) {
 			log.info("got: ${results}")
 			def ipPath = results.content.substring(1, results.content.length() - 1)
 			def ipResults = getItem(poolServer, ipPath, opts)
-			if(ipResults.success == true && ipResults.error != true) {
+			if(ipResults.success && !ipResults.hasErrors()) {
 				rtn.success = true
 				rtn.results = ipResults.results
 				rtn.headers = ipResults.headers
-				//Time to register A Record
-				def newIp = rtn.results.ipv4addrs.first().ipv4addr
-				rtn.newIp = rtn.results.ipv4addrs.first().ipv4addr
-				rtn.ipAddress = rtn.newIp
 			}
 		}
 		return rtn
 	}
 
-	private releaseIpAddress(NetworkPoolServer poolServer, NetworkPoolIp poolIp, Map opts) {
-		def rtn = [success:false]
+	private ApiResponse releaseIpAddress(NetworkPoolServer poolServer, NetworkPoolIp poolIp, Map opts) {
+		def rtn = new ApiResponse()
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
-		rtn.success = results?.success && results?.error != true
-		if(results?.success && results?.error != true) {
-			rtn.results = results.content ? new groovy.json.JsonSlurper().parseText(results.content) : [:]
+		rtn.success = (results?.success && !results?.hasErrors())
+		if(rtn.success) {
+			rtn.content = results.content ? new JsonSlurper().parseText(results.content) : [:]
 			rtn.headers = results.headers
 			if(poolIp.internalId) {
 				apiPath = getServicePath(poolServer.serviceUrl) + poolIp.internalId
@@ -529,7 +528,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			if(poolIp.ptrId) {
 				apiPath = getServicePath(poolServer.serviceUrl) + poolIp.ptrId
-				//we have an A Record to delete
+				//we have a ptr Record to delete
 				results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																												requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
 				log.info("Clearing out PTR Record ${results?.success}")
@@ -538,24 +537,24 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private getItem(NetworkPoolServer poolServer, String path, Map opts) {
-		def rtn = [success:false]
+	private ApiResponse getItem(NetworkPoolServer poolServer, String path, Map opts) {
+		def rtn = new ApiResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + path
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											requestContentType:ContentType.APPLICATION_JSON], 'GET')
-		rtn.success = results?.success && results?.error != true
+		rtn.success = results?.success && !results?.hasErrors()
 		log.debug("getItem results: ${results}")
-		if(rtn.success == true) {
-			rtn.results = results.content ? new groovy.json.JsonSlurper().parseText(results.content) : [:]
+		if(rtn.success) {
+			rtn.results = results.content ? new JsonSlurper().parseText(results.content) : [:]
 			rtn.headers = results.headers
 		}
 		return rtn
 	}
 
-	private listNetworks(NetworkPoolServer poolServer, Map opts) {
-		def rtn = [success:false, results:[]]
+	private ApiResponse listNetworks(NetworkPoolServer poolServer, Map opts) {
+		def rtn = new ApiResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'network'
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -568,13 +567,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			while(hasMore && attempt < 1000) {
 				def pageQuery = parseNetworkFilter(poolServer.networkFilter)
 				pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults]
-				if(pageId != null)
+				if(pageId != null) {
 					pageQuery['_page_id'] = pageId
+				}
 				//load results
 				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], query: pageQuery,
 																													requestContentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl], 'GET')
-				log.debug("listNetworks results: ${results}")
-				if(results?.success && results?.error != true) {
+				log.debug("listNetworks results: ${results.toMap()}")
+				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
 					rtn.headers = results.headers
 					def pageResults = results.content ? new JsonSlurper().parseText(results.content) : []
@@ -584,7 +584,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							pageId = pageResults.next_page_id
 						else
 							hasMore = false
-						rtn.results += pageResults.result
+						if (rtn.results) {
+							rtn.results += pageResults.result
+						} else {
+							rtn.results = pageResults.result
+						}
 					} else {
 						hasMore = false
 					}
@@ -601,9 +605,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, query:pageQuery,
 																												requestContentType:ContentType.APPLICATION_JSON], 'GET')
-			rtn.success = results?.success && results?.error != true
+			rtn.success = results?.success && !results?.hasErrors()
 			if(rtn.success) {
-				rtn.results = results.content ? new JsonSlurper().parseText(results.content) : [:]
+				rtn.content = results.content ? new JsonSlurper().parseText(results.content) : [:]
 				rtn.headers = results.headers
 			} else {
 				rtn.msg = results?.error
@@ -612,8 +616,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private listZones(NetworkPoolServer poolServer, Map opts) {
-		def rtn = [success:false, results:[]]
+	private ApiResponse listZones(NetworkPoolServer poolServer, Map opts) {
+		def rtn = new ApiResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'zone_auth'
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -623,7 +627,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		if(doPaging == true) {
 			def pageId = null
 			def attempt = 0
-			while(hasMore == true && attempt < 1000) {
+			while(hasMore && attempt < 1000) {
 				def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults]
 				if(pageId != null)
 					pageQuery['_page_id'] = pageId
@@ -631,17 +635,21 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], query:pageQuery,
 																													requestContentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl], 'GET')
 				log.debug("listZones results: ${results}")
-				if(results?.success && results?.error != true) {
+				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
 					rtn.headers = results.headers
-					def pageResults = results.content ? new groovy.json.JsonSlurper().parseText(results.content) : []
+					def pageResults = results.content ? new JsonSlurper().parseText(results.content) : []
 
 					if(pageResults?.result?.size() > 0) {
 						if(pageResults.next_page_id)
 							pageId = pageResults.next_page_id
 						else
 							hasMore = false
-						rtn.results += pageResults.result
+						if(rtn.results) {
+							rtn.results += pageResults.result
+						} else {
+							rtn.results = pageResults.result
+						}
 					} else {
 						hasMore = false
 					}
@@ -657,9 +665,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, query:pageQuery,
 																												requestContentType:ContentType.APPLICATION_JSON], 'GET')
-			rtn.success = results?.success && results?.error != true
-			if(rtn.success == true) {
-				rtn.results = results.content ? new groovy.json.JsonSlurper().parseText(results.content) : [:]
+			rtn.success = results?.success && !results?.hasErrors()
+			if(rtn.success) {
+				rtn.results = results.content ? new JsonSlurper().parseText(results.content)?.result : [:]
 				rtn.headers = results.headers
 			} else {
 				rtn.msg = results?.error
@@ -668,24 +676,23 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-
-	private testNetworkPoolServer(NetworkPoolServer poolServer) {
-		def rtn = [success:false, invalidLogin:false]
+	private ApiResponse testNetworkPoolServer(NetworkPoolServer poolServer) {
+		def rtn = new ApiResponse()
 		try {
 			def opts = [doPaging:false, maxResults:1]
 			def networkList = listNetworks(poolServer, opts)
-			if(networkList.success)
-				rtn.success = true
-			else
-				rtn.msg = 'error connecting to infoblox'
 			rtn.success = networkList.success
+			if(!networkList.success) {
+				rtn.msg = 'error connecting to infoblox'
+			}
 		} catch(e) {
+			rtn.success = false
 			log.error("test network pool server error: ${e}", e)
 		}
 		return rtn
 	}
 
-	private static parseNetworkFilter(networkFilter) {
+	private static Map parseNetworkFilter(String networkFilter) {
 		def rtn = [:]
 		if(networkFilter?.length() > 0) {
 			def filters = networkFilter.tokenize('&')
@@ -701,18 +708,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	private static String cleanServiceUrl(String url) {
 		def rtn = url
-		def slashIndex = rtn.indexOf('/', 10)
-		if(slashIndex > 10)
+		def slashIndex = rtn?.indexOf('/', 9)
+		if(slashIndex > 9)
 			rtn = rtn.substring(0, slashIndex)
 		return rtn
 	}
 
 	private static String getServicePath(String url) {
 		def rtn = '/'
-		def slashIndex = url.indexOf('/', 10)
-		if(slashIndex > 10)
+		def slashIndex = url?.indexOf('/', 9)
+		if(slashIndex > 9)
 			rtn = url.substring(slashIndex)
-		if(!rtn.endsWith('/'))
+		if(!rtn?.endsWith('/'))
 			rtn = rtn + '/'
 		return rtn
 	}

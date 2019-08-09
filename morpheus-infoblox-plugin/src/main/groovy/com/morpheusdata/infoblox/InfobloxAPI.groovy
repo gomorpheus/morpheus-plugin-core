@@ -1,5 +1,7 @@
 package com.morpheusdata.infoblox
 
+import com.morpheusdata.response.ApiResponse
+import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.*
@@ -48,10 +50,10 @@ import java.security.cert.X509Certificate
 class InfobloxAPI {
 	static Integer WEB_CONNECTION_TIMEOUT = 120 * 1000
 
-	public callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
-		def rtn = [success: false, headers: [:]]
+	ApiResponse callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+		def rtn = new ApiResponse()
 		try {
-			URIBuilder uriBuilder = new URIBuilder("${url}/${path}")
+			def uriBuilder = new URIBuilder("${url}/${path}")
 			if(opts.query) {
 				opts.query?.each { k, v ->
 					uriBuilder.addParameter(k, v?.toString())
@@ -115,8 +117,8 @@ class InfobloxAPI {
 						}
 						rtn.success = true
 					} else {
-						if(response.getEntity()) {
-							rtn.content = EntityUtils.toString(response.getEntity());
+						if(response.entity) {
+							rtn.content = EntityUtils.toString(response.entity);
 						}
 						rtn.success = false
 						rtn.errorCode = response.getStatusLine().getStatusCode()?.toString()
@@ -124,7 +126,7 @@ class InfobloxAPI {
 					}
 				} catch(ex) {
 					log.error "Error occurred processing the response for ${url}/${path} : ${ex.message}", ex
-					rtn.error = "Error occurred processing the response for ${url}/${path} : ${ex.message}"
+					rtn.errors = "Error occurred processing the response for ${url}/${path} : ${ex.message}"
 					rtn.success = false
 				} finally {
 					if(response) {
@@ -132,13 +134,13 @@ class InfobloxAPI {
 					}
 				}
 			}
-		} catch(javax.net.ssl.SSLProtocolException sslEx) {
+		} catch(SSLProtocolException sslEx) {
 			log.error("Error Occurred calling Infoblox API (SSL Exception): ${sslEx.message}",sslEx)
-			rtn.error = "SSL Handshake Exception (is SNI Misconfigured): ${sslEx.message}"
+			rtn.addError('sslHandshake',  "SSL Handshake Exception (is SNI Misconfigured): ${sslEx.message}")
 			rtn.success = false
 		} catch (e) {
 			log.error("Error Occurred calling Infoblox API: ${e.message}",e)
-			rtn.error = e.message
+			rtn.addError('error', e.message)
 			rtn.success = false
 		}
 		return rtn

@@ -30,6 +30,7 @@ public class NetworkPoolIp extends MorpheusModel {
 	private Long refId;
 	private Long subRefId; //for multiple nics on same host
 	private NetworkDomain domain;
+	public User createdBy;
 
 	public NetworkPoolRange getNetworkPoolRange() {
 		return networkPoolRange;
