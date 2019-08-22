@@ -24,7 +24,7 @@ public class MorpheusModel {
 
 	/**
 	 * Gets the uniquely generated ID from the database record stored via the Morpheus appliance.
-	 * @return
+	 * @return id
 	 */
 	public Long getId() {
 		return id;

@@ -36,48 +36,24 @@ public interface IPAMProvider extends PluginProvider {
 	void refresh(NetworkPoolServer poolServer);
 
 
-	/**
+	/*
 	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
 	 * @return A Set of {@link NetworkPoolType} objects representing the available pool types provided by this Provider.
 	 */
 	Set<NetworkPoolType> getProvidedPoolTypes();
 
-	/**
+	/*
 	 * Target endpoint used to allocate an IP Address during provisioning of Instances
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse leasePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
-	/**
+	/*
 	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
-	/**
+	/*
 	 * Called during instance teardown to release an IP Address reservation.
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param ipAddress
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts);
 

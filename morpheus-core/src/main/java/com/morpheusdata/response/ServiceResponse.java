@@ -3,28 +3,36 @@ package com.morpheusdata.response;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ServiceResponse {
+
+// generic
+public class ServiceResponse<T> {
 	private static final String DEFAULT_ERROR_KEY = "error";
 	private Boolean success = false;
 	private String msg = null;
 	private Map<String,String> errors = new LinkedHashMap<>();
-	private Object data;
+	private T data;
 
 	public ServiceResponse() { }
 
-	public ServiceResponse(Boolean success, String msg, Map<String,String> errors, Object data) {
+	public ServiceResponse(Boolean success, String msg, Map<String,String> errors, T data) {
 		this.success = success;
 		this.msg = msg;
-		this.errors = errors;
+		if(errors != null) {
+			this.errors = errors;
+		}
 		this.data = data;
 	}
 
 	public static ServiceResponse error() {
-		return new ServiceResponse(false, null, null, null);
+		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
+		serviceResponse.setError("error");
+		return serviceResponse;
 	}
 
 	public static ServiceResponse error(String msg) {
-		return new ServiceResponse(false, msg, null, null);
+		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
+		serviceResponse.setError(msg);
+		return serviceResponse;
 	}
 
 	static ServiceResponse error(String msg, Map<String,String> errors) {
@@ -67,6 +75,7 @@ public class ServiceResponse {
 
 	public boolean hasErrors() {
 		if(errors == null) return false;
+		if(!success) return true;
 		return errors.size() > 0;
 	}
 
@@ -91,11 +100,11 @@ public class ServiceResponse {
 		this.msg = msg;
 	}
 
-	public Object getData() {
+	public T getData() {
 		return data;
 	}
 
-	public void setData(Object data) {
+	public void setData(T data) {
 		this.data = data;
 	}
 
@@ -104,11 +113,30 @@ public class ServiceResponse {
 	}
 
 	public void setErrors(Map<String, String> errors) {
+		this.success = false;
 		this.errors = errors;
 	}
 
+	public void addError(String value) {
+		this.success = false;
+		this.errors.put(DEFAULT_ERROR_KEY, value);
+	}
+
 	public void addError(String key, String value) {
+		this.success = false;
 		this.errors.put(key, value);
+	}
+
+	public void removeError() {
+		this.errors.remove(DEFAULT_ERROR_KEY);
+		if (this.errors.size() == 0) {
+			this.success = true;
+		}
+	}
+
+	public void clearErrors() {
+		this.errors.clear();
+		this.success = true;
 	}
 
 	public void removeError(String key) {
@@ -121,7 +149,7 @@ public class ServiceResponse {
 
 	/**
 	 * Provided for backwards compatibility with existing getError()
-	 * @return
+	 * @return Error message
 	 */
 	public String getError() {
 		return this.errors.getOrDefault(DEFAULT_ERROR_KEY, null);
@@ -129,10 +157,10 @@ public class ServiceResponse {
 
 	/**
 	 * Provided for backwards compatibility with existing setError(msg)
-	 * @return
+	 * @param value value to set
 	 */
 	public void setError(String value) {
+		this.success = false;
 		this.errors.put(DEFAULT_ERROR_KEY, value);
 	}
-
 }

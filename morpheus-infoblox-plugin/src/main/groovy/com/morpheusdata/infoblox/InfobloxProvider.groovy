@@ -124,7 +124,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		poolType.code = 'infoblox'
 		poolType.name = 'Infoblox'
 		poolType.creatable = false
-		poolType.description = 'Infoblox'
+		poolType.description = 'Infoblox IPAM'
 		return [poolType]
 	}
 
@@ -385,8 +385,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	}
 
-	def getNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
-		def rtn = new ServiceResponse(success: false)
+	ApiResponse getNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
+		def rtn = new ApiResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -412,7 +412,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		log.debug("body: ${body}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
-		if(results?.success && results?.hasErrors()) {
+		if(results?.success && !results?.hasErrors()) {
 			def ipPath = results.content.substring(1, results.content.length() - 1)
 			def ipResults = getItem(poolServer, ipPath, opts)
 			if(ipResults.success && !ipResults.hasErrors()) {

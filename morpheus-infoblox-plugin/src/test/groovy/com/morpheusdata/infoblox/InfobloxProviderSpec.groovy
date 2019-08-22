@@ -139,7 +139,7 @@ class InfobloxProviderSpec extends Specification {
         type.code == 'infoblox'
         type.name == 'Infoblox'
         !type.creatable
-        type.description == 'Infoblox'
+        type.description == 'Infoblox IPAM'
     }
 
     void "releaseIpAddress"() {
@@ -235,7 +235,17 @@ class InfobloxProviderSpec extends Specification {
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost", configMap: [extraAttributes: '{"foo": "bar"}'])
         def networkPool = new NetworkPool(name: "pool name")
         def hostname = 'hostname'
+
+        and:"mock getItem"
+        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ApiResponse(
+                success: true,
+                errors: null ,
+                content:'"foo"')
         and:
+        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
+                success: true,
+                errors: null ,
+                content:'"foo"')
         infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
                 success: true,
                 errors: null ,
@@ -245,7 +255,7 @@ class InfobloxProviderSpec extends Specification {
         def result = provider.getNextIpAddress(poolServer, networkPool, hostname, [:])
 
         then:
-        result
+        result.success
     }
 
 }

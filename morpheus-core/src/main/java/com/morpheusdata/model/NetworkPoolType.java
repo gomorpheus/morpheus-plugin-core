@@ -54,7 +54,7 @@ public class NetworkPoolType extends MorpheusModel{
 	/**
 	 * Gets the human readable name of the Pool Type that will be displayed in the Morpheus UI for reference. This should ideally be unique but
 	 * is not mandatory.
-	 * @return
+	 * @return name
 	 */
 	public String getName() {
 		return name;
@@ -80,7 +80,7 @@ public class NetworkPoolType extends MorpheusModel{
 
 	/**
 	 * Sets the description text of the current pool type. This description information can be used
-	 * @param description
+	 * @param description description
 	 */
 	public void setDescription(String description) {
 		this.description = description;

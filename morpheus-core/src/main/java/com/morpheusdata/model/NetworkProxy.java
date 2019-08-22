@@ -71,7 +71,7 @@ public class NetworkProxy extends MorpheusModel {
 
 	/**
 	 * Sets the Host IP of the proxy server being utilized.
-	 * @param proxyHost
+	 * @param proxyHost proxy host
 	 */
 	public void setProxyHost(String proxyHost) {
 		this.proxyHost = proxyHost;

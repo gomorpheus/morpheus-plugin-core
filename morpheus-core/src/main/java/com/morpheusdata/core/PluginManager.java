@@ -38,7 +38,7 @@ public class PluginManager {
 		}
 	}
 
-	PluginManager(MorpheusContext context) {
+	public PluginManager(MorpheusContext context) {
 		this.morpheusContext = context;
 
 		if(this.morpheusContext == null) {
@@ -69,28 +69,29 @@ public class PluginManager {
 		plugin.setPluginManager(this);
 		plugin.setMorpheusContext(this.morpheusContext);
 		plugin.initialize();
+		System.out.println(plugin.getProviders());
 		plugins.add(plugin);
 	}
 
 	/**
 	 * Given a path to a plugin pathToJar file - create a child classloader, extract the Plugin Manifest and registers.
-	 * @param pathToJar
-	 * @throws Exception
+	 * @param pathToJar Path to jar file
+	 * @throws Exception if file does not exist
 	 */
-	void registerPlugin(String pathToJar) throws Exception {
+	public void registerPlugin(String pathToJar) throws Exception {
 		File jarFile = new File(pathToJar);
 		URLClassLoader pluginLoader = URLClassLoader.newInstance(new URL[]{jarFile.toURL()}, pluginManagerClassLoader);
 
 		JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFile));
 		Manifest mf = jarStream.getManifest();
 		Attributes attributes = mf.getMainAttributes();
-		String pluginClass = attributes.getValue("Plugin-Class");
+		String pluginClassName = attributes.getValue("Plugin-Class");
 		String pluginVersion = attributes.getValue("Plugin-Version");
 
-		Class<Plugin> thing = (Class<Plugin>) pluginLoader.loadClass(pluginClass);
+		Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
-		System.out.println("Loading Plugin " + pluginClass + ":" + pluginVersion +" from " +  pathToJar);
-		registerPlugin(thing);
+		System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
+		registerPlugin(pluginClass);
 	}
 
 
@@ -105,5 +106,15 @@ public class PluginManager {
 	 */
 	ArrayList<Plugin> getPlugins() {
 		return this.plugins;
+	}
+
+	Plugin findByCode(String code) {
+		for(Plugin plugin: this.plugins) {
+			PluginProvider pp = plugin.getProviderByCode(code);
+			if(pp != null) {
+				return pp.getPlugin();
+			}
+		}
+		return null;
 	}
 }

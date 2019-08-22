@@ -17,7 +17,7 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * Provides a Collection of OptionType inputs that need to be made available to various provisioning Wizards
-	 * @return
+	 * @return Collection of OptionTypes
 	 */
 	public Collection<OptionType> getOptionTypes();
 
@@ -29,7 +29,7 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * Returns the Name of the Provisioning Provider
-	 * @return
+	 * @return Name
 	 */
 	public String getName();
 
@@ -56,8 +56,8 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * Validates the provided provisioning options of a workload
-	 * @param opts
-	 * @return
+	 * @param opts options
+	 * @return Response from API
 	 */
 	ServiceResponse validateWorkload(Map opts);
 
@@ -68,21 +68,21 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
 	 *                 how best to provision the workload
 	 * @param opts additional configuration options that may have been passed during provisioning
-	 * @return
+	 * @return Response from API
 	 */
 	ServiceResponse runWorkload(Workload workload, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.
 	 * @param workload the Workload we want to shut down
-	 * @return
+	 * @return Response from API
 	 */
 	ServiceResponse stopWorkload(Workload workload);
 
 	/**
 	 * Issues the remote calls necessary to start a workload element for running.
 	 * @param workload the Workload we want to start up.
-	 * @return
+	 * @return Response from API
 	 */
 	ServiceResponse startWorkload(Workload workload);
 
@@ -90,16 +90,16 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * Issues the remote calls to restart a workload element. In some cases this is just a simple alias call to do a stop/start,
 	 * however, in some cases cloud providers provide a direct restart call which may be preferred for speed.
 	 * @param workload the Workload we want to restart.
-	 * @return
+	 * @return Response from API
 	 */
 	ServiceResponse restartWorkload(Workload workload);
 
 	/**
 	 * This is the key method called to destroy / remove a workload. This should make the remote calls necessary to remove any assets
 	 * associated with the workload.
-	 * @param workload
-	 * @param opts
-	 * @return
+	 * @param workload to remove
+	 * @param opts map of options
+	 * @return Response from API
 	 */
 	ServiceResponse removeWorkload(Workload workload,Map opts);
 }
