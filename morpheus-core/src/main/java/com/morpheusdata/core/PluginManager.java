@@ -108,7 +108,7 @@ public class PluginManager {
 		return this.plugins;
 	}
 
-	Plugin findByCode(String code) {
+	public Plugin findByCode(String code) {
 		for(Plugin plugin: this.plugins) {
 			PluginProvider pp = plugin.getProviderByCode(code);
 			if(pp != null) {
