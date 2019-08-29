@@ -30,7 +30,7 @@ dependencies {
     implementation sezpoz
     implementation localGroovy()
     testAnnotationProcessor sezpoz
-    testImplementation 'org.codehaus.groovy:groovy-all:2.4.13'
+    testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
     testImplementation 'org.xmlunit:xmlunit-core:2.3.0'
 }
 

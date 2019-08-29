@@ -26,13 +26,21 @@ class ServiceResponseSpec extends Specification {
         resp.data.age == 1
     }
 
+	void "setting error to null shouldn't make success false"() {
+		when:
+		def resp = new ServiceResponse<>(success: true, errors: null)
+		then: ""
+		resp.success
+	}
+
     void "error setting"() {
         given:
         def resp = new ServiceResponse<>()
-        when:
 
+		when:
         resp
-        then:
+
+		then:
         !resp.success
         resp.hasErrors()
         resp.errors.size() == 0

@@ -32,13 +32,16 @@ configurations {
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.2.0'
-	compile 'org.apache.httpcomponents:httpclient:4.5.3'
-	compile 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 
-    compile 'org.slf4j:slf4j-parent:1.7.25'
-    testCompile "org.codehaus.groovy:groovy-all:2.4.13"
-    testCompile "org.spockframework:spock-core:1.3-groovy-2.4"
+	// only for `console` task
+	runtimeOnly "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation "org.spockframework:spock-core:$spockVersion"
 }
 
 sourceSets {
