@@ -131,9 +131,4 @@ test {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '5.2'
-}
-
-
 bintrayUpload.dependsOn build, sourcesJar, javadocJar
