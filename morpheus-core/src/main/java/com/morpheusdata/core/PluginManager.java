@@ -104,7 +104,7 @@ public class PluginManager {
 	 * Returns the instances of all loaded Plugins within the current JVM
 	 * @return A Collection of already initialized plugins
 	 */
-	ArrayList<Plugin> getPlugins() {
+	public ArrayList<Plugin> getPlugins() {
 		return this.plugins;
 	}
 

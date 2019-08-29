@@ -16,7 +16,7 @@ public class NetworkPoolServer extends MorpheusModel {
 	public String servicePassword;
 	public Integer apiPort;
 	public Integer adminPort;
-
+	public String status = "ok"; //ok, error, warning, offline
 	public String config;
 	public String networkFilter;
 	public String tenantMatch;
