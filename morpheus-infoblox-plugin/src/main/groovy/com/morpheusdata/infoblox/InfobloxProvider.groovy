@@ -15,7 +15,7 @@ import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
-import com.morpheusdata.response.ApiResponse
+import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
@@ -175,7 +175,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts) {
 		ServiceResponse response
 		try {
-			def results = ApiResponse.success()
+			def results = ServiceResponse.success()
 			if(ipAddress.externalId) {
 				results = releaseIpAddress(networkPoolServer, ipAddress, opts)
 			}
@@ -385,8 +385,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	}
 
-	ApiResponse getNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
-		def rtn = new ApiResponse(success: false)
+	ServiceResponse getNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -479,7 +479,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	private reserveNextIpAddress(NetworkPoolServer poolServer, NetworkPool networkPool, String hostname, Map opts) {
-		def rtn = new ApiResponse(success: false)
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -508,8 +508,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private ApiResponse releaseIpAddress(NetworkPoolServer poolServer, NetworkPoolIp poolIp, Map opts) {
-		def rtn = new ApiResponse()
+	private ServiceResponse releaseIpAddress(NetworkPoolServer poolServer, NetworkPoolIp poolIp, Map opts) {
+		def rtn = new ServiceResponse()
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -537,8 +537,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private ApiResponse getItem(NetworkPoolServer poolServer, String path, Map opts) {
-		def rtn = new ApiResponse(success: false)
+	private ServiceResponse getItem(NetworkPoolServer poolServer, String path, Map opts) {
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + path
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -553,8 +553,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private ApiResponse listNetworks(NetworkPoolServer poolServer, Map opts) {
-		def rtn = new ApiResponse(success: false)
+	private ServiceResponse listNetworks(NetworkPoolServer poolServer, Map opts) {
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'network'
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -616,8 +616,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private ApiResponse listZones(NetworkPoolServer poolServer, Map opts) {
-		def rtn = new ApiResponse(success: false)
+	private ServiceResponse listZones(NetworkPoolServer poolServer, Map opts) {
+		def rtn = new ServiceResponse(success: false)
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'zone_auth'
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -676,8 +676,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	private ApiResponse testNetworkPoolServer(NetworkPoolServer poolServer) {
-		def rtn = new ApiResponse()
+	private ServiceResponse testNetworkPoolServer(NetworkPoolServer poolServer) {
+		def rtn = new ServiceResponse()
 		try {
 			def opts = [doPaging:false, maxResults:1]
 			def networkList = listNetworks(poolServer, opts)

@@ -11,6 +11,12 @@ public class ServiceResponse<T> {
 	private String msg = null;
 	private Map<String,String> errors = new LinkedHashMap<>();
 	private T data;
+	private Map<String,String> headers;
+	private String content;
+	private String errorCode;
+	// Holds the parsed json map or array.
+	// TODO: Add jackson or a java json lib.
+	private Object results;
 
 	public ServiceResponse() { }
 
@@ -47,7 +53,7 @@ public class ServiceResponse<T> {
 		return new ServiceResponse(true, msg, null, data);
 	}
 
-	static ServiceResponse success(Object data) {
+	public static ServiceResponse success(Object data) {
 		return new ServiceResponse(true, null, null, data);
 	}
 
@@ -113,7 +119,9 @@ public class ServiceResponse<T> {
 	}
 
 	public void setErrors(Map<String, String> errors) {
-		this.success = false;
+		if (errors != null) {
+			this.success = false;
+		}
 		this.errors = errors;
 	}
 
@@ -162,5 +170,37 @@ public class ServiceResponse<T> {
 	public void setError(String value) {
 		this.success = false;
 		this.errors.put(DEFAULT_ERROR_KEY, value);
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public Object getResults() {
+		return results;
+	}
+
+	public void setResults(Object results) {
+		this.results = results;
 	}
 }

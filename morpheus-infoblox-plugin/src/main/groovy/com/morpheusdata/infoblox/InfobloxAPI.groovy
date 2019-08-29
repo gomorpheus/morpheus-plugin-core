@@ -1,6 +1,6 @@
 package com.morpheusdata.infoblox
 
-import com.morpheusdata.response.ApiResponse
+import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
@@ -50,8 +50,8 @@ import java.security.cert.X509Certificate
 class InfobloxAPI {
 	static Integer WEB_CONNECTION_TIMEOUT = 120 * 1000
 
-	ApiResponse callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
-		def rtn = new ApiResponse()
+	ServiceResponse callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+		def rtn = new ServiceResponse()
 		try {
 			def uriBuilder = new URIBuilder("${url}/${path}")
 			if(opts.query) {

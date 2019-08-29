@@ -8,7 +8,7 @@ import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolServer
-import com.morpheusdata.response.ApiResponse
+import com.morpheusdata.response.ServiceResponse
 import spock.lang.Narrative
 import spock.lang.Shared
 import spock.lang.Specification
@@ -38,7 +38,7 @@ class InfobloxProviderSpec extends Specification {
     void "updateNetworkPoolStatus"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"foo": 1}')
+        infobloxAPI.callApi(_, _, _, _, _, "GET") >> ServiceResponse.success('{"foo": 1}')
 
         when:
         provider.refresh(poolServer)
@@ -53,7 +53,7 @@ class InfobloxProviderSpec extends Specification {
     void "listNetworks"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"foo": 1}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"foo": 1}')
 
         when:
         def response = provider.listNetworks(poolServer, [doPaging: false])
@@ -65,7 +65,7 @@ class InfobloxProviderSpec extends Specification {
     void "listNetworks - do paging"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
 
         when:
         def response = provider.listNetworks(poolServer, [doPaging:true])// Pagination object?
@@ -78,7 +78,7 @@ class InfobloxProviderSpec extends Specification {
     void "listZones"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
 
         when:
         def response = provider.listZones(poolServer, [:])
@@ -91,7 +91,7 @@ class InfobloxProviderSpec extends Specification {
     void "listZones - doPaging false"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1", "2"]}')
 
         when:
         def response = provider.listZones(poolServer, [doPaging: false])
@@ -104,7 +104,7 @@ class InfobloxProviderSpec extends Specification {
     void "testNetworkPoolServer"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"result": ["1"]}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
 
         when:
         def response = provider.testNetworkPoolServer(poolServer)
@@ -116,7 +116,7 @@ class InfobloxProviderSpec extends Specification {
     void "getItem"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, _) >> new ApiResponse(success: true, errors: null , content:'{"result": ["1"]}')
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
 
         when:
         def response = provider.getItem(poolServer, '/path', [:])
@@ -152,7 +152,7 @@ class InfobloxProviderSpec extends Specification {
 
         then:
         result.success
-        3 * infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ApiResponse(success: true, errors: null , content:'{"result": ["1"]}')
+        3 * infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
     }
 
     void "returnPoolAddress"() {
@@ -162,7 +162,7 @@ class InfobloxProviderSpec extends Specification {
         def networkPool = new NetworkPool()
         def network = new Network()
         and: "mock api delete"
-        infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ApiResponse(success: true, errors: null , content:'{"result": ["1"]}')
+        infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
 
         when:
         def result = provider.returnPoolAddress(poolServer, networkPool, network, ipAddress, [:])
@@ -178,11 +178,11 @@ class InfobloxProviderSpec extends Specification {
         def domain = new NetworkDomain(name:"name")
         def networkPool = new NetworkPool(name: "pool name")
         and:
-        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'{"result": ["1"] ]}')
-        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'{"ipv4addrs": [{"ipv4addr": "192.168.1.1"}]}')
@@ -201,13 +201,13 @@ class InfobloxProviderSpec extends Specification {
         def networkPool = new NetworkPool(name: "pool name")
         def hostname = 'foobar'
         and:
-        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'{"result": ["1"]}')
 
         and: "Odd response from API that is surrounded in quotes."
-        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'"ippath"')
@@ -237,16 +237,16 @@ class InfobloxProviderSpec extends Specification {
         def hostname = 'hostname'
 
         and:"mock getItem"
-        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'GET') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'"foo"')
         and:
-        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'"foo"')
-        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ApiResponse(
+        infobloxAPI.callApi(_, _, _, _, _, 'POST') >> new ServiceResponse(
                 success: true,
                 errors: null ,
                 content:'{"ips": ["1.1.1.1"]}')
