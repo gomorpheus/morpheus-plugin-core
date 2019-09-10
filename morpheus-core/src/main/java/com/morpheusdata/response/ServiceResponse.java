@@ -1,5 +1,6 @@
 package com.morpheusdata.response;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class ServiceResponse<T> {
 	private String msg = null;
 	private Map<String,String> errors = new LinkedHashMap<>();
 	private T data;
-	private Map<String,String> headers;
+	private Map<String,Object> headers;
 	private String content;
 	private String errorCode;
 	// Holds the parsed json map or array.
@@ -172,12 +173,18 @@ public class ServiceResponse<T> {
 		this.errors.put(DEFAULT_ERROR_KEY, value);
 	}
 
-	public Map<String, String> getHeaders() {
+	public Map<String, Object> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(Map<String, String> headers) {
+	public void setHeaders(Map<String, Object> headers) {
 		this.headers = headers;
+	}
+
+	public void addHeader(String key, Object value) {
+		if(this.headers == null)
+			this.headers = new HashMap<>();
+		this.headers.put(key, value);
 	}
 
 	public String getContent() {

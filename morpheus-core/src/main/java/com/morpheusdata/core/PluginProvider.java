@@ -35,4 +35,10 @@ public interface PluginProvider {
 	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
 	 */
 	String getProviderName();
+
+	/**
+	 * Returns true if the Provider is a plugin. Always true for plugin but null or false for Morpheus internal providers.
+	 * @return provider is plugin
+	 */
+	public default boolean isPlugin() { return true; }
 }

@@ -23,9 +23,13 @@ public interface IPAMProvider extends PluginProvider {
 	 * If the error is a generic authentication error or unknown error, a standard message can also be sent back in the response.
 	 *
 	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
+	 * @param opts Pagination options
 	 * @return A response is returned depending on if the inputs are valid or not.
 	 */
-	ServiceResponse validate(NetworkPoolServer poolServer);
+	public ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
+
+
+	public ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
 
 	/**
 	 * Periodically called to refresh and sync data coming from the relevant integration. Most integration providers

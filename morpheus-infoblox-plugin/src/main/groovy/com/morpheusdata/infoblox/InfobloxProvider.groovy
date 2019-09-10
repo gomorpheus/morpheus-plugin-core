@@ -71,11 +71,47 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @return A response is returned depending on if the inputs are valid or not.
 	 */
 	@Override
-	ServiceResponse validate(NetworkPoolServer poolServer) {
-		return null
+	public ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+		log.info("PLUGIN!!! verifyPoolServer: ${poolServer}")
+		log.warn('foobar fizz buzz' * 10)
+		ServiceResponse<NetworkPoolServer> rtn = ServiceResponse.error()
+		rtn.data = poolServer
+
+		try {
+			def apiUrl = cleanServiceUrl(poolServer.serviceUrl)
+			boolean hostOnline = false
+			try {
+				def apiUrlObj = new URL(apiUrl)
+				def apiHost = apiUrlObj.getHost()
+				def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
+				hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, null)
+			} catch(e) {
+				log.error("Error parsing URL {}", apiUrl, e)
+			}
+			if(hostOnline) {
+				opts.doPaging = false
+				opts.maxResults = 1
+				def networkList = listNetworks(poolServer, opts)
+				if(networkList.success) {
+					rtn.success = true
+				} else {
+					rtn.msg = networkList.msg ?: 'Error connecting to infoblox'
+				}
+			} else {
+				rtn.msg = 'Host not reachable'
+			}
+		} catch(e) {
+			log.error("verifyPoolServer error: ${e}", e)
+		}
+		return rtn
 	}
 
-	/**
+	@Override
+	ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+		// no-op
+		return ServiceResponse.success()
+	}
+/**
 	 * Periodically called to refresh and sync data coming from the relevant integration. Most integration providers
 	 * provide a method like this that is called periodically (typically 5 - 10 minutes). DNS Sync operates on a 10min
 	 * cycle by default. Useful for caching Host Records created outside of Morpheus.

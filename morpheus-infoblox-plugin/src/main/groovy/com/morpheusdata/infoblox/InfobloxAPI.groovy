@@ -101,14 +101,14 @@ class InfobloxAPI {
 			withClient(opts) { HttpClient client ->
 				CloseableHttpResponse response = client.execute(request)
 				try {
-					if(response.getStatusLine().getStatusCode() <= 399) {
-						response.getAllHeaders().each { h ->
-							rtn.headers["${h.name}"] = h.value
+					if(response.statusLine.statusCode <= 399) {
+						response.allHeaders.each { h ->
+							println "header - $h.name = $h.value"
+							rtn.addHeader(h.name.toString(), h.value)
 						}
-						HttpEntity entity = response.getEntity()
+						HttpEntity entity = response.entity
 						if(entity) {
-
-							rtn.content = EntityUtils.toString(entity);
+							rtn.content = EntityUtils.toString(entity)
 							if(!opts.suppressLog) {
 								log.debug("results of SUCCESSFUL call to {}/{}, results: {}",url,path,rtn.content ?: '')
 							}
@@ -118,15 +118,15 @@ class InfobloxAPI {
 						rtn.success = true
 					} else {
 						if(response.entity) {
-							rtn.content = EntityUtils.toString(response.entity);
+							rtn.content = EntityUtils.toString(response.entity)
 						}
 						rtn.success = false
-						rtn.errorCode = response.getStatusLine().getStatusCode()?.toString()
+						rtn.errorCode = response.statusLine.statusCode.toString()
 						log.warn("path: ${path} error: ${rtn.errorCode} - ${rtn.content}")
 					}
 				} catch(ex) {
 					log.error "Error occurred processing the response for ${url}/${path} : ${ex.message}", ex
-					rtn.errors = "Error occurred processing the response for ${url}/${path} : ${ex.message}"
+					rtn.setError("Error occurred processing the response for ${url}/${path} : ${ex.message}")
 					rtn.success = false
 				} finally {
 					if(response) {

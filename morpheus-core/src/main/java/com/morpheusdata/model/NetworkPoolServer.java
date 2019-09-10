@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import java.util.Date;
 import java.util.Map;
 
 public class NetworkPoolServer extends MorpheusModel {
@@ -17,9 +18,14 @@ public class NetworkPoolServer extends MorpheusModel {
 	public Integer apiPort;
 	public Integer adminPort;
 	public String status = "ok"; //ok, error, warning, offline
+	public String statusMessage;
 	public String config;
 	public String networkFilter;
+	public String zoneFilter;
 	public String tenantMatch;
 	public Boolean enabled = true;
-	public Map<String, String> configMap;
+	public Date statusDate;
+	public Date dateCreated;
+	public Date lastUpdated;
+	public Map<String, Object> configMap;
 }
