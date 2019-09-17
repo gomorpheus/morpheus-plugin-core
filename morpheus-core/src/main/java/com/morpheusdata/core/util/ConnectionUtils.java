@@ -1,6 +1,10 @@
 package com.morpheusdata.core.util;
 
+import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.Container;
 import com.morpheusdata.model.NetworkProxy;
+import com.morpheusdata.response.ServiceResponse;
+
 import java.net.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;

@@ -429,4 +429,6 @@ public class NetworkPool extends MorpheusModel {
 	protected String configuration;
 	protected String cidr;
 	protected Long poolServerId;
+
+	public List<NetworkPoolRange> ipRanges;
 }

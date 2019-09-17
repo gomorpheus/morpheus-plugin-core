@@ -23,6 +23,7 @@ import org.apache.http.conn.ssl.TrustStrategy
 import org.apache.http.conn.ssl.X509HostnameVerifier
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.DefaultHttpResponseFactory
+import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager
@@ -98,7 +99,7 @@ class InfobloxAPI {
 				postRequest.setEntity(new StringEntity(opts.body.encodeAsJson().toString()));
 			}
 
-			withClient(opts) { HttpClient client ->
+			withClient(opts) { HttpClient client, BasicCookieStore basicCookieStore ->
 				CloseableHttpResponse response = client.execute(request)
 				try {
 					if(response.statusLine.statusCode <= 399) {
@@ -106,6 +107,8 @@ class InfobloxAPI {
 							println "header - $h.name = $h.value"
 							rtn.addHeader(h.name.toString(), h.value)
 						}
+						rtn.cookies = [ibapauth: basicCookieStore?.cookies?.find{it.name == 'ibapauth'}?.value]
+
 						HttpEntity entity = response.entity
 						if(entity) {
 							rtn.content = EntityUtils.toString(entity)
@@ -283,5 +286,9 @@ class InfobloxAPI {
 			connectionManager.shutdown()
 		}
 
+	}
+
+	void shutdownClient(Map opts) {
+		// FIXME Shutdown/close client
 	}
 }

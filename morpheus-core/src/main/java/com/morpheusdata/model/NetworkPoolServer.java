@@ -27,5 +27,8 @@ public class NetworkPoolServer extends MorpheusModel {
 	public Date statusDate;
 	public Date dateCreated;
 	public Date lastUpdated;
+	public NetworkPoolServerType type;
+	public AccountIntegration integration;
+	public Account account;
 	public Map<String, Object> configMap;
 }

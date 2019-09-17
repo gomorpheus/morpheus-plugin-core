@@ -3,6 +3,8 @@ package com.morpheusdata.model;
 import java.util.Date;
 
 public class NetworkPoolIp extends MorpheusModel {
+
+	NetworkPool networkPool;
 	private NetworkPoolRange networkPoolRange;
 	private String ipType = "assigned"; //assigned, reserved
 	private String ipAddress;

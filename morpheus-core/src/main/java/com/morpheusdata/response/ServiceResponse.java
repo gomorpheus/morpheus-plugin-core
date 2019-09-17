@@ -18,6 +18,7 @@ public class ServiceResponse<T> {
 	// Holds the parsed json map or array.
 	// TODO: Add jackson or a java json lib.
 	private Object results;
+	private Map<String, String> cookies;
 
 	public ServiceResponse() { }
 
@@ -42,11 +43,11 @@ public class ServiceResponse<T> {
 		return serviceResponse;
 	}
 
-	static ServiceResponse error(String msg, Map<String,String> errors) {
+	public static ServiceResponse error(String msg, Map<String,String> errors) {
 		return new ServiceResponse(false, msg, errors, null);
 	}
 
-	static ServiceResponse error(String msg, Map<String,String> errors, Object data) {
+	public static ServiceResponse error(String msg, Map<String,String> errors, Object data) {
 		return new ServiceResponse(false, msg, errors, data);
 	}
 
@@ -209,5 +210,19 @@ public class ServiceResponse<T> {
 
 	public void setResults(Object results) {
 		this.results = results;
+	}
+
+	public Map getCookies() {
+		return cookies;
+	}
+
+	public void setCookies(Map cookies) {
+		this.cookies = cookies;
+	}
+
+	public void addCookies(String key, Object value) {
+		if(this.cookies == null)
+			this.cookies = new HashMap<>();
+		this.cookies.put(key, value.toString());
 	}
 }
