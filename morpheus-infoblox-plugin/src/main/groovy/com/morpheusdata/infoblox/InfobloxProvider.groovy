@@ -25,7 +25,7 @@ import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
 
 @Slf4j
-abstract class InfobloxProvider implements IPAMProvider, DNSProvider {
+class InfobloxProvider implements IPAMProvider, DNSProvider {
 	MorpheusContext morpheusContext
 	Plugin plugin
 	InfobloxAPI infobloxAPI
@@ -237,10 +237,9 @@ abstract class InfobloxProvider implements IPAMProvider, DNSProvider {
 	def validateService(AccountIntegration integration) { return null }
 	def refreshDnsIntegration(AccountIntegration integration) { return null }
 
-
 	@Override
 	ServiceResponse createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts) {
-		def rtn = [success:false]
+		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
 
@@ -326,7 +325,6 @@ abstract class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
 						break
-
 				}
 
 				log.info("createRecord results: ${results}")
@@ -897,7 +895,7 @@ abstract class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
-	@Override
+//	@Override
 	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords) {
 		if(poolIp.externalId) {
 			def poolServer = morpheusContext.network.getPoolServerById(networkPool.poolServerId)

@@ -63,12 +63,12 @@ public interface IPAMProvider extends PluginProvider {
 
 
 	ServiceResponse initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
-	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp);
-	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain, Boolean createARecord, Boolean createPtrRecord);
+	ServiceResponse createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts);
+	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain, Boolean createARecord, Boolean createPtrRecord); // createHostRecord
 	ServiceResponse updateHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp);
-	ServiceResponse deleteHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords);
-	ServiceResponse provisionWorkload(NetworkPoolServer poolServer, Workload workload, Map opts);
-	ServiceResponse provisionServer(NetworkPoolServer poolServer, ComputeServer server, Map opts);
-	ServiceResponse removeServer(NetworkPoolServer poolServer, ComputeServer server, Map opts);
-	ServiceResponse removeContainer(NetworkPoolServer poolServer, Workload workload, Map opts);
+	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords);
+	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts);
+	ServiceResponse provisionServer(AccountIntegration integration, ComputeServer server, Map opts);
+	ServiceResponse removeServer(AccountIntegration integration, ComputeServer server, Map opts);
+	ServiceResponse removeContainer(AccountIntegration integration, Container container, Map opts);
 }

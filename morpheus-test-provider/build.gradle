@@ -36,7 +36,7 @@ configurations {
 
 dependencies {
     implementation project(':morpheus-core')
-	compile 'commons-net:commons-net:3.5'
+	implementation 'commons-net:commons-net:3.5'
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
     testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
     testImplementation "org.spockframework:spock-core:$spockVersion"
