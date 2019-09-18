@@ -59,7 +59,7 @@ public interface MorpheusNetworkContext {
 	void updateMatchedZones(Long poolServerId, List updateList);
 	void removeMissingZones(Long poolServerId, List removeList);
 
-	NetworkDomain getNetworkDomainByOwner(Account account);
+	List getNetworkDomainByOwner(Account account);
 
 	NetworkDomainRecord getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
 	void deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);

@@ -2,6 +2,7 @@ package com.morpheusdata.infoblox
 
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.util.MorpheusUtils
 import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.*
@@ -23,7 +24,6 @@ import org.apache.http.conn.ssl.TrustStrategy
 import org.apache.http.conn.ssl.X509HostnameVerifier
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.DefaultHttpResponseFactory
-import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager
@@ -51,8 +51,8 @@ import java.security.cert.X509Certificate
 class InfobloxAPI {
 	static Integer WEB_CONNECTION_TIMEOUT = 120 * 1000
 
-	ServiceResponse callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
-		def rtn = new ServiceResponse()
+	ServiceResponse<Map> callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+		def rtn = new ServiceResponse<Map>(data: [:])
 		try {
 			def uriBuilder = new URIBuilder("${url}/${path}")
 			if(opts.query) {
@@ -99,15 +99,19 @@ class InfobloxAPI {
 				postRequest.setEntity(new StringEntity(opts.body.encodeAsJson().toString()));
 			}
 
-			withClient(opts) { HttpClient client, BasicCookieStore basicCookieStore ->
+			withClient(opts) { HttpClient client ->
 				CloseableHttpResponse response = client.execute(request)
 				try {
 					if(response.statusLine.statusCode <= 399) {
 						response.allHeaders.each { h ->
-							println "header - $h.name = $h.value"
 							rtn.addHeader(h.name.toString(), h.value)
 						}
-						rtn.cookies = [ibapauth: basicCookieStore?.cookies?.find{it.name == 'ibapauth'}?.value]
+
+						response.getHeaders('Set-Cookie').each {
+							MorpheusUtils.extractCookie(it.toString()).each { cookie ->
+								rtn.addCookies(cookie.key, cookie.value)
+							}
+						}
 
 						HttpEntity entity = response.entity
 						if(entity) {
@@ -118,6 +122,7 @@ class InfobloxAPI {
 						} else {
 							rtn.content = null
 						}
+						rtn.data.httpClient = client
 						rtn.success = true
 					} else {
 						if(response.entity) {

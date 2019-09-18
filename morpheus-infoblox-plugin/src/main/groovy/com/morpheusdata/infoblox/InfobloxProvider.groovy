@@ -17,12 +17,12 @@ import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
-import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
+import org.apache.http.client.HttpClient
 
 @Slf4j
 class InfobloxProvider implements IPAMProvider, DNSProvider {
@@ -168,7 +168,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @return A response is returned depending on if the inputs are valid or not.
 	 */
 	@Override
-	public ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+	ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
 		log.info("PLUGIN!!! verifyPoolServer: ${poolServer}")
 		ServiceResponse<NetworkPoolServer> rtn = ServiceResponse.error()
 		rtn.data = poolServer
@@ -202,7 +202,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	public ServiceResponse<NetworkPoolServer> initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+	ServiceResponse<NetworkPoolServer> initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
 		log.info("initializeNetworkPoolServer: ${poolServer}")
 		def rtn = new ServiceResponse()
 		try {
@@ -370,7 +370,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	protected ServiceResponse refreshNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
 		def rtn = new ServiceResponse()
-		log.debug("refreshNetworkPoolServer: {}", poolServer)
+		log.debug("refreshNetworkPoolServer: {}", poolServer.dump())
 		try {
 			def apiUrl = cleanServiceUrl(poolServer.serviceUrl)
 			def apiUrlObj = new URL(apiUrl)
@@ -383,19 +383,19 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def testResults
 			// Promise
 			if(hostOnline) {
-				testResults = testNetworkPoolServer(poolServer)
+				testResults = testNetworkPoolServer(poolServer) as ServiceResponse<Map>
 
 				if(!testResults.success) {
-					//NOTE invalidLogin was never only ever set to false.
+					//NOTE invalidLogin was only ever set to false.
 					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'error', 'error calling infoblox')
 				} else {
-					def addOnMap = [ibapauth: testResults.cookies.ibapauth]
-					if (testResults.data['httpClient']) {
+					def addOnMap = [ibapauth: testResults.getCookie('ibapauth')]
+					if (testResults.data.httpClient instanceof HttpClient) {
 						addOnMap.httpClient = testResults.data.httpClient
 						addOnMap.reuse = true
 					}
 					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'syncing', null)
-					testResults.data['addOnMap'] = addOnMap
+					testResults.data.addOnMap = addOnMap
 				}
 			} else {
 				morpheusContext.network.updateNetworkPoolStatus(poolServer, 'error', 'infoblox api not reachable')
@@ -403,19 +403,19 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			// Promise
 			if(testResults.success) {
-				def addOnMap = testResults.data['addOnMap']
-				cacheNetworks(poolServer, opts + testResults.data['addOnMap'])?.get()
-				cacheZones(poolServer,opts + testResults.data['addOnMap'])?.get()
-				if(poolServer.configMap?.inventoryExisting) {
-					cacheIpAddressRecords(poolServer, opts + testResults.data['addOnMap'])
-					cacheZoneRecords(poolServer,opts + testResults.data['addOnMap'])
+				Map addOnMap = testResults.data.addOnMap as Map
+				cacheNetworks(poolServer, (opts + addOnMap))
+				cacheZones(poolServer, (opts + addOnMap))
+				if(poolServer?.configMap?.inventoryExisting) {
+					cacheIpAddressRecords(poolServer, (opts + addOnMap))
+					cacheZoneRecords(poolServer, (opts + addOnMap))
 				}
 
-				if(testResults.data['addOnMap']['ibapauth']) {
+				if(testResults.getCookie('ibapauth')) {
 					infobloxAPI.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, requestContentType:ContentType.JSON] + addOnMap, 'POST')
 				}
-				if(testResults.data['addOnMap']['reuse']) {
-					infobloxAPI.shutdownClient(testResults.data['addOnMap'])
+				if(addOnMap?.reuse) {
+					infobloxAPI.shutdownClient(addOnMap)
 				}
 				morpheusContext.network.updateNetworkPoolStatus(poolServer, 'ok', null)
 			}
@@ -534,7 +534,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
-				rtn.cookies.ibapauth = results.cookies.ibapauth
+				rtn.cookies.ibapauth = results.getCookie('ibapauth')
 				rtn.headers = results.headers
 				def pageResults = results.content ? new JsonSlurper().parseText(results.content) : []
 				if(pageResults?.result?.size() > 0) {
@@ -557,7 +557,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	void cacheNetworks(NetworkPoolServer poolServer, ServiceResponse networks, Map opts) {
+	void cacheNetworks(NetworkPoolServer poolServer, Map opts) {
 		opts.doPaging = true
 		def listResults = listNetworks(poolServer, opts)
 		log.debug("listResults: {}",listResults)
@@ -1341,7 +1341,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
-				rtn.cookies.ibapauth = results.cookies.ibapauth
+				rtn.cookies.ibapauth = results.getCookie('ibapauth')
 				rtn.headers = results.headers
 				def pageResults = results.content ? new JsonSlurper().parseText(results.content) : []
 
@@ -1371,7 +1371,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def opts = [doPaging:false, maxResults:1]
 			def networkList = listNetworks(poolServer, opts)
 			rtn.success = networkList.success
-			rtn.data = networkList.ibapauth
+			rtn.data = networkList.data
+			rtn.cookies = networkList.cookies
 			if(!networkList.success) {
 				rtn.msg = 'error connecting to infoblox'
 			}

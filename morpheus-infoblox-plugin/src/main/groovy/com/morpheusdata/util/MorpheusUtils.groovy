@@ -65,4 +65,12 @@ class MorpheusUtils {
 		}
 		return rtn
 	}
+
+	static Map<String, String> extractCookie(String rawCookie) {
+		if(!rawCookie) return null
+		def name = rawCookie.split('=')?.getAt(0)
+		String data = rawCookie?.split("$name=")?.getAt(1)?.split(";")?.getAt(0)
+		def value = data?.substring(1, data?.length() - 1)
+		[(name.toString()): value]
+	}
 }

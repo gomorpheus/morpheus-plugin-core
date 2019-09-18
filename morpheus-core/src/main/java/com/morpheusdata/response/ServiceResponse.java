@@ -225,4 +225,10 @@ public class ServiceResponse<T> {
 			this.cookies = new HashMap<>();
 		this.cookies.put(key, value.toString());
 	}
+
+	public String getCookie(String key) {
+		if(this.cookies == null)
+			return null;
+		return this.cookies.getOrDefault(key, null);
+	}
 }
