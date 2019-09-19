@@ -188,8 +188,8 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	NetworkDomain getNetworkDomainByOwner(Account account) {
-		return null
+	List getNetworkDomainByOwner(Account account) {
+
 	}
 
 	@Override

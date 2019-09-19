@@ -236,7 +236,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
 	 */
 	@Override
-	void refresh(NetworkPoolServer poolServer) { }
+	void refresh(NetworkPoolServer poolServer) {
+		refreshNetworkPoolServer(poolServer, [:])
+	}
 
 	// TODO: Add to interface
 	def validateService(AccountIntegration integration) { return null }

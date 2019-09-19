@@ -35,21 +35,6 @@ class InfobloxProviderSpec extends Specification {
         provider
     }
 
-    void "updateNetworkPoolStatus"() {
-        given:
-        def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        infobloxAPI.callApi(_, _, _, _, _, "GET") >> ServiceResponse.success('{"foo": 1}')
-
-        when:
-        provider.refresh(poolServer)
-
-        then:
-        1 * networkContext.updateNetworkPoolStatus(_, 'syncing', null)
-        and:
-        1 * networkContext.updateNetworkPoolStatus(_, 'ok', null)
-
-    }
-
     void "listNetworks"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
