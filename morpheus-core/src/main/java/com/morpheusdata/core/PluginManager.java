@@ -94,7 +94,6 @@ public class PluginManager {
 		registerPlugin(pluginClass);
 	}
 
-
 	void deregisterPlugin(Plugin plugin) {
 		plugin.onDestroy();
 		plugins.remove(plugin);

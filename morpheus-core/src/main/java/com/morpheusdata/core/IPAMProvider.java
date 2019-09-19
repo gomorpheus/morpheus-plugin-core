@@ -28,8 +28,9 @@ public interface IPAMProvider extends PluginProvider {
 	 */
 	public ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
 
-
 	public ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
+
+	public ServiceResponse updateNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
 
 	/**
 	 * Periodically called to refresh and sync data coming from the relevant integration. Most integration providers

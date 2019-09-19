@@ -221,9 +221,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	@Override
 	ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
-		// no-op
-		return ServiceResponse.success()
+		return ServiceResponse.success() // no-op
 	}
+
+	@Override
+	ServiceResponse updateNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+		return ServiceResponse.success() // no-op
+	}
+
 	/**
 	 * Periodically called to refresh and sync data coming from the relevant integration. Most integration providers
 	 * provide a method like this that is called periodically (typically 5 - 10 minutes). DNS Sync operates on a 10min
@@ -272,7 +277,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
 
 						break
 					case 'AAAA':
@@ -285,7 +290,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
 
 						break
 					case 'CNAME':
@@ -298,7 +303,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
 
 						break
 					case 'TXT':
@@ -311,7 +316,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
 						break
 					case 'MX':
 						apiPath = getServicePath(poolServer.serviceUrl) + 'record:mx'
@@ -323,7 +328,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.JSON], 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, requestContentType:ContentType.APPLICATION_JSON], 'POST')
 						break
 				}
 
@@ -354,7 +359,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				apiPath = getServicePath(poolServer.serviceUrl) + record.externalId
 				//we have an A Record to delete
 				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.JSON], 'DELETE')
+																												requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
 				log.info("deleteRecord results: ${results}")
 				if(results.success) {
 					rtn.success = true
@@ -412,7 +417,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}
 
 				if(testResults.getCookie('ibapauth')) {
-					infobloxAPI.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, requestContentType:ContentType.JSON] + addOnMap, 'POST')
+					infobloxAPI.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, requestContentType:ContentType.APPLICATION_JSON] + addOnMap, 'POST')
 				}
 				if(addOnMap?.reuse) {
 					infobloxAPI.shutdownClient(addOnMap)
@@ -530,7 +535,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'],
-																												query:pageQuery, requestContentType:ContentType.JSON, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth], 'GET')
+																												query:pageQuery, requestContentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth], 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
@@ -884,7 +889,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		]
 		log.debug("body: ${body}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																											body:body, requestContentType:ContentType.JSON], 'PUT')
+																											body:body, requestContentType:ContentType.APPLICATION_JSON], 'PUT')
 		if(results.success) {
 			def ipPath = results.content.substring(1, results.content.length() - 1)
 			def ipResults = getItem(poolServer, ipPath, [:])
@@ -902,18 +907,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 			def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.JSON], 'DELETE')
+																												requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
 			if(results?.success && !results.hasErrors()) {
 				if(poolIp.internalId) {
 					apiPath = getServicePath(poolServer.serviceUrl) + poolIp.internalId
 					//we have an A Record to delete
-					results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, requestContentType:ContentType.JSON], 'DELETE')
+					results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
 				}
 				if(poolIp.ptrId) {
 					apiPath = getServicePath(poolServer.serviceUrl) + poolIp.ptrId
 					//we have an A Record to delete
 					results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																													requestContentType:ContentType.JSON], 'DELETE')
+																													requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
 					log.info("Clearing out PTR Record ${results?.success}")
 				}
 				return ServiceResponse.success(poolIp)
@@ -1287,7 +1292,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	void cacheIpAddressRecords(NetworkPoolServer poolServer, Map opts) {
-		morpheusContext.network.getNetworkPoolByPoolServer(poolServer, "externalId").each { NetworkPool pool ->
+		def pools = morpheusContext.network.getNetworkPoolByPoolServer(poolServer, "externalId")
+		pools.each { pool ->
 			def listResults = listHostRecords(poolServer, pool.name, opts)
 			if(listResults.success) {
 				def results = [:]
@@ -1337,7 +1343,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'],
-																												query:pageQuery, requestContentType:ContentType.JSON, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth], 'GET')
+																												query:pageQuery, requestContentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth], 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
