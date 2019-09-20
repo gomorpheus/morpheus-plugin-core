@@ -14,7 +14,7 @@ public interface MorpheusNetworkContext {
 
 	void updateMatchedPools(Long poolServerId, List chunkedUpdateList);
 
-	void removeMissingPools(Long poolServerId, List removeList);
+	void removeMissingPools(Long poolServerId, List<NetworkPool> removeList);
 
 	List<NetworkPool> getNetworkPoolByPoolServer(NetworkPoolServer poolServer);
 
