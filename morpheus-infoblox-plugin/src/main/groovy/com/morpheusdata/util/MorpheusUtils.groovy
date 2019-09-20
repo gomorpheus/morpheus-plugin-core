@@ -55,7 +55,9 @@ class MorpheusUtils {
 				}
 			}
 			masterItems?.each { masterItem ->
-				def match = rtn.updateList?.find { it.masterItem == masterItem }
+				def match = rtn?.updateList?.find {
+					it.masterItem == masterItem
+				}
 				if(!match) {
 					rtn.addList << masterItem
 				}

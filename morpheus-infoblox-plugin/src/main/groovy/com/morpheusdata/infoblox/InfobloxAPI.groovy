@@ -1,6 +1,6 @@
 package com.morpheusdata.infoblox
 
-import com.morpheusdata.response.ServiceResponse
+
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.util.logging.Slf4j
@@ -109,7 +109,7 @@ class InfobloxAPI {
 
 						response.getHeaders('Set-Cookie').each {
 							MorpheusUtils.extractCookie(it.toString()).each { cookie ->
-								rtn.addCookies(cookie.key, cookie.value)
+								rtn.addCookie(cookie.key, cookie.value)
 							}
 						}
 

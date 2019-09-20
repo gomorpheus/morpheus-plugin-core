@@ -220,7 +220,7 @@ public class ServiceResponse<T> {
 		this.cookies = cookies;
 	}
 
-	public void addCookies(String key, Object value) {
+	public void addCookie(String key, Object value) {
 		if(this.cookies == null)
 			this.cookies = new HashMap<>();
 		this.cookies.put(key, value.toString());

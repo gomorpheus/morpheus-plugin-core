@@ -572,7 +572,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		if(listResults.success) {
 			def results = [:]
 			results.poolType = poolServer.type
-			results.objList = listResults?.results
+			results.objList = listResults?.content
 			results.existingItems = morpheusContext.network.getNetworkPoolByPoolServer(poolServer, 'ipRanges')?.flatten()
 
 			def matchFunction = { String morpheusItem, Map cloudItem ->
@@ -1349,7 +1349,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
-				rtn.cookies.ibapauth = results.getCookie('ibapauth')
+				if(results.getCookie('ibapauth')) {
+					rtn.addCookie('ibapauth', results.getCookie('ibapauth'))
+				}
 				rtn.headers = results.headers
 				def pageResults = results.content ? new JsonSlurper().parseText(results.content) : []
 

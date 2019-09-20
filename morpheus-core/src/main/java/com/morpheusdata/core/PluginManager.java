@@ -69,7 +69,6 @@ public class PluginManager {
 		plugin.setPluginManager(this);
 		plugin.setMorpheusContext(this.morpheusContext);
 		plugin.initialize();
-		System.out.println(plugin.getProviders());
 		plugins.add(plugin);
 	}
 
