@@ -106,11 +106,11 @@ public class PluginManager {
 		return this.plugins;
 	}
 
-	public Plugin findByCode(String code) {
+	public PluginProvider findByCode(String code) {
 		for(Plugin plugin: this.plugins) {
 			PluginProvider pp = plugin.getProviderByCode(code);
 			if(pp != null) {
-				return pp.getPlugin();
+				return pp;
 			}
 		}
 		return null;
