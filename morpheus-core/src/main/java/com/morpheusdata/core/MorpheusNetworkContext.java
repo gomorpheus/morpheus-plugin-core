@@ -1,7 +1,6 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.response.ServiceResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +73,9 @@ public interface MorpheusNetworkContext {
 
 	void createSyncedNetworkDomain(Long poolServerId, List addList);
 
-	void updateMatchedZones(Long poolServerId, List updateList);
+	List<NetworkDomain> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
+
+	void saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
 
 	void removeMissingZones(Long poolServerId, List removeList);
 

@@ -463,7 +463,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				while (syncLists?.updateList?.size() > 0) {
 					List chunkedUpdateList = syncLists.updateList.take(50)
 					syncLists.updateList = syncLists.updateList.drop(50)
-					morpheusContext.network.updateMatchedZones(poolServer.id, chunkedUpdateList)
+					updateMatchedZones(poolServer, chunkedUpdateList)
 				}
 
 				if (syncLists?.removeList?.size() > 0) {
@@ -494,6 +494,47 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				 zoneType: 'Authoritative'])
 		}
 		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList)
+	}
+
+	/**
+	 * Given a pool server and updateList, extract externalId's and names to match on and update NetworkDomains.
+	 * @param poolServer
+	 * @param addList
+	 */
+	void updateMatchedZones(NetworkPoolServer poolServer, List updateList) {
+		def externalIds = updateList.collect{ ul -> ul.existingItem[0] }
+		def names = updateList.collect{ ul -> ul.existingItem[1] }
+		def matchedZones = morpheusContext.network.findNetworkDomainsByPoolServerAndExternalIdsOrNames(poolServer, externalIds, names)
+
+		def matchedZonesByExternalId = matchedZones?.collectEntries{[(it.externalId):it]}
+		def matchedZonesByName = matchedZones?.collectEntries{[(it.name):it]}
+		List<NetworkDomain> domainsToUpdate = []
+		updateList?.each { update ->
+			NetworkDomain existingItem = matchedZonesByExternalId[update.existingItem[0]]
+			if(!existingItem) {
+				existingItem = matchedZonesByName[update.existingItem[1]]
+			}
+			if(existingItem) {
+				def save = false
+				if(!existingItem.externalId) {
+					existingItem.externalId = update.masterItem.'_ref'
+					save = true
+				}
+				if(!existingItem.refId) {
+					existingItem.refType = 'AccountIntegration'
+					existingItem.refId = poolServer.integration.id
+					existingItem.refSource = 'integration'
+					save = true
+				}
+
+				if(save) {
+					domainsToUpdate.add(existingItem)
+				}
+			}
+		}
+		if(domainsToUpdate.size() > 0) {
+			morpheusContext.network.saveAllNetworkDomains(domainsToUpdate)
+		}
 	}
 	// Cache methods
 
