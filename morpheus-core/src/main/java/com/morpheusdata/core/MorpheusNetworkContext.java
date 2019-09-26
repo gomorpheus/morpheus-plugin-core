@@ -72,7 +72,7 @@ public interface MorpheusNetworkContext {
 
 	void addMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List addList);
 
-	void addMissingZones(Long poolServerId, List addList);
+	void createSyncedNetworkDomain(Long poolServerId, List addList);
 
 	void updateMatchedZones(Long poolServerId, List updateList);
 

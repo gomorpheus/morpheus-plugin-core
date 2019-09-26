@@ -434,6 +434,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
+	// Cache methods
 	def cacheZones(NetworkPoolServer poolServer, Map opts = [:]) {
 		try {
 			def listResults = listZones(poolServer, opts)
@@ -456,7 +457,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				while (syncLists?.addList?.size() > 0) {
 					List chunkedAddList = syncLists.addList.take(50)
 					syncLists.addList = syncLists.addList.drop(50)
-					morpheusContext.network.addMissingZones(poolServer.id, chunkedAddList)
+					addMissingZones(poolServer, chunkedAddList)
 				}
 
 				while (syncLists?.updateList?.size() > 0) {
@@ -473,6 +474,28 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.error("cacheZones error: ${e}", e)
 		}
 	}
+
+	/**
+	 * Creates a mapping for networkDomainService.createSyncedNetworkDomain() method on the network context.
+	 * @param poolServer
+	 * @param addList
+	 */
+	void addMissingZones(NetworkPoolServer poolServer, List addList) {
+		List<Map> missingZonesMap = []
+		addList?.each { Map add ->
+			missingZonesMap.add(
+				[owner:poolServer.account,
+				 refType:'AccountIntegration',
+				 refId: poolServer?.integration?.id,
+				 externalId: add.'_ref',
+				 name: MorpheusUtils.getFriendlyDomainName(add.fqdn),
+				 fqdn: MorpheusUtils.getFqdnDomainName(add.fqdn),
+				 refSource: 'integration',
+				 zoneType: 'Authoritative'])
+		}
+		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList)
+	}
+	// Cache methods
 
 	def cacheZoneRecords(NetworkPoolServer poolServer, Map opts) {
 		try {

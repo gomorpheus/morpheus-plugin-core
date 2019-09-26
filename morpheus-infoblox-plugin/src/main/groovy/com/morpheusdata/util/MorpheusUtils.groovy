@@ -75,4 +75,27 @@ class MorpheusUtils {
 		def value = data?.substring(1, data?.length() - 1)
 		[(name.toString()): value]
 	}
+
+	static String getFriendlyDomainName(String name) {
+		def rtn = name
+		if(name) {
+			name = name.toLowerCase()
+			if(name?.endsWith('.'))
+				name = name.substring(0, name.length() - 1)
+			rtn = name
+		}
+		return rtn
+
+	}
+
+	static String getFqdnDomainName(String name) {
+		def rtn = name
+		if(name) {
+			name = name.toLowerCase()
+			if(!name.endsWith('.'))
+				name = name + '.'
+			rtn = name
+		}
+		return rtn
+	}
 }
