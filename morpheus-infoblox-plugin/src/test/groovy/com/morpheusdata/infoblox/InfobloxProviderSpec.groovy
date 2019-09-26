@@ -127,6 +127,31 @@ class InfobloxProviderSpec extends Specification {
         type.description == 'Infoblox IPAM'
     }
 
+	void "getProvidedAccountIntegrationTypes"() {
+		when:
+		def types = provider.providedAccountIntegrationTypes
+
+		then:
+		types.size() == 1
+
+		when:
+		def type = types.first()
+
+		then:
+		type.category == 'ipam'
+		type.code == 'infoblox'
+		!type.enabled
+		type.viewSet == 'ipam'
+		type.optionTypes == []
+		type.name == 'Infoblox'
+		!type.description
+		!type.hasCMDB
+		!type.hasCM
+		type.hasDNS
+		!type.hasApprovals
+		type.integrationService == 'networkPoolService'
+	}
+
     void "releaseIpAddress"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")

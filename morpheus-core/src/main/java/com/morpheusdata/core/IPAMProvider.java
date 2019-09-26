@@ -41,11 +41,17 @@ public interface IPAMProvider extends PluginProvider {
 	void refresh(NetworkPoolServer poolServer);
 
 
-	/*
+	/**
 	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
 	 * @return A Set of {@link NetworkPoolType} objects representing the available pool types provided by this Provider.
 	 */
 	Set<NetworkPoolType> getProvidedPoolTypes();
+
+	/**
+	 * Returns a list of account integration types that are available for use. These are synchronized by the IPAM Provider via a Context.
+	 * @return A Set of {@link AccountIntegrationType} objects representing the available account integration provided by this Provider.
+	 */
+	Set<AccountIntegrationType> getProvidedAccountIntegrationTypes();
 
 	/*
 	 * Target endpoint used to allocate an IP Address during provisioning of Instances

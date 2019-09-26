@@ -6,6 +6,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.model.AccountIntegration
+import com.morpheusdata.model.AccountIntegrationType
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Network
@@ -475,7 +476,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	def cacheZoneRecords(NetworkPoolServer poolServer, Map opts) {
 		try {
-			def domains = morpheusContext.network.getNetworkDomainByTypeAndRefId('AccountIntegration', poolServer.integration.id)
+			def domains = morpheusContext.network.getNetworkDomainByTypeAndRefId('AccountIntegration', poolServer?.integration?.id)
 
 			domains?.each { NetworkDomain domain ->
 				cacheZoneDomainRecords(poolServer,domain,'A',opts)?.get()
@@ -604,12 +605,29 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	@Override
 	Set<NetworkPoolType> getProvidedPoolTypes() {
-		NetworkPoolType poolType = new NetworkPoolType()
-		poolType.code = 'infoblox'
-		poolType.name = 'Infoblox'
-		poolType.creatable = false
-		poolType.description = 'Infoblox IPAM'
-		return [poolType]
+		[new NetworkPoolType(
+			code: 'infoblox',
+			name: 'Infoblox',
+			creatable: false,
+			description: 'Infoblox IPAM'
+		)]
+	}
+
+	@Override
+	Set<AccountIntegrationType> getProvidedAccountIntegrationTypes() {
+		[new AccountIntegrationType(
+			name:'Infoblox',
+			code:'infoblox',
+			category:'ipam',
+			enabled:false,
+			viewSet:'ipam',
+			optionTypes:[],
+			hasCMDB:false,
+			hasCM:false,
+			hasDNS: true,
+			hasApprovals:false,
+			integrationService:'networkPoolService'
+		)]
 	}
 
 	/**

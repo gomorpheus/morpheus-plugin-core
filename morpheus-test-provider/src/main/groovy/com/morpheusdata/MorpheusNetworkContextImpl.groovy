@@ -38,8 +38,8 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	List<NetworkPool> getNetworkPoolByPoolServer(NetworkPoolServer poolServer, String joinProperty) {
-		return null
+	void removeMissingPools(Long poolServerId, List removeList) {
+
 	}
 
 	@Override
