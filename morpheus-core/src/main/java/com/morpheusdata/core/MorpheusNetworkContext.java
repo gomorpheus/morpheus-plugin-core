@@ -63,8 +63,6 @@ public interface MorpheusNetworkContext {
 
 	String releaseLock(String name, Map opts);
 
-	void addMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List addList);
-
 	void createSyncedNetworkDomain(Long poolServerId, List addList);
 
 	List<NetworkDomain> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
@@ -87,7 +85,13 @@ public interface MorpheusNetworkContext {
 
 	NetworkPoolRange save(NetworkPoolRange networkPoolRange);
 
+	NetworkDomainRecord save(NetworkDomainRecord domainRecord);
+
+	void saveAll(List<NetworkDomainRecord> domainRecords);
+
 	void save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
 
-	List<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPool pool, List externalIds);
+	Map<String, NetworkPool> findNetworkPoolsByPoolServerAndExternalIds(NetworkPool pool, List externalIds);
+
+	Map<String, NetworkDomainRecord> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
 }

@@ -558,6 +558,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
+	//cacheZoneDomainRecords
 	void cacheZoneDomainRecords(NetworkPoolServer poolServer, NetworkDomain domain, String recordType, Map opts) {
 		def listResults = listZoneRecords(poolServer, domain.name, "record:${recordType.toLowerCase()}", opts)
 		log.debug("listResults: {}",listResults)
@@ -573,13 +574,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			while(syncLists?.addList?.size() > 0) {
 				List chunkedAddList = syncLists.addList.take(50)
 				syncLists.addList = syncLists.addList.drop(50)
-				morpheusContext.network.addMissingDomainRecords(poolServer.id, domain, recordType, chunkedAddList)
+				addMissingDomainRecords(poolServer, domain, recordType, chunkedAddList)
 			}
 			//update list
 			while(syncLists.updateList?.size() > 0) {
 				List chunkedUpdateList = syncLists.updateList.take(50)
 				syncLists.updateList = syncLists.updateList.drop(50)
-				morpheusContext.network.updateMatchedDomainRecords(poolServer.id, domain,recordType, chunkedUpdateList)
+				updateMatchedDomainRecords(domain,recordType, chunkedUpdateList)
 			}
 			// remove list
 			if(syncLists.removeList?.size() > 0) {
@@ -588,6 +589,84 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
+	void updateMatchedDomainRecords(NetworkDomain domain, String recordType, List updateList) {
+		def externalIds = updateList.collect{ ul -> ul.existingItem }
+		def matchedDomainRecords = morpheusContext.network.findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(domain, recordType, externalIds)
+
+		def records = []
+		updateList?.each { update ->
+			NetworkDomainRecord existingItem = matchedDomainRecords[update.existingItem]
+			if(existingItem) {
+				//update view ?
+				def save = false
+				switch(recordType){
+					case 'A':
+						if(update.masterItem.ipv4addr != existingItem.content) {
+							existingItem.setContent(update.masterItem.ipv4addr)
+							save = true
+						}
+						break
+					case 'AAAA':
+						if(update.masterItem.ipv6addr != existingItem.content) {
+							existingItem.setContent(update.masterItem.ipv6addr)
+							save = true
+						}
+						break
+					case 'TXT':
+						if(update.masterItem.text != existingItem.content) {
+							existingItem.setContent(update.masterItem.text)
+							save = true
+						}
+						break
+					case 'CNAME':
+						if(update.masterItem.canonical != existingItem.content) {
+							existingItem.setContent(update.masterItem.canonical)
+							save = true
+						}
+						break
+					case 'MX':
+						if(update.masterItem.mail_exchanger != existingItem.content) {
+							existingItem.setContent(update.masterItem.mail_exchanger)
+							save = true
+						}
+						break
+
+					case 'PTR':
+
+						break
+				}
+				if(save) {
+					records.add(existingItem)
+				}
+			}
+		}
+		if(records.size() > 0) {
+			morpheusContext.network.saveAll(records)
+		}
+	}
+
+	void addMissingDomainRecords(NetworkPoolServer poolServer, NetworkDomain domain, String recordType, List addList) {
+		List<NetworkDomainRecord> records = []
+		addList?.each {
+			def addConfig = [networkDomain: domain, externalId:it.'_ref', name: recordType == 'PTR' ? it.ptrdname : it.name, fqdn: "${it.name}.${it.zone ?: ""}", type: recordType, source: 'sync']
+			def newObj = new NetworkDomainRecord(addConfig)
+			if(recordType == 'A') {
+				newObj.setContent(it.ipv4addr)
+			} else if (recordType == 'AAAA') {
+				newObj.setContent(it.ipv6addr)
+			} else if (recordType == 'TEXT') {
+				newObj.setContent(it.text)
+			} else if (recordType == 'CNAME') {
+				newObj.setContent(it.canonical)
+			} else if (recordType == 'MX') {
+				newObj.setContent(it.mail_exchanger)
+			}
+			records.add(newObj)
+		}
+		morpheusContext.network.saveAll(records)
+	}
+
+	//cacheZoneDomainRecords
 	ServiceResponse listZoneRecords(NetworkPoolServer poolServer, String zoneName, String recordType = 'record:a', Map opts=[:]) {
 		def rtn = new ServiceResponse()
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
