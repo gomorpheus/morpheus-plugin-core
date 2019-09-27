@@ -9,10 +9,6 @@ public interface MorpheusNetworkContext {
 
 	void updateNetworkPoolStatus(NetworkPoolServer poolServer, String status, String message);
 
-	void addMissingPools(Long poolServerId, List chunkedAddList);
-
-	void updateMatchedPools(Long poolServerId, List chunkedUpdateList);
-
 	void removeMissingPools(Long poolServerId, List<NetworkPool> removeList);
 
 	List<NetworkPool> getNetworkPoolByPoolServer(NetworkPoolServer poolServer);
@@ -86,4 +82,14 @@ public interface MorpheusNetworkContext {
 	void deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
 
 	NetworkDomain getServerNetworkDomain(ComputeServer computeServer);
+
+	List getNetworkPoolByNetworkPoolServer(NetworkPoolServer poolServer, String property);
+
+	NetworkPool save(NetworkPool networkPool);
+
+	NetworkPoolRange save(NetworkPoolRange networkPoolRange);
+
+	void save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
+
+	List<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPool pool, List externalIds);
 }

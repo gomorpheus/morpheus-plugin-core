@@ -3,6 +3,8 @@ package com.morpheusdata.util
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkPool
 import groovy.util.logging.Slf4j
+import org.apache.commons.net.util.SubnetUtils
+
 //import org.apache.commons.net.util.SubnetUtils
 
 // FIXME: should live in Core, need to convert to java
@@ -34,6 +36,20 @@ class MorpheusUtils {
 				rtn = networkPool?.netmask
 			}
 		} catch(ignore) {}
+		return rtn
+	}
+
+	static Map getNetworkPoolConfig(cidr) {
+		def rtn = [config:[:], ranges:[]]
+		try {
+			def subnetInfo = new SubnetUtils(cidr).getInfo()
+			rtn.config.netmask = subnetInfo.getNetmask()
+			rtn.config.ipCount = subnetInfo.getAddressCountLong() ?: 0
+			rtn.config.ipFreeCount = rtn.config.ipCount
+			rtn.ranges << [startAddress:subnetInfo.getLowAddress(), endAddress:subnetInfo.getHighAddress()]
+		} catch(e) {
+			log.warn("error parsing network pool cidr: ${e}", e)
+		}
 		return rtn
 	}
 
