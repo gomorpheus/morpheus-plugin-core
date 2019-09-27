@@ -11,15 +11,13 @@ public interface MorpheusNetworkContext {
 
 	void removeMissingPools(Long poolServerId, List<NetworkPool> removeList);
 
-	List<NetworkPool> getNetworkPoolByPoolServer(NetworkPoolServer poolServer);
+	List<NetworkPool> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer);
 
-	List<NetworkPool> getNetworkPoolByPoolServer(NetworkPoolServer poolServer, String joinProperty);
+	List<NetworkPool> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer, String property);
 
 	List getNetworkPoolByNetworkPool(NetworkPool pool);
 
-	void addMissingIps(NetworkPool pool, List addList);
-
-	void updateMatchedIps(NetworkPool pool, List updateList);
+	List getModelProperties(NetworkPool pool, List<String> joinProperties);
 
 	void removeMissingIps(NetworkPool pool, List removeList);
 
@@ -37,11 +35,11 @@ public interface MorpheusNetworkContext {
 
 	NetworkDomainRecord saveDomainRecord(NetworkDomainRecord domainRecord, Map opts);
 
-	NetworkPoolIp saveNetworkPoolIp(NetworkPoolIp poolIp);
+	NetworkPoolIp save(NetworkPoolIp poolIp);
 
-	NetworkPoolIp saveNetworkPoolIp(NetworkPoolIp poolIp, NetworkPool networkPool);
+	NetworkPoolIp save(NetworkPoolIp poolIp, NetworkPool networkPool);
 
-	NetworkPoolIp saveNetworkPoolIp(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
+	NetworkPoolIp save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
 
 	NetworkPoolIp getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
 
@@ -71,6 +69,8 @@ public interface MorpheusNetworkContext {
 
 	List<NetworkDomain> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
 
+	List<NetworkPoolIp> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
+
 	void saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
 
 	void removeMissingZones(Long poolServerId, List removeList);
@@ -82,8 +82,6 @@ public interface MorpheusNetworkContext {
 	void deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
 
 	NetworkDomain getServerNetworkDomain(ComputeServer computeServer);
-
-	List getNetworkPoolByNetworkPoolServer(NetworkPoolServer poolServer, String property);
 
 	NetworkPool save(NetworkPool networkPool);
 

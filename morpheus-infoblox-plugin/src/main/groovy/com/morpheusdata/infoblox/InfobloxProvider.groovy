@@ -1446,13 +1446,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	// cacheIpAddressRecords
 	void cacheIpAddressRecords(NetworkPoolServer poolServer, Map opts) {
-		def pools = morpheusContext.network.getNetworkPoolByPoolServer(poolServer, "externalId")
+		def pools = morpheusContext.network.getNetworkPoolsByNetworkPoolServer(poolServer, "ipRanges")
 		pools.each { pool ->
 			def listResults = listHostRecords(poolServer, pool.name, opts)
 			if(listResults.success) {
 				def results = [:]
 				results.objList = listResults?.results?.findAll{res -> res.status == 'USED'}
-				results.existingItems = morpheusContext.network.getNetworkPoolByNetworkPool(pool)
+				results.existingItems = morpheusContext.network.getModelProperties(pool, ['externalId', 'ipAddress'])
 				//sync lists
 				def matchFunction = { morpheusItem, Map cloudItem ->
 					morpheusItem[0] == cloudItem?.'_ref'
@@ -1464,13 +1464,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				while(syncLists?.addList?.size() > 0) {
 					List chunkedAddList = syncLists.addList.take(50)
 					syncLists.addList = syncLists.addList.drop(50)
-					morpheusContext.network.addMissingIps(pool,chunkedAddList)
+					addMissingIps(pool,chunkedAddList)
 				}
 				//update list
 				while(syncLists?.updateList?.size() > 0) {
 					List chunkedUpdateList = syncLists.updateList.take(50)
 					syncLists.updateList = syncLists.updateList.drop(50)
-					morpheusContext.network.updateMatchedIps(pool, chunkedUpdateList)
+					updateMatchedIps(pool, chunkedUpdateList)
 				}
 				//removes
 				if(syncLists?.removeList?.size() > 0) {
@@ -1480,7 +1480,62 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
+	void addMissingIps(NetworkPool pool, List addList) {
+		addList?.each { it ->
+			def ipAddress = it.ip_address
+			def types = it.types
+			def names = it.names
+			def ipType = 'assigned'
+			if(types?.contains('UNMANAGED')) {
+				ipType = 'unmanaged'
+			}
+			if(!types) {
+				ipType = 'used'
+			}
+			def addConfig = [networkPool: pool, networkPoolRange: pool.ipRanges ? pool.ipRanges.first() : null, ipType: ipType, hostname: names ? names.first() : null, ipAddress: ipAddress, externalId:it.'_ref',]
+			def newObj = new NetworkPoolIp(addConfig)
+			morpheusContext.network.save(newObj)
+		}
+	}
+
+	void updateMatchedIps(NetworkPool pool, List updateList) {
+		def externalIds = updateList.collect{ ul -> ul.existingItem[0] }
+		def ipAddresses = updateList.collect{ ul -> ul.existingItem[1] }
+		def matchedPoolIps = morpheusContext.network.getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(pool, externalIds, ipAddresses)
+		def matchedPoolIpsByExternalId = matchedPoolIps?.collectEntries{[(it.externalId):it]}
+		def matchedPoolIpsByIpAddress = matchedPoolIps?.collectEntries{[(it.ipAddress):it]}
+		updateList?.each {  update ->
+			def existingItem = matchedPoolIpsByExternalId[update.existingItem[0]]
+			if(!existingItem) {
+				existingItem = matchedPoolIpsByIpAddress[update.existingItem[1]]
+			}
+			if(existingItem) {
+				def hostname = update.masterItem.names ? update.masterItem.names.first() : null
+				def ipType = 'assigned'
+				if(update.masterItem.types?.contains('UNMANAGED')) {
+					ipType = 'unmanaged'
+				}
+				if(!update.masterItem.types) {
+					ipType = 'used'
+				}
+				def save = false
+				if(existingItem.ipType != ipType) {
+					existingItem.ipType = ipType
+					save = true
+				}
+				if(existingItem.hostname != hostname) {
+					existingItem.hostname = hostname
+					save = true
+
+				}
+				if(save) {
+					morpheusContext.network.save(existingItem)
+				}
+			}
+		}
+	}
 	// cacheIpAddressRecords
+
 	ServiceResponse listHostRecords(NetworkPoolServer poolServer, String networkName, Map opts) {
 		def rtn = new ServiceResponse()
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl) //ipv4address?network=10.10.10.0/24
