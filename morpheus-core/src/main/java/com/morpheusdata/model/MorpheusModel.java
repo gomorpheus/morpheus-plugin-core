@@ -77,7 +77,7 @@ public class MorpheusModel {
 	/**
 	 * @return A Map of all properties, similar to Groovy's getProperties()
 	 */
-	public HashMap<String, Object> getPropertiesMap()  {
+	public HashMap<String, Object> getProperties()  {
 		HashMap<String, Object> map = new HashMap<>();
 
 		for(Class clazz = this.getClass(); clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
@@ -93,5 +93,4 @@ public class MorpheusModel {
 		}
 		return map;
 	}
-
 }

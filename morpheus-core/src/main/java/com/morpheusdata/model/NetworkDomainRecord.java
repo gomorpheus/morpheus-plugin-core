@@ -13,11 +13,21 @@ public class NetworkDomainRecord extends MorpheusModel {
     public String internalId;
     public String externalId;
     public String source;
-    public NetworkPoolIp networkPoolIp;
     public Long serverId;
     public Long containerId;
     public Long instanceId;
     public String status;
     public String statusMessage;
+    public NetworkPoolIp networkPoolIp;
     public NetworkDomain networkDomain;
+
+    public void setNetworkPoolIpId(Long id) {
+    	this.networkPoolIp = new NetworkPoolIp();
+    	this.networkPoolIp.id = id;
+	}
+
+	public void setNetworkDomainId(Long id) {
+		this.networkDomain = new NetworkDomain();
+		this.networkDomain.id = id;
+	}
 }

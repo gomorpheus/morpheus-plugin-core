@@ -58,7 +58,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
-				def domainMatch = morpheusContext.network.getServerNetworkDomain(server)
+				def domainMatch = morpheusContext.network.getServerNetworkDomain(server).blockingGet()
 				log.info("domainMatch: ${domainMatch}")
 				def domainName = domainMatch?.name ?: 'localdomain'
 				if(domainMatch) {
@@ -206,7 +206,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	ServiceResponse<NetworkPoolServer> initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
-		log.info("initializeNetworkPoolServer: ${poolServer}")
+		log.info("initializeNetworkPoolServer: ${poolServer.dump()}")
 		def rtn = new ServiceResponse()
 		try {
 			if(poolServer) {
@@ -219,11 +219,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			rtn.error = "initializeNetworkPoolServer error: ${e}"
 			log.error("initializeNetworkPoolServer error: ${e}", e)
 		}
+		log.info(rtn.dump())
 		return rtn
 	}
 
 	@Override
 	ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
+		log.info "createNetworkPoolServer() no-op"
 		return ServiceResponse.success() // no-op
 	}
 
@@ -356,21 +358,25 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
-				def poolServer = morpheusContext.network.getPoolServerByAccountIntegration(integration)
+				morpheusContext.network.getPoolServerByAccountIntegration(integration).doOnSuccess({poolServer ->
+					def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
+					def apiPath
 
-				def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
-				def apiPath
-
-				apiPath = getServicePath(poolServer.serviceUrl) + record.externalId
-				//we have an A Record to delete
-				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
-				log.info("deleteRecord results: ${results}")
-				if(results.success) {
-					rtn.success = true
-				}
+					apiPath = getServicePath(poolServer.serviceUrl) + record.externalId
+					//we have an A Record to delete
+					def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+																																	requestContentType:ContentType.APPLICATION_JSON], 'DELETE')
+					log.info("deleteRecord results: ${results}")
+					if(results.success) {
+						rtn.success = true
+					}
+				}).doOnError({error ->
+					log.error(error)
+				}).doOnSubscribe({ sub ->
+					log.info "Subscribed"
+				})
 			} else {
-				log.warn("no integration")
+			log.warn("no integration")
 			}
 		} catch(e) {
 			log.error("provisionServer error: ${e}", e)
@@ -397,21 +403,21 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 				if(!testResults.success) {
 					//NOTE invalidLogin was only ever set to false.
-					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'error', 'error calling infoblox')
+					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'error', 'error calling infoblox').blockingGet()
 				} else {
 					def addOnMap = [ibapauth: testResults.getCookie('ibapauth')]
 					if (testResults.data.httpClient instanceof HttpClient) {
 						addOnMap.httpClient = testResults.data.httpClient
 						addOnMap.reuse = true
 					}
-					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'syncing', null)
+					morpheusContext.network.updateNetworkPoolStatus(poolServer, 'syncing', null).blockingGet()
 					testResults.data.addOnMap = addOnMap
 				}
 			} else {
 				morpheusContext.network.updateNetworkPoolStatus(poolServer, 'error', 'infoblox api not reachable')
 				return ServiceResponse.error("infoblox api not reachable")
 			}
-			// Promise
+
 			if(testResults.success) {
 				Map addOnMap = testResults.data.addOnMap as Map
 				cacheNetworks(poolServer, (opts + addOnMap))
@@ -427,7 +433,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				if(addOnMap?.reuse) {
 					infobloxAPI.shutdownClient(addOnMap)
 				}
-				morpheusContext.network.updateNetworkPoolStatus(poolServer, 'ok', null)
+				morpheusContext.network.updateNetworkPoolStatus(poolServer, 'ok', null).blockingGet()
 			}
 			return testResults
 		} catch(e) {
@@ -445,32 +451,36 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if (listResults.success) {
 				def results = [:]
 				results.objList = listResults?.results
-				results.existingItems = morpheusContext.network.getNetworkDomainByOwner(poolServer.account)
+				morpheusContext.network.getNetworkDomainByOwner(poolServer.account).doOnSuccess({data ->
+					def matchFunction = { existingItem, Map syncItem ->
+						existingItem[0] == syncItem.'_ref'
+					}
+					def secondaryMatchFunction = { existingItem, Map syncItem ->
+						existingItem[1] == syncItem.fqdn
+					}
 
-				def matchFunction = { existingItem, Map syncItem ->
-					existingItem[0] == syncItem.'_ref'
-				}
-				def secondaryMatchFunction = { existingItem, Map syncItem ->
-					existingItem[1] == syncItem.fqdn
-				}
+					def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction, secondaryMatchFunction)
 
-				def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction, secondaryMatchFunction)
+					while (syncLists?.addList?.size() > 0) {
+						List chunkedAddList = syncLists.addList.take(50)
+						syncLists.addList = syncLists.addList.drop(50)
+						addMissingZones(poolServer, chunkedAddList)
+					}
 
-				while (syncLists?.addList?.size() > 0) {
-					List chunkedAddList = syncLists.addList.take(50)
-					syncLists.addList = syncLists.addList.drop(50)
-					addMissingZones(poolServer, chunkedAddList)
-				}
+					while (syncLists?.updateList?.size() > 0) {
+						List chunkedUpdateList = syncLists.updateList.take(50)
+						syncLists.updateList = syncLists.updateList.drop(50)
+						updateMatchedZones(poolServer, chunkedUpdateList)
+					}
 
-				while (syncLists?.updateList?.size() > 0) {
-					List chunkedUpdateList = syncLists.updateList.take(50)
-					syncLists.updateList = syncLists.updateList.drop(50)
-					updateMatchedZones(poolServer, chunkedUpdateList)
-				}
-
-				if (syncLists?.removeList?.size() > 0) {
-					morpheusContext.network.removeMissingZones(poolServer.id, syncLists.removeList)
-				}
+					if (syncLists?.removeList?.size() > 0) {
+						morpheusContext.network.removeMissingZones(poolServer.id, syncLists.removeList).blockingGet()
+					}
+				}).doOnError({error ->
+					log.error(error)
+				}).doOnSubscribe({ sub ->
+					log.debug "Subscribed"
+				})
 			}
 		} catch (e) {
 			log.error("cacheZones error: ${e}", e)
@@ -495,7 +505,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				 refSource: 'integration',
 				 zoneType: 'Authoritative'])
 		}
-		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList)
+		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList).blockingGet()
 	}
 
 	/**
@@ -506,44 +516,50 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	void updateMatchedZones(NetworkPoolServer poolServer, List updateList) {
 		def externalIds = updateList.collect{ ul -> ul.existingItem[0] }
 		def names = updateList.collect{ ul -> ul.existingItem[1] }
-		def matchedZones = morpheusContext.network.findNetworkDomainsByPoolServerAndExternalIdsOrNames(poolServer, externalIds, names)
+		morpheusContext.network.findNetworkDomainsByPoolServerAndExternalIdsOrNames(
+			poolServer,
+			externalIds,
+			names
+		).doOnSuccess({ matchedZones ->
+			def matchedZonesByExternalId = matchedZones?.collectEntries{[(it.externalId):it]}
+			def matchedZonesByName = matchedZones?.collectEntries{[(it.name):it]}
+			List<NetworkDomain> domainsToUpdate = []
+			updateList?.each { update ->
+				NetworkDomain existingItem = matchedZonesByExternalId[update.existingItem[0]]
+				if(!existingItem) {
+					existingItem = matchedZonesByName[update.existingItem[1]]
+				}
+				if(existingItem) {
+					def save = false
+					if(!existingItem.externalId) {
+						existingItem.externalId = update.masterItem.'_ref'
+						save = true
+					}
+					if(!existingItem.refId) {
+						existingItem.refType = 'AccountIntegration'
+						existingItem.refId = poolServer.integration.id
+						existingItem.refSource = 'integration'
+						save = true
+					}
 
-		def matchedZonesByExternalId = matchedZones?.collectEntries{[(it.externalId):it]}
-		def matchedZonesByName = matchedZones?.collectEntries{[(it.name):it]}
-		List<NetworkDomain> domainsToUpdate = []
-		updateList?.each { update ->
-			NetworkDomain existingItem = matchedZonesByExternalId[update.existingItem[0]]
-			if(!existingItem) {
-				existingItem = matchedZonesByName[update.existingItem[1]]
+					if(save) {
+						domainsToUpdate.add(existingItem)
+					}
+				}
 			}
-			if(existingItem) {
-				def save = false
-				if(!existingItem.externalId) {
-					existingItem.externalId = update.masterItem.'_ref'
-					save = true
-				}
-				if(!existingItem.refId) {
-					existingItem.refType = 'AccountIntegration'
-					existingItem.refId = poolServer.integration.id
-					existingItem.refSource = 'integration'
-					save = true
-				}
+			if(domainsToUpdate.size() > 0) {
+				morpheusContext.network.saveAllNetworkDomains(domainsToUpdate).blockingGet()
+			}
+		}).doOnError({error ->
+			log.error(error)
+		}).doOnSubscribe({ sub ->
+			log.debug "Subscribed"
+		})
 
-				if(save) {
-					domainsToUpdate.add(existingItem)
-				}
-			}
-		}
-		if(domainsToUpdate.size() > 0) {
-			morpheusContext.network.saveAllNetworkDomains(domainsToUpdate)
-		}
 	}
 	// Cache Zones methods
-
 	def cacheZoneRecords(NetworkPoolServer poolServer, Map opts) {
-		try {
-			def domains = morpheusContext.network.getNetworkDomainByTypeAndRefId('AccountIntegration', poolServer?.integration?.id)
-
+		morpheusContext.network.getNetworkDomainByTypeAndRefId('AccountIntegration', poolServer?.integration?.id).doOnSuccess({ domains ->
 			domains?.each { NetworkDomain domain ->
 				cacheZoneDomainRecords(poolServer,domain,'A',opts)?.get()
 				cacheZoneDomainRecords(poolServer,domain,'AAAA',opts)?.get()
@@ -553,19 +569,22 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				cacheZoneDomainRecords(poolServer,domain,'MX',opts)?.get()
 				return null
 			}
-		} catch(e) {
+		}).doOnError({ e ->
 			log.error("cacheZoneRecords error: ${e}", e)
-		}
+		}).doOnSubscribe({ sub ->
+			log.debug "Subscribed"
+		})
 	}
 
 	//cacheZoneDomainRecords
 	void cacheZoneDomainRecords(NetworkPoolServer poolServer, NetworkDomain domain, String recordType, Map opts) {
+		log.info "cacheZoneDomainRecords $poolServer, $domain, $recordType, $opts"
 		def listResults = listZoneRecords(poolServer, domain.name, "record:${recordType.toLowerCase()}", opts)
 		log.debug("listResults: {}",listResults)
 		if(listResults.success) {
 			def results = [:]
 				results.objList = listResults?.results
-				results.existingItems = morpheusContext.network.getNetworkDomainByDomainAndRecordType(domain, recordType)
+				results.existingItems = morpheusContext.network.getNetworkDomainByDomainAndRecordType(domain, recordType).blockingGet()
 			def matchFunction = { String morpheusItem, Map cloudItem ->
 				morpheusItem == cloudItem?.'_ref'
 			}
@@ -715,13 +734,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	void cacheNetworks(NetworkPoolServer poolServer, Map opts) {
 		opts.doPaging = true
 		def listResults = listNetworks(poolServer, opts)
-		log.debug("listResults: {}",listResults)
+		log.info("listResults: {}", listResults.dump())
 
 		if(listResults.success) {
 			def results = [:]
 			results.poolType = poolServer.type
-			results.objList = listResults?.content
-			results.existingItems = morpheusContext.network.getNetworkPoolByNetworkPoolServer(poolServer, 'externalId')
+			results.objList = listResults?.results
+			results.existingItems = morpheusContext.network.getNetworkPoolsByNetworkPoolServer(poolServer, 'externalId').blockingGet()
 
 			def matchFunction = { String morpheusItem, Map cloudItem ->
 				morpheusItem == cloudItem?.'_ref'
@@ -741,23 +760,24 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			//removes
 			if(syncLists.removeList?.size() > 0) {
-				morpheusContext.network.removeMissingPools(poolServer.id, syncLists.removeList)
+				morpheusContext.network.removeMissingPools(poolServer.id, syncLists.removeList).blockingGet()
 			}
 		}
 	}
 
 	void addMissingPools(NetworkPoolServer poolServer, List chunkedAddList) {
-		def poolType = new NetworkPoolServerType(code:'infoblox')
+		def poolType = new NetworkPoolType(code:'infoblox')
 		chunkedAddList?.each {
 			def networkIp = it.network
 			def networkView = it.network_view
 			def displayName = networkView ? (networkView + ' ' + networkIp) : networkIp
 			def networkInfo = MorpheusUtils.getNetworkPoolConfig(networkIp)
-			def addConfig = [poolServer: poolServer, cidr: networkIp, account: poolServer.account,
+			def addConfig = ["poolServer": poolServer, cidr: networkIp, account: poolServer.account,
 							 owner: poolServer.account, name:networkIp, externalId: it.'_ref', displayName: displayName,
 							 type: poolType, poolEnabled: true, parentType: 'NetworkPoolServer', parentId: poolServer.id]
 			addConfig += networkInfo.config
-			def newObj = morpheusContext.network.save(new NetworkPool(addConfig))
+			def newNetworkPool =new NetworkPool(addConfig)
+			def newObj = morpheusContext.network.save(newNetworkPool).blockingGet()
 
 			List<NetworkPoolRange> ranges = []
 			networkInfo?.ranges?.each { range ->
@@ -767,13 +787,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				def addRange = new NetworkPoolRange(rangeConfig)
 				ranges.add(addRange)
 			}
-			morpheusContext.network.save(newObj, ranges)
+			morpheusContext.network.save(newObj, ranges).blockingGet()
 		}
 	}
 
 	void updateMatchedPools(NetworkPoolServer poolServer, List chunkedUpdateList) {
 		def externalIds = chunkedUpdateList.collect{ ul -> ul.existingItem }
-		def matchedPools = morpheusContext.network.findNetworkPoolsByPoolServerAndExternalIds(poolServer, externalIds)
+		def matchedPools = morpheusContext.network.findNetworkPoolsByPoolServerAndExternalIds(poolServer, externalIds).blockingGet()
 
 		chunkedUpdateList?.each { update ->
 			def existingItem = (NetworkPool) matchedPools[update.existingItem]
@@ -1525,38 +1545,43 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	// cacheIpAddressRecords
 	void cacheIpAddressRecords(NetworkPoolServer poolServer, Map opts) {
-		def pools = morpheusContext.network.getNetworkPoolsByNetworkPoolServer(poolServer, "ipRanges")
-		pools.each { pool ->
-			def listResults = listHostRecords(poolServer, pool.name, opts)
-			if(listResults.success) {
-				def results = [:]
-				results.objList = listResults?.results?.findAll{res -> res.status == 'USED'}
-				results.existingItems = morpheusContext.network.getModelProperties(pool, ['externalId', 'ipAddress'])
-				//sync lists
-				def matchFunction = { morpheusItem, Map cloudItem ->
-					morpheusItem[0] == cloudItem?.'_ref'
-				}
-				def secondaryMatchFunction = { morpheusItem, Map cloudItem ->
-					morpheusItem[1] == cloudItem?.ip_address
-				}
-				def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction, secondaryMatchFunction)
-				while(syncLists?.addList?.size() > 0) {
-					List chunkedAddList = syncLists.addList.take(50)
-					syncLists.addList = syncLists.addList.drop(50)
-					addMissingIps(pool,chunkedAddList)
-				}
-				//update list
-				while(syncLists?.updateList?.size() > 0) {
-					List chunkedUpdateList = syncLists.updateList.take(50)
-					syncLists.updateList = syncLists.updateList.drop(50)
-					updateMatchedIps(pool, chunkedUpdateList)
-				}
-				//removes
-				if(syncLists?.removeList?.size() > 0) {
-					morpheusContext.network.removeMissingIps(pool, syncLists.removeList)
+		morpheusContext.network.getNetworkPoolsByNetworkPoolServerJoin(poolServer, "ipRanges").doOnSuccess({ pools ->
+			pools.each { pool ->
+				def listResults = listHostRecords(poolServer, pool.name, opts)
+				if (listResults.success) {
+					def results = [:]
+					results.objList = listResults?.results?.findAll { res -> res.status == 'USED' }
+					results.existingItems = morpheusContext.network.getModelProperties(pool, ['externalId', 'ipAddress']).blockingGet()
+					//sync lists
+					def matchFunction = { morpheusItem, Map cloudItem ->
+						morpheusItem[0] == cloudItem?.'_ref'
+					}
+					def secondaryMatchFunction = { morpheusItem, Map cloudItem ->
+						morpheusItem[1] == cloudItem?.ip_address
+					}
+					def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction, secondaryMatchFunction)
+					while (syncLists?.addList?.size() > 0) {
+						List chunkedAddList = syncLists.addList.take(50)
+						syncLists.addList = syncLists.addList.drop(50)
+						addMissingIps(pool, chunkedAddList)
+					}
+					//update list
+					while (syncLists?.updateList?.size() > 0) {
+						List chunkedUpdateList = syncLists.updateList.take(50)
+						syncLists.updateList = syncLists.updateList.drop(50)
+						updateMatchedIps(pool, chunkedUpdateList)
+					}
+					//removes
+					if (syncLists?.removeList?.size() > 0) {
+						morpheusContext.network.removeMissingIps(pool, syncLists.removeList)
+					}
 				}
 			}
-		}
+		}).doOnError({error ->
+			log.error(error)
+		}).doOnSubscribe({ sub ->
+			log.debug "Subscribed"
+		})
 	}
 
 	void addMissingIps(NetworkPool pool, List addList) {

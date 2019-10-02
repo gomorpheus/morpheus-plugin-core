@@ -1,97 +1,95 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import io.reactivex.Single;
 
 import java.util.List;
 import java.util.Map;
 
 public interface MorpheusNetworkContext {
 
-	void updateNetworkPoolStatus(NetworkPoolServer poolServer, String status, String message);
+	Single<Void> updateNetworkPoolStatus(NetworkPoolServer poolServer, String status, String message);
 
-	void removeMissingPools(Long poolServerId, List<NetworkPool> removeList);
+	Single<Void> removeMissingPools(Long poolServerId, List<NetworkPool> removeList);
 
-	List<NetworkPool> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer);
+	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer);
 
-	List<NetworkPool> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer, String property);
+	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer, String property);
+	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServerJoin(NetworkPoolServer poolServer, String joinProperty);
 
-	List getNetworkPoolByNetworkPool(NetworkPool pool);
+	Single<List> getModelProperties(NetworkPool pool, List<String> joinProperties);
 
-	List getModelProperties(NetworkPool pool, List<String> joinProperties);
+	Single<Void> removeMissingIps(NetworkPool pool, List removeList);
 
-	void removeMissingIps(NetworkPool pool, List removeList);
+	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
 
-	void removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
+	Single<NetworkPoolServer> getPoolServerByAccountIntegration(AccountIntegration integration);
 
-	NetworkPoolServer getPoolServerByAccountIntegration(AccountIntegration integration);
+	Single<NetworkPoolServer> getPoolServerById(Long id);
 
-	NetworkPoolServer getPoolServerById(Long id);
+	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId);
 
-	List<NetworkDomain> getNetworkDomainByTypeAndRefId(String refType, Long refId);
+	Single<List<NetworkPool>> getPools(NetworkPoolServer poolServer);
 
-	List<NetworkPool> getPools(NetworkPoolServer poolServer);
+	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord);
 
-	NetworkDomainRecord saveDomainRecord(NetworkDomainRecord domainRecord);
+	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord, Map opts);
 
-	NetworkDomainRecord saveDomainRecord(NetworkDomainRecord domainRecord, Map opts);
+	Single<NetworkPoolIp> save(NetworkPoolIp poolIp);
 
-	NetworkPoolIp save(NetworkPoolIp poolIp);
+	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool);
 
-	NetworkPoolIp save(NetworkPoolIp poolIp, NetworkPool networkPool);
+	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
 
-	NetworkPoolIp save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
+	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
 
-	NetworkPoolIp getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
+	Single<NetworkDomain> getContainerNetworkDomain(Container container);
 
-	NetworkDomain getContainerNetworkDomain(Container container);
+	Single<String> getComputeServerExternalFqdn(ComputeServer computeServer);
 
-	String getComputeServerExternalFqdn(ComputeServer computeServer);
+	Single<String> getContainerExternalIp(Container container);
 
-	String getContainerExternalIp(Container container);
+	Single<String> getContainerExternalFqdn(Container container);
 
-	String getContainerExternalFqdn(Container container);
+	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress);
 
-	NetworkPoolIp loadNetworkPoolIp(NetworkPool pool, String ipAddress);
+	Single<List> getNetworkDomainByDomainAndRecordType(NetworkDomain domain, String recordType);
 
-	List getNetworkDomainByDomainAndRecordType(NetworkDomain domain, String recordType);
+	Single<Void> removeMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List removeList);
 
-	void updateMatchedDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List updateList);
+	Single<String> acquireLock(String name, Map opts);
 
-	void removeMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List removeList);
+	Single<Boolean> releaseLock(String name, Map opts);
 
-	String acquireLock(String name, Map opts);
+	Single<Void> createSyncedNetworkDomain(Long poolServerId, List addList);
 
-	String releaseLock(String name, Map opts);
+	Single<List<NetworkDomain>> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
 
-	void createSyncedNetworkDomain(Long poolServerId, List addList);
+	Single<List<NetworkPoolIp>> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
 
-	List<NetworkDomain> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
+	Single<Void> saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
 
-	List<NetworkPoolIp> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
+	Single<Void> removeMissingZones(Long poolServerId, List removeList);
 
-	void saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
+	Single<List> getNetworkDomainByOwner(Account account);
 
-	void removeMissingZones(Long poolServerId, List removeList);
+	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
 
-	List getNetworkDomainByOwner(Account account);
+	Single<Void> deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
 
-	NetworkDomainRecord getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
+	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
 
-	void deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
+	Single<NetworkPool> save(NetworkPool networkPool);
 
-	NetworkDomain getServerNetworkDomain(ComputeServer computeServer);
+	Single<NetworkPoolRange> save(NetworkPoolRange networkPoolRange);
 
-	NetworkPool save(NetworkPool networkPool);
+	Single<NetworkDomainRecord> save(NetworkDomainRecord domainRecord);
 
-	NetworkPoolRange save(NetworkPoolRange networkPoolRange);
+	Single<Void> saveAll(List<NetworkDomainRecord> domainRecords);
 
-	NetworkDomainRecord save(NetworkDomainRecord domainRecord);
+	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
 
-	void saveAll(List<NetworkDomainRecord> domainRecords);
+	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
 
-	void save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
-
-	Map<String, NetworkPool> findNetworkPoolsByPoolServerAndExternalIds(NetworkPool pool, List externalIds);
-
-	Map<String, NetworkDomainRecord> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
+	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
 }

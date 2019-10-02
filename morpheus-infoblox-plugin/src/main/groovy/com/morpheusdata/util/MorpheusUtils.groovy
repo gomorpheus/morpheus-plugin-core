@@ -5,8 +5,6 @@ import com.morpheusdata.model.NetworkPool
 import groovy.util.logging.Slf4j
 import org.apache.commons.net.util.SubnetUtils
 
-//import org.apache.commons.net.util.SubnetUtils
-
 // FIXME: should live in Core, need to convert to java
 @Slf4j
 class MorpheusUtils {
@@ -28,9 +26,8 @@ class MorpheusUtils {
 		try {
 			rtn = network?.netmask
 			if(!rtn && network?.cidr) {
-				return 'foo'
-//				def subnetInfo = new SubnetUtils(network.cidr).getInfo()
-//				rtn = subnetInfo.getNetmask()
+				def subnetInfo = new SubnetUtils(network.cidr).getInfo()
+				rtn = subnetInfo.getNetmask()
 			}
 			if(!rtn) {
 				rtn = networkPool?.netmask

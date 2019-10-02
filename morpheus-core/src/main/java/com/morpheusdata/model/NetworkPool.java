@@ -392,23 +392,6 @@ public class NetworkPool extends MorpheusModel {
 		markDirty("cidr", cidr);
 	}
 
-	/**
-	 * Gets the ID of the {@link NetworkPoolServer} that this pool is attached to.
-	 * @return The unique ID of the {@link NetworkPoolServer}
-	 */
-	public Long getPoolServerId() {
-		return poolServerId;
-	}
-
-	/**
-	 * Sets the associated {@link NetworkPoolServer} that this Pool belongs to for sync purposes and integration purposes.
-	 * @param poolServerId The unique ID of the {@link NetworkPoolServer}
-	 */
-	public void setPoolServerId(Long poolServerId) {
-		this.poolServerId = poolServerId;
-		markDirty("poolServerId", poolServerId);
-	}
-
 	protected String typeCode;
 	protected String name;
 	protected String displayName;
@@ -428,7 +411,27 @@ public class NetworkPool extends MorpheusModel {
 	protected String refId;
 	protected String configuration;
 	protected String cidr;
-	protected Long poolServerId;
+	public NetworkPoolServer poolServer;
+	public Account account;
+	public Account owner;
+	public NetworkPoolType type;
+	public String parentType;
+	public String parentId;
+	public String category;
 
 	public List<NetworkPoolRange> ipRanges;
+
+	public void setPoolServerId(Long id) {
+		this.poolServer = new NetworkPoolServer();
+		this.poolServer.id = id;
+	}
+	public void setAccountId(Long id) {
+		this.account = new Account();
+		this.account.id = id;
+	}
+
+	public void setOwnerId(Long id) {
+		this.owner = new Account();
+		this.owner.id = id;
+	}
 }

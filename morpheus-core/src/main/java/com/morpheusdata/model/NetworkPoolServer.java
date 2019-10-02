@@ -31,4 +31,9 @@ public class NetworkPoolServer extends MorpheusModel {
 	public AccountIntegration integration;
 	public Account account;
 	public Map<String, Object> configMap;
+
+	public void setAccountId(Long id) {
+		this.account = new Account();
+		this.account.id = id;
+	}
 }

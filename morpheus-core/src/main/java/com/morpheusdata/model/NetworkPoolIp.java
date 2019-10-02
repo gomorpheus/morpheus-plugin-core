@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class NetworkPoolIp extends MorpheusModel {
 
-	NetworkPool networkPool;
+	public NetworkPool networkPool;
 	private NetworkPoolRange networkPoolRange;
 	private String ipType = "assigned"; //assigned, reserved
 	private String ipAddress;
@@ -18,9 +18,6 @@ public class NetworkPoolIp extends MorpheusModel {
 	private String fqdn;
 	private String domainName;
 	private String hostname;
-
-
-
 	private String internalId;
 	private String externalId;
 	private String ptrId;

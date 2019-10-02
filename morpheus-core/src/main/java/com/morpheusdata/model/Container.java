@@ -89,4 +89,19 @@ public class Container extends MorpheusModel {
 
 //	static hasMany = [files:ContainerFile, mounts:ContainerMount, ports:ContainerPort, logs:ContainerLog,
 //	configMaps:ContainerConfig, volumes:StorageVolume]
+
+	void setServerId(Long id) {
+		this.server = new ComputeServer();
+		this.server.id = id;
+	}
+
+	void setNetworkId(Long id) {
+		this.network = new Network();
+		this.network.id = id;
+	}
+
+	void setInstanceId(Long id) {
+		this.instance = new Instance();
+		this.instance.id = id;
+	}
 }
