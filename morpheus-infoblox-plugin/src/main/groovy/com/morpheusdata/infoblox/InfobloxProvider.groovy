@@ -62,14 +62,15 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				log.info("domainMatch: ${domainMatch}")
 				def domainName = domainMatch?.name ?: 'localdomain'
 				if(domainMatch) {
-					def domainRecord = morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, server.id)
-					if(domainRecord) {
-						def results = deleteRecord(integration, domainRecord, opts)
-						rtn.success = results?.success
-						if(rtn.success) {
-							morpheusContext.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord)
+					morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, server.id).doOnSuccess({domainRecord ->
+						if(domainRecord) {
+							def results = deleteRecord(integration, domainRecord, opts)
+							rtn.success = results?.success
+							if(rtn.success) {
+								morpheusContext.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord).blockingGet()
+							}
 						}
-					}
+					})
 				}
 			} else {
 				log.warn("no integration")
@@ -86,17 +87,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
-				def domainMatch = morpheusContext.network.getServerNetworkDomain(server)
-				if(domainMatch) {
-					def fqdn = morpheusContext.network.getComputeServerExternalFqdn(server)
-					def content = morpheusContext.network.getContainerExternalIp(server) // FIXME how does a server have a container external ip?
-					def domainRecord = new NetworkDomainRecord(name: fqdn,fqdn:fqdn, serverId: server.id, networkDomain: domainMatch, content: content )
-					def results = createRecord(integration,domainRecord,opts)
-					rtn.success = results?.success
-					if(rtn.success) {
-						morpheusContext.network.saveDomainRecord(domainRecord)
+				morpheusContext.network.getServerNetworkDomain(server).doOnSuccess({domainMatch ->
+					if(domainMatch) {
+						def fqdn = morpheusContext.network.getComputeServerExternalFqdn(server).blockingGet()
+						def content = morpheusContext.network.getContainerExternalIp(server).blockingGet() // FIXME how does a server have a container external ip?
+						def domainRecord = new NetworkDomainRecord(name: fqdn,fqdn:fqdn, serverId: server.id, networkDomain: domainMatch, content: content )
+						def results = createRecord(integration,domainRecord,opts)
+						rtn.success = results?.success
+						if(rtn.success) {
+							morpheusContext.network.saveDomainRecord(domainRecord).blockingGet()
+						}
 					}
-				}
+				})
 			} else {
 				log.warn("no integration")
 			}
@@ -112,19 +114,21 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
-				def domainMatch = morpheusContext.network.getContainerNetworkDomain(container)
-				log.info("domainMatch: ${domainMatch}")
-				def domainName = domainMatch?.name ?: 'localdomain'
-				if(domainMatch) {
-					def domainRecord = morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, container.id)
-					if(domainRecord) {
-						def results = deleteRecord(integration,domainRecord,opts)
-						rtn.success = results?.success
-						if(rtn.success) {
-							morpheusContext.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord)
-						}
+				morpheusContext.network.getContainerNetworkDomain(container).doOnSuccess({domainMatch ->
+					log.info("domainMatch: ${domainMatch}")
+					def domainName = domainMatch?.name ?: 'localdomain'
+					if(domainMatch) {
+						morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, container.id).doOnSuccess({domainRecord ->
+							if(domainRecord) {
+								def results = deleteRecord(integration,domainRecord,opts)
+								rtn.success = results?.success
+								if(rtn.success) {
+									morpheusContext.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord).blockingGet()
+								}
+							}
+						})
 					}
-				}
+				})
 			} else {
 				log.warn("no integration")
 			}
@@ -140,18 +144,16 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
-				NetworkDomain domainMatch = morpheusContext.network.getContainerNetworkDomain(container)
-				if(domainMatch) {
-					def fqdn = morpheusContext.network.getContainerExternalFqdn(container)
-					def containerExternalIp = morpheusContext.network.getContainerExternalIp(container)
+				morpheusContext.network.getContainerNetworkDomain(container).doOnSuccess({ domainMatch ->
+					def fqdn = morpheusContext.network.getContainerExternalFqdn(container).blockingGet()
+					def containerExternalIp = morpheusContext.network.getContainerExternalIp(container).blockingGet()
 					def domainRecord = new NetworkDomainRecord(name: fqdn, fqdn: fqdn, containerId: container.id, serverId: container.server.id, networkDomain: domainMatch, content: containerExternalIp)
 					def results = createRecord(integration,domainRecord,opts)
 					rtn.success = results?.success
 					if(rtn.success) {
-						morpheusContext.network.saveDomainRecord(domainRecord)
+						morpheusContext.network.saveDomainRecord(domainRecord).blockingGet()
 					}
-				}
-
+				})
 			} else {
 				log.warn("no integration")
 			}
@@ -172,7 +174,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	@Override
 	ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
-		log.info("PLUGIN!!! verifyPoolServer: ${poolServer}")
 		ServiceResponse<NetworkPoolServer> rtn = ServiceResponse.error()
 		rtn.data = poolServer
 
@@ -260,7 +261,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					fqdn = "${record.name}.${record.networkDomain.name}"
 				}
 
-				def poolServer = morpheusContext.network.getPoolServerByAccountIntegration(integration)
+				def poolServer = morpheusContext.network.getPoolServerByAccountIntegration(integration).blockingGet()
 
 				def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 				def recordType = record.type
@@ -342,7 +343,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				log.info("createRecord results: ${results}")
 				if(results.success) {
 					record.externalId = results.content.substring(1, results.content.length() - 1)
-					morpheusContext.network.saveDomainRecord(record)
+					morpheusContext.network.saveDomainRecord(record).blockingGet()
 					rtn.success = true
 				}
 			} else {
@@ -603,14 +604,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			// remove list
 			if(syncLists.removeList?.size() > 0) {
-				morpheusContext.network.removeMissingDomainRecords(poolServer.id, domain, recordType, syncLists.removeList)
+				morpheusContext.network.removeMissingDomainRecords(poolServer.id, domain, recordType, syncLists.removeList).blockingGet()
 			}
 		}
 	}
 
 	void updateMatchedDomainRecords(NetworkDomain domain, String recordType, List updateList) {
 		def externalIds = updateList.collect{ ul -> ul.existingItem }
-		def matchedDomainRecords = morpheusContext.network.findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(domain, recordType, externalIds)
+		def matchedDomainRecords = morpheusContext.network.findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(domain, recordType, externalIds).blockingGet()
 
 		def records = []
 		updateList?.each { update ->
@@ -660,7 +661,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 		}
 		if(records.size() > 0) {
-			morpheusContext.network.saveAll(records)
+			morpheusContext.network.saveAll(records).blockingGet()
 		}
 	}
 
@@ -682,7 +683,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			records.add(newObj)
 		}
-		morpheusContext.network.saveAll(records)
+		morpheusContext.network.saveAll(records).blockingGet()
 	}
 
 	//cacheZoneDomainRecords
@@ -766,7 +767,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	void addMissingPools(NetworkPoolServer poolServer, List chunkedAddList) {
-		def poolType = new NetworkPoolType(code:'infoblox')
+		def poolType = new NetworkPoolType(code: 'infoblox')
 		chunkedAddList?.each {
 			def networkIp = it.network
 			def networkView = it.network_view
@@ -821,11 +822,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						def addRange = new NetworkPoolRange(rangeConfig)
 						ranges.add(addRange)
 					}
-					morpheusContext.network.save(existingItem, ranges)
+					morpheusContext.network.save(existingItem, ranges).blockingGet()
 					save = true
 				}
 				if(save) {
-					morpheusContext.network.save(existingItem)
+					morpheusContext.network.save(existingItem).blockingGet()
 				}
 			}
 		}
@@ -884,7 +885,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					rtn.data.poolType = 'dhcp'
 					rtn.success = true
 				} else {
-					def currentIp = morpheusContext.network.getNetworkIp(networkPool, assignedType, assignedId, subAssignedId)
+					def currentIp = morpheusContext.network.getNetworkIp(networkPool, assignedType, assignedId, subAssignedId).blockingGet()
 
 					if(currentIp) {
 						log.info("Ip Reservation Exists, Reusing Reservation for {}...", currentIp.ipAddress)
@@ -893,12 +894,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						rtn.data.poolType = 'static'
 						rtn.success = true
 					} else {
-						lock = morpheusContext.network.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l])
+						lock = morpheusContext.network.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l]).blockingGet()
 						try {
 							def nextIp = getNextIpAddress(networkPoolServer, networkPool, assignedHostname, opts)
 							if(nextIp.success && nextIp?.results?.ipv4addrs?.size() > 0) {
 								def newIp = nextIp.results.ipv4addrs.first().ipv4addr
-								def networkPoolIp = morpheusContext.network.loadNetworkPoolIp(networkPool, newIp)
+								def networkPoolIp = morpheusContext.network.loadNetworkPoolIp(networkPool, newIp).blockingGet()
 								networkPoolIp = networkPoolIp ?: new NetworkPoolIp(networkPool:networkPool, ipAddress:newIp, staticIp:false)
 								def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
 								networkPoolIp.networkPoolRange = ipRange
@@ -916,7 +917,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 								networkPoolIp.hostname = assignedHostname
 								networkPoolIp.domain = opts.networkDomain
 
-								morpheusContext.network.saveNetworkPoolIp(networkPoolIp, networkPool)
+								morpheusContext.network.save(networkPoolIp, networkPool).blockingGet()
 
 								rtn.data.ipAddress = newIp
 								rtn.data.poolIp = networkPoolIp
@@ -928,11 +929,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 								if(nextIp.data.aRecordRef) {
 									def domainRecord = new NetworkDomainRecord(networkDomain: network.networkDomain, networkPoolIp: networkPoolIp, name: assignedHostname, fqdn: assignedHostname, source: 'user', type: 'A', externalId: nextIp.data.aRecordRef)
 									domainRecord.content = newIp
-									morpheusContext.network.saveDomainRecord(domainRecord, [flush:true])
+									morpheusContext.network.saveDomainRecord(domainRecord, [flush:true]).blockingGet()
 								}
 								if(nextIp.data.ptrRecordRef) {
 									def ptrDomainRecord = new NetworkDomainRecord(networkDomain: network.networkDomain, networkPoolIp: networkPoolIp, name: nextIp.data.ptrName, fqdn: assignedHostname, source: 'user', type: 'PTR', externalId: nextIp.data.ptrRecordRef)
-									morpheusContext.network.saveDomainRecord(ptrDomainRecord, [flush:true])
+									morpheusContext.network.saveDomainRecord(ptrDomainRecord, [flush:true]).blockingGet()
 								}
 							}
 						} catch(e) {
@@ -942,7 +943,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}
 			} finally {
 				if(lock) {
-					morpheusContext.network.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock])
+					morpheusContext.network.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock]).blockingGet()
 				}
 			}
 			return rtn
@@ -967,13 +968,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def lock
 		try {
 			if(networkPoolServer.serviceMode == 'dhcp') {
-				lock = morpheusContext.network.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l])
+				lock = morpheusContext.network.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l]).blockingGet()
 				try {
 					def nextIp = reserveNextIpAddress(networkPoolServer, networkPool, assignedHostname, opts)
 					log.info("nextIp: {}", nextIp)
 					if(nextIp.success && nextIp?.results?.ipv4addrs?.size() > 0) {
 						def newIp = nextIp.results.ipv4addrs.first().ipv4addr
-						def networkPoolIp = morpheusContext.network.loadNetworkPoolIp(networkPool, newIp)
+						def networkPoolIp = morpheusContext.network.loadNetworkPoolIp(networkPool, newIp).blockingGet()
 						networkPoolIp = networkPoolIp ?: new NetworkPoolIp(networkPool:networkPool, ipAddress:newIp, staticIp:false)
 						def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
 						networkPoolIp.networkPoolRange = ipRange
@@ -988,7 +989,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						networkPoolIp.internalId = nextIp.data.aRecordRef
 						networkPoolIp.fqdn = assignedHostname
 
-						morpheusContext.network.saveNetworkPoolIp(networkPoolIp, networkPool, [flush:true])
+						morpheusContext.network.save(networkPoolIp, networkPool, [flush:true]).blockingGet()
 
 						rtn.results.ipAddress = newIp
 						rtn.results.poolIp = networkPoolIp
@@ -1006,7 +1007,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 		} finally {
 			if(lock) {
-				morpheusContext.network.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock])
+				morpheusContext.network.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock]).blockingGet()
 			}
 		}
 		return rtn
@@ -1030,7 +1031,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				results = releaseIpAddress(networkPoolServer, ipAddress, opts)
 			}
 			if(results.success) {
-				morpheusContext.network.removePoolIp(networkPool, ipAddress)
+				morpheusContext.network.removePoolIp(networkPool, ipAddress).blockingGet()
 				response = ServiceResponse.success()
 			}
 		} catch(e) {
@@ -1073,7 +1074,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def newIp = ipResults.results.ipv4addrs?.first()?.ipv4addr
 			networkPoolIp.externalId = ipResults.results?.getAt('_ref')
 			networkPoolIp.ipAddress = newIp
-			morpheusContext.network.saveNetworkPoolIp(networkPoolIp)
+			morpheusContext.network.save(networkPoolIp).blockingGet()
 
 			if(createARecord && domain) {
 				apiPath = getServicePath(poolServer.serviceUrl) + 'record:a'
@@ -1093,7 +1094,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					def aRecordRef = results.content.substring(1, results.content.length() - 1)
 					def domainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: hostname, fqdn: hostname, source: 'user', type: 'A', externalId: aRecordRef)
 //					domainRecord.addToContent(newIp)
-					morpheusContext.network.saveDomainRecord(domainRecord)
+					morpheusContext.network.saveDomainRecord(domainRecord).blockingGet()
 					networkPoolIp.internalId = aRecordRef
 				}
 				if(createPtrRecord) {
@@ -1115,12 +1116,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					} else {
 						String prtRecordRef = results.content.substring(1, results.content.length() - 1)
 						def ptrDomainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: ptrName, fqdn: hostname, source: 'user', type: 'PTR', externalId: prtRecordRef)
-						morpheusContext.network.saveDomainRecord(ptrDomainRecord)
+						morpheusContext.network.saveDomainRecord(ptrDomainRecord).blockingGet()
 						log.info("got PTR record: {}",results)
 						networkPoolIp.ptrId = prtRecordRef
 					}
 				}
-				morpheusContext.network.saveNetworkPoolIp(networkPoolIp)
+				morpheusContext.network.save(networkPoolIp).blockingGet()
 			}
 			return ServiceResponse.success(networkPoolIp)
 		} else {
@@ -1155,7 +1156,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 //	@Override
 	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords) {
 		if(poolIp.externalId) {
-			def poolServer = morpheusContext.network.getPoolServerById(networkPool.poolServerId)
+			def poolServer = morpheusContext.network.getPoolServerById(networkPool.poolServer.id).blockingGet()
 			def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 			def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, [headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
@@ -1573,7 +1574,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					}
 					//removes
 					if (syncLists?.removeList?.size() > 0) {
-						morpheusContext.network.removeMissingIps(pool, syncLists.removeList)
+						morpheusContext.network.removeMissingIps(pool, syncLists.removeList).blockingGet()
 					}
 				}
 			}
@@ -1598,14 +1599,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 			def addConfig = [networkPool: pool, networkPoolRange: pool.ipRanges ? pool.ipRanges.first() : null, ipType: ipType, hostname: names ? names.first() : null, ipAddress: ipAddress, externalId:it.'_ref',]
 			def newObj = new NetworkPoolIp(addConfig)
-			morpheusContext.network.save(newObj)
+			morpheusContext.network.save(newObj).blockingGet()
 		}
 	}
 
 	void updateMatchedIps(NetworkPool pool, List updateList) {
 		def externalIds = updateList.collect{ ul -> ul.existingItem[0] }
 		def ipAddresses = updateList.collect{ ul -> ul.existingItem[1] }
-		def matchedPoolIps = morpheusContext.network.getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(pool, externalIds, ipAddresses)
+		def matchedPoolIps = morpheusContext.network.getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(pool, externalIds, ipAddresses).blockingGet()
 		def matchedPoolIpsByExternalId = matchedPoolIps?.collectEntries{[(it.externalId):it]}
 		def matchedPoolIpsByIpAddress = matchedPoolIps?.collectEntries{[(it.ipAddress):it]}
 		updateList?.each {  update ->
@@ -1633,7 +1634,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 				}
 				if(save) {
-					morpheusContext.network.save(existingItem)
+					morpheusContext.network.save(existingItem).blockingGet()
 				}
 			}
 		}
