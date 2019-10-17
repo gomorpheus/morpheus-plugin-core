@@ -8,6 +8,7 @@ class InfobloxPlugin extends Plugin {
 	void initialize() {
 		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheusContext)
 		this.pluginProviders.put("infoblox", infobloxProvider)
+		this.setName("Infoblox")
 	}
 
 	/**

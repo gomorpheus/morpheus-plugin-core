@@ -19,6 +19,10 @@ public abstract class Plugin implements PluginInterface {
 	protected MorpheusContext morpheusContext;
 	private ClassLoader classLoader;
 
+	protected String name;
+	protected String fileName;
+	protected String version;
+
 	/**
 	 * Sets the manager this plugin was loaded from
 	 * @param manager
@@ -81,4 +85,33 @@ public abstract class Plugin implements PluginInterface {
 		return providers;
 	}
 
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getFileName() {
+		return this.fileName;
+	}
+
+	@Override
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	@Override
+	public String getVersion() {
+		return this.version;
+	}
+
+	@Override
+	public void setVersion(String version) {
+		this.version = version;
+	}
 }

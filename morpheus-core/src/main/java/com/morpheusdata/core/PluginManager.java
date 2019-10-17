@@ -33,9 +33,9 @@ public class PluginManager {
 		if(this.morpheusContext == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
-		for(Class<Plugin> plugin : plugins) {
-			registerPlugin(plugin);
-		}
+//		for(Class<Plugin> plugin : plugins) {
+//			registerPlugin(plugin);
+//		}
 	}
 
 	public PluginManager(MorpheusContext context) {
@@ -64,10 +64,13 @@ public class PluginManager {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	void registerPlugin(Class<Plugin> pluginClass) throws IllegalAccessException, InstantiationException {
+	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException {
 		Plugin plugin = pluginClass.newInstance();
 		plugin.setPluginManager(this);
 		plugin.setMorpheusContext(this.morpheusContext);
+		plugin.setName(pluginClass.toString());
+		plugin.setFileName(jarFile.getAbsolutePath());
+		plugin.setVersion(version);
 		plugin.initialize();
 		plugins.add(plugin);
 	}
@@ -90,7 +93,7 @@ public class PluginManager {
 		Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
 		System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
-		registerPlugin(pluginClass);
+		registerPlugin(pluginClass, jarFile, pluginVersion);
 	}
 
 	void deregisterPlugin(Plugin plugin) {
