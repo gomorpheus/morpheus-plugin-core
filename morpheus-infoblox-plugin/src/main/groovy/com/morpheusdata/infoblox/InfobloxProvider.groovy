@@ -834,14 +834,16 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 	/**
 	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link NetworkPoolType} objects representing the available pool types provided by this Provider.
+	 * @return A Set of {@link NetworkPoolServerType} objects representing the available pool types provided by this Provider.
 	 */
 	@Override
-	Set<NetworkPoolType> getProvidedPoolTypes() {
-		[new NetworkPoolType(
+	Set<NetworkPoolServerType> getProvidedPoolServerTypes() {
+		[new NetworkPoolServerType(
 			code: 'infoblox',
 			name: 'Infoblox',
-			creatable: false,
+			isPlugin: true,
+			selectable: true,
+			poolService: 'infobloxNetworkPoolService',
 			description: 'Infoblox IPAM'
 		)]
 	}

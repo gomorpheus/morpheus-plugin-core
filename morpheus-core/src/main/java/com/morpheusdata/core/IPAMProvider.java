@@ -43,9 +43,9 @@ public interface IPAMProvider extends PluginProvider {
 
 	/**
 	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link NetworkPoolType} objects representing the available pool types provided by this Provider.
+	 * @return A Set of {@link NetworkPoolServerType} objects representing the available pool types provided by this Provider.
 	 */
-	Set<NetworkPoolType> getProvidedPoolTypes();
+	Set<NetworkPoolServerType> getProvidedPoolServerTypes();
 
 	/**
 	 * Returns a list of account integration types that are available for use. These are synchronized by the IPAM Provider via a Context.
