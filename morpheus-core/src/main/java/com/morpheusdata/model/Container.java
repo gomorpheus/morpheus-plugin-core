@@ -12,7 +12,7 @@ public class Container extends MorpheusModel {
 //	public ContainerTypeSet containerTypeSet;
 	public ComputeServer server;
 //	public InstanceAction action;
-//	public ServicePlan plan;
+	public ServicePlan plan;
 //	public ComputeZonePool resourcePool;
 	public String apiKey;
 	public Date dateCreated;

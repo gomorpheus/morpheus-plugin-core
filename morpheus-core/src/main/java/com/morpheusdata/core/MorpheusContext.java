@@ -32,6 +32,19 @@ public interface MorpheusContext {
 	MorpheusNetworkContext getNetwork();
 
 
+	/**
+	 * Returns the MorpheusBackupContext used for performing updates or queries on backup related assets within Morpheus.
+	 * Typically this would be called by a {@link BackupProvider}
+	 * @return And Instance of the Backup Context to be used for calls by various backup providers
+	 */
+	MorpheusBackupContext getBackup();
+
+	/**
+	 * Returns the MorpheusBackupContext used for performing updates or queries on backup related assets within Morpheus.
+	 * Typically this would be called by a ProvisionProvider or
+	 * @return And Instance of the Backup Context to be used for calls by various backup providers
+	 */
+	MorpheusProvisionContext getProvision();
 
 	//Common methods used across various contexts
 
