@@ -31,6 +31,8 @@ public interface MorpheusContext {
 	 */
 	MorpheusNetworkContext getNetwork();
 
+	MorpheusTaskContext getTask();
+
 
 
 	//Common methods used across various contexts
