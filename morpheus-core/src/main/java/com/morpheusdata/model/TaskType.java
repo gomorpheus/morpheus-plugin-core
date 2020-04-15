@@ -17,6 +17,7 @@ public class TaskType extends MorpheusModel {
 	Boolean allowExecuteResource = false;
 	Boolean allowLocalRepo = false;
 	Boolean allowRemoteKeyAuth = false;
+	Boolean isPlugin = true;
 
 //	static hasMany = [optionTypes:OptionType]
 }

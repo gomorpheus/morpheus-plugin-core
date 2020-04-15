@@ -6,14 +6,16 @@ import com.morpheusdata.model.TaskType
 class TaskSetPlugin extends Plugin {
 	@Override
 	void initialize() {
-//		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheusContext)
-//		this.pluginProviders.put("infoblox", infobloxProvider)
+		MikeTaskProvider mikeTaskProvider = new MikeTaskProvider(this, morpheusContext)
+		this.pluginProviders.put("miketask", mikeTaskProvider)
 		this.setName("TaskSet")
+
 		TaskType mikeType = new TaskType(
 				name: 'MikeTask',
 				enabled: true,
 				code: 'miketask',
-				scope: 'all'
+				scope: 'all',
+				serviceName: 'mikeTaskService'
 		)
 		morpheusContext.task.createTask(mikeType)
 	}
