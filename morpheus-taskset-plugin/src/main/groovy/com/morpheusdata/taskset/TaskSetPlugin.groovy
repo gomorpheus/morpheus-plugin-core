@@ -7,7 +7,7 @@ class TaskSetPlugin extends Plugin {
 	@Override
 	void initialize() {
 		MikeTaskProvider mikeTaskProvider = new MikeTaskProvider(this, morpheusContext)
-		this.pluginProviders.put("miketask", mikeTaskProvider)
+		this.pluginProviders.put("mikeTaskService", mikeTaskProvider)
 		this.setName("TaskSet")
 
 		TaskType mikeType = new TaskType(
