@@ -1,23 +1,25 @@
 package com.morpheusdata.model;
 
+import java.util.List;
+
 public class TaskType extends MorpheusModel {
 
-	String code;
-	String category;
-	String scope; //all, app, instance, container
-	String name;
-	String description;
-	String serviceName;
-	String serviceMethod;
-	Boolean scriptable = false;
-	Boolean enabled = true;
-	Boolean hasResults = false;
-	Boolean allowExecuteLocal = false;
-	Boolean allowExecuteRemote = false;
-	Boolean allowExecuteResource = false;
-	Boolean allowLocalRepo = false;
-	Boolean allowRemoteKeyAuth = false;
-	Boolean isPlugin = true;
+	public String code;
+	public String category;
+	public String scope; //all, app, instance, container
+	public String name;
+	public String description;
+	public String serviceName;
+	public String serviceMethod;
+	public Boolean scriptable = false;
+	public Boolean enabled = true;
+	public Boolean hasResults = false;
+	public Boolean allowExecuteLocal = false;
+	public Boolean allowExecuteRemote = false;
+	public Boolean allowExecuteResource = false;
+	public Boolean allowLocalRepo = false;
+	public Boolean allowRemoteKeyAuth = false;
+	public Boolean isPlugin = true;
 
-//	static hasMany = [optionTypes:OptionType]
+	public List<OptionType> optionTypes;
 }
