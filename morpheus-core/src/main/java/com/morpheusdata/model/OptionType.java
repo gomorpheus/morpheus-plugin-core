@@ -11,7 +11,7 @@ package com.morpheusdata.model;
  */
 public class OptionType extends MorpheusModel {
 
-
+	protected String name;
 	protected String code;
 	protected String fieldLabel;
 	protected String fieldName;

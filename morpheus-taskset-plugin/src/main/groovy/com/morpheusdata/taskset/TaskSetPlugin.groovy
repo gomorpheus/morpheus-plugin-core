@@ -1,6 +1,7 @@
 package com.morpheusdata.taskset
 
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType
 
 class TaskSetPlugin extends Plugin {
@@ -10,12 +11,23 @@ class TaskSetPlugin extends Plugin {
 		this.pluginProviders.put("mikeTaskService", mikeTaskProvider)
 		this.setName("TaskSet")
 
+//		OptionType optionType = new OptionType(
+//				name: 'mikeTask',
+//				code: 'mikeTask',
+//				fieldName: 'mikeTask',
+//				optionSource: true,
+//				displayOrder: 0,
+//				fieldLabel: 'Mike Task'
+//		)
+
 		TaskType mikeType = new TaskType(
 				name: 'MikeTask',
 				enabled: true,
 				code: 'miketask',
 				scope: 'all',
-				serviceName: 'mikeTaskService'
+				serviceName: 'mikeTaskService',
+//				optionTypes: [optionType],
+				allowExecuteLocal: true
 		)
 		morpheusContext.task.createTask(mikeType)
 	}
