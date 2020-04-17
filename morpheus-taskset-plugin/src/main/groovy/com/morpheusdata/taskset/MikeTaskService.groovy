@@ -8,7 +8,8 @@ import com.morpheusdata.model.Task
 class MikeTaskService implements ExecutableTaskInterface {
 
 	Map executeLocalTask(Task task, Map opts, Container container, ComputeServer server) {
-		String data = "Lorem Ipsum"
+		def taskOption = task.taskOptions.find { it.optionType.code == 'mikeTaskText' }
+		String data = taskOption?.value
 		[
 				success: true,
 				data   : data,
