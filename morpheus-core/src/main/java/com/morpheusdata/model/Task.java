@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class Task {
+public class Task extends MorpheusModel {
 	Account account;
 	String name;
 	String code;
