@@ -5,20 +5,19 @@ import java.util.List;
 import java.util.UUID;
 
 public class Task extends MorpheusModel {
-	Account account;
-	String name;
-	String code;
-	String resultType; //value, exitCode, keyValue, json
-	TaskType taskType;
-	Boolean retryable = false;
-	Integer retryCount = 5;
-	Integer retryDelaySeconds = 10;
-	Date dateCreated;
-	Date lastUpdated;
-	String uuid = UUID.randomUUID().toString();
-	String executeTarget; // local, remote, resource
-	List optionTypes;
-	Boolean allowCustomConfig = false;
-
-//	static hasMany = [taskOptions:TaskOption,  optionTypes: OptionType]
+	public Account account;
+	public String name;
+	public String code;
+	public String resultType; //value, exitCode, keyValue, json
+	public TaskType taskType;
+	public Boolean retryable = false;
+	public Integer retryCount = 5;
+	public Integer retryDelaySeconds = 10;
+	public Date dateCreated;
+	public Date lastUpdated;
+	public String uuid = UUID.randomUUID().toString();
+	public String executeTarget; // local, remote, resource
+	public List optionTypes;
+	public Boolean allowCustomConfig = false;
+	public List taskOptions;
 }

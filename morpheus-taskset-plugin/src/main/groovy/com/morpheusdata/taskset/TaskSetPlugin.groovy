@@ -11,14 +11,15 @@ class TaskSetPlugin extends Plugin {
 		this.pluginProviders.put("mikeTaskService", mikeTaskProvider)
 		this.setName("TaskSet")
 
-//		OptionType optionType = new OptionType(
-//				name: 'mikeTask',
-//				code: 'mikeTask',
-//				fieldName: 'mikeTask',
-//				optionSource: true,
-//				displayOrder: 0,
-//				fieldLabel: 'Mike Task'
-//		)
+		OptionType optionType = new OptionType(
+				name: 'mikeTask',
+				code: 'mikeTaskText',
+				fieldName: 'mikeTask',
+				optionSource: true,
+				displayOrder: 0,
+				fieldLabel: 'Text to Reverse',
+				required: true,
+		)
 
 		TaskType mikeType = new TaskType(
 				name: 'MikeTask',
@@ -26,7 +27,7 @@ class TaskSetPlugin extends Plugin {
 				code: 'miketask',
 				scope: 'all',
 				serviceName: 'mikeTaskService',
-//				optionTypes: [optionType],
+				optionTypes: [optionType],
 				allowExecuteLocal: true
 		)
 		morpheusContext.task.createTask(mikeType)
