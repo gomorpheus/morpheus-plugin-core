@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class TaskSet {
+public class TaskSet extends MorpheusModel {
 	static boolean searchable = false;
 
 //	static transients = ['taskIds']
