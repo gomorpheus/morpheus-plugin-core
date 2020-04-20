@@ -1,4 +1,4 @@
-package com.morpheusdata.taskset
+package com.morpheusdata.task
 
 import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.model.ComputeServer
@@ -20,32 +20,32 @@ class MikeTaskService implements ExecutableTaskInterface {
 	}
 
 	@Override
-	Map executeServerTask(ComputeServer server, Task task, Map opts) {
+	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
 		return null
 	}
 
 	@Override
-	Map executeServerTask(ComputeServer server, Task task) {
+	TaskResult executeServerTask(ComputeServer server, Task task) {
 		return null
 	}
 
 	@Override
-	Map executeContainerTask(Container container, Task task, Map opts) {
+	TaskResult executeContainerTask(Container container, Task task, Map opts) {
 		return null
 	}
 
 	@Override
-	Map executeContainerTask(Container container, Task task) {
+	TaskResult executeContainerTask(Container container, Task task) {
 		return null
 	}
 
 	@Override
-	Map executeRemoteTask(Task task, Map opts, Container container, ComputeServer server) {
+	TaskResult executeRemoteTask(Task task, Map opts, Container container, ComputeServer server) {
 		return null
 	}
 
 	@Override
-	Map executeRemoteTask(Task task, Container container, ComputeServer server) {
+	TaskResult executeRemoteTask(Task task, Container container, ComputeServer server) {
 		return null
 	}
 }

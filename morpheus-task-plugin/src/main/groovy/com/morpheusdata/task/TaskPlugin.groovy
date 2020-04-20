@@ -1,15 +1,15 @@
-package com.morpheusdata.taskset
+package com.morpheusdata.task
 
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType
 
-class TaskSetPlugin extends Plugin {
+class TaskPlugin extends Plugin {
 	@Override
 	void initialize() {
 		MikeTaskProvider mikeTaskProvider = new MikeTaskProvider(this, morpheusContext)
 		this.pluginProviders.put("mikeTaskService", mikeTaskProvider)
-		this.setName("TaskSet")
+		this.setName("Task")
 
 		OptionType optionType = new OptionType(
 				name: 'mikeTask',
