@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class TaskResult {
 	public Boolean success;
-	public String data;
+	public Object data;
 	public String output;
 	public String exitCode;
 	public String msg;
