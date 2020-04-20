@@ -21,8 +21,6 @@ apply plugin: 'com.jfrog.bintray'
 group = 'com.morpheusdata'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-
-
 repositories {
     mavenLocal()
     jcenter()
@@ -32,16 +30,18 @@ repositories {
 configurations {
     provided
 }
- 
 
 dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.2.0'
-	compile 'org.apache.httpcomponents:httpclient:4.5.3'
-	compile 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 
-    compile 'org.slf4j:slf4j-parent:1.7.25'
-    testCompile "org.codehaus.groovy:groovy-all:2.5.1"
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+	// only for `console` task
+	runtimeOnly "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation "org.spockframework:spock-core:$spockVersion"
 }
 
 sourceSets {
@@ -130,10 +130,5 @@ test {
         showStandardStreams = true
     }
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '5.2'
-}
-
 
 bintrayUpload.dependsOn build, sourcesJar, javadocJar

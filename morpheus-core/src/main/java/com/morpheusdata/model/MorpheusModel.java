@@ -1,7 +1,7 @@
 package com.morpheusdata.model;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * Base class for all Morpheus Model classes. This provides dirty checking capabilities for most base object representations
@@ -24,7 +24,7 @@ public class MorpheusModel {
 
 	/**
 	 * Gets the uniquely generated ID from the database record stored via the Morpheus appliance.
-	 * @return
+	 * @return id
 	 */
 	public Long getId() {
 		return id;
@@ -72,5 +72,25 @@ public class MorpheusModel {
 	 */
 	public LinkedHashMap<String,Object> getDirtyPropertyValues() {
 		return dirtyProperties;
+	}
+
+	/**
+	 * @return A Map of all properties, similar to Groovy's getProperties()
+	 */
+	public HashMap<String, Object> getProperties()  {
+		HashMap<String, Object> map = new HashMap<>();
+
+		for(Class clazz = this.getClass(); clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+			Field[] fields = clazz.getDeclaredFields();
+			for (Field field : fields) {
+				String name = field.getName();
+				Object value = null;
+				try {
+					value = field.get(this);
+				} catch (IllegalAccessException ignore) { }
+				map.put(name, value);
+			}
+		}
+		return map;
 	}
 }

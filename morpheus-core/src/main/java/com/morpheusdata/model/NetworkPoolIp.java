@@ -3,6 +3,8 @@ package com.morpheusdata.model;
 import java.util.Date;
 
 public class NetworkPoolIp extends MorpheusModel {
+
+	public NetworkPool networkPool;
 	private NetworkPoolRange networkPoolRange;
 	private String ipType = "assigned"; //assigned, reserved
 	private String ipAddress;
@@ -16,9 +18,6 @@ public class NetworkPoolIp extends MorpheusModel {
 	private String fqdn;
 	private String domainName;
 	private String hostname;
-
-
-
 	private String internalId;
 	private String externalId;
 	private String ptrId;
@@ -30,6 +29,7 @@ public class NetworkPoolIp extends MorpheusModel {
 	private Long refId;
 	private Long subRefId; //for multiple nics on same host
 	private NetworkDomain domain;
+	public User createdBy;
 
 	public NetworkPoolRange getNetworkPoolRange() {
 		return networkPoolRange;

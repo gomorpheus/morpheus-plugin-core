@@ -19,20 +19,20 @@ public interface CloudProvider extends PluginProvider {
 
 	/**
 	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration
-	 * @return
+	 * @return Collection of OptionType
 	 */
 	public Collection<OptionType> getOptionTypes();
 
 	/**
 	 * Grabs all {@link ComputeServerType} objects that this CloudProvider can represent during a sync or during a provision.
-	 * @return
+	 * @return collection of ComputeServerType
 	 */
 	public Collection<ComputeServerType> getComputeServerTypes();
 
 	/**
 	 * Grabs available provisioning providers related to the target Cloud Plugin. Some clouds have multiple provisioning
 	 * providers or some clouds allow for service based providers on top like (Docker or Kubernetes).
-	 * @return
+	 * @return Collection of ProvisioningProvider
 	 */
 	Collection<ProvisioningProvider> getAvailableProvisioningProviders();
 
@@ -49,8 +49,8 @@ public interface CloudProvider extends PluginProvider {
 	 * Validates the submitted zone information to make sure it is functioning correctly.
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.
-	 * @param zoneInfo
-	 * @return
+	 * @param zoneInfo zone
+	 * @return ServiceResponse
 	 */
 	ServiceResponse validate(Zone zoneInfo);
 
@@ -64,7 +64,7 @@ public interface CloudProvider extends PluginProvider {
 	/**
 	 * Zones/Clouds are refreshed periodically by the Morpheus Environment. This includes things like caching of brownfield
 	 * environments and resources such as Networks, Datastores, Resource Pools, etc.
-	 * @param zoneInfo
+	 * @param zoneInfo zone
 	 */
 	void refresh(Zone zoneInfo);
 
@@ -73,7 +73,7 @@ public interface CloudProvider extends PluginProvider {
 	 * Zones/Clouds are refreshed periodically by the Morpheus Environment. This includes things like caching of brownfield
 	 * environments and resources such as Networks, Datastores, Resource Pools, etc. This represents the long term sync method that happens
 	 * daily instead of every 5-10 minute cycle
-	 * @param zoneInfo
+	 * @param zoneInfo zone
 	 */
 	void refreshDaily(Zone zoneInfo);
 

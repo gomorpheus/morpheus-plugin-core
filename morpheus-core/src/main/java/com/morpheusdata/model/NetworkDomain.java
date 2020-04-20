@@ -28,7 +28,7 @@ public class NetworkDomain extends MorpheusModel {
 	 * Gets the display name of the current Network Domain. Domains can have a display name for situations where the same
 	 * Domain record exists multiple times but may target different OU Paths for example. This provides a way for the user
 	 * to override a Domain Name and change its display for consumption.
-	 * @return
+	 * @return display name
 	 */
 	public String getDisplayName() {
 		return displayName;
@@ -46,7 +46,7 @@ public class NetworkDomain extends MorpheusModel {
 
 	/**
 	 * Grabs the current Domain name. This should be the fully qualified DNS Name of the Authoritative Zone it represents.
-	 * @return
+	 * @return name
 	 */
 	public String getName() {
 		return name;
@@ -92,7 +92,7 @@ public class NetworkDomain extends MorpheusModel {
 
 	/**
 	 * Sets the Public Zone qualifier flag used for defining if the current Zone is a public or internal DNS Zone.
-	 * @param publicZone
+	 * @param publicZone zone
 	 */
 	public void setPublicZone(Boolean publicZone) {
 		this.publicZone = publicZone;
@@ -112,7 +112,7 @@ public class NetworkDomain extends MorpheusModel {
 	 * Set the String form of the Model class name that this Domain Record is related to. Typically via most Integrations the value
 	 * of this field should be 'AccountIntegration', however some scenarios exist where this may get synced or created via an
 	 * alternative means (perhaps from a CloudProvider). The refId is also required when using this field.
-	 * @param refType
+	 * @param refType type
 	 */
 	public void setRefType(String refType) {
 		this.refType = refType;

@@ -23,9 +23,14 @@ public interface IPAMProvider extends PluginProvider {
 	 * If the error is a generic authentication error or unknown error, a standard message can also be sent back in the response.
 	 *
 	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
+	 * @param opts Pagination options
 	 * @return A response is returned depending on if the inputs are valid or not.
 	 */
-	ServiceResponse validate(NetworkPoolServer poolServer);
+	public ServiceResponse verifyNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
+
+	public ServiceResponse createNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
+
+	public ServiceResponse updateNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
 
 	/**
 	 * Periodically called to refresh and sync data coming from the relevant integration. Most integration providers
@@ -38,56 +43,39 @@ public interface IPAMProvider extends PluginProvider {
 
 	/**
 	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link NetworkPoolType} objects representing the available pool types provided by this Provider.
+	 * @return A Set of {@link NetworkPoolServerType} objects representing the available pool types provided by this Provider.
 	 */
-	Set<NetworkPoolType> getProvidedPoolTypes();
+	Set<NetworkPoolServerType> getProvidedPoolServerTypes();
 
 	/**
+	 * Returns a list of account integration types that are available for use. These are synchronized by the IPAM Provider via a Context.
+	 * @return A Set of {@link AccountIntegrationType} objects representing the available account integration provided by this Provider.
+	 */
+	Set<AccountIntegrationType> getProvidedAccountIntegrationTypes();
+
+	/*
 	 * Target endpoint used to allocate an IP Address during provisioning of Instances
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse leasePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
-	/**
+	/*
 	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
-	/**
+	/*
 	 * Called during instance teardown to release an IP Address reservation.
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param ipAddress
-	 * @param opts
-	 * @return
 	 */
 	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts);
 
 
-	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp);
-	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain, Boolean createARecord, Boolean createPtrRecord);
+	ServiceResponse initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
+	ServiceResponse createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts);
+	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool  networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain, Boolean createARecord, Boolean createPtrRecord); // createHostRecord
 	ServiceResponse updateHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp);
-	ServiceResponse deleteHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords);
-	ServiceResponse provisionWorkload(NetworkPoolServer poolServer, Workload workload, Map opts);
-	ServiceResponse provisionServer(NetworkPoolServer poolServer, ComputeServer server, Map opts);
-	ServiceResponse removeServer(NetworkPoolServer poolServer, ComputeServer server, Map opts);
-	ServiceResponse removeContainer(NetworkPoolServer poolServer, Workload workload, Map opts);
+	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords);
+	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts);
+	ServiceResponse provisionServer(AccountIntegration integration, ComputeServer server, Map opts);
+	ServiceResponse removeServer(AccountIntegration integration, ComputeServer server, Map opts);
+	ServiceResponse removeContainer(AccountIntegration integration, Container container, Map opts);
 }
