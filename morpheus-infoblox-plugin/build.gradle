@@ -9,6 +9,7 @@ buildscript {
 
 plugins {
     id "com.jfrog.bintray" version "1.6"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 apply plugin: 'java'
@@ -18,9 +19,8 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'com.morpheusdata'
+version = '1.0.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-
 
 repositories {
     mavenLocal()
@@ -31,18 +31,33 @@ repositories {
 configurations {
     provided
 }
- 
 
 dependencies {
-    compile project(':morpheus-core')
-	compileOnly "org.codehaus.groovy:groovy:2.4.13"
-	compileOnly "org.codehaus.groovy:groovy-json:2.4.13"
-	compileOnly "org.codehaus.groovy:groovy-templates:2.4.13"
-	compile 'commons-beanutils:commons-beanutils:1.9.3'
-	testCompile "org.codehaus.groovy:groovy-all:2.4.13"
-    testCompile project(':morpheus-test-provider')
+	provided project(':morpheus-core')
+    implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation 'commons-beanutils:commons-beanutils:1.9.3'
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
+	implementation 'commons-net:commons-net:3.6'
 
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+	// Include morpheus-core and it's dependencies
+	testImplementation project(':morpheus-core')
+	testImplementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	testImplementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	testImplementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+    testImplementation project(':morpheus-test-provider')
+    testImplementation 'net.bytebuddy:byte-buddy:1.9.3'
+    testImplementation 'org.objenesis:objenesis:2.6'
+    testImplementation "org.spockframework:spock-core:$spockVersion"
+    testImplementation 'cglib:cglib-nodep:3.2.12'
+}
+// https://brokenco.de/2015/07/15/gradle-goodness-excluding-depends-from-shadow.html
+configurations {
+	/* We don't want the morpheus-core dependency in our shadowJar */
+//	runtime.exclude module: 'morpheus-core'
 }
 
 sourceSets {
@@ -51,6 +66,14 @@ sourceSets {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+                'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
+                'Plugin-Version': version
+        )
+    }
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'

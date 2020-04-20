@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.Container;
 import com.morpheusdata.model.Workload;
 import com.morpheusdata.response.ServiceResponse;
 
@@ -14,8 +15,8 @@ import java.util.Map;
  * @author David Estes
  */
 public interface DNSProvider extends PluginProvider {
-	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts);
+	ServiceResponse provisionContainer(AccountIntegration integration, Container container, Map opts);
 	ServiceResponse provisionServer(AccountIntegration integration, ComputeServer server, Map opts);
 	ServiceResponse removeServer(AccountIntegration integration, ComputeServer server, Map opts);
-	ServiceResponse removeContainer(AccountIntegration integration, Workload workload, Map opts);
+	ServiceResponse removeContainer(AccountIntegration integration, Container container, Map opts);
 }

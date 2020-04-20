@@ -11,4 +11,11 @@ public interface PluginInterface {
 	 * Called when a plugin is being removed from the plugin manager (aka Uninstalled)
 	 */
 	void onDestroy();
+
+	String getName();
+	void setName(String name);
+	String getFileName();
+	void setFileName(String fileName);
+	String getVersion();
+	void setVersion(String version);
 }

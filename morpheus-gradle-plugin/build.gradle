@@ -30,9 +30,7 @@ dependencies {
     implementation sezpoz
     implementation localGroovy()
     testAnnotationProcessor sezpoz
-    testImplementation('org.spockframework:spock-core:1.0-groovy-2.4') {
-        exclude module: 'groovy-all' // use the version that is distributed with Gradle
-    }
+    testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
     testImplementation 'org.xmlunit:xmlunit-core:2.3.0'
 }
 

@@ -1,6 +1,10 @@
 package com.morpheusdata.core.util;
 
+import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.Container;
 import com.morpheusdata.model.NetworkProxy;
+import com.morpheusdata.response.ServiceResponse;
+
 import java.net.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -25,7 +29,7 @@ public class ConnectionUtils {
 		return testHostConnectivity(hostname,port,doPingTest,true,null);
 	}
 
-	static Boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
+	public static Boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
 		Boolean rtn = false;
 		if(doPingTest == true && networkProxy == null) {
 			try {

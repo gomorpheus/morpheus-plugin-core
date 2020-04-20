@@ -67,8 +67,9 @@ public class ComputeServer  extends MorpheusModel {
 		markDirty("zone", zone);
 	}
 
-
-
-
-
+	public void setZoneId(Long id) {
+		this.zone = new Zone();
+		this.zone.id = id;
+		markDirty("zone", zone);
+	}
 }

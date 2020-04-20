@@ -6,8 +6,9 @@ class InfobloxPlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		InfobloxProvider infobloxProvider = new InfobloxProvider(this,morpheusContext)
-		this.pluginProviders.put("infoblox",infobloxProvider)
+		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheusContext)
+		this.pluginProviders.put("infoblox", infobloxProvider)
+		this.setName("Infoblox")
 	}
 
 	/**
@@ -18,3 +19,7 @@ class InfobloxPlugin extends Plugin {
 		//nothing to do for now
 	}
 }
+
+
+//AccountIntegrationType
+// -> has many - optiontype // for UI

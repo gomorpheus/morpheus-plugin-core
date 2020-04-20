@@ -11,7 +11,8 @@ package com.morpheusdata.model;
  * @author David Estes
  */
 public class Network extends MorpheusModel {
-	protected Long zoneId;
+//	protected Long zoneId;
+	public Zone zone;
 	protected Long zonePoolId;
 	protected NetworkType type;
 	protected String name;
@@ -58,17 +59,10 @@ public class Network extends MorpheusModel {
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
 
-	public Long getZoneId() {
-		return zoneId;
-	}
-
-	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
-		markDirty("zoneId", zoneId);
-	}
-
-	public Long getZonePoolId() {
-		return zonePoolId;
+	public void setZoneId(Long id) {
+		this.zone = new Zone();
+		this.zone.id = id;
+		markDirty("zone", id);
 	}
 
 	public void setZonePoolId(Long zonePoolId) {

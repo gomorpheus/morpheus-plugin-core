@@ -1,22 +1,39 @@
 package com.morpheusdata.model;
 
-public class NetworkPoolServer extends MorpheusModel {
-	String name;
-	String description;
-	String internalId;
-	String externalId;
-	String serviceUrl;
-	Boolean ignoreSsl = true;
-	String serviceHost;
-	Integer servicePort = 22;
-	String serviceMode;
-	String serviceUsername;
-	String servicePassword;
-	Integer apiPort;
-	Integer adminPort;
+import java.util.Date;
+import java.util.Map;
 
-	String config;
-	String networkFilter;
-	String tenantMatch;
-	Boolean enabled = true;
+public class NetworkPoolServer extends MorpheusModel {
+	public String name;
+	public String description;
+	public String internalId;
+	public String externalId;
+	public String serviceUrl;
+	public Boolean ignoreSsl = true;
+	public String serviceHost;
+	public Integer servicePort = 22;
+	public String serviceMode;
+	public String serviceUsername;
+	public String servicePassword;
+	public Integer apiPort;
+	public Integer adminPort;
+	public String status = "ok"; //ok, error, warning, offline
+	public String statusMessage;
+	public String config;
+	public String networkFilter;
+	public String zoneFilter;
+	public String tenantMatch;
+	public Boolean enabled = true;
+	public Date statusDate;
+	public Date dateCreated;
+	public Date lastUpdated;
+	public NetworkPoolServerType type;
+	public AccountIntegration integration;
+	public Account account;
+	public Map<String, Object> configMap;
+
+	public void setAccountId(Long id) {
+		this.account = new Account();
+		this.account.id = id;
+	}
 }

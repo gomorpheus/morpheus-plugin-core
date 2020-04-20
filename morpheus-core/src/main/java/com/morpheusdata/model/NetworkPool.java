@@ -17,7 +17,7 @@ public class NetworkPool extends MorpheusModel {
 
 	/**
 	 * Gets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolTypes()} method.
+	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
 	 * @return the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public String getTypeCode() {
@@ -26,7 +26,7 @@ public class NetworkPool extends MorpheusModel {
 
 	/**
 	 * Sets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolTypes()} method.
+	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
 	 * @param typeCode the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public void setTypeCode(String typeCode) {
@@ -392,23 +392,6 @@ public class NetworkPool extends MorpheusModel {
 		markDirty("cidr", cidr);
 	}
 
-	/**
-	 * Gets the ID of the {@link NetworkPoolServer} that this pool is attached to.
-	 * @return The unique ID of the {@link NetworkPoolServer}
-	 */
-	public Long getPoolServerId() {
-		return poolServerId;
-	}
-
-	/**
-	 * Sets the associated {@link NetworkPoolServer} that this Pool belongs to for sync purposes and integration purposes.
-	 * @param poolServerId The unique ID of the {@link NetworkPoolServer}
-	 */
-	public void setPoolServerId(Long poolServerId) {
-		this.poolServerId = poolServerId;
-		markDirty("poolServerId", poolServerId);
-	}
-
 	protected String typeCode;
 	protected String name;
 	protected String displayName;
@@ -428,5 +411,27 @@ public class NetworkPool extends MorpheusModel {
 	protected String refId;
 	protected String configuration;
 	protected String cidr;
-	protected Long poolServerId;
+	public NetworkPoolServer poolServer;
+	public Account account;
+	public Account owner;
+	public NetworkPoolType type;
+	public String parentType;
+	public String parentId;
+	public String category;
+
+	public List<NetworkPoolRange> ipRanges;
+
+	public void setPoolServerId(Long id) {
+		this.poolServer = new NetworkPoolServer();
+		this.poolServer.id = id;
+	}
+	public void setAccountId(Long id) {
+		this.account = new Account();
+		this.account.id = id;
+	}
+
+	public void setOwnerId(Long id) {
+		this.owner = new Account();
+		this.owner.id = id;
+	}
 }
