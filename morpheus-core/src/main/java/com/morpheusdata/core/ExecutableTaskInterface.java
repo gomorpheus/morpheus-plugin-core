@@ -14,13 +14,13 @@ public interface ExecutableTaskInterface {
 
 	Map executeLocalTask(Task task, Map opts, Container container, ComputeServer server);
 
-//	def executeServerTask(ComputeServer server, Task task, Map opts);
-//	def executeServerTask(ComputeServer server, Task task);
-//
-//	def executeContainerTask(Container container, Task task, Map opts);
-//	def executeContainerTask(Container container, Task task);
-//
-//	def executeRemoteTask(Task task, Map opts, Container container, ComputeServer server);
-//	def executeRemoteTask(Task task, Container container, ComputeServer server);
+	Map executeServerTask(ComputeServer server, Task task, Map opts);
+	Map executeServerTask(ComputeServer server, Task task);
+
+	Map executeContainerTask(Container container, Task task, Map opts);
+	Map executeContainerTask(Container container, Task task);
+
+	Map executeRemoteTask(Task task, Map opts, Container container, ComputeServer server);
+	Map executeRemoteTask(Task task, Container container, ComputeServer server);
 
 }

@@ -38,6 +38,6 @@ class TaskSetPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		//nothing to do for now
+		morpheusContext.task.disableTask('miketask')
 	}
 }
