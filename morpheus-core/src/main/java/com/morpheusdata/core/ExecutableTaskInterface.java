@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.Container;
 import com.morpheusdata.model.Task;
+import com.morpheusdata.model.TaskResult;
 
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public interface ExecutableTaskInterface {
 
-	Map executeLocalTask(Task task, Map opts, Container container, ComputeServer server);
+	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server);
 
 	Map executeServerTask(ComputeServer server, Task task, Map opts);
 	Map executeServerTask(ComputeServer server, Task task);

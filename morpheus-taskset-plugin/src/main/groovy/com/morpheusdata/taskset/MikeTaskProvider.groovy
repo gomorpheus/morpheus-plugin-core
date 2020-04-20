@@ -4,6 +4,9 @@ import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.PluginProvider
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.Container
+import com.morpheusdata.model.Task
 
 class MikeTaskProvider implements PluginProvider {
 	MorpheusContext morpheusContext
@@ -34,5 +37,9 @@ class MikeTaskProvider implements PluginProvider {
 	@Override
 	String getProviderName() {
 		return "Mike Task Service"
+	}
+
+	Map executeLocalTask(Task task, Map opts, Container container, ComputeServer server) {
+		service.executeLocalTask(task, opts, container, server).toMap()
 	}
 }
