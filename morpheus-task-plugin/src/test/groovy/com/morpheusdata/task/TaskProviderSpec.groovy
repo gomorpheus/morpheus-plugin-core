@@ -16,6 +16,7 @@ class TaskProviderSpec extends Specification {
 	@Shared
 	MikeTaskProvider provider
 
+
 	def setup() {
 		context = Mock(MorpheusContextImpl)
 		plugin = Mock(TaskPlugin)
