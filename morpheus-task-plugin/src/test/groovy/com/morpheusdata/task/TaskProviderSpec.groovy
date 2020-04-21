@@ -1,6 +1,7 @@
 package com.morpheusdata.task
 
 import com.morpheusdata.MorpheusContextImpl
+import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.model.Task
 import spock.lang.Shared
@@ -28,15 +29,8 @@ class TaskProviderSpec extends Specification {
 		provider
 	}
 
-	void "local execution"() {
-		given:
-		Task task = new Task()
-		Map expected = [:]
-
-		when:
-		Map res = provider.executeLocalTask(task, [:], null, null)
-
-		then:
-		res == expected
+	void "service instantiated"() {
+		expect:
+		provider.service instanceof ExecutableTaskInterface
 	}
 }
