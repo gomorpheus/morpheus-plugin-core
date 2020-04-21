@@ -1,16 +1,17 @@
 package com.morpheusdata.task
 
-import com.morpheusdata.core.AbstractTaskProvider
+
 import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.TaskProvider
 
-class MikeTaskProvider extends AbstractTaskProvider {
+class MikeTaskProvider implements TaskProvider {
 	MorpheusContext morpheusContext
 	Plugin plugin
 	ExecutableTaskInterface service
 
-	MikeTaskProvider (Plugin plugin, MorpheusContext morpheusContext) {
+	MikeTaskProvider(Plugin plugin, MorpheusContext morpheusContext) {
 		this.plugin = plugin
 		this.morpheusContext = morpheusContext
 	}
