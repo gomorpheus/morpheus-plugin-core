@@ -6,7 +6,7 @@ public class TaskType extends MorpheusModel {
 
 	public String code;
 	public String category;
-	public String scope; //all, app, instance, container
+	public TaskScope scope;
 	public String name;
 	public String description;
 	public String serviceName;
@@ -22,4 +22,11 @@ public class TaskType extends MorpheusModel {
 	public Boolean isPlugin = true;
 
 	public List<OptionType> optionTypes;
+
+	public enum TaskScope {
+		all,
+		app,
+		instance,
+		container
+	}
 }

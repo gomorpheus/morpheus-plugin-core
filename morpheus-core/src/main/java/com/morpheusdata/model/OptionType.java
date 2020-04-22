@@ -261,11 +261,22 @@ public class OptionType extends MorpheusModel {
 
 
 	public enum InputType {
-		TEXT,
-		NUMBER,
-		TEXTAREA,
-		SELECT,
-		CHECKBOX,
-		RADIO
+		TEXT("text"),
+		NUMBER("number"),
+		TEXTAREA("textarea"),
+		SELECT("select"),
+		CHECKBOX("checkbox"),
+		RADIO("radio"),
+		CODE_EDITOR("code-editor");
+
+		private final String value;
+
+		InputType(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return this.value;
+		}
 	}
 }
