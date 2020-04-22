@@ -19,16 +19,21 @@ class TaskPlugin extends Plugin {
 				displayOrder: 0,
 				fieldLabel: 'Text to Reverse',
 				required: true,
+				inputType: OptionType.InputType.TEXT
 		)
 
 		TaskType mikeType = new TaskType(
 				name: 'MikeTask',
 				enabled: true,
 				code: 'miketask',
-				scope: 'all',
+				scope: TaskType.TaskScope.all,
 				serviceName: 'mikeTaskService',
 				optionTypes: [optionType],
-				allowExecuteLocal: true
+				allowExecuteLocal: true,
+				allowExecuteRemote: true,
+				allowLocalRepo: true,
+				allowExecuteResource: true,
+				allowRemoteKeyAuth: true
 		)
 		morpheusContext.task.createTask(mikeType)
 	}
