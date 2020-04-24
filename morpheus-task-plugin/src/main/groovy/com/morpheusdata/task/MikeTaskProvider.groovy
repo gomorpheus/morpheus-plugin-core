@@ -1,10 +1,11 @@
 package com.morpheusdata.task
 
-
 import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.TaskProvider
+import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.TaskType
 
 class MikeTaskProvider implements TaskProvider {
 	MorpheusContext morpheusContext
@@ -29,6 +30,66 @@ class MikeTaskProvider implements TaskProvider {
 	@Override
 	ExecutableTaskInterface getService() {
 		return new MikeTaskService()
+	}
+
+	@Override
+	String getTaskCode() {
+		return "miketask"
+	}
+
+	@Override
+	TaskType.TaskScope getScope() {
+		return TaskType.TaskScope.all
+	}
+
+	@Override
+	String getTaskName() {
+		return 'Mike Task'
+	}
+
+	@Override
+	String getTaskDescription() {
+		return 'A custom task that reverses task'
+	}
+
+	@Override
+	Boolean isAllowExecuteLocal() {
+		return true
+	}
+
+	@Override
+	Boolean isAllowExecuteRemote() {
+		return true
+	}
+
+	@Override
+	Boolean isAllowExecuteResource() {
+		return true
+	}
+
+	@Override
+	Boolean isAllowLocalRepo() {
+		return true
+	}
+
+	@Override
+	Boolean isAllowRemoteKeyAuth() {
+		return true
+	}
+
+	@Override
+	List<OptionType> getOptionTypes() {
+		OptionType optionType = new OptionType(
+				name: 'mikeTask',
+				code: 'mikeTaskText',
+				fieldName: 'mikeTask',
+				optionSource: true,
+				displayOrder: 0,
+				fieldLabel: 'Text to Reverse',
+				required: true,
+				inputType: OptionType.InputType.TEXT
+		)
+		return [optionType]
 	}
 
 	@Override
