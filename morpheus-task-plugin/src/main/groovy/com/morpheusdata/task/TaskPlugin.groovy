@@ -8,34 +8,8 @@ class TaskPlugin extends Plugin {
 	@Override
 	void initialize() {
 		MikeTaskProvider mikeTaskProvider = new MikeTaskProvider(this, morpheusContext)
-		this.pluginProviders.put("mikeTaskService", mikeTaskProvider)
+		this.pluginProviders.put(mikeTaskProvider.providerCode, mikeTaskProvider)
 		this.setName("Task")
-
-		OptionType optionType = new OptionType(
-				name: 'mikeTask',
-				code: 'mikeTaskText',
-				fieldName: 'mikeTask',
-				optionSource: true,
-				displayOrder: 0,
-				fieldLabel: 'Text to Reverse',
-				required: true,
-				inputType: OptionType.InputType.TEXT
-		)
-
-		TaskType mikeType = new TaskType(
-				name: 'MikeTask',
-				enabled: true,
-				code: 'miketask',
-				scope: TaskType.TaskScope.all,
-				serviceName: 'mikeTaskService',
-				optionTypes: [optionType],
-				allowExecuteLocal: true,
-				allowExecuteRemote: true,
-				allowLocalRepo: true,
-				allowExecuteResource: true,
-				allowRemoteKeyAuth: true
-		)
-		morpheusContext.task.createTask(mikeType)
 	}
 
 	/**

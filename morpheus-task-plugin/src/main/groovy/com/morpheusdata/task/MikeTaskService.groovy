@@ -10,6 +10,41 @@ class MikeTaskService implements ExecutableTaskInterface {
 
 	@Override
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server) {
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeServerTask(ComputeServer server, Task task) {
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeContainerTask(Container container, Task task, Map opts) {
+		println container.hostname
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeContainerTask(Container container, Task task) {
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeRemoteTask(Task task, Map opts, Container container, ComputeServer server) {
+		executeTask(task)
+	}
+
+	@Override
+	TaskResult executeRemoteTask(Task task, Container container, ComputeServer server) {
+		return null
+	}
+
+	TaskResult executeTask(Task task) {
 		def taskOption = task.taskOptions.find { it.optionType.code == 'mikeTaskText' }
 		String data = taskOption?.value
 		new TaskResult(
@@ -17,35 +52,5 @@ class MikeTaskService implements ExecutableTaskInterface {
 				data   : data,
 				output : data.reverse()
 		)
-	}
-
-	@Override
-	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
-		return null
-	}
-
-	@Override
-	TaskResult executeServerTask(ComputeServer server, Task task) {
-		return null
-	}
-
-	@Override
-	TaskResult executeContainerTask(Container container, Task task, Map opts) {
-		return null
-	}
-
-	@Override
-	TaskResult executeContainerTask(Container container, Task task) {
-		return null
-	}
-
-	@Override
-	TaskResult executeRemoteTask(Task task, Map opts, Container container, ComputeServer server) {
-		return null
-	}
-
-	@Override
-	TaskResult executeRemoteTask(Task task, Container container, ComputeServer server) {
-		return null
 	}
 }
