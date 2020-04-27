@@ -7,4 +7,4 @@ build/
 *.iws
 .idea/
 .DS_Store
-morpheus-core/out/
+morpheus-plugin-api/out/

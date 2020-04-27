@@ -1,1 +1,1 @@
-include 'morpheus-core','morpheus-test-provider', 'morpheus-infoblox-plugin', 'morpheus-gradle-plugin', 'morpheus-task-plugin'
+include 'morpheus-plugin-api','morpheus-test-provider', 'morpheus-infoblox-plugin', 'morpheus-gradle-plugin', 'morpheus-task-plugin'

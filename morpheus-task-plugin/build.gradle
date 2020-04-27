@@ -33,7 +33,7 @@ configurations {
 }
 
 dependencies {
-	provided project(':morpheus-core')
+	provided project(':morpheus-plugin-api')
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
