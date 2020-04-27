@@ -17,7 +17,7 @@ public class Task extends MorpheusModel {
 	public Date lastUpdated;
 	public String uuid = UUID.randomUUID().toString();
 	public String executeTarget; // local, remote, resource
-	public List optionTypes;
+	public List<OptionType> optionTypes;
 	public Boolean allowCustomConfig = false;
-	public List taskOptions;
+	public List<TaskOption> taskOptions;
 }
