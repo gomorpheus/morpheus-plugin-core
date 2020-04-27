@@ -4,11 +4,12 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.6"
+    // id "com.jfrog.bintray" version "1.8.5"
 }
 
 apply plugin: 'java'
@@ -60,7 +61,7 @@ bintray {
     pkg {
         repo = 'gomorpheus'
         userOrg = 'bertramlabs'
-        name = 'morpheus-core'
+        name = 'morpheus-plugin-api'
         vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
         licenses = ['Apache-2.0']
     }
@@ -84,11 +85,11 @@ task morpheusJavaDoc(type: Javadoc) {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId 'morpheus-core'
+            artifactId 'morpheus-plugin-api'
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'morpheus-core'
+                    name 'morpheus-plugin-api'
                     description 'Morpheus Core provides the core framework for implementing extension plugins for the morpheus platform'
                     url 'https://github.com/bertramdev/morpheus-core'
                     scm {
