@@ -114,4 +114,12 @@ public abstract class Plugin implements PluginInterface {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
 }

@@ -2,8 +2,6 @@ package com.morpheusdata.core;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -64,13 +62,16 @@ public class PluginManager {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException {
+	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
+		ClassLoader pluginClassLoader =  new ChildFirstClassLoader(new URL[]{jarFile.toURL()}, pluginManagerClassLoader);
+
 		Plugin plugin = pluginClass.newInstance();
 		plugin.setPluginManager(this);
 		plugin.setMorpheusContext(this.morpheusContext);
 		plugin.setName(pluginClass.toString());
 		plugin.setFileName(jarFile.getAbsolutePath());
 		plugin.setVersion(version);
+		plugin.setClassLoader(pluginClassLoader);
 		plugin.initialize();
 		plugins.add(plugin);
 	}

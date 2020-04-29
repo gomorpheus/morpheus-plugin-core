@@ -4,7 +4,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.10.1'
+		classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.2.0-SNAPSHOT'
 	}
 }
 
@@ -35,13 +35,13 @@ configurations {
 }
 
 dependencies {
-	provided project(':morpheus-core')
+	provided project(':morpheus-plugin-api')
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 
 	// Include morpheus-core and it's dependencies
-	testImplementation project(':morpheus-core')
+	testImplementation project(':morpheus-plugin-api')
 	testImplementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
 
@@ -65,7 +65,7 @@ sourceSets {
 }
 
 assets {
-	packagePlugin=true //set to true if this is a library
+	packagePlugin = false //set to true if this is a library
 }
 
 
