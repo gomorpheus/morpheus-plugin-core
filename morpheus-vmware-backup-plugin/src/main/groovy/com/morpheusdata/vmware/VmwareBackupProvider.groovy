@@ -292,9 +292,9 @@ class VmwareBackupProvider implements BackupProvider {
 			def outputFile = new File(outputPath)
 			outputFile.mkdirs()
 			def exportOpts = [targetDir:outputPath, snapshotId:backupResult.snapshotId, vmName:"${instance.name}.${container.id}"]
-			log.info("extractBackup options: ${exportOpts}")
+			log.info("extractBackup options: {}", exportOpts)
 			def exportResults = ctx.backup.exportSnapshot('vmwareProvisionService', container, exportOpts)
-			log.info("extractBackup results: ${exportResults}")
+			log.info("extractBackup results: {}", exportResults)
 			def saveResults = ctx.backup.saveBackupResults(backup.account, outputFile.getPath(), backup.id)
 			if(saveResults.success == true) {
 				def statusMap = [backupResultId :rtn.backupResultId, destinationPath:outputPath, snapshotExtracted:'yes',
@@ -359,9 +359,9 @@ class VmwareBackupProvider implements BackupProvider {
 				rtn.success = true
 			}
 		} catch(e) {
-			log.error("restoreBackup: ${e}", e)
+			log.error("restoreBackup: {}", e)
 			rtn.success = false
-			rtn.message = e.getMessage()
+			rtn.message = e.message
 			ctx.backup.updateBackupRestore(backupRestore, [status:BackupServiceStatus.STATUS_FAILED, errorMessage: rtn.message])
 		}
 		return rtn
@@ -380,7 +380,7 @@ class VmwareBackupProvider implements BackupProvider {
 					def container = ctx.compute.getContainerById(backupResult.containerId).blockingGet() //Container.read(backupResult.containerId)
 					def server = ctx.compute.getComputeServerById(container.server.id).blockingGet() // ComputeServer.read(container.serverId)
 					def zone = ctx.compute.getComputeZoneById(server.zone.id).blockingGet()// ComputeZone.read(server.zoneId)
-					def zoneType = ctx.compute.getComputeZoneTypeById(zone.zoneType.id) //ComputeZoneType.read(zone.zoneTypeId)
+					def zoneType = ctx.compute.getComputeZoneTypeById(zone.zoneType.id).blockingGet() //ComputeZoneType.read(zone.zoneTypeId)
 					def apiUrl
 					def apiUsername
 					def apiPassword

@@ -12,6 +12,8 @@ public interface MorpheusBackupContext {
 
 	void updateBackupStatus(Long id, String status, Map opts);
 
+	void updateBackupStatus(Long backupResultId, Map opts);
+
 	Single<Backup> getBackupById(Long id);
 
 	Object saveBackupResults(Account ac, String Path, Long id);

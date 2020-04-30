@@ -1,7 +1,6 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.core.BackupProvider;
-import sun.net.NetworkServer;
 
 import java.util.Date;
 
@@ -64,7 +63,7 @@ public class ComputeZone extends MorpheusModel {
 	public String containerMode = "docker";
 	public String storageMode = "standard";
 	public String securityMode = "off"; //host firewall.. off or internal;
-//	public NetworkSecurityServer securityServer; //integrated security service;
+	public NetworkSecurityServer securityServer; //integrated security service;
 	public String networkSecurityMode; // internal (to manage internal firewall for VMs) (ignored if securityServer is set - not used;
 	public NetworkServer networkServer; //virtual or physical network provider;
 	public String backupMode = "internal"; //if backups are off,run by morpheus or a provider;
