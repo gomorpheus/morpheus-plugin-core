@@ -4,6 +4,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
+		classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.2.0-SNAPSHOT'
 	}
 }
 
@@ -17,6 +18,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
 version = '1.0.0'
