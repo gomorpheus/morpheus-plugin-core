@@ -1,16 +1,29 @@
 package com.morpheusdata.task
 
-import com.morpheusdata.core.ExecutableTaskInterface
-import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.Container
-import com.morpheusdata.model.Task
-import com.morpheusdata.model.TaskResult
+import com.morpheusdata.core.AbstractTaskService
+import com.morpheusdata.core.MorpheusTaskContext
+import com.morpheusdata.model.*
 
-class MikeTaskService implements ExecutableTaskInterface {
+class MikeTaskService extends AbstractTaskService {
+	MorpheusTaskContext context
+
+	MikeTaskService(MorpheusTaskContext context) {
+		this.context = context
+	}
+
+	@Override
+	MorpheusTaskContext getContext() {
+		return context
+	}
 
 	@Override
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server) {
-		executeTask(task)
+		TaskResult rtn = new TaskResult()
+		buildLocalTaskConfig([:], task, [], opts).doOnSuccess({ TaskConfig config ->
+			println config
+			rtn = executeTask(task)
+		}).doOnError({Exception e -> println e})
+		rtn
 	}
 
 	@Override

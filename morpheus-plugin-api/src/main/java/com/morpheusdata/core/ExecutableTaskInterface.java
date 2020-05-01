@@ -13,6 +13,8 @@ import java.util.Map;
  */
 public interface ExecutableTaskInterface {
 
+	MorpheusTaskContext getContext();
+
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server);
 
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts);
