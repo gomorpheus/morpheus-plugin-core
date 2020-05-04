@@ -17,12 +17,10 @@ class MikeTaskService extends AbstractTaskService {
 	}
 
 	@Override
-	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server) {
+	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server, Instance instance) {
 		TaskResult rtn = new TaskResult()
-		buildLocalTaskConfig([:], task, [], opts).doOnSuccess({ TaskConfig config ->
-			println config
-			rtn = executeTask(task)
-		}).doOnError({Exception e -> println e})
+		buildLocalTaskConfig([:], task, [], opts).blockingGet()
+		rtn = executeTask(task)
 		rtn
 	}
 
