@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.Container;
+import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.Task;
 import com.morpheusdata.model.TaskConfig;
 import io.reactivex.Single;
@@ -11,6 +12,10 @@ import java.util.Map;
 public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	public Single<TaskConfig> buildLocalTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
 		return getContext().buildLocalTaskConfig(baseConfig, task, excludes, opts);
+	}
+
+	public Single<TaskConfig> buildInstanceTaskConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts) {
+		return getContext().buildInstanceTaskConfig(instance, baseConfig, task, excludes, opts);
 	}
 
 	public TaskConfig buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {

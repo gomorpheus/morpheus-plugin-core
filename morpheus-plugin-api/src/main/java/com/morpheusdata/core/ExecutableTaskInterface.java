@@ -1,9 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.Container;
-import com.morpheusdata.model.Task;
-import com.morpheusdata.model.TaskResult;
+import com.morpheusdata.model.*;
 
 import java.util.Map;
 
@@ -15,7 +12,7 @@ public interface ExecutableTaskInterface {
 
 	MorpheusTaskContext getContext();
 
-	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server);
+	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server, Instance instance);
 
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts);
 	TaskResult executeServerTask(ComputeServer server, Task task);
