@@ -1,9 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Container;
-import com.morpheusdata.model.Instance;
-import com.morpheusdata.model.Task;
-import com.morpheusdata.model.TaskConfig;
+import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
 import java.util.Collection;
@@ -24,5 +21,9 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 
 	public Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
 		return getContext().buildContainerTaskConfig(container, baseConfig, task, excludes, opts);
+	}
+
+	public Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer server, Map baseConfig, Task task, Collection excludes, Map opts) {
+		return getContext().buildComputeServerTaskConfig(server, baseConfig, task, excludes, opts);
 	}
 }

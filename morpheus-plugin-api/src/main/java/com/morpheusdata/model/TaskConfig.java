@@ -44,6 +44,8 @@ public class TaskConfig {
 
 	public InstanceConfig instance;
 	public ContainerConfig container;
+	public ServerConfig server;
+	public Zone zone;
 
 	public static class InstanceConfig {
 		public Long id;
@@ -210,5 +212,19 @@ public class TaskConfig {
 		public String unitNumber;
 		public Long displayOrder;
 		public Boolean rootVolume;
+	}
+
+	public static class Zone {
+		public String name;
+		public String code;
+		public String location;
+		public String cloudTypeName;
+		public String cloudTypeCode;
+		public String domainName;
+		public String scalePriority;
+		public Boolean firewallEnabled;
+		public String regionCode;
+		public String agentMode;
+		public String datacenterId;
 	}
 }

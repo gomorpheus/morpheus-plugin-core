@@ -18,50 +18,54 @@ class MikeTaskService extends AbstractTaskService {
 
 	@Override
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server, Instance instance) {
-		TaskResult rtn = new TaskResult()
-		buildLocalTaskConfig([:], task, [], opts).blockingGet()
+		TaskConfig config = buildLocalTaskConfig([:], task, [], opts).blockingGet()
 		if(instance) {
-			buildInstanceTaskConfig(instance, [:], task, [], opts).blockingGet()
+			config = buildInstanceTaskConfig(instance, [:], task, [], opts).blockingGet()
 		}
 		if(container) {
-			buildContainerTaskConfig(container, [:], task, [], [:]).blockingGet()
+			config = buildContainerTaskConfig(container, [:], task, [], opts).blockingGet()
 		}
-		rtn = executeTask(task)
-		rtn
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
-		executeTask(task)
+		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], opts).blockingGet()
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeServerTask(ComputeServer server, Task task) {
-		executeTask(task)
+		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], [:]).blockingGet()
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeContainerTask(Container container, Task task, Map opts) {
-		println container.hostname
-		executeTask(task)
+		TaskConfig config = buildContainerTaskConfig(container, [:], task, [], opts).blockingGet()
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeContainerTask(Container container, Task task) {
-		executeTask(task)
+		TaskConfig config = buildContainerTaskConfig(container, [:], task, [], [:]).blockingGet()
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeRemoteTask(Task task, Map opts, Container container, ComputeServer server) {
-		executeTask(task)
+		TaskConfig config = buildRemoteTaskConfig([:], task, [], opts).blockingGet()
+		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeRemoteTask(Task task, Container container, ComputeServer server) {
-		return null
+		TaskConfig config = buildRemoteTaskConfig([:], task, [], [:]).blockingGet()
+		executeTask(task, config)
 	}
 
-	TaskResult executeTask(Task task) {
+	TaskResult executeTask(Task task, TaskConfig config) {
+		println config.accountId
 		def taskOption = task.taskOptions.find { it.optionType.code == 'mikeTaskText' }
 		String data = taskOption?.value
 		new TaskResult(
