@@ -18,11 +18,11 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 		return getContext().buildInstanceTaskConfig(instance, baseConfig, task, excludes, opts);
 	}
 
-	public TaskConfig buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().buildRemoteTaskConfig(baseConfig, task, excludes, opts).blockingGet();
+	public Single<TaskConfig> buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
+		return getContext().buildRemoteTaskConfig(baseConfig, task, excludes, opts);
 	}
 
-	public TaskConfig buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().buildContainerTaskConfig(container, baseConfig, task, excludes, opts).blockingGet();
+	public Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
+		return getContext().buildContainerTaskConfig(container, baseConfig, task, excludes, opts);
 	}
 }

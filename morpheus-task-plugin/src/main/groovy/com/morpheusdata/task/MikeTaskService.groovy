@@ -20,7 +20,12 @@ class MikeTaskService extends AbstractTaskService {
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server, Instance instance) {
 		TaskResult rtn = new TaskResult()
 		buildLocalTaskConfig([:], task, [], opts).blockingGet()
-		buildInstanceTaskConfig(instance, [:], task, [], opts).blockingGet()
+		if(instance) {
+			buildInstanceTaskConfig(instance, [:], task, [], opts).blockingGet()
+		}
+		if(container) {
+			buildContainerTaskConfig(container, [:], task, [], [:]).blockingGet()
+		}
 		rtn = executeTask(task)
 		rtn
 	}
