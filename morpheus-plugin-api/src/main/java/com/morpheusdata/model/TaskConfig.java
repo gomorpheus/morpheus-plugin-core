@@ -19,31 +19,33 @@ public class TaskConfig {
 	public String localScriptGitRef;
 	public List results;
 	public Map customOptions;
+	public Map evars;
+	public String groupName;
+	public String groupCode;
+	public String cloudName;
+	public String cloudCode;
+	public String type;
 
-	public Long userId;
+	public String userId;
 	public String userDisplayName;
 	public String username;
-	public InstanceConfig instance;
-	public Long accountId;
+	public String userInitials;
+	public String accountId;
+	public String account;
+	public String tenant;
+	public String tenantId;
+	public String tenantSubdomain;
+	public String accountType;
+	public String sequence;
+	public String platform;
 //	public Cypher cypher;
+//	public ArchivesAccess archives;
+//	public MorpheusAccess morpheus;
 
-//	public TaskConfig (Map map) {
-//		instanceId = (Long) map.get("instanceId");
-//		containerId = (Long) map.get("containerId");
-//		serverId = (Long) map.get("serverId");
-//		instanceName = (String) map.get("instanceId");
-//		serverName = (String) map.get("serverName");
-//		containerName = (String) map.get("containerName");
-//		internalIp = (String) map.get("internalIp");
-//		externalIp = (String) map.get("externalIp");
-//		userId = (Long) map.get("userId");
-//		userDisplayName = (String) map.get("userDisplayName");
-//		username = (String) map.get("username");
-//		customOptions = (Map) map.get("customOptions");
-//		instance = new InstanceConfig((Map)map.get("instance"));
-//	}
+	public InstanceConfig instance;
+	public ContainerConfig container;
 
-	public class InstanceConfig {
+	public static class InstanceConfig {
 		public Long id;
 		public String instanceTypeName;
 		public String instanceTypeCode;
@@ -84,48 +86,129 @@ public class TaskConfig {
 		public Boolean sslEnabled;
 		public Long sslCertId;
 		public String serviceUsername;
-//		public String servicePassword;
+		public String servicePassword;
 		public String adminUsername;
-//		public String adminPassword;
+		public String adminPassword;
 		public String createdByUsername;
 		public String createdByEmail;
 		public String createdByFirstName;
 		public String createdByLastName;
 		public Map evars;
 		public Map metadata;
+	}
 
+	public static class ContainerConfig {
+		public Long id;
+		public String name;
+		public String containerTypeName;
+		public String containerTypeCode;
+		public String containerTypeShortName;
+		public String containerTypeCategory;
+		public String provisionType;
+		public String dataPath;
+		public String logsPath;
+		public String configPath;
+		public String planCode;
+		public Date dateCreated;
+		public String status;
+		public String environmentPrefix;
+		public String version;
+		public String image;
+		public String internalHostname;
+		public String hostname;
+		public String domainName;
+		public Long storage;
+		public Long memory;
+		public Long cores;
+		public String internalIp;
+		public String externalIp;
+		public String sshHost;
+		public String hostMountPoint;
+		public Long configId;
+		public String configGroup;
+		public String configRole;
+		public String certificatePath;
+		public String certificateStyle;
+		public List ports;
+		public Map portMap;
+		public String internalPort;
+		public String externalPort;
+		public Long serverId;
+		public ServerConfig server;
+	}
 
-//		public InstanceConfig(Map map) {
-//			this.id = (Long) map.get("id");
-//			this.instanceTypeName = (String) map.get("instanceTypeName");
-//			this.instanceTypeCode = (String) map.get("instanceTypeCode");
-//			this.provisionType = (String) map.get("provisionType");
-//			this.layoutId = (String) map.get("layoutId");
-//			this.layoutCode = (String) map.get("layoutCode");
-//			this.layoutName = (String) map.get("layoutName");
-//			this.instanceVersion = (String) map.get("instanceVersion");
-//			this.plan = (String) map.get("plan");
-//			this.name = (String) map.get("name");
-//			this.displayName = (String) map.get("displayName");
-//			this.description = (String) map.get("description");
-//			this.environmentPrefix = (String) map.get("environmentPrefix");
-//			this.hostname = (String) map.get("hostname");
-//			this.domainName = (String) map.get("domainName");
-//			this.assignedDomainName = (String) map.get("assignedDomainName");
-//			this.firewallEnabled = (String) map.get("firewallEnabled");
-//			this.userStatus = (String) map.get("userStatus");
-//			this.scheduleStatus = (String) map.get("scheduleStatus");
-//			this.networkLevel = (String) map.get("networkLevel");
-//			this.instanceLevel = (String) map.get("instanceLevel");
-//			this.deployGroup = (String) map.get("deployGroup");
-//			this.instanceContext = (String) map.get("instanceContext");
-//			this.autoScale = (Boolean) map.get("autoScale");
-//			this.networkLevel = (String) map.get("networkLevel");
-//			this.networkLevel = (String) map.get("networkLevel");
-//			this.networkLevel = (String) map.get("networkLevel");
-//			this.networkLevel = (String) map.get("networkLevel");
-//			this.networkLevel = (String) map.get("networkLevel");
-//		}
+	public static class ServerConfig {
+		public Long id;
+		public String serverTypeName;
+		public String serverTypeCode;
+		public String computeTypeName;
+		public String computeTypeCode;
+		public Long parentServerId;
+		public String plan;
+		public String visibility;
+		public String osTypeCode;
+		public Long sourceImageId;
+		public String name;
+		public String displayName;
+		public String internalName;
+		public String category;
+		public String description;
+		public String internalId;
+		public String externalId;
+		public String platform;
+		public String platformVersion;
+		public String agentVersion;
+		public String nodePackageVersion;
+		public String sshHost;
+		public String sshPort;
+		public String sshUsername;
+		public String consoleType;
+		public String consoleHost;
+		public String consolePort;
+		public String consoleUsername;
+		public String internalSshUsername;
+		public String internalIp;
+		public String externalIp;
+		public String osDevice;
+		public String dataDevice;
+		public Boolean lvmEnabled;
+		public String apiKey;
+		public Boolean softwareRaid;
+		public String status;
+		public String powerState;
+		public Date dateCreated;
+		public String lastAgentUpdate;
+		public String serverType;
+		public String osType;
+		public String commType;
+		public Boolean managed;
+		public Boolean agentInstalled;
+		public Boolean toolsInstalled;
+		public String hostname;
+		public String domainName;
+		public String fqdn;
+		public String statusMessage;
+		public Long maxStorage;
+		public Long maxMemory;
+		public Long maxCores;
+		public String macAddress;
+		public String serverVendor;
+		public String serverModel;
+		public String serialNumber;
+		public String tags;
+		public String configId;
+		public String configGroup;
+		public String configRole;
+		public List<Volume> volumes;
+	}
 
+	public static class Volume {
+		public Long id;
+		public String name;
+		public String deviceName;
+		public Long maxStorage;
+		public String unitNumber;
+		public Long displayOrder;
+		public Boolean rootVolume;
 	}
 }
