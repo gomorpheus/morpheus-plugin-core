@@ -38,12 +38,16 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 	implementation 'com.github.jknack:handlebars:4.2.0'
+	implementation 'javax.servlet:javax.servlet-api:3.0.1'
 
 	// only for `console` task
 	runtimeOnly "org.codehaus.groovy:groovy-all:$groovyVersion"
 
 	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation 'javax.servlet:javax.servlet-api:3.0.1'
+	testImplementation 'cglib:cglib-nodep:3.3.0'
+	testImplementation 'org.objenesis:objenesis:3.1'
 }
 
 sourceSets {

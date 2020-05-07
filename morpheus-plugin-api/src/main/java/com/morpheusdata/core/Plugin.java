@@ -1,9 +1,9 @@
 package com.morpheusdata.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.morpheusdata.views.Renderer;
+import com.morpheusdata.web.PluginController;
+
+import java.util.*;
 
 /**
  * This is the base class for all Plugins that are instantiated within the Morpheus Environment. It contains both
@@ -18,10 +18,35 @@ public abstract class Plugin implements PluginInterface {
 	private PluginManager pluginManager;
 	protected MorpheusContext morpheusContext;
 	private ClassLoader classLoader;
+	protected Renderer<?> renderer;
+	protected List<PluginController> controllers = new ArrayList<>();
 
 	protected String name;
 	protected String fileName;
 	protected String version;
+
+	public void setControllers(List<PluginController> controllers) {
+		this.controllers = controllers;
+	}
+
+	public List<PluginController> getControllers() {
+		return controllers;
+	}
+
+	/**
+	 * Set the template renderer for ths plugin.
+	 * @param renderer
+	 */
+	void setRenderer(Renderer<?> renderer) {
+		this.renderer = renderer;
+	}
+
+	/**
+	 * Get the template renderer for ths plugin.
+	 */
+	Renderer<?> getRenderer() {
+		return this.renderer;
+	}
 
 	/**
 	 * Sets the manager this plugin was loaded from

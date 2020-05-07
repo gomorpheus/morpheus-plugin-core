@@ -1,4 +1,4 @@
-package com.morpheusdata.templates;
+package com.morpheusdata.views;
 
 public class TemplateResponse {
 	public String text;

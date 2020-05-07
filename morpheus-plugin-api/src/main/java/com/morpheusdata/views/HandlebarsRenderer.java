@@ -1,4 +1,4 @@
-package com.morpheusdata.templates;
+package com.morpheusdata.views;
 
 
 import com.github.jknack.handlebars.Handlebars;
@@ -24,7 +24,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	@Override
-	public TemplateResponse render(String templateText, TemplateModel<?> model) {
+	public TemplateResponse render(String templateText, ViewModel<?> model) {
 		Template template = null;
 		try {
 			template = engine.compileInline(templateText);
@@ -35,7 +35,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	@Override
-	public TemplateResponse renderTemplate(String location, TemplateModel<?> model) {
+	public TemplateResponse renderTemplate(String location, ViewModel<?> model) {
 		Template template;
 		try {
 			template = engine.compile(location);
@@ -62,7 +62,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		return response;
 	}
 
-	private TemplateResponse applyModel(Template template, TemplateModel<?> model) {
+	private TemplateResponse applyModel(Template template, ViewModel<?> model) {
 		TemplateResponse response = new TemplateResponse();
 		try {
 			if(template == null) {

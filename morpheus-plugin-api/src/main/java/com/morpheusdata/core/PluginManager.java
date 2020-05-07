@@ -1,5 +1,9 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.views.ViewModel;
+import com.morpheusdata.web.Dispatcher;
+import com.morpheusdata.web.PluginController;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.MalformedURLException;
@@ -7,6 +11,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -21,12 +27,14 @@ public class PluginManager {
 
 	private ArrayList<Plugin> plugins = new ArrayList<>();
 	private MorpheusContext morpheusContext;
+	private Dispatcher dispatcher;
 	private final ClassLoader mainLoader = PluginManager.class.getClassLoader();
 	// Isolated classloader all plugins will use as a parent.
 	private final ClassLoader pluginManagerClassLoader = new ClassLoader(mainLoader){};
 
 	PluginManager(MorpheusContext context, Collection<Class<Plugin>> plugins) throws InstantiationException, IllegalAccessException {
 		this.morpheusContext = context;
+		this.dispatcher = new Dispatcher(this);
 
 		if(this.morpheusContext == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
@@ -38,10 +46,15 @@ public class PluginManager {
 
 	public PluginManager(MorpheusContext context) {
 		this.morpheusContext = context;
+		this.dispatcher = new Dispatcher(this);
 
 		if(this.morpheusContext == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
+	}
+
+	public Object handleRoute(String route, ViewModel<?> model, Map permissions) {
+		return dispatcher.handleRoute(route, model, permissions);
 	}
 
 	/**
@@ -108,6 +121,18 @@ public class PluginManager {
 	 */
 	public ArrayList<Plugin> getPlugins() {
 		return this.plugins;
+	}
+
+	public Map<Class, Map<String, String>> getRoutes() {
+		Map<Class, Map<String, String>> routes = new HashMap<>();
+		for (Plugin p : this.getPlugins()) {
+			for (PluginController c : p.getControllers()) {
+				if (c.getRoutes().keySet().size() > 0) {
+					routes.put(c.getClass(), c.getRoutes());
+				}
+			}
+		}
+		return routes;
 	}
 
 	public PluginProvider findByCode(String code) {
