@@ -1,4 +1,4 @@
-package com.morpheusdata.templates
+package com.morpheusdata.views
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
@@ -7,7 +7,7 @@ import spock.lang.Specification
 class HandlebarsSpec extends Specification {
 	void "template location"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = "World"
 		def hbt = new HandlebarsRenderer()
 
@@ -21,7 +21,7 @@ class HandlebarsSpec extends Specification {
 
 	void "template location with scoped lookup"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = "World"
 		def hbt = new HandlebarsRenderer("/renderer/hbs/")
 
@@ -35,7 +35,7 @@ class HandlebarsSpec extends Specification {
 
 	void "template location - no file exists"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = "World"
 		def hbt = new HandlebarsRenderer()
 
@@ -49,7 +49,7 @@ class HandlebarsSpec extends Specification {
 
 	void "string template"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = "World"
 		String template = "Hello {{this}}!"
 		def hbt = new HandlebarsRenderer()
@@ -64,7 +64,7 @@ class HandlebarsSpec extends Specification {
 
 	void "Template string null"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = "World"
 		String template = null
 		def hbt = new HandlebarsRenderer()
@@ -79,7 +79,7 @@ class HandlebarsSpec extends Specification {
 
 	void "Template with Map Model"() {
 		given:
-		def model = new TemplateModel<Map>()
+		def model = new ViewModel<Map>()
 		model.object = [name: "Eric", color: "green"]
 		String template = "{{name}}'s favorite color is {{color}}."
 		def hbt = new HandlebarsRenderer()
@@ -94,7 +94,7 @@ class HandlebarsSpec extends Specification {
 
 	void "Template with Object"() {
 		given:
-		def model = new TemplateModel<Server>()
+		def model = new ViewModel<Server>()
 		model.object = new Server(name: "tomcat", ip: "127.0.0.1", running: true)
 		String template = "{{name}} server ip is {{ip}} and is running == {{running}}."
 		def hbt = new HandlebarsRenderer()
@@ -110,7 +110,7 @@ class HandlebarsSpec extends Specification {
 
 	void "Template with null Model"() {
 		given:
-		def model = new TemplateModel<String>()
+		def model = new ViewModel<String>()
 		model.object = null
 		String template = "ok null model"
 		def hbt = new HandlebarsRenderer()
