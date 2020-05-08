@@ -10,15 +10,15 @@ import java.io.*;
 public class HandlebarsRenderer implements Renderer<Handlebars> {
 	private final Handlebars engine;
 
-	HandlebarsRenderer() {
+	public HandlebarsRenderer() {
 		engine = new Handlebars();
 	}
 
-	HandlebarsRenderer(Handlebars overrideEngine) {
+	public HandlebarsRenderer(Handlebars overrideEngine) {
 		engine = overrideEngine;
 	}
 
-	HandlebarsRenderer(String prefix) {
+	public HandlebarsRenderer(String prefix) {
 		ClassPathTemplateLoader customLoader = new ClassPathTemplateLoader(prefix);
 		engine = new Handlebars(customLoader);
 	}
