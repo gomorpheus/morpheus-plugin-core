@@ -50,7 +50,7 @@ class CustomTabProvider implements InstanceTabProvider {
 //		getRenderer().renderTemplate("/hbs/instanceTab", model)
 
 		TemplateResponse response = new TemplateResponse()
-		response.text = instance.name
+		response.text = "<div><h2>${instance.name}</h2><script>alert('${instance.name}')</script></div>"
 		response
 	}
 }
