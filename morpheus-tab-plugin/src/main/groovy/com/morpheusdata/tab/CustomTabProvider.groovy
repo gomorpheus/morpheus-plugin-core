@@ -2,14 +2,14 @@ package com.morpheusdata.tab
 
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.TabProvider
+import com.morpheusdata.core.InstanceTabProvider
 import com.morpheusdata.model.Instance
 import com.morpheusdata.views.HandlebarsRenderer
 import com.morpheusdata.views.Renderer
 import com.morpheusdata.views.TemplateResponse
 import com.morpheusdata.views.ViewModel
 
-class CustomTabProvider implements TabProvider {
+class CustomTabProvider implements InstanceTabProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 
@@ -43,12 +43,7 @@ class CustomTabProvider implements TabProvider {
 		return new HandlebarsRenderer()
 	}
 
-	TemplateResponse renderTemplate() {
-		ViewModel<String> model = new ViewModel<String>()
-		model.object = getProviderName()
-		getRenderer().renderTemplate("/hbs/instanceTab", model)
-	}
-
+	@Override
 	TemplateResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 //		model.object = getProviderName()
