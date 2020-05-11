@@ -43,6 +43,12 @@ class CustomTabProvider implements InstanceTabProvider {
 		return new HandlebarsRenderer()
 	}
 
+	TemplateResponse renderTemplate() {
+		ViewModel<String> model = new ViewModel<String>()
+		model.object = getProviderName()
+		getRenderer().renderTemplate("/hbs/instanceTab", model)
+	}
+
 	@Override
 	TemplateResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
@@ -50,7 +56,7 @@ class CustomTabProvider implements InstanceTabProvider {
 //		getRenderer().renderTemplate("/hbs/instanceTab", model)
 
 		TemplateResponse response = new TemplateResponse()
-		response.text = "<div><h2>${instance.name}</h2><script>alert('${instance.name}')</script></div>"
+		response.text = "<div><h2>${instance.name}</h2><script>alert('${instance.name}')</script><script src='/assets/custom-tab-1/instance-tab.js'></script></div>"
 		response
 	}
 }
