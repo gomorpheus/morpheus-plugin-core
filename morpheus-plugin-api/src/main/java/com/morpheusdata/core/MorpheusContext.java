@@ -1,5 +1,8 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.Permission;
+import io.reactivex.Single;
+
 /**
  * Provides a means to interact or query data from the main Morpheus application back into the various provider extensions
  * It is important to note that most methods in the context are asynchronous and rely on RxJava based interfaces so as
@@ -33,7 +36,8 @@ public interface MorpheusContext {
 
 	MorpheusTaskContext getTask();
 
-
+	Single<Permission> createPermission(Permission permission);
+	Single<Void> deletePermission(String permissionCode);
 
 	//Common methods used across various contexts
 
