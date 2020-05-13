@@ -56,7 +56,7 @@ class CustomTabProvider implements InstanceTabProvider {
 //		getRenderer().renderTemplate("/hbs/instanceTab", model)
 
 		TemplateResponse response = new TemplateResponse()
-		response.text = "<div><h2>${instance.name}</h2><script>alert('${instance.name}')</script><script src='/assets/custom-tab-1/instance-tab.js'></script></div>"
+		response.text = "<div><h2>${instance.name} ${instance.status}</h2><script>alert('${instance.name}')</script><script src='/assets/custom-tab-1/instance-tab.js'></script></div>"
 		response
 	}
 }
