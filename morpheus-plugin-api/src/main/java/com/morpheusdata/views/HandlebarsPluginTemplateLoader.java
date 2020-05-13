@@ -18,6 +18,12 @@ public class HandlebarsPluginTemplateLoader extends AbstractTemplateLoader {
 		setSuffix(DEFAULT_SUFFIX);
 	}
 
+	public HandlebarsPluginTemplateLoader(String prefix, ClassLoader classLoader) {
+		this.classLoader = classLoader;
+		setPrefix(prefix);
+		setSuffix(DEFAULT_SUFFIX);
+	}
+
 	@Override
 	public TemplateSource sourceAt(String uri) throws IOException {
 		String location = resolve(normalize(uri));

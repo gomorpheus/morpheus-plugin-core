@@ -15,8 +15,18 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		engine = new Handlebars(customLoader);
 	}
 
+	public HandlebarsRenderer(String prefix) {
+		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(prefix, this.getClass().getClassLoader());
+		engine = new Handlebars(customLoader);
+	}
+
 	public HandlebarsRenderer(ClassLoader classLoader) {
 		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(classLoader);
+		engine = new Handlebars(customLoader);
+	}
+
+	public HandlebarsRenderer(String prefix, ClassLoader classLoader) {
+		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(prefix, classLoader);
 		engine = new Handlebars(customLoader);
 	}
 

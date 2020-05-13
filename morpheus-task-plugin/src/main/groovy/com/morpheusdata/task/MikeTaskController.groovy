@@ -15,6 +15,7 @@ class MikeTaskController implements PluginController {
 		println model
 		return TemplateResponse.success("foo")
 	}
+
 	def json(ViewModel<Map> model) {
 		println model
 		model.object.foo = "fizz"

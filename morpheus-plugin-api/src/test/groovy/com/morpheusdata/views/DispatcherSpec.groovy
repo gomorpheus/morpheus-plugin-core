@@ -45,15 +45,18 @@ class DispatcherSpec extends Specification {
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
 		pm.getPlugins() >> [plugin]
+		pm.getRoutes() >> [(TestController.class): [foo: 'example']]
+
 		plugin.getControllers() >> [new TestController()]
+
 		def d = new Dispatcher(pm)
 
 		when:
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url, 'permission').class == TestController.class
-		d.handleRoute("/bad/url", 'permission')?.class == null
+		d.handleRoute(url).class == TemplateResponse.class
+		d.handleRoute("/bad/url")?.class == null
 	}
 
 	void "duplicate routes"() {
@@ -61,6 +64,7 @@ class DispatcherSpec extends Specification {
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
 		plugin.getControllers() >> [new TestController(), new AnotherController()]
+		pm.getRoutes() >> [(TestController.class): [foo: 'example']]
 		pm.getPlugins() >> [plugin]
 		def d = new Dispatcher(pm)
 
@@ -68,8 +72,8 @@ class DispatcherSpec extends Specification {
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url, 'permission').class == TestController.class
-		d.handleRoute("/bad/url", 'permission')?.class == null
+		d.handleRoute(url).class == TemplateResponse.class
+		d.handleRoute("/bad/url")?.class == null
 	}
 }
 
