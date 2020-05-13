@@ -96,7 +96,9 @@ public class PluginManager {
 	 */
 	public void registerPlugin(String pathToJar) throws Exception {
 		File jarFile = new File(pathToJar);
-		URLClassLoader pluginLoader = URLClassLoader.newInstance(new URL[]{jarFile.toURL()}, pluginManagerClassLoader);
+		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
+
+		URLClassLoader pluginLoader = URLClassLoader.newInstance(new URL[]{jarUrl}, pluginManagerClassLoader);
 
 		JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFile));
 		Manifest mf = jarStream.getManifest();
@@ -104,10 +106,15 @@ public class PluginManager {
 		String pluginClassName = attributes.getValue("Plugin-Class");
 		String pluginVersion = attributes.getValue("Plugin-Version");
 
-		Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
+		try {
+			Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
-		System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
-		registerPlugin(pluginClass, jarFile, pluginVersion);
+			System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
+			registerPlugin(pluginClass, jarFile, pluginVersion);
+		} catch (Exception e) {
+			System.out.println("Unable to load plugin class from " + pathToJar);
+			e.printStackTrace();
+		}
 	}
 
 	void deregisterPlugin(Plugin plugin) {

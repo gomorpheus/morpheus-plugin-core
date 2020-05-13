@@ -3,24 +3,25 @@ package com.morpheusdata.views;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class HandlebarsRenderer implements Renderer<Handlebars> {
 	private final Handlebars engine;
 
 	public HandlebarsRenderer() {
-		engine = new Handlebars();
+		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(this.getClass().getClassLoader());
+		engine = new Handlebars(customLoader);
+	}
+
+	public HandlebarsRenderer(ClassLoader classLoader) {
+		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(classLoader);
+		engine = new Handlebars(customLoader);
 	}
 
 	public HandlebarsRenderer(Handlebars overrideEngine) {
 		engine = overrideEngine;
-	}
-
-	public HandlebarsRenderer(String prefix) {
-		ClassPathTemplateLoader customLoader = new ClassPathTemplateLoader(prefix);
-		engine = new Handlebars(customLoader);
 	}
 
 	@Override

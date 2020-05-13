@@ -35,16 +35,18 @@ public abstract class Plugin implements PluginInterface {
 
 	/**
 	 * Set the template renderer for ths plugin.
-	 * @param renderer
+	 * @param renderer sets the renderer for the plugin
 	 */
-	void setRenderer(Renderer<?> renderer) {
+	public void setRenderer(Renderer<?> renderer) {
 		this.renderer = renderer;
 	}
 
 	/**
 	 * Get the template renderer for ths plugin.
+	 *
+	 * @return the renderer for the plugin
 	 */
-	Renderer<?> getRenderer() {
+	protected Renderer<?> getRenderer() {
 		return this.renderer;
 	}
 
