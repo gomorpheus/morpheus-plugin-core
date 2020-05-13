@@ -9,10 +9,10 @@ class HandlebarsSpec extends Specification {
 		given:
 		def model = new ViewModel<String>()
 		model.object = "World"
-		def hbt = new HandlebarsRenderer()
+		def hbt = new HandlebarsRenderer("renderer")
 
 		when:
-		def result = hbt.renderTemplate("/renderer/hbs/test", model)
+		def result = hbt.renderTemplate("hbs/test", model)
 
 		then:
 		result.text == 'Hello World!\n'
@@ -23,7 +23,7 @@ class HandlebarsSpec extends Specification {
 		given:
 		def model = new ViewModel<String>()
 		model.object = "World"
-		def hbt = new HandlebarsRenderer("/renderer/hbs/")
+		def hbt = new HandlebarsRenderer("renderer/hbs/")
 
 		when:
 		def result = hbt.renderTemplate("test", model)
@@ -40,10 +40,10 @@ class HandlebarsSpec extends Specification {
 		def hbt = new HandlebarsRenderer()
 
 		when:
-		def result = hbt.renderTemplate("/bad/location", model)
+		def result = hbt.renderTemplate("bad/location", model)
 
 		then:
-		result.text == 'Template file not found: /bad/location.hbs'
+		result.text == 'Template file not found: hbs/bad/location.hbs'
 		result.status == 400
 	}
 

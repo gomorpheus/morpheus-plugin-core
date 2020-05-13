@@ -7,9 +7,7 @@ import com.morpheusdata.views.TemplateResponse;
 import com.morpheusdata.views.ViewModel;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Provides a
@@ -29,13 +27,16 @@ public class Dispatcher {
 		this.pluginManager = pluginManager;
 	}
 
-//  TemplateResponse route(String path);
+	public Object handleRoute(String path) {
+		ViewModel<Void> model = new ViewModel<>();
+		return handleRoute(path, model);
+	}
 
-	public TemplateResponse handleRoute(String path, ViewModel<?> model, Map permissions) {
-		System.out.println("---- from dispatch ----");
-		System.out.println(path);
-		System.out.println(permissions);
-		System.out.println("---- from dispatch ----");
+	public Object handleRoute(String path, ViewModel<?> model) {
+		return handleRoute(path, model, Collections.emptyMap());
+	}
+
+	public Object handleRoute(String path, ViewModel<?> model, Map permissions) {
 		for(Class controller : pluginManager.getRoutes().keySet()) {
 			System.out.println(controller.toString());
 		}
@@ -55,14 +56,14 @@ public class Dispatcher {
 		return true;
 	}
 
-	public TemplateResponse doDispatch(String className, String methodName, ViewModel<?> params) {
+	public Object doDispatch(String className, String methodName, ViewModel<?> params) {
 		try {
 			Class[] argsList = new Class[]{ViewModel.class};
 			Class<?> clazz = Class.forName(className);
 			Object inst = clazz.newInstance();
 			Method m = clazz.getMethod(methodName, argsList);
 
-			return (TemplateResponse) m.invoke(inst, params) ;
+			return m.invoke(inst, params) ;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
