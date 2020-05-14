@@ -37,13 +37,13 @@ class HandlebarsSpec extends Specification {
 		given:
 		def model = new ViewModel<String>()
 		model.object = "World"
-		def hbt = new HandlebarsRenderer()
+		def hbt = new HandlebarsRenderer('renderer')
 
 		when:
 		def result = hbt.renderTemplate("bad/location", model)
 
 		then:
-		result.text == 'Template file not found: hbs/bad/location.hbs'
+		result.text == 'Template file not found: bad/location'
 		result.status == 400
 	}
 
@@ -136,9 +136,13 @@ class HandlebarsSpec extends Specification {
 
 	void "hbs engine with prefix"() {
 		when:
-		def hbt = new HandlebarsRenderer("/myplugin/")
+		def hbt = new HandlebarsPluginTemplateLoader("myplugin/", this.class.classLoader)
 		then:
-		hbt.engine.loader.prefix == "/myplugin/"
+		hbt.prefix == "myplugin/"
+		when:
+		hbt = new HandlebarsPluginTemplateLoader(this.class.classLoader)
+		then:
+		hbt.prefix == "hbs/"
 	}
 
 	void "template response static helper methods"() {
