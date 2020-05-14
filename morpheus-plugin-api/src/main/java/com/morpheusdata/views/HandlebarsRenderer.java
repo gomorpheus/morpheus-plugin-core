@@ -3,31 +3,55 @@ package com.morpheusdata.views;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.TemplateLoader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class HandlebarsRenderer implements Renderer<Handlebars> {
 	private final Handlebars engine;
+	private DynamicTemplateLoader loader;
 
 	public HandlebarsRenderer() {
 		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(this.getClass().getClassLoader());
-		engine = new Handlebars(customLoader);
+		loader = new DynamicTemplateLoader(customLoader);
+		engine = new Handlebars(loader);
 	}
 
 	public HandlebarsRenderer(String prefix) {
 		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(prefix, this.getClass().getClassLoader());
-		engine = new Handlebars(customLoader);
+		loader = new DynamicTemplateLoader(customLoader);
+		engine = new Handlebars(loader);
 	}
 
 	public HandlebarsRenderer(ClassLoader classLoader) {
 		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(classLoader);
-		engine = new Handlebars(customLoader);
+		loader = new DynamicTemplateLoader(customLoader);
+		engine = new Handlebars(loader);
 	}
 
 	public HandlebarsRenderer(String prefix, ClassLoader classLoader) {
 		HandlebarsPluginTemplateLoader customLoader = new HandlebarsPluginTemplateLoader(prefix, classLoader);
-		engine = new Handlebars(customLoader);
+		loader = new DynamicTemplateLoader(customLoader);
+		engine = new Handlebars(loader);
+	}
+
+	public void addTemplateLoader(ClassLoader classLoader) {
+		HandlebarsPluginTemplateLoader loader = new HandlebarsPluginTemplateLoader(classLoader);
+		this.loader.addTemplateLoader(loader);
+	}
+
+	public void removeTemplateLoader(ClassLoader classLoader) {
+		for(TemplateLoader templateLoader : this.loader.getTemplateLoaders()) {
+			if (templateLoader.getClass().getClassLoader() == classLoader) {
+				this.loader.removeTemplateLoader(loader);
+				break;
+			}
+		}
+	}
+
+	public Iterable<TemplateLoader> getTemplateLoaders() {
+		return this.loader.getTemplateLoaders();
 	}
 
 	public HandlebarsRenderer(Handlebars overrideEngine) {

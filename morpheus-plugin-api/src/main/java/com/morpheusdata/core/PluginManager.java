@@ -1,5 +1,8 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.views.HandlebarsPluginTemplateLoader;
+import com.morpheusdata.views.HandlebarsRenderer;
+import com.morpheusdata.views.Renderer;
 import com.morpheusdata.views.ViewModel;
 import com.morpheusdata.web.Dispatcher;
 import com.morpheusdata.web.PluginController;
@@ -26,6 +29,7 @@ public class PluginManager {
 	private ArrayList<Plugin> plugins = new ArrayList<>();
 	private MorpheusContext morpheusContext;
 	private Dispatcher dispatcher;
+	private Renderer<?> renderer = new HandlebarsRenderer();
 	private final ClassLoader mainLoader = PluginManager.class.getClassLoader();
 	// Isolated classloader all plugins will use as a parent.
 	private final ClassLoader pluginManagerClassLoader = new ClassLoader(mainLoader){};
@@ -74,7 +78,8 @@ public class PluginManager {
 	 * @throws InstantiationException
 	 */
 	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
-		ClassLoader pluginClassLoader =  new ChildFirstClassLoader(new URL[]{jarFile.toURL()}, pluginManagerClassLoader);
+		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
+		ClassLoader pluginClassLoader =  new ChildFirstClassLoader(new URL[]{jarUrl}, pluginManagerClassLoader);
 
 		Plugin plugin = pluginClass.newInstance();
 		plugin.setPluginManager(this);
@@ -84,6 +89,9 @@ public class PluginManager {
 		plugin.setVersion(version);
 		plugin.setClassLoader(pluginClassLoader);
 		plugin.initialize();
+		if(plugin.getControllers().size() > 0 && !plugin.hasCustomRender()) {
+			this.renderer.addTemplateLoader(pluginClassLoader);
+		}
 		plugins.add(plugin);
 	}
 
@@ -117,6 +125,7 @@ public class PluginManager {
 
 	void deregisterPlugin(Plugin plugin) {
 		plugin.onDestroy();
+		this.renderer.removeTemplateLoader(plugin.getClassLoader());
 		plugins.remove(plugin);
 	}
 
@@ -148,5 +157,9 @@ public class PluginManager {
 			}
 		}
 		return null;
+	}
+
+	public Renderer<?> getRenderer() {
+		return this.renderer;
 	}
 }

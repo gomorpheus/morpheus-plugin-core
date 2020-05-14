@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
 
@@ -41,13 +42,22 @@ public abstract class Plugin implements PluginInterface {
 		this.renderer = renderer;
 	}
 
+
+	public boolean hasCustomRender() {
+		return this.renderer != null;
+	}
+
 	/**
 	 * Get the template renderer for ths plugin.
 	 *
 	 * @return the renderer for the plugin
 	 */
 	protected Renderer<?> getRenderer() {
-		return this.renderer;
+		if(this.renderer != null) {
+			return this.renderer;
+		} else {
+			return this.pluginManager.getRenderer();
+		}
 	}
 
 	/**
