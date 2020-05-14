@@ -36,9 +36,6 @@ public interface MorpheusContext {
 
 	MorpheusTaskContext getTask();
 
-	Single<Permission> createPermission(Permission permission);
-	Single<Void> deletePermission(String permissionCode);
-
 	//Common methods used across various contexts
 
 	//TODO: Add Locking Provider RPC Calls to acquire distributed locks when necessary

@@ -1,6 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.views.HandlebarsRenderer;
+import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
 
@@ -21,6 +21,7 @@ public abstract class Plugin implements PluginInterface {
 	private ClassLoader classLoader;
 	protected Renderer<?> renderer;
 	protected List<PluginController> controllers = new ArrayList<>();
+	protected List<Permission> permissions = new ArrayList<>();
 
 	protected String name;
 	protected String fileName;
@@ -158,5 +159,13 @@ public abstract class Plugin implements PluginInterface {
 
 	public ClassLoader getClassLoader() {
 		return classLoader;
+	}
+
+	public List<Permission> getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(List<Permission> permissions) {
+		this.permissions = permissions;
 	}
 }
