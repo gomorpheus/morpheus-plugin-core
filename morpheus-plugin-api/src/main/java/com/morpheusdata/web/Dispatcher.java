@@ -3,6 +3,7 @@ package com.morpheusdata.web;
 
 import com.morpheusdata.core.Plugin;
 import com.morpheusdata.core.PluginManager;
+import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.TemplateResponse;
 import com.morpheusdata.views.ViewModel;
 
@@ -16,44 +17,36 @@ public class Dispatcher {
 	private final PluginManager pluginManager;
 
 	public Dispatcher(PluginManager pluginManager) {
-		Set<String> routes = new HashSet<>();
-		for (Plugin p : pluginManager.getPlugins()) {
-			for (PluginController c : p.getControllers()) {
-				if (c.getRoutes().keySet().size() > 0) {
-					routes.addAll(c.getRoutes().keySet());
-				}
-			}
-		}
 		this.pluginManager = pluginManager;
 	}
 
-	public Object handleRoute(String path) {
+	public Object handleRoute(String path, List<Map<String, String>> usersPermissions ) {
 		ViewModel<Void> model = new ViewModel<>();
-		return handleRoute(path, model);
+		return handleRoute(path, model, usersPermissions);
 	}
 
-	public Object handleRoute(String path, ViewModel<?> model) {
-		return handleRoute(path, model, Collections.emptyMap());
-	}
-
-	public Object handleRoute(String path, ViewModel<?> model, Map permissions) {
-		for(Class controller : pluginManager.getRoutes().keySet()) {
-			System.out.println(controller.toString());
-		}
+	public Object handleRoute(String path, ViewModel<?> model, List<Map<String, String>> usersPermissions) {
 		for(Plugin p: pluginManager.getPlugins()) {
 			for(PluginController controller: p.getControllers()) {
-				if (controller.getRoutes().containsKey(path)) {
-					String route = controller.getRoutes().get(path);
-					System.out.println(route);
-					return doDispatch(controller.getClass().getName(), route, model);
+				for(Route route: controller.getRoutes()) {
+					if(route.url.equals(path)) {
+						if(checkPermissions(usersPermissions, route.permissions)) {
+							return doDispatch(controller.getClass().getName(), route.method, model);
+						}
+					}
 				}
 			}
 		}
 		return null;
 	}
 
- 	boolean hasPermission(String permission, String access, String path) {
-		return true;
+ 	boolean checkPermissions(List<Map<String, String>> userPermissions, List<Permission> requiredPermissions) {
+		for(Permission p : requiredPermissions) {
+			if(userPermissions.contains(p.asMap())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Object doDispatch(String className, String methodName, ViewModel<?> params) {

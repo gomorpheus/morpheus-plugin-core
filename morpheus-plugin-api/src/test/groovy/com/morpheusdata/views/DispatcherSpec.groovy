@@ -3,8 +3,10 @@ package com.morpheusdata.views
 
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.PluginManager
+import com.morpheusdata.model.Permission
 import com.morpheusdata.web.Dispatcher
 import com.morpheusdata.web.PluginController
+import com.morpheusdata.web.Route
 import spock.lang.Specification
 
 class DispatcherSpec extends Specification {
@@ -42,6 +44,7 @@ class DispatcherSpec extends Specification {
 
 	void "handle route"() {
 		given:
+		def usersPermissions = [[admin:"full"]]
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
 		pm.getPlugins() >> [plugin]
@@ -55,16 +58,21 @@ class DispatcherSpec extends Specification {
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url).class == TemplateResponse.class
-		d.handleRoute("/bad/url")?.class == null
+		d.handleRoute(url, usersPermissions).class == TemplateResponse.class
+		d.handleRoute("/bad/url", usersPermissions)?.class == null
 	}
 
 	void "duplicate routes"() {
 		given:
+		def usersPermissions = [[admin:"full"]]
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
 		plugin.getControllers() >> [new TestController(), new AnotherController()]
-		pm.getRoutes() >> [(TestController.class): [foo: 'example']]
+		pm.getRoutes() >> [
+				(TestController.class):
+						Route.build("/foo/example", "example",
+								Permission.build("admin", "full"))
+		]
 		pm.getPlugins() >> [plugin]
 		def d = new Dispatcher(pm)
 
@@ -72,15 +80,48 @@ class DispatcherSpec extends Specification {
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url).class == TemplateResponse.class
-		d.handleRoute("/bad/url")?.class == null
+		d.handleRoute(url, usersPermissions).class == TemplateResponse.class
+		d.handleRoute("/bad/url", usersPermissions)?.class == null
+	}
+
+	void "handleRoute permission check"() {
+		given:
+		def usersPermissions = [[admin:"full"]]
+		def badPermissions = [[bad:"read"]]
+		def pm = Mock(PluginManager)
+		def plugin = Mock(Plugin)
+		plugin.getControllers() >> [new PermissionController()]
+		pm.getRoutes() >> [
+				(PermissionController.class):
+					Route.build("/foo/example", "example",
+					Permission.build("admin", "full"))
+			]
+		pm.getPlugins() >> [plugin]
+		def d = new Dispatcher(pm)
+		String url = "/foo/example"
+
+		when:
+		def result = d.handleRoute(url, usersPermissions)
+
+		then:
+		result.class == TemplateResponse.class
+
+		when:
+		result = d.handleRoute(url, badPermissions)
+
+		then:
+		result?.class == null
+
+
 	}
 }
 
 class TestController implements PluginController {
-	Map<String, String> getRoutes() {
-		['/foo/example': "example",
-		 '/foo/json': "json"]
+	List<Route> getRoutes() {
+		[
+			Route.build("/foo/example", "example", Permission.build("admin", "full")),
+			Route.build("/foo/json", "json", Permission.build("admin", "full"))
+		]
 	}
 
 	def example(ViewModel<String> model) {
@@ -93,7 +134,22 @@ class TestController implements PluginController {
 }
 
 class AnotherController implements PluginController {
-	Map<String, String> getRoutes() {
-		['/foo/example': "example"]
+	List<Route> getRoutes() {
+		[
+			Route.build("/foo/example", "example", Permission.build("admin", "full"))
+		]
 	}
+}
+
+class PermissionController implements PluginController {
+	List<Route> getRoutes() {
+		[
+				Route.build("/foo/example", "example", Permission.build("admin", "full"))
+		]
+	}
+
+	def example(ViewModel<String> model) {
+		return TemplateResponse.success("foo")
+	}
+
 }
