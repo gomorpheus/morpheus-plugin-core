@@ -1,7 +1,7 @@
 package com.morpheusdata.web;
 
-import java.util.Map;
+import java.util.List;
 
 public interface PluginController {
-	public Map<String, String> getRoutes();
+	public List<Route> getRoutes();
 }

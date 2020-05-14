@@ -3,16 +3,14 @@ package com.morpheusdata.core;
 import com.morpheusdata.views.ViewModel;
 import com.morpheusdata.web.Dispatcher;
 import com.morpheusdata.web.PluginController;
+import com.morpheusdata.web.Route;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -53,7 +51,7 @@ public class PluginManager {
 		}
 	}
 
-	public Object handleRoute(String route, ViewModel<?> model, Map permissions) {
+	public Object handleRoute(String route, ViewModel<?> model, List<Map<String, String>> permissions) {
 		return dispatcher.handleRoute(route, model, permissions);
 	}
 
@@ -130,11 +128,11 @@ public class PluginManager {
 		return this.plugins;
 	}
 
-	public Map<Class, Map<String, String>> getRoutes() {
-		Map<Class, Map<String, String>> routes = new HashMap<>();
+	public Map<Class, List<Route>> getRoutes() {
+		Map<Class, List<Route>> routes = new HashMap<>();
 		for (Plugin p : this.getPlugins()) {
 			for (PluginController c : p.getControllers()) {
-				if (c.getRoutes().keySet().size() > 0) {
+				if (c.getRoutes().size() > 0) {
 					routes.put(c.getClass(), c.getRoutes());
 				}
 			}
