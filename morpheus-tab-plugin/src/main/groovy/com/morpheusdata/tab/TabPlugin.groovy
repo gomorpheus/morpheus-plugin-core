@@ -10,7 +10,7 @@ class TabPlugin extends Plugin {
 		CustomTabProvider customTabProvider = new CustomTabProvider(this, morpheusContext)
 		this.pluginProviders.put(customTabProvider.providerCode, customTabProvider)
 		this.setName("Custom Tabs")
-		Permission pluginPermission = new Permission(name: 'Custom Instance Tab', code: 'custom-instance-tab', availableAccessTypes: [Permission.AccessType.full, Permission.AccessType.read, Permission.AccessType.none])
+		Permission pluginPermission = new Permission('Custom Instance Tab','custom-instance-tab', [Permission.AccessType.none, Permission.AccessType.read, Permission.AccessType.full])
 		morpheusContext.createPermission(pluginPermission).blockingGet()
 	}
 
