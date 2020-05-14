@@ -45,6 +45,10 @@ public class Permission extends MorpheusModel {
 		return types;
 	}
 
+	public static Permission build(String name, String code, List<AccessType> availableAccessTypes) {
+		return new Permission(name, code, availableAccessTypes);
+	}
+
 	public static Permission build(String code, List<AccessType> availableAccessTypes) {
 		return new Permission(code, availableAccessTypes);
 	}
