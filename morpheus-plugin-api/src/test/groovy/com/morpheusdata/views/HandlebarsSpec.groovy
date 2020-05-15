@@ -157,6 +157,21 @@ class HandlebarsSpec extends Specification {
 		TemplateResponse.error("error", 422).status == 422
 	}
 
+	void "template with asset helper"() {
+		given:
+		def model = new ViewModel<String>()
+		model.object = "World"
+		def hbt = new HandlebarsRenderer('renderer')
+		hbt.registerAssetHelper('pluginProviderCode')
+
+		when:
+		def result = hbt.renderTemplate("hbs/assetHelperTest", model)
+
+		then:
+		result.text == 'Hello World!\n<img src="/assets/pluginProviderCode/foo/bar" />\n'
+		result.status == 200
+	}
+
 	class Server {
 		String ip
 		String name

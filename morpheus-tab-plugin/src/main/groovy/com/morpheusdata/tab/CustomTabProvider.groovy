@@ -12,6 +12,7 @@ import com.morpheusdata.views.ViewModel
 class CustomTabProvider implements InstanceTabProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
+	HandlebarsRenderer renderer = new HandlebarsRenderer('renderer')
 
 	CustomTabProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
@@ -40,23 +41,14 @@ class CustomTabProvider implements InstanceTabProvider {
 
 	@Override
 	Renderer getRenderer() {
-		return new HandlebarsRenderer()
-	}
-
-	TemplateResponse renderTemplate() {
-		ViewModel<String> model = new ViewModel<String>()
-		model.object = getProviderName()
-		getRenderer().renderTemplate("/hbs/instanceTab", model)
+		return renderer
 	}
 
 	@Override
 	TemplateResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
-//		model.object = getProviderName()
-//		getRenderer().renderTemplate("/hbs/instanceTab", model)
-
-		TemplateResponse response = new TemplateResponse()
-		response.text = "<div><h2>${instance.name} ${instance.status}</h2><script>alert('${instance.name}')</script><script src='/assets/custom-tab-1/instance-tab.js'></script></div>"
-		response
+		model.object = instance
+		getRenderer().registerAssetHelper(getProviderCode())
+		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
 }
