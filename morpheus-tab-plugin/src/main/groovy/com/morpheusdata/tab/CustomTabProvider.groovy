@@ -1,5 +1,6 @@
 package com.morpheusdata.tab
 
+import com.morpheusdata.core.AbstractInstanceTabProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.InstanceTabProvider
@@ -9,10 +10,9 @@ import com.morpheusdata.views.Renderer
 import com.morpheusdata.views.TemplateResponse
 import com.morpheusdata.views.ViewModel
 
-class CustomTabProvider implements InstanceTabProvider {
+class CustomTabProvider extends AbstractInstanceTabProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
-	HandlebarsRenderer renderer = new HandlebarsRenderer('renderer')
 
 	CustomTabProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
@@ -39,16 +39,16 @@ class CustomTabProvider implements InstanceTabProvider {
 		'Custom Tab 1'
 	}
 
-	@Override
-	Renderer getRenderer() {
-		return renderer
-	}
+//	@Override
+//	Renderer getRenderer() {
+//		return renderer
+//	}
 
 	@Override
 	TemplateResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		model.object = instance
-		getRenderer().registerAssetHelper(getProviderCode())
+//		getRenderer().registerAssetHelper(getProviderCode())
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
 }
