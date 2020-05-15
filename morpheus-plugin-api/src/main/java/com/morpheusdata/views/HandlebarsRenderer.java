@@ -2,6 +2,8 @@ package com.morpheusdata.views;
 
 
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateLoader;
 
@@ -83,6 +85,15 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	@Override
 	public Handlebars getEngine() {
 		return engine;
+	}
+
+	public void registerAssetHelper(String providerCode) {
+		engine.registerHelper("asset", new Helper<String>() {
+			@Override
+			public Object apply(String context, Options options) throws IOException {
+				return "/assets/" + providerCode + context;
+			}
+		});
 	}
 
 	private TemplateResponse handleError(Exception e) {
