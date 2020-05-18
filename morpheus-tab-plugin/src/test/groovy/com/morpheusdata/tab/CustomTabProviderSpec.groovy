@@ -20,6 +20,7 @@ class CustomTabProviderSpec extends Specification {
 		TemplateResponse res = provider.renderTemplate(instance)
 
 		then:
+		1 * plugin.classLoader >> this.class.classLoader
 		res.text == """<h1>${instance.name}</h1>
 <dl>
 	<dt>Description</dt>
