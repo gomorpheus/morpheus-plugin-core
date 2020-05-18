@@ -6,6 +6,6 @@ import com.morpheusdata.views.Renderer;
 import com.morpheusdata.views.TemplateResponse;
 
 public interface InstanceTabProvider extends PluginProvider {
-	public Renderer<?> getRenderer();
-	public TemplateResponse renderTemplate(Instance instance);
+	Renderer<?> getRenderer();
+	TemplateResponse renderTemplate(Instance instance);
 }

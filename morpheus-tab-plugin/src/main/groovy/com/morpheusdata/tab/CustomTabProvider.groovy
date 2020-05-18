@@ -3,10 +3,7 @@ package com.morpheusdata.tab
 import com.morpheusdata.core.AbstractInstanceTabProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.InstanceTabProvider
 import com.morpheusdata.model.Instance
-import com.morpheusdata.views.HandlebarsRenderer
-import com.morpheusdata.views.Renderer
 import com.morpheusdata.views.TemplateResponse
 import com.morpheusdata.views.ViewModel
 
@@ -39,16 +36,10 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 		'Custom Tab 1'
 	}
 
-//	@Override
-//	Renderer getRenderer() {
-//		return renderer
-//	}
-
 	@Override
 	TemplateResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		model.object = instance
-//		getRenderer().registerAssetHelper(getProviderCode())
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
 }
