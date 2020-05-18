@@ -9,7 +9,7 @@ public abstract class AbstractInstanceTabProvider implements InstanceTabProvider
 	@Override
 	public Renderer<?> getRenderer() {
 		if(renderer == null) {
-			renderer = new HandlebarsRenderer("renderer");
+			renderer = new HandlebarsRenderer("renderer", getPlugin().getClassLoader());
 			renderer.registerAssetHelper(getProviderCode());
 		}
 		return renderer;
