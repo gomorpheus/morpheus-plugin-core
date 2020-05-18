@@ -5,6 +5,20 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader
 import spock.lang.Specification
 
 class HandlebarsSpec extends Specification {
+	void "default template location"() {
+		given:
+		def model = new ViewModel<String>()
+		model.object = "John"
+		def hbt = new HandlebarsRenderer()
+
+		when: "the template file is located in /resources/hbs/"
+		def result = hbt.renderTemplate("defaultLocation", model)
+
+		then:
+		result.text == 'My name is John!\n'
+		result.status == 200
+	}
+
 	void "template location"() {
 		given:
 		def model = new ViewModel<String>()
