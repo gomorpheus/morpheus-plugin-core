@@ -13,4 +13,5 @@ public interface MorpheusTaskContext {
 	Single<TaskConfig> buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts);
+	Single<TaskResult> executeSudoCommand(String address, Integer port, String username, String password, String command, String publicKey, String privateKey, String passPhrase, Boolean ignoreExitStatus, ComputeServer computeServer, LogLevel logLevel, Boolean doPty, String runAsUser);
 }
