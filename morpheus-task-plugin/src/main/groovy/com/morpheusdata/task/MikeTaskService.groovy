@@ -55,7 +55,8 @@ class MikeTaskService extends AbstractTaskService {
 	@Override
 	TaskResult executeRemoteTask(Task task, Map opts, Container container, ComputeServer server, Instance instance) {
 		TaskConfig config = buildRemoteTaskConfig([:], task, [], opts).blockingGet()
-		context.executeSudoCommand('localhost', 8080, 'bob', 'password', 'echo $JAVA_HOME', null, null, null, false, null, LogLevel.debug, false, null)
+//		context.executeSudoCommand('localhost', 8080, 'bob', 'password', 'echo $JAVA_HOME', null, null, null, false, null, LogLevel.debug, false, null)
+		context.executeContainerCommands(container, ['echo $JAVA_HOME'])
 		executeTask(task, config)
 	}
 
