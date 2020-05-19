@@ -4,6 +4,7 @@ import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface MorpheusTaskContext {
@@ -14,4 +15,5 @@ public interface MorpheusTaskContext {
 	Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskResult> executeSudoCommand(String address, Integer port, String username, String password, String command, String publicKey, String privateKey, String passPhrase, Boolean ignoreExitStatus, ComputeServer computeServer, LogLevel logLevel, Boolean doPty, String runAsUser);
+	Single<Void> executeContainerCommands(Container container, List<String> commandList);
 }
