@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public interface ExecutableTaskInterface {
 
-	MorpheusTaskContext getContext();
+	MorpheusContext getContext();
 
 	TaskResult executeLocalTask(Task task, Map opts, Container container, ComputeServer server, Instance instance);
 

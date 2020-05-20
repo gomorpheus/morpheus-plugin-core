@@ -1,5 +1,14 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.Container;
+import com.morpheusdata.model.LogLevel;
+import com.morpheusdata.model.TaskResult;
+import io.reactivex.Single;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * Provides a means to interact or query data from the main Morpheus application back into the various provider extensions
  * It is important to note that most methods in the context are asynchronous and rely on RxJava based interfaces so as
@@ -36,6 +45,11 @@ public interface MorpheusContext {
 
 
 	//Common methods used across various contexts
+	Single<TaskResult> executeSshCommand(String address, Integer port, String username, String password, String command, String publicKey, String privateKey, String passPhrase, Boolean ignoreExitStatus, ComputeServer computeServer, LogLevel logLevel, Boolean doPty, String runAsUser, Boolean sudo);
+	Single<TaskResult> executeWindowsCommand(String address, Integer port, String username, String password, String command, Boolean noProfile, Boolean elevated);
+	Single<TaskResult> executeCommandOnWorkload(Container container, String command);
+	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command);
+	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile);
 
 	//TODO: Add Locking Provider RPC Calls to acquire distributed locks when necessary
 
