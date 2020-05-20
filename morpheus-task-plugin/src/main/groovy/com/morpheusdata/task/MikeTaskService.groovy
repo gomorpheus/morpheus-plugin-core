@@ -31,12 +31,14 @@ class MikeTaskService extends AbstractTaskService {
 	@Override
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
 		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], opts).blockingGet()
+		context.executeComputeServerCommand(server, 'echo $JAVA_HOME', [:])
 		executeTask(task, config)
 	}
 
 	@Override
 	TaskResult executeServerTask(ComputeServer server, Task task) {
 		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], [:]).blockingGet()
+		context.executeComputeServerCommand(server, 'echo $JAVA_HOME', [:])
 		executeTask(task, config)
 	}
 
