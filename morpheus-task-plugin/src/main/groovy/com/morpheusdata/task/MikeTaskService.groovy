@@ -3,7 +3,6 @@ package com.morpheusdata.task
 import com.morpheusdata.core.AbstractTaskService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.model.*
-import io.reactivex.Single
 
 class MikeTaskService extends AbstractTaskService {
 	MorpheusContext context
@@ -33,6 +32,7 @@ class MikeTaskService extends AbstractTaskService {
 	@Override
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
 		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], opts).blockingGet()
+		context.executeCommandOnServer(server, 'echo $JAVA_HOME')
 		context.executeCommandOnServer(server, 'echo $JAVA_HOME', false, 'user', 'password', null, null, null, false)
 		executeTask(task, config)
 	}
@@ -47,6 +47,8 @@ class MikeTaskService extends AbstractTaskService {
 	@Override
 	TaskResult executeContainerTask(Container container, Task task, Map opts) {
 		TaskConfig config = buildContainerTaskConfig(container, [:], task, [], opts).blockingGet()
+		context.executeCommandOnWorkload(container, 'echo $JAVA_HOME')
+		context.executeCommandOnWorkload(container, 'echo $JAVA_HOME', 'user', 'password', null, null, null, false, null, false)
 		executeTask(task, config)
 	}
 
