@@ -60,6 +60,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	}
 
 	@Override
+	Single<TaskResult> executeCommandOnWorkload(Container container, String command, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, String runAsUser, Boolean sudo) {
+		return null
+	}
+
+	@Override
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command) {
 		return null
 	}
