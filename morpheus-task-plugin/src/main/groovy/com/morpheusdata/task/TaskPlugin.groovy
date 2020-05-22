@@ -1,8 +1,6 @@
 package com.morpheusdata.task
 
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.model.OptionType
-import com.morpheusdata.model.TaskType
 
 class TaskPlugin extends Plugin {
 	@Override
