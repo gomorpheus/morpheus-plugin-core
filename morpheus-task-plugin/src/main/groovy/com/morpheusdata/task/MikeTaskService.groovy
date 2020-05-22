@@ -25,7 +25,7 @@ class MikeTaskService extends AbstractTaskService {
 		if(container) {
 			config = buildContainerTaskConfig(container, [:], task, [], opts).blockingGet()
 		}
-		context.executeSshCommand('localhost', 8080, 'bob', 'password', 'echo $JAVA_HOME', null, null, null, false, null, LogLevel.debug, false, null, false)
+		context.executeSshCommand('localhost', 8080, 'bob', 'password', 'echo $JAVA_HOME', null, null, null, false, LogLevel.debug, false, null, false)
 		executeTask(task, config)
 	}
 
@@ -33,7 +33,7 @@ class MikeTaskService extends AbstractTaskService {
 	TaskResult executeServerTask(ComputeServer server, Task task, Map opts) {
 		TaskConfig config = buildComputeServerTaskConfig(server, [:], task, [], opts).blockingGet()
 		context.executeCommandOnServer(server, 'echo $JAVA_HOME')
-		context.executeCommandOnServer(server, 'echo $JAVA_HOME', false, 'user', 'password', null, null, null, false)
+		context.executeCommandOnServer(server, 'echo $JAVA_HOME', false, 'user', 'password', null, null, null, false, false)
 		executeTask(task, config)
 	}
 
