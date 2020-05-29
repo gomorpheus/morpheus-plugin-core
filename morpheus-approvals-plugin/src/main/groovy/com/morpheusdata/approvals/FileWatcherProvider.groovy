@@ -77,13 +77,14 @@ ${resp.references*.externalId.join(',')}
 	}
 
 	@Override
-	List<Map> monitorApproval() {
+	List<Request> monitorApproval() {
 		List approvalsResp = []
 		File approvalsDir = new File('approvals')
 		approvalsDir.listFiles().each { File file ->
 			println "reading file $file.absolutePath"
 			List<String> lines = file.readLines()
-			approvalsResp << [externalId: file.name - '.txt', itemStatus: [[status: lines[0], externalId: lines[1]]]]
+//			approvalsResp << [externalId: , itemStatus: [[status: lines[0], externalId: lines[1]]]]
+			approvalsResp << new Request(externalId: file.name - '.txt', refs: [new RequestReference(status: RequestReference.ApprovalStatus.valueOf(lines[0]), externalId: lines[1])])
 		}
 		approvalsResp
 	}
