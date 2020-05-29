@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface ApprovalProvider extends PluginProvider {
 	Map createApprovalRequest(List<Instance> instances, Request request, Map opts);
-	void monitorApproval();
+	List<Map> monitorApproval();
 }

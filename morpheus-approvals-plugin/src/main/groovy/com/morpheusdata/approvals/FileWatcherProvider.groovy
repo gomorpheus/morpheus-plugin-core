@@ -48,9 +48,17 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	void monitorApproval() {
+	List<Map> monitorApproval() {
 		println('approval1')
 		println('approval2')
 		println('approval3')
+		Map approvals = [
+		        externalId: 'AO123',
+				itemStatus: [
+						externalId: 'AO123',
+						status: 'approved' // TODO enum for RequestReference.STATUS_APPROVED
+				]
+		]
+		[approvals]
 	}
 }
