@@ -36,7 +36,7 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	Map createApprovalRequest(List<Instance> instance, Request request, Map opts) {
+	Map createApprovalRequest(List<Instance> instances, Request request, Map opts) {
 //		Request request = new Request(
 //				externalId: 'AO123',
 //				externalName: 'AO Request 123',
@@ -44,7 +44,18 @@ class FileWatcherProvider implements ApprovalProvider {
 //		)
 //		request
 //		morpheusContext.compute.requestApproval(instance, getProviderCode())
-		[success: true, externalId: 'AO123', externalName: 'AO Request 123',]
+		[
+				success         : true,
+				externalId      : 'AO123',
+				externalName    : 'AO Request 123',
+				externalMappings: [
+						[
+								refId       : instances.first().id,
+								externalId  : 'AO123',
+								externalName: 'AO Request 123',
+						]
+				]
+		]
 	}
 
 	@Override
@@ -53,10 +64,12 @@ class FileWatcherProvider implements ApprovalProvider {
 		println('approval2')
 		println('approval3')
 		Map approvals = [
-		        externalId: 'AO123',
+				externalId: 'AO123',
 				itemStatus: [
-						externalId: 'AO123',
-						status: 'approved' // TODO enum for RequestReference.STATUS_APPROVED
+						[
+								externalId: 'AO123',
+								status    : 'approved' // TODO enum for RequestReference.STATUS_APPROVED
+						]
 				]
 		]
 		[approvals]
