@@ -5,6 +5,8 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Request
+import com.morpheusdata.model.RequestReference
+import com.morpheusdata.response.RequestResponse
 
 class FileWatcherProvider implements ApprovalProvider {
 	Plugin plugin
@@ -36,42 +38,53 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	Map createApprovalRequest(List<Instance> instances, Request request, Map opts) {
-//		Request request = new Request(
-//				externalId: 'AO123',
-//				externalName: 'AO Request 123',
-//				requestType: Request.ApprovalRequestType.INSTANCE_APPROVAL_TYPE
-//		)
-//		request
-//		morpheusContext.compute.requestApproval(instance, getProviderCode())
-		[
-				success         : true,
-				externalId      : 'AO123',
-				externalName    : 'AO Request 123',
-				externalMappings: [
-						[
-								refId       : instances.first().id,
-								externalId  : 'AO123',
-								externalName: 'AO Request 123',
-						]
-				]
-		]
+	RequestResponse createApprovalRequest(List<Instance> instances, Request request, Map opts) {
+		String externalRequestId = "AO_REQ_${request.id}"
+		def resp
+		try {
+			String approvalsDirName = "approvals"
+			File approvalsDir = new File(approvalsDirName)
+			if(!approvalsDir.exists()) {
+				approvalsDir.mkdir()
+			}
+			File file = new File("$approvalsDirName/${externalRequestId}.txt")
+
+			if(file.createNewFile()) {
+				println "created file $file.absolutePath"
+				resp = new RequestResponse(
+						success: true,
+						externalRequestId: externalRequestId,
+						externalRequestName: 'AO Request 123',
+						references: []
+				)
+				instances.each {
+					resp.references << new RequestReference(instance: it, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
+				}
+				// TODO enum for RequestReference.STATUS_APPROVED
+				String fileContents = """requested
+${resp.references*.externalId.join(',')}
+"""
+				file.write(fileContents)
+			} else {
+				println "failed to create file $file.absolutePath"
+				resp = new RequestResponse(success: false)
+			}
+		} catch(Exception e) {
+			println e.message
+			resp = new RequestResponse(success: false)
+		}
+		resp
 	}
 
 	@Override
 	List<Map> monitorApproval() {
-		println('approval1')
-		println('approval2')
-		println('approval3')
-		Map approvals = [
-				externalId: 'AO123',
-				itemStatus: [
-						[
-								externalId: 'AO123',
-								status    : 'approved' // TODO enum for RequestReference.STATUS_APPROVED
-						]
-				]
-		]
-		[approvals]
+		List approvalsResp = []
+		File approvalsDir = new File('approvals')
+		approvalsDir.listFiles().each { File file ->
+			println "reading file $file.absolutePath"
+			List<String> lines = file.readLines()
+			approvalsResp << [externalId: file.name - '.txt', itemStatus: [[status: lines[0], externalId: lines[1]]]]
+		}
+		approvalsResp
 	}
 }
