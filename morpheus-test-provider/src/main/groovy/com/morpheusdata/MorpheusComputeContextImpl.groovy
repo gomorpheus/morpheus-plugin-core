@@ -11,8 +11,4 @@ class MorpheusComputeContextImpl implements MorpheusComputeContext {
 
     }
 
-	@Override
-	void requestApproval(Instance instance, String providerCode) {
-
-	}
 }
