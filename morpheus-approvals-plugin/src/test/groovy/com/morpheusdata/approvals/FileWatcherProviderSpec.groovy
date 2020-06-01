@@ -4,12 +4,15 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Request
+import com.morpheusdata.model.RequestReference
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Subject
 
 import java.nio.file.Files
 import java.nio.file.Paths
 
+@Stepwise
 class FileWatcherProviderSpec extends Specification {
 
 	Plugin plugin
@@ -36,20 +39,24 @@ class FileWatcherProviderSpec extends Specification {
 	}
 
 	void "watchApprovals"() {
+		given:
+		Request request = new Request(
+				externalId: 'AO_REQ_456',
+				refs: [
+						new RequestReference(
+								externalId: 'AO_INST_123',
+								status    : 'requested'
+						)
+				]
+		)
+
 		when:
 		def resp = provider.monitorApproval()
 
 		then:
-		resp == [
-				[
-						externalId: 'AO_REQ_456',
-						itemStatus: [
-								[
-										externalId: 'AO_INST_123',
-										status    : 'requested'
-								]
-						]
-				]
-		]
+		resp.size() == 1
+		resp[0].externalId == request.externalId
+		resp[0].refs.size() == 1
+		resp[0].refs[0].properties == request.refs[0].properties
 	}
 }

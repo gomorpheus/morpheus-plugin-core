@@ -1,17 +1,21 @@
 package com.morpheusdata.model;
 
 public class RequestReference {
-	private Instance instance;
+
+	/**
+	 * The Instance or App id
+	 */
+	private String refId;
 	private String externalId;
 	private String externalName;
 	private ApprovalStatus status;
 
-	public Instance getInstance() {
-		return instance;
+	public String getRefId() {
+		return refId;
 	}
 
-	public void setInstance(Instance instance) {
-		this.instance = instance;
+	public void setRefId(String refId) {
+		this.refId = refId;
 	}
 
 	public String getExternalId() {

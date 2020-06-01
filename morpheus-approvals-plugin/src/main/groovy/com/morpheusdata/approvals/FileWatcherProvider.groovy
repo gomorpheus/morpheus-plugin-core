@@ -38,7 +38,7 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	RequestResponse createApprovalRequest(List<Instance> instances, Request request, Map opts) {
+	RequestResponse createApprovalRequest(List instances, Request request, Map opts) {
 		String externalRequestId = "AO_REQ_${request.id}"
 		def resp
 		try {
@@ -58,9 +58,8 @@ class FileWatcherProvider implements ApprovalProvider {
 						references: []
 				)
 				instances.each {
-					resp.references << new RequestReference(instance: it, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
+					resp.references << new RequestReference(refId: it.id, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
 				}
-				// TODO enum for RequestReference.STATUS_APPROVED
 				String fileContents = """requested
 ${resp.references*.externalId.join(',')}
 """
@@ -83,7 +82,6 @@ ${resp.references*.externalId.join(',')}
 		approvalsDir.listFiles().each { File file ->
 			println "reading file $file.absolutePath"
 			List<String> lines = file.readLines()
-//			approvalsResp << [externalId: , itemStatus: [[status: lines[0], externalId: lines[1]]]]
 			approvalsResp << new Request(externalId: file.name - '.txt', refs: [new RequestReference(status: RequestReference.ApprovalStatus.valueOf(lines[0]), externalId: lines[1])])
 		}
 		approvalsResp
