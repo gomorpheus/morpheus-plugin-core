@@ -4,6 +4,7 @@ import com.morpheusdata.core.ApprovalProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.Request
 import com.morpheusdata.model.RequestReference
 import com.morpheusdata.response.RequestResponse
@@ -85,5 +86,10 @@ ${resp.references*.externalId.join(',')}
 			approvalsResp << new Request(externalId: file.name - '.txt', refs: [new RequestReference(status: RequestReference.ApprovalStatus.valueOf(lines[0]), externalId: lines[1])])
 		}
 		approvalsResp
+	}
+
+	@Override
+	List<OptionType> policyIntegrationOptionTypes() {
+		[new OptionType(name: 'Policy Option 1', fieldName: 'file-location', fieldLabel: 'File Location', displayOrder: 0)]
 	}
 }
