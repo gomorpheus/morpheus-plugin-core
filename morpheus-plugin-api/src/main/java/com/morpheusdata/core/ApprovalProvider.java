@@ -14,7 +14,7 @@ public interface ApprovalProvider extends PluginProvider {
 	 * @param opts provision options
 	 * @return a response object with a success status and references to external approval system
 	 */
-	RequestResponse createApprovalRequest(List instances, Request request, Map opts);
+	RequestResponse createApprovalRequest(List instances, Request request, Policy policy, Map opts);
 
 	/**
 	 * Periodically called to check on approval status
