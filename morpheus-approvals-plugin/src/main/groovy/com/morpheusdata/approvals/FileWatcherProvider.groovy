@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.Policy
 import com.morpheusdata.model.Request
 import com.morpheusdata.model.RequestReference
 import com.morpheusdata.response.RequestResponse
@@ -39,11 +40,11 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	RequestResponse createApprovalRequest(List instances, Request request, Map opts) {
+	RequestResponse createApprovalRequest(List instances, Request request, Policy policy, Map opts) {
 		String externalRequestId = "AO_REQ_${request.id}"
 		def resp
 		try {
-			String approvalsDirName = "approvals"
+			String approvalsDirName = policy.configMap?."file-location"
 			File approvalsDir = new File(approvalsDirName)
 			if(!approvalsDir.exists()) {
 				approvalsDir.mkdir()
@@ -79,7 +80,7 @@ ${resp.references*.externalId.join(',')}
 	@Override
 	List<Request> monitorApproval() {
 		List approvalsResp = []
-		File approvalsDir = new File('approvals')
+		File approvalsDir = new File('/Users/miketruso/Desktop/approvals')
 		approvalsDir.listFiles().each { File file ->
 			println "reading file $file.absolutePath"
 			List<String> lines = file.readLines()
