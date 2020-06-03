@@ -3,6 +3,7 @@ package com.morpheusdata.approvals
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.Policy
 import com.morpheusdata.model.Request
 import com.morpheusdata.model.RequestReference
 import spock.lang.Specification
@@ -27,13 +28,17 @@ class FileWatcherProviderSpec extends Specification {
 	}
 
 	void "writes file"() {
+		given:
+		Policy policy = new Policy(configMap: ["file-location": 'src/test/resources/approvals'])
+
 		when:
-		provider.createApprovalRequest([new Instance(id: 123)], new Request(id: 456), [:])
+		provider.createApprovalRequest([new Instance(id: 123)], new Request(id: 456), policy, [:])
 
 		then:
-		File file = new File("approvals/AO_REQ_456.txt")
+		String filePath = 'src/test/resources/approvals/AO_REQ_456.txt'
+		File file = new File(filePath)
 		file.exists()
-		List<String> lines = Files.readAllLines(Paths.get("approvals/AO_REQ_456.txt"))
+		List<String> lines = Files.readAllLines(Paths.get(filePath))
 		lines[0] == 'requested'
 		lines[1] == 'AO_INST_123'
 	}

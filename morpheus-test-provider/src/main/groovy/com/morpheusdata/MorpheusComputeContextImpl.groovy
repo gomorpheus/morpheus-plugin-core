@@ -1,7 +1,6 @@
 package com.morpheusdata
 
 import com.morpheusdata.core.MorpheusComputeContext
-import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Zone
 
 class MorpheusComputeContextImpl implements MorpheusComputeContext {
@@ -10,5 +9,4 @@ class MorpheusComputeContextImpl implements MorpheusComputeContext {
     void updateZoneStatus(Zone zone, String status, String message, Date syncDate) {
 
     }
-
 }
