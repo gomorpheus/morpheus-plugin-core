@@ -1,9 +1,10 @@
 package com.morpheusdata.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.morpheusdata.model.Permission;
+import com.morpheusdata.views.Renderer;
+import com.morpheusdata.web.PluginController;
+
+import java.util.*;
 
 /**
  * This is the base class for all Plugins that are instantiated within the Morpheus Environment. It contains both
@@ -18,10 +19,47 @@ public abstract class Plugin implements PluginInterface {
 	private PluginManager pluginManager;
 	protected MorpheusContext morpheusContext;
 	private ClassLoader classLoader;
+	protected Renderer<?> renderer;
+	protected List<PluginController> controllers = new ArrayList<>();
+	protected List<Permission> permissions = new ArrayList<>();
 
 	protected String name;
 	protected String fileName;
 	protected String version;
+
+	public void setControllers(List<PluginController> controllers) {
+		this.controllers = controllers;
+	}
+
+	public List<PluginController> getControllers() {
+		return controllers;
+	}
+
+	/**
+	 * Set the template renderer for ths plugin.
+	 * @param renderer sets the renderer for the plugin
+	 */
+	public void setRenderer(Renderer<?> renderer) {
+		this.renderer = renderer;
+	}
+
+
+	public boolean hasCustomRender() {
+		return this.renderer != null;
+	}
+
+	/**
+	 * Get the template renderer for ths plugin.
+	 *
+	 * @return the renderer for the plugin
+	 */
+	protected Renderer<?> getRenderer() {
+		if(this.renderer != null) {
+			return this.renderer;
+		} else {
+			return this.pluginManager.getRenderer();
+		}
+	}
 
 	/**
 	 * Sets the manager this plugin was loaded from
@@ -113,5 +151,21 @@ public abstract class Plugin implements PluginInterface {
 	@Override
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	public List<Permission> getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(List<Permission> permissions) {
+		this.permissions = permissions;
 	}
 }
