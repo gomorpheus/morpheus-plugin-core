@@ -11,6 +11,7 @@ public interface ApprovalProvider extends PluginProvider {
 	 *
 	 * @param instances List of {@link Instance} or {@link App}
 	 * @param request the Morpheus provision Request
+	 * @param policy the approval policy containing a Map config with values from provided optionTypes
 	 * @param opts provision options
 	 * @return a response object with a success status and references to external approval system
 	 */
