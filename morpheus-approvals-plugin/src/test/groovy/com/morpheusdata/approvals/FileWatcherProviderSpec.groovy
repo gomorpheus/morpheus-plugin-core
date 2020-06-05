@@ -29,13 +29,13 @@ class FileWatcherProviderSpec extends Specification {
 
 	void "writes file"() {
 		given:
-		Policy policy = new Policy(configMap: ["file-location": 'src/test/resources/approvals'])
+		Policy policy = new Policy(configMap: ["file-location": 'src/test/resources/approval-requests'])
 
 		when:
 		provider.createApprovalRequest([new Instance(id: 123)], new Request(id: 456), policy, [:])
 
 		then:
-		String filePath = 'src/test/resources/approvals/AO_REQ_456.txt'
+		String filePath = 'src/test/resources/approval-requests/AO_REQ_456.txt'
 		File file = new File(filePath)
 		file.exists()
 		List<String> lines = Files.readAllLines(Paths.get(filePath))
