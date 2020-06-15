@@ -1,1 +1,7 @@
-include 'morpheus-plugin-api','morpheus-test-provider', 'morpheus-infoblox-plugin', 'morpheus-gradle-plugin', 'morpheus-task-plugin'
+include 'morpheus-plugin-api'
+include 'morpheus-test-provider'
+include 'morpheus-infoblox-plugin'
+include 'morpheus-gradle-plugin'
+include 'morpheus-task-plugin'
+include 'morpheus-tab-plugin'
+include 'morpheus-approvals-plugin'
