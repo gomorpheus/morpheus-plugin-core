@@ -1,14 +1,10 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Permission;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.Container;
 import com.morpheusdata.model.LogLevel;
 import com.morpheusdata.model.TaskResult;
 import io.reactivex.Single;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Provides a means to interact or query data from the main Morpheus application back into the various provider extensions
@@ -22,6 +18,7 @@ import java.util.Map;
  *
  * @see MorpheusComputeContext
  * @see MorpheusNetworkContext
+ * @see MorpheusTaskContext
  *
  * @author David Estes
  */
@@ -41,6 +38,11 @@ public interface MorpheusContext {
 	 */
 	MorpheusNetworkContext getNetwork();
 
+	/**
+	 * Returns the Task context used for automation tasks on assets within Morpheus.
+	 * Typically this would be called by a {@link TaskProvider}.
+	 * @return An Instance of the Task Context to be used for calls by various task providers
+	 */
 	MorpheusTaskContext getTask();
 
 
