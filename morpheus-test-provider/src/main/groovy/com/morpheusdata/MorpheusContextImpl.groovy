@@ -22,11 +22,13 @@ class MorpheusContextImpl implements MorpheusContext {
     MorpheusContextImpl() {
         computeContext = new MorpheusComputeContextImpl()
         networkContext = new MorpheusNetworkContextImpl()
+		taskContext = new MorpheusTaskContextImpl()
     }
 
-    MorpheusContextImpl(MorpheusComputeContext computeContext, MorpheusNetworkContext networkContext) {
+    MorpheusContextImpl(MorpheusComputeContext computeContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext) {
         this.computeContext = computeContext
         this.networkContext = networkContext
+		this.taskContext = taskContext
     }
 
     @Override
