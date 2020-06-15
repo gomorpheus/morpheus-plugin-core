@@ -26,7 +26,7 @@ class MikeTaskProvider implements TaskProvider {
 
 	@Override
 	ExecutableTaskInterface getService() {
-		return new MikeTaskService(morpheusContext.task)
+		return new MikeTaskService(morpheusContext)
 	}
 
 	@Override
