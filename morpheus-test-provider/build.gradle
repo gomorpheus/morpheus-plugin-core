@@ -65,14 +65,9 @@ bintray {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
 
 task morpheusJavaDoc(type: Javadoc) {
@@ -117,8 +112,6 @@ publishing {
                 }
             }
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
         }
     }
 }
@@ -131,4 +124,4 @@ test {
 }
 
 
-bintrayUpload.dependsOn build, sourcesJar, javadocJar
+bintrayUpload.dependsOn build
