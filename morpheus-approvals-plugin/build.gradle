@@ -9,13 +9,12 @@ buildscript {
 
 plugins {
 	id "com.jfrog.bintray" version "1.6"
-	id "com.github.johnrengelman.shadow" version "5.1.0"
+	id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'com.morpheusdata'
@@ -66,7 +65,7 @@ jar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.approvals.ApprovalsPlugin',
-				'Plugin-Version': version
+				'Plugin-Version': archiveVersion
 		)
 	}
 }
