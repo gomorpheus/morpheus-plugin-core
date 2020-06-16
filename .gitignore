@@ -8,4 +8,4 @@ plugins/
 *.iws
 .idea/
 .DS_Store
-morpheus-plugin-api/out/
+out/

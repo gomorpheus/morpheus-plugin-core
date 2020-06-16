@@ -6,6 +6,13 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Provides helper methods to build task configurations
+ *
+ * @see MorpheusTaskContext
+ *
+ * @author Mike Truso
+ */
 public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	public Single<TaskConfig> buildLocalTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
 		return getContext().getTask().buildLocalTaskConfig(baseConfig, task, excludes, opts);

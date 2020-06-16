@@ -57,7 +57,7 @@ public interface TaskProvider extends PluginProvider {
 
 	/**
 	 * Additional task configuration
-	 * {@see OptionType}
+	 * {@link OptionType}
 	 * @return a List of OptionType
 	 */
 	List<OptionType> getOptionTypes();

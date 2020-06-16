@@ -6,6 +6,11 @@ import com.morpheusdata.response.RequestResponse;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Provides capability to create custom approval policies
+ *
+ * @author Mike Truso
+ */
 public interface ApprovalProvider extends PluginProvider {
 	/**
 	 *

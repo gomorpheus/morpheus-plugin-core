@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Details as may be relevant for executing a Task on an {@link Instance}, {@link Container}, or {@link ComputeServer}
+ *
+ * @author Mike Truso
+ */
 public class TaskConfig {
-	// type config
 	public Long instanceId;
 	public Long containerId;
 	public Long serverId;
@@ -38,9 +42,6 @@ public class TaskConfig {
 	public String accountType;
 	public String sequence;
 	public String platform;
-//	public Cypher cypher;
-//	public ArchivesAccess archives;
-//	public MorpheusAccess morpheus;
 
 	public InstanceConfig instance;
 	public ContainerConfig container;
