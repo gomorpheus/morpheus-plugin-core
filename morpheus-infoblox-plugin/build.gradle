@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
 	id "com.jfrog.bintray" version "1.6"
-	id "com.github.johnrengelman.shadow" version "5.1.0"
+	id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 apply plugin: 'java'
@@ -70,7 +70,7 @@ jar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
-				'Plugin-Version': version
+				'Plugin-Version': archiveVersion
 		)
 	}
 }

@@ -24,7 +24,7 @@ jar {
     manifest {
         attributes(
                 'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
-                'Plugin-Version': version
+                'Plugin-Version': archiveVersion
         )
     }
 }
