@@ -9,14 +9,13 @@ buildscript {
 }
 
 plugins {
-	id "com.jfrog.bintray" version "1.6"
-	id "com.github.johnrengelman.shadow" version "5.1.0"
+	id "com.jfrog.bintray" version "1.8.5"
+	id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
 
@@ -73,19 +72,14 @@ jar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.tab.TabPlugin',
-				'Plugin-Version': version
+				'Plugin-Version': archiveVersion
 		)
 	}
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
 
 task morpheusJavaDoc(type: Javadoc) {
@@ -130,8 +124,6 @@ publishing {
 				}
 			}
 			from components.java
-			artifact sourcesJar
-			artifact javadocJar
 		}
 	}
 }
@@ -144,4 +136,4 @@ test {
 }
 
 
-bintrayUpload.dependsOn build, sourcesJar, javadocJar
+bintrayUpload.dependsOn build
