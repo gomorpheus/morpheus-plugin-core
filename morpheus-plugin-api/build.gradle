@@ -3,21 +3,16 @@ buildscript {
         mavenLocal()
         jcenter()
     }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
-    }
 }
 
 plugins {
-    // id "com.jfrog.bintray" version "1.8.5"
+     id "com.jfrog.bintray" version "1.8.5"
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 group = 'com.morpheusdata'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -72,14 +67,9 @@ bintray {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
 
 task morpheusJavaDoc(type: Javadoc) {
@@ -119,8 +109,6 @@ publishing {
                 }
             }
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
         }
     }
 }
@@ -137,4 +125,4 @@ test {
     }
 }
 
-bintrayUpload.dependsOn build, sourcesJar, javadocJar
+bintrayUpload.dependsOn build
