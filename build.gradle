@@ -4,12 +4,16 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
 	}
 }
+
+
 
 subprojects {
 	version = '0.1.0'
 	apply plugin: 'java'
+	apply plugin: 'com.jfrog.bintray'
 	tasks.withType(Jar) {
 		destinationDirectory = file("$rootDir/plugins")
 	}
@@ -18,6 +22,7 @@ subprojects {
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: 'com.jfrog.bintray'
 
 group = 'com.bertramlabs.plugins'
 
