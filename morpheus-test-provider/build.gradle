@@ -7,9 +7,6 @@ buildscript {
     }
 }
 
-plugins {
-	id "com.jfrog.bintray" version "1.8.5"
-}
 
 apply plugin: 'java'
 apply plugin: 'groovy'
