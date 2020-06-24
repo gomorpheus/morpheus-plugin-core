@@ -3,7 +3,9 @@ package com.morpheusdata.tab
 import com.morpheusdata.core.AbstractInstanceTabProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.User
 import com.morpheusdata.views.TemplateResponse
 import com.morpheusdata.views.ViewModel
 
@@ -41,5 +43,10 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 		ViewModel<String> model = new ViewModel<String>()
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
+	}
+
+	@Override
+	Boolean show(Instance instance, User user, Account account) {
+		true
 	}
 }
