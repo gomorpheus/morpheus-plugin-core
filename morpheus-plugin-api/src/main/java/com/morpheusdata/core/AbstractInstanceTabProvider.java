@@ -3,6 +3,11 @@ package com.morpheusdata.core;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 
+/**
+ * Default implementation of {@link InstanceTabProvider} with a {@link HandlebarsRenderer} and custom `asset` helper tag
+ *
+ * @author Mike Truso
+ */
 public abstract class AbstractInstanceTabProvider implements InstanceTabProvider {
 	private HandlebarsRenderer renderer;
 
