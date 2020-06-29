@@ -87,11 +87,11 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		return engine;
 	}
 
-	public void registerAssetHelper(String providerCode) {
+	public void registerAssetHelper(String pluginName) {
 		engine.registerHelper("asset", new Helper<String>() {
 			@Override
 			public Object apply(String context, Options options) throws IOException {
-				return "/assets/" + providerCode + context;
+				return "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context;
 			}
 		});
 	}
