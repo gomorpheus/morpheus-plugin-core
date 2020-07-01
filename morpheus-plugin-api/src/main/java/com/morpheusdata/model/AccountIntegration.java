@@ -2,35 +2,35 @@ package com.morpheusdata.model;
 
 import java.util.Map;
 
-public class AccountIntegration  extends MorpheusModel {
-	//Id reference
-	Long id;
-	String uuid;
-	String name;
-	Map<String,Object> config;
-	String type;
-	String code;
-	String serviceHost;
-	String servicePort;
-	String serviceUrl;
-	String serviceSlave;
-	String repoUrl;
-	String authType;
-	String authId;
-	String serviceUsername;
-	String servicePassword;
-	String servicePath;
-	String serviceToken;
-	String serviceVersion;
-	String serviceWindowsVersion;
-	String serviceCommand;
-	String serviceMode;
-	String serviceConfig;
-	String serviceTypeCode;
-	Boolean serviceFlag;
-	String servicePrivateKey;
-	String servicePublicKey;
+public class AccountIntegration extends MorpheusModel {
 
-	String authPrivateKey;
-	String authPublicKey;
+	public String uuid;
+	public String name;
+	public String config;
+	public Map<String, Object> configMap;
+	public String type;
+	public String code;
+	public String serviceHost;
+	public String servicePort;
+	public String serviceUrl;
+	public String serviceSlave;
+	public String repoUrl;
+	public String authType;
+	public String authId;
+	public String serviceUsername;
+	public String servicePassword;
+	public String servicePath;
+	public String serviceToken;
+	public String serviceVersion;
+	public String serviceWindowsVersion;
+	public String serviceCommand;
+	public String serviceMode;
+	public String serviceConfig;
+	public String serviceTypeCode;
+	public Boolean serviceFlag;
+	public String servicePrivateKey;
+	public String servicePublicKey;
+
+	public String authPrivateKey;
+	public String authPublicKey;
 }
