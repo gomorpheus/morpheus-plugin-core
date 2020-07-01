@@ -25,9 +25,10 @@ public interface ApprovalProvider extends PluginProvider {
 
 	/**
 	 * Periodically called to check on approval status
+	 * @param accountIntegration account integration details
 	 * @return Request objects with their corresponding {@link RequestReference} containing approval status
 	 */
-	List<Request> monitorApproval();
+	List<Request> monitorApproval(AccountIntegration accountIntegration);
 
 	/**
 	 * Optionally provide custom configuration options when creating a new {@link Policy}
