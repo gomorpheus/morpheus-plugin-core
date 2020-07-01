@@ -80,7 +80,7 @@ ${resp.references*.externalId.join(',')}
 	}
 
 	@Override
-	List<Request> monitorApproval() {
+	List<Request> monitorApproval(AccountIntegration accountIntegration) {
 		List approvalsResp = []
 		File approvalsDir = new File('src/test/resources/approval-requests')
 		approvalsDir.listFiles().each { File file ->
