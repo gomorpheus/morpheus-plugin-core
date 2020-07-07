@@ -3,6 +3,10 @@ package com.morpheusdata.core;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+/**
+ * A {@link URLClassLoader} which searches in its own classloader context before delegating it to the parent classloader.
+ * This is useful for giving preferences to resources in the plugin jar over Morpheus resources.
+ */
 public class ChildFirstClassLoader extends URLClassLoader {
 
 	public ChildFirstClassLoader(URL[] urls, ClassLoader parent) {
