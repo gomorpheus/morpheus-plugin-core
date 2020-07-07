@@ -20,6 +20,7 @@ class CustomTabProviderSpec extends Specification {
 		TemplateResponse res = provider.renderTemplate(instance)
 
 		then:
+		1 * plugin.name >> 'My Plugin'
 		1 * plugin.classLoader >> this.class.classLoader
 		res.text == """<h1>${instance.name}</h1>
 <dl>
@@ -30,7 +31,7 @@ class CustomTabProviderSpec extends Specification {
 	<dt>Max Cores</dt>
 	<dd>${instance.maxCores}</dd>
 </dl>
-<img src="/assets/custom-tab-1/foo/bar" />
+<img src="/assets/plugin/my-plugin/foo/bar" />
 """
 	}
 }

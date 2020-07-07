@@ -176,13 +176,13 @@ class HandlebarsSpec extends Specification {
 		def model = new ViewModel<String>()
 		model.object = "World"
 		def hbt = new HandlebarsRenderer('renderer')
-		hbt.registerAssetHelper('pluginProviderCode')
+		hbt.registerAssetHelper('Handlebars Plugin')
 
 		when:
 		def result = hbt.renderTemplate("hbs/assetHelperTest", model)
 
 		then:
-		result.text == 'Hello World!\n<img src="/assets/pluginProviderCode/foo/bar" />\n'
+		result.text == 'Hello World!\n<img src="/assets/plugin/handlebars-plugin/foo/bar" />\n'
 		result.status == 200
 	}
 

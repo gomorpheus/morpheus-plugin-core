@@ -2,10 +2,12 @@ package com.morpheusdata.approvals
 
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Policy
 import com.morpheusdata.model.Request
 import com.morpheusdata.model.RequestReference
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 import spock.lang.Subject
@@ -18,6 +20,8 @@ class FileWatcherProviderSpec extends Specification {
 
 	Plugin plugin
 	MorpheusContext context
+	@Shared
+	AccountIntegration accountIntegration = new AccountIntegration(configMap: [cm: [plugin: ["file-location": 'src/test/resources/approval-requests']]])
 	@Subject
 	FileWatcherProvider provider
 
@@ -29,10 +33,10 @@ class FileWatcherProviderSpec extends Specification {
 
 	void "writes file"() {
 		given:
-		Policy policy = new Policy(configMap: ["file-location": 'src/test/resources/approval-requests'])
+		Policy policy = new Policy(configMap: [someProp: 'someVal'])
 
 		when:
-		provider.createApprovalRequest([new Instance(id: 123)], new Request(id: 456), policy, [:])
+		provider.createApprovalRequest([new Instance(id: 123)], new Request(id: 456), accountIntegration, policy, [:])
 
 		then:
 		String filePath = 'src/test/resources/approval-requests/AO_REQ_456.txt'
@@ -56,7 +60,7 @@ class FileWatcherProviderSpec extends Specification {
 		)
 
 		when:
-		def resp = provider.monitorApproval()
+		def resp = provider.monitorApproval(accountIntegration)
 
 		then:
 		resp.size() == 1
