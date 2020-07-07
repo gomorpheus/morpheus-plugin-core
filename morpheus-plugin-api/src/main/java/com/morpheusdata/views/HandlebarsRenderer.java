@@ -87,11 +87,17 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		return engine;
 	}
 
-	public void registerAssetHelper(String providerCode) {
+	/**
+	 * Creates an {{asset}} helper tag that outputs the plugin specific relative url for assets stored in the /src/assets
+	 * e.g. <code>&lt;link href="{{asset "/custom.css"}}" /&gt;</code>
+	 * @see <a href="https://jknack.github.io/handlebars.java/helpers.html">Handlebars Helpers</a>
+	 * @param pluginName name of the plugin
+	 */
+	public void registerAssetHelper(String pluginName) {
 		engine.registerHelper("asset", new Helper<String>() {
 			@Override
 			public Object apply(String context, Options options) throws IOException {
-				return "/assets/" + providerCode + context;
+				return "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context;
 			}
 		});
 	}

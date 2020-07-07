@@ -3,6 +3,7 @@ package com.morpheusdata.approvals
 import com.morpheusdata.core.ApprovalProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.Policy
@@ -40,11 +41,12 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	RequestResponse createApprovalRequest(List instances, Request request, Policy policy, Map opts) {
+	RequestResponse createApprovalRequest(List instances, Request request, AccountIntegration accountIntegration, Policy policy, Map opts) {
 		String externalRequestId = "AO_REQ_${request.id}"
 		def resp
 		try {
-			String approvalsDirName = policy.configMap?."file-location"
+			String approvalsDirName = accountIntegration.configMap?.cm?.plugin?."file-location"
+			println(policy.configMap?."file-watch-policy-1")
 			File approvalsDir = new File(approvalsDirName)
 			if(!approvalsDir.exists()) {
 				approvalsDir.mkdir()
@@ -78,7 +80,7 @@ ${resp.references*.externalId.join(',')}
 	}
 
 	@Override
-	List<Request> monitorApproval() {
+	List<Request> monitorApproval(AccountIntegration accountIntegration) {
 		List approvalsResp = []
 		File approvalsDir = new File('src/test/resources/approval-requests')
 		approvalsDir.listFiles().each { File file ->
@@ -90,7 +92,12 @@ ${resp.references*.externalId.join(',')}
 	}
 
 	@Override
-	List<OptionType> policyIntegrationOptionTypes() {
-		[new OptionType(name: 'Policy Option 1', fieldName: 'file-location', fieldLabel: 'File Location', displayOrder: 0)]
+	List<OptionType> integrationOptionTypes() {
+		[new OptionType(code: 'plugin-integration-1', name: 'File Location', fieldName: 'file-location', fieldLabel: 'File Location', displayOrder: 0)]
+	}
+
+	@Override
+	List<OptionType> policyOptionTypes() {
+		[new OptionType(code: 'plugin-policy-1', name: 'Policy Option 1', fieldName: 'file-watch-policy-1', fieldLabel: 'Custom Policy Option 1', displayOrder: 0)]
 	}
 }
