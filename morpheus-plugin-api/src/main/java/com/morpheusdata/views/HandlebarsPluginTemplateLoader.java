@@ -8,6 +8,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * A Template Loader for handlebars that sets some defaulst and uses an injected classloader
+ *
+ * Default prefix "hbs/"
+ * Default suffix ".hbs"
+ */
 public class HandlebarsPluginTemplateLoader extends AbstractTemplateLoader {
 
 	final ClassLoader classLoader;

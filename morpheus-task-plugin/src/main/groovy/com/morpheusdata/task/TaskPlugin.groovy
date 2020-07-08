@@ -15,7 +15,7 @@ class TaskPlugin extends Plugin {
 		def model = new ViewModel<String>()
 		model.object = "Eric"
 
-		println this.getRenderer().renderTemplate('instanceTab', model).text
+		println this.getRenderer().renderTemplate('instanceTab', model).html
 	}
 
 	/**

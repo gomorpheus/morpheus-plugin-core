@@ -6,7 +6,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.User
-import com.morpheusdata.views.TemplateResponse
+import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 
 class CustomTabProvider extends AbstractInstanceTabProvider {
@@ -39,7 +39,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	}
 
 	@Override
-	TemplateResponse renderTemplate(Instance instance) {
+	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)

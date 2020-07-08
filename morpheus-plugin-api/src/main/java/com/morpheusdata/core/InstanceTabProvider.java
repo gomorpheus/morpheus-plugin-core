@@ -4,8 +4,8 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.User;
+import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
-import com.morpheusdata.views.TemplateResponse;
 
 /**
  * Provides support for custom UI tabs when viewing Instance details
@@ -25,7 +25,7 @@ public interface InstanceTabProvider extends PluginProvider {
 	 * @param instance details of an Instance
 	 * @return result of rendering an template
 	 */
-	TemplateResponse renderTemplate(Instance instance);
+	HTMLResponse renderTemplate(Instance instance);
 
 	/**
 	 * Provide logic when tab should be displayed. This logic is checked after permissions are validated.

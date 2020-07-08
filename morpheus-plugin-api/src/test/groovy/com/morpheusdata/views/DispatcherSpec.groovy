@@ -58,7 +58,7 @@ class DispatcherSpec extends Specification {
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url, usersPermissions).class == TemplateResponse.class
+		d.handleRoute(url, usersPermissions).class == HTMLResponse.class
 		d.handleRoute("/bad/url", usersPermissions)?.class == null
 	}
 
@@ -80,7 +80,7 @@ class DispatcherSpec extends Specification {
 		String url = "/foo/example"
 
 		then:
-		d.handleRoute(url, usersPermissions).class == TemplateResponse.class
+		d.handleRoute(url, usersPermissions).class == HTMLResponse.class
 		d.handleRoute("/bad/url", usersPermissions)?.class == null
 	}
 
@@ -104,7 +104,7 @@ class DispatcherSpec extends Specification {
 		def result = d.handleRoute(url, usersPermissions)
 
 		then:
-		result.class == TemplateResponse.class
+		result.class == HTMLResponse.class
 
 		when:
 		result = d.handleRoute(url, badPermissions)
@@ -125,7 +125,7 @@ class TestController implements PluginController {
 	}
 
 	def example(ViewModel<String> model) {
-		return TemplateResponse.success("foo")
+		return HTMLResponse.success("foo")
 	}
 	def json(ViewModel<Map> model) {
 		model.object.foo = "fizz"
@@ -149,7 +149,7 @@ class PermissionController implements PluginController {
 	}
 
 	def example(ViewModel<String> model) {
-		return TemplateResponse.success("foo")
+		return HTMLResponse.success("foo")
 	}
 
 }
