@@ -11,6 +11,10 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Based on {@link com.github.jknack.handlebars.io.CompositeTemplateLoader}
+ * Provides a way to delegate template lookups to all registered plugins
+ */
 public class DynamicTemplateLoader implements TemplateLoader {
 
 	/**

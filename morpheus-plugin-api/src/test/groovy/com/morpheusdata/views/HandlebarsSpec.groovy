@@ -15,7 +15,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.renderTemplate("defaultLocation", model)
 
 		then:
-		result.text == 'My name is John!\n'
+		result.html == 'My name is John!\n'
 		result.status == 200
 	}
 
@@ -29,7 +29,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.renderTemplate("hbs/test", model)
 
 		then:
-		result.text == 'Hello World!\n'
+		result.html == 'Hello World!\n'
 		result.status == 200
 	}
 
@@ -43,7 +43,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.renderTemplate("test", model)
 
 		then:
-		result.text == 'Hello World!\n'
+		result.html == 'Hello World!\n'
 		result.status == 200
 	}
 
@@ -57,7 +57,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.renderTemplate("bad/location", model)
 
 		then:
-		result.text == 'Template file not found: bad/location'
+		result.html == 'Template file not found: bad/location'
 		result.status == 400
 	}
 
@@ -72,7 +72,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.render(template, model)
 
 		then:
-		result.text == 'Hello World!'
+		result.html == 'Hello World!'
 		result.status == 200
 	}
 
@@ -87,7 +87,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.render(template, model)
 
 		then:
-		result.text == "No template defined."
+		result.html == "No template defined."
 		result.status == 400
 	}
 
@@ -102,7 +102,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.render(template, model)
 
 		then:
-		result.text == "Eric's favorite color is green."
+		result.html == "Eric's favorite color is green."
 		result.status == 200
 	}
 
@@ -117,7 +117,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.render(template, model)
 
 		then:
-		result.text == "tomcat server ip is 127.0.0.1 and is running == true."
+		result.html == "tomcat server ip is 127.0.0.1 and is running == true."
 		result.status == 200
 	}
 
@@ -133,7 +133,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.render(template, model)
 
 		then:
-		result.text == "ok null model"
+		result.html == "ok null model"
 		result.status == 200
 	}
 
@@ -161,14 +161,14 @@ class HandlebarsSpec extends Specification {
 
 	void "template response static helper methods"() {
 		expect:
-		TemplateResponse.success().text == ""
-		TemplateResponse.success().status == 200
-		TemplateResponse.success("message").text == "message"
-		TemplateResponse.success("message").status == 200
-		TemplateResponse.error("error").text == "error"
-		TemplateResponse.error("error").status == 400
-		TemplateResponse.error("error", 422).text == "error"
-		TemplateResponse.error("error", 422).status == 422
+		HTMLResponse.success().html == ""
+		HTMLResponse.success().status == 200
+		HTMLResponse.success("message").html == "message"
+		HTMLResponse.success("message").status == 200
+		HTMLResponse.error("error").html == "error"
+		HTMLResponse.error("error").status == 400
+		HTMLResponse.error("error", 422).html == "error"
+		HTMLResponse.error("error", 422).status == 422
 	}
 
 	void "template with asset helper"() {
@@ -182,7 +182,7 @@ class HandlebarsSpec extends Specification {
 		def result = hbt.renderTemplate("hbs/assetHelperTest", model)
 
 		then:
-		result.text == 'Hello World!\n<img src="/assets/plugin/handlebars-plugin/foo/bar" />\n'
+		result.html == 'Hello World!\n<img src="/assets/plugin/handlebars-plugin/foo/bar" />\n'
 		result.status == 200
 	}
 

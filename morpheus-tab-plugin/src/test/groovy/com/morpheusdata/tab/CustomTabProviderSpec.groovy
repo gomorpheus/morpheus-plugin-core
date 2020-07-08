@@ -3,7 +3,7 @@ package com.morpheusdata.tab
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
-import com.morpheusdata.views.TemplateResponse
+import com.morpheusdata.views.HTMLResponse
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -17,12 +17,12 @@ class CustomTabProviderSpec extends Specification {
 	void "renderTemplate with instance"() {
 		when:
 		Instance instance = new Instance(name: 'My Instance', maxCores: 2, status: 'Running', description: 'abc123')
-		TemplateResponse res = provider.renderTemplate(instance)
+		HTMLResponse res = provider.renderTemplate(instance)
 
 		then:
 		1 * plugin.name >> 'My Plugin'
 		1 * plugin.classLoader >> this.class.classLoader
-		res.text == """<h1>${instance.name}</h1>
+		res.html == """<h1>${instance.name}</h1>
 <dl>
 	<dt>Description</dt>
 	<dd>${instance.description}</dd>

@@ -2,7 +2,7 @@ package com.morpheusdata.task
 
 import com.morpheusdata.model.Permission
 import com.morpheusdata.views.JsonResponse
-import com.morpheusdata.views.TemplateResponse
+import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 import com.morpheusdata.web.PluginController
 import com.morpheusdata.web.Route
@@ -17,7 +17,7 @@ class MikeTaskController implements PluginController {
 
 	def example(ViewModel<String> model) {
 		println model
-		return TemplateResponse.success("foo")
+		return HTMLResponse.success("foo")
 	}
 
 	def json(ViewModel<Map> model) {

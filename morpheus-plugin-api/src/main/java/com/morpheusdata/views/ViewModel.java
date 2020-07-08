@@ -3,6 +3,10 @@ package com.morpheusdata.views;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+/**
+ * This model will be provided from Morpheus-ui to the plugin controller. It contains the request/response
+ * @param <T>
+ */
 public class ViewModel<T> {
 	public T object;
 	public ServletRequest request;

@@ -3,13 +3,16 @@ package com.morpheusdata.views;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateLoader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * HandlebarsRenderer implements the Renderer interface.
+ * It uses a Dynamic template loader and Handlebars engine to render templates.
+ */
 public class HandlebarsRenderer implements Renderer<Handlebars> {
 	private final Handlebars engine;
 	private DynamicTemplateLoader loader;
@@ -61,7 +64,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	@Override
-	public TemplateResponse render(String templateText, ViewModel<?> model) {
+	public HTMLResponse render(String templateText, ViewModel<?> model) {
 		Template template = null;
 		try {
 			template = engine.compileInline(templateText);
@@ -72,7 +75,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	@Override
-	public TemplateResponse renderTemplate(String location, ViewModel<?> model) {
+	public HTMLResponse renderTemplate(String location, ViewModel<?> model) {
 		Template template;
 		try {
 			template = engine.compile(location);
@@ -94,35 +97,30 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	 * @param pluginName name of the plugin
 	 */
 	public void registerAssetHelper(String pluginName) {
-		engine.registerHelper("asset", new Helper<String>() {
-			@Override
-			public Object apply(String context, Options options) throws IOException {
-				return "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context;
-			}
-		});
+		engine.registerHelper("asset", (Helper<String>) (context, options) -> "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context);
 	}
 
-	private TemplateResponse handleError(Exception e) {
+	private HTMLResponse handleError(Exception e) {
 		e.printStackTrace();
-		TemplateResponse response  = new TemplateResponse();
+		HTMLResponse response  = new HTMLResponse();
 		if (FileNotFoundException.class.equals(e.getClass())) {
-			response.text = "Template file not found: " + e.getMessage();
+			response.html = "Template file not found: " + e.getMessage();
 		} else {
-			response.text = e.getMessage();
+			response.html = e.getMessage();
 		}
 		response.status = 400;
 		return response;
 	}
 
-	private TemplateResponse applyModel(Template template, ViewModel<?> model) {
-		TemplateResponse response = new TemplateResponse();
+	private HTMLResponse applyModel(Template template, ViewModel<?> model) {
+		HTMLResponse response = new HTMLResponse();
 		try {
 			if(template == null) {
 				throw new Exception("No template defined.");
 			} else if (model != null && model.object != null) {
-				response.text = template.apply(model.object);
+				response.html = template.apply(model.object);
 			} else {
-				response.text = template.text();
+				response.html = template.text();
 			}
 
 			response.status = model.status;
