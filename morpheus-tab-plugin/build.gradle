@@ -8,9 +8,7 @@ buildscript {
 	}
 }
 
-plugins {
-	id "com.github.johnrengelman.shadow" version "6.0.0"
-}
+apply plugin: 'com.github.johnrengelman.shadow'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
