@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
-version = '1.0.1'
+version = '1.0.2'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
