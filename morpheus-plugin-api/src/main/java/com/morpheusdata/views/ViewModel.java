@@ -5,7 +5,7 @@ import javax.servlet.ServletResponse;
 
 /**
  * This model will be provided from Morpheus-ui to the plugin controller. It contains the request/response
- * @param <T>
+ * @param <T> Type of object in the model.
  */
 public class ViewModel<T> {
 	public T object;
