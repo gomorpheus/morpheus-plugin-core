@@ -5,16 +5,18 @@ buildscript {
 	}
 	dependencies {
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
+		classpath "com.github.jengelman.gradle.plugins:shadow:6.0.0"
 	}
 }
 
 
 
+
 subprojects {
-	version = '0.2.1'
+	version = '0.2.2-SNAPSHOT'
 	apply plugin: 'java'
 	apply plugin: 'com.jfrog.bintray'
-	tasks.withType(Jar) {
+	tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 		destinationDirectory = file("$rootDir/plugins")
 	}
 }
