@@ -1,1 +1,1 @@
-alert("Script loaded from AssetPipeline");
+console.log("Script loaded from AssetPipeline");
