@@ -22,7 +22,7 @@ class DispatcherSpec extends Specification {
 				'com.morpheusdata.views.TestController',
 				'example',
 				new ViewModel<Map>()
-		).text == "foo"
+		).html == "foo"
 	}
 
 	void "Test dispatch json"() {
