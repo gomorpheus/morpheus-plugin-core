@@ -127,5 +127,5 @@ test {
 	}
 }
 
-
+tasks.assemble.dependsOn tasks.shadowJar
 bintrayUpload.dependsOn build
