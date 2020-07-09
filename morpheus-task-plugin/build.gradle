@@ -64,7 +64,7 @@ jar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.task.TaskPlugin',
-				'Plugin-Version': archiveVersion
+				'Plugin-Version': version
 		)
 	}
 }

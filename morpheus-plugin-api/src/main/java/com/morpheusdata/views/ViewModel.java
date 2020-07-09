@@ -14,7 +14,7 @@ public class ViewModel<T> {
 	public Integer status = 200;
 
 	static ViewModel<?> of(Object data) {
-		ViewModel<Object> obj = new ViewModel<Object>();
+		ViewModel<Object> obj = new ViewModel<>();
 		obj.object = data;
 		return obj;
 	}
