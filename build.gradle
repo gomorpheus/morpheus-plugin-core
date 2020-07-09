@@ -19,6 +19,7 @@ subprojects {
 	tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 		destinationDirectory = file("$rootDir/plugins")
 	}
+	
 }
 
 apply plugin: 'java'
