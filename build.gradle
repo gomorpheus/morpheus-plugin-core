@@ -13,13 +13,14 @@ buildscript {
 
 
 subprojects {
-	version = '0.2.2-SNAPSHOT'
+	version = '0.2.2'
 	apply plugin: 'java'
+	// apply plugin: 'java-library'
 	apply plugin: 'com.jfrog.bintray'
 	tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 		destinationDirectory = file("$rootDir/plugins")
 	}
-	
+
 }
 
 apply plugin: 'java'
