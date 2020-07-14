@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.Permission
 import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
@@ -47,6 +48,13 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 
 	@Override
 	Boolean show(Instance instance, User user, Account account) {
-		true
+		def show = true
+		println "user has permissions: ${user.permissions}"
+		plugin.permissions.each { Permission permission ->
+			if(user.permissions[permission.code] != permission.availableAccessTypes.last().toString()){
+				show = false
+			}
+		}
+		return show
 	}
 }
