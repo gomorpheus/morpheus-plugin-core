@@ -41,7 +41,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildInstanceTaskConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildInstanceTaskConfig(instance, baseConfig, task, excludes, opts);
+		return getContext().buildInstanceConfig(instance, baseConfig, task, excludes, opts);
 	}
 
 	/**
