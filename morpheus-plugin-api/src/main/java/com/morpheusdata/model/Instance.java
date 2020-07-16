@@ -44,7 +44,7 @@ public class Instance extends MorpheusModel {
 	public String servicePassword;
 
 
-	private Collection<Workload> workloads;
+	private Collection<Workload> containers;
 
 	public String getUuid() {
 		return uuid;
@@ -73,13 +73,13 @@ public class Instance extends MorpheusModel {
 		markDirty("description", description);
 	}
 
-	public Collection<Workload> getWorkloads() {
-		return workloads;
+	public Collection<Workload> getContainers() {
+		return containers;
 	}
 
-	public void setWorkloads(Collection<Workload> workloads) {
-		this.workloads = workloads;
-		markDirty("workloads", workloads);
+	public void setContainers(Collection<Workload> containers) {
+		this.containers = containers;
+		markDirty("workloads", containers);
 	}
 
 	public String getInstanceTypeName() {
