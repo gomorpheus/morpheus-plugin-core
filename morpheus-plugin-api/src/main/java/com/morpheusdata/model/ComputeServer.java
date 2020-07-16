@@ -8,12 +8,12 @@ package com.morpheusdata.model;
  */
 public class ComputeServer  extends MorpheusModel {
 
-	private String uuid;
-	private String name;
-	private String displayName;
-	private String externalId;
-	private String uniqueId;
-	private Zone zone;
+	public String uuid;
+	public String name;
+	public String displayName;
+	public String externalId;
+	public String uniqueId;
+	public Zone zone;
 
 	public String getUuid() {
 		return uuid;
