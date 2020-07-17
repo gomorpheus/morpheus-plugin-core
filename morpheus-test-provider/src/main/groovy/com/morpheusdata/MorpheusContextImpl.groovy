@@ -6,7 +6,10 @@ import com.morpheusdata.core.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusTaskContext
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
+import com.morpheusdata.model.Instance
 import com.morpheusdata.model.LogLevel
+import com.morpheusdata.model.Task
+import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.TaskResult
 import io.reactivex.Single
 
@@ -73,6 +76,21 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo) {
+		return null
+	}
+
+	@Override
+	Single<TaskConfig> buildInstanceConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts) {
+		return null
+	}
+
+	@Override
+	Single<TaskConfig> buildContainerConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
+		return null
+	}
+
+	@Override
+	Single<TaskConfig> buildComputeServerConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts) {
 		return null
 	}
 }
