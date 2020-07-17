@@ -68,7 +68,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildContainerTaskConfig(container, baseConfig, task, excludes, opts);
+		return getContext().buildContainerConfig(container, baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -82,6 +82,6 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer server, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildComputeServerTaskConfig(server, baseConfig, task, excludes, opts);
+		return getContext().buildComputeServerConfig(server, baseConfig, task, excludes, opts);
 	}
 }
