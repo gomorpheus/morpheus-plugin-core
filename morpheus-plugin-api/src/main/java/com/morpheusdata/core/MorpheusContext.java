@@ -1,10 +1,10 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.Container;
-import com.morpheusdata.model.LogLevel;
-import com.morpheusdata.model.TaskResult;
+import com.morpheusdata.model.*;
 import io.reactivex.Single;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Provides a means to interact or query data from the main Morpheus application back into the various provider extensions
@@ -134,6 +134,10 @@ public interface MorpheusContext {
 	 * @return A result object detailing the command execution
 	 */
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo);
+
+	Single<TaskConfig> buildInstanceConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts);
+	Single<TaskConfig> buildContainerConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);
+	Single<TaskConfig> buildComputeServerConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts);
 
 	//TODO: Add Locking Provider RPC Calls to acquire distributed locks when necessary
 
