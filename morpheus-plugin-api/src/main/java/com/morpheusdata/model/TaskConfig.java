@@ -98,6 +98,7 @@ public class TaskConfig {
 		public String createdByLastName;
 		public Map evars;
 		public Map metadata;
+		public List<ContainerConfig> containers;
 	}
 
 	public static class ContainerConfig {

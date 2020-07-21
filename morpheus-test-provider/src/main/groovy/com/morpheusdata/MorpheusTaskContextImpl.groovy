@@ -20,22 +20,7 @@ class MorpheusTaskContextImpl implements MorpheusTaskContext {
 	}
 
 	@Override
-	Single<TaskConfig> buildInstanceTaskConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return null
-	}
-
-	@Override
 	Single<TaskConfig> buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return null
-	}
-
-	@Override
-	Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return null
-	}
-
-	@Override
-	Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts) {
 		return null
 	}
 }

@@ -6,6 +6,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Permission
+import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
@@ -42,6 +43,8 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	@Override
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
+		TaskConfig config = morpheusContext.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
+		println "server id: ${config.instance.containers.first().server.externalId}"
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}

@@ -9,11 +9,11 @@ package com.morpheusdata.model;
  * @author David Estes
  */
 public class Workload extends MorpheusModel {
-	String uuid;
+	public String uuid;
 
 
 	/**
 	 * Most workloads are associated with a corresponding host/server record
 	 */
-	ComputeServer server;
+	public ComputeServer server;
 }
