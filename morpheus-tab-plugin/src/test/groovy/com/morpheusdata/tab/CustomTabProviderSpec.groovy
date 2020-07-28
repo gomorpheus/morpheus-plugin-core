@@ -3,7 +3,9 @@ package com.morpheusdata.tab
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.views.HTMLResponse
+import io.reactivex.Single
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -22,6 +24,7 @@ class CustomTabProviderSpec extends Specification {
 		then:
 		1 * plugin.name >> 'My Plugin'
 		1 * plugin.classLoader >> this.class.classLoader
+		1 * context.buildInstanceConfig(_, _, _, _, _) >> Single.just(new TaskConfig())
 		res.html == """<h1>${instance.name}</h1>
 <dl>
 	<dt>Description</dt>
