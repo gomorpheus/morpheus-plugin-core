@@ -7,6 +7,7 @@ import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Permission
 import com.morpheusdata.model.TaskConfig
+import com.morpheusdata.model.TabContentSecurityPolicy
 import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
@@ -44,7 +45,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		TaskConfig config = morpheusContext.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
-		println "server id: ${config.instance.containers.first().server.externalId}"
+		println "server id: ${config.instance?.containers?.first()?.server?.externalId}"
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
@@ -59,5 +60,15 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 			}
 		}
 		return show
+	}
+
+	@Override
+	TabContentSecurityPolicy getContentSecurityPolicy() {
+		def csp = new TabContentSecurityPolicy()
+		csp.scriptSrc = '*.jsdelivr.net'
+		csp.frameSrc = '*.digitalocean.com'
+		csp.imgSrc = '*.wikimedia.org'
+		csp.styleSrc = 'https: *.bootstrapcdn.com'
+		csp
 	}
 }
