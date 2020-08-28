@@ -31,13 +31,13 @@ public interface ApprovalProvider extends PluginProvider {
 	List<Request> monitorApproval(AccountIntegration accountIntegration);
 
 	/**
-	 * Optionally provide custom configuration options when creating a new {@link Policy}
+	 * Optionally provide custom configuration options when creating a new {@link AccountIntegration}
 	 * @return a List of OptionType
 	 */
 	List<OptionType> integrationOptionTypes();
 
 	/**
-	 * Optionally provide custom configuration options when creating a new {@link AccountIntegration}
+	 * Optionally provide custom configuration options when creating a new {@link Policy}
 	 * @return a List of OptionType
 	 */
 	List<OptionType> policyOptionTypes();
