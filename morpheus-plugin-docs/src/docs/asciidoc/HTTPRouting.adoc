@@ -1,0 +1,37 @@
+== HTTP Routing
+
+A plugin may register an endpoint or endpoints to respond with `html` or `json`. To register your routes in your plugin you must implement the `PluginController` class.
+
+=== Models
+
+Incoming requests come with a `ViewModel` object populated with the http request & response details.
+
+=== Example
+
+[source,groovy]
+----
+class MyPluginController implements PluginController {
+	List<Route> getRoutes() {
+		[
+			Route.build("/myPrefix/example", "html", Permission.build("admin", "full")),
+			Route.build("/mikeTask/json", "json", Permission.build("admin", "full"))
+		]
+	}
+
+	def html(ViewModel<String> model) {
+		return HTMLResponse.success("Some Text")
+	}
+
+	def json(ViewModel<Map> model) {
+		Map simpleMap = [serverid: "abc-123", other: model.object.someData]
+		return JsonResponse.of(simpleMap)
+	}
+}
+----
+
+Route provides a builder to allow your plugin to easily build a route with permissions. It takes the `url`, the `method` in this class to call, and a list of `permissions` which can be built with the `Permission` builder.
+
+The route can either return:
+
+* `HTMLResponse` - simple text, or a full rendered view.
+* `JsonResponse` - an object rendered as json.
