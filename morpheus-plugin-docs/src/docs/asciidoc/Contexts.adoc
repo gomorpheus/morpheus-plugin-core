@@ -1,0 +1,12 @@
+== Contexts
+
+A context allows you to interact with, query and save data with Morephus.
+
+=== Network Context
+
+Network Context provides the ability to query and update network services such as IPAM, DNS, etc.
+
+=== Compute Context
+
+Compute context allows you to interact with compute resources such as servers
+

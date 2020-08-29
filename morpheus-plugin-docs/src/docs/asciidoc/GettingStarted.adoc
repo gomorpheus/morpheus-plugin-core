@@ -1,0 +1,75 @@
+== Getting Started
+
+The structure of a Plugin is a typical "fat jar". The plugin will include all the dependencies required to run along with depending on the `morephus-plugin-api`.
+
+=== Gradle project
+
+Create a new project with a `build.gradle` file. We will use the shadowjar plugin to create our "fat jar"
+
+.build.grade
+[source,groovy]
+----
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'com.example'
+version = '1.0.0'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+configurations {
+    provided
+}
+
+dependencies {
+    provided project(':morpheus-plugin-api')
+}
+----
+
+To let the Morpheus plugin manager know what class to load you must specify the class in jar's manifest:
+
+.build.grade
+[source,groovy]
+----
+jar {
+	manifest {
+		attributes(
+				'Plugin-Class': 'com.example.MyPlugin',
+				'Plugin-Version': archiveVersion.get() // Get version defined in gradle
+		)
+	}
+}
+----
+
+=== Plugin Class
+
+Following the example above create your plugin class under `src/main/java/com/example/MyPlugin.java`
+
+Your plugin must extend the `com.morephus.core.Plugin` class:
+
+.MyPlugin.java
+[source,java]
+----
+import com.morephus.core.Plugin;
+
+class MyPlugin extends Plugin {
+
+	@Override
+	void initialize() {
+		this.setName("My Custom Tabs Plugin");
+		CustomTabProvider tabProvider = new CustomTabProvider(this, morpheusContext);
+		this.pluginProviders.put(customTabProvider.providerCode, customTabProvider);
+	}
+}
+----
+
+Here we see a basic plugin that initializes a some metadata (the Plugin Name) and registers a custom tab provider.
+
+=== Registering Providers
+
+A plugin may contain any number of Plugin Providers. A Plugin Provider contains the functionality of your plugin such as a Custom Tab, IPAM, Backup Provider, etc.
+
+There are provided classes such as `TaskProvider`, `ProvisioningProvider`, `ApprovalProvider` and others to get you started building your provider. For example the `InstanceTabProvider` provides a renderer, show method, and security checking method to make it easy to build your own custom tab on the instance page.
+
+
+

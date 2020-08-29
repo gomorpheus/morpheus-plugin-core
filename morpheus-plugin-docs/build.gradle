@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+}
+
+plugins {
+	id 'org.asciidoctor.jvm.convert' version '3.1.0'
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+	mavenCentral()
+}
+
+configurations {
+    provided
+}
+
+dependencies {
+}
