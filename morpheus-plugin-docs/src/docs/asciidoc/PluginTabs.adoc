@@ -1,8 +1,8 @@
-== Instance Tabs
+=== Instance Tabs
 
 Customize the UI for your Instances by providing your own tabs.
 
-=== Setup
+==== Setup
 Create a new class that extends `AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method. Below is a simple example binding the Instance object to the template model
 [source, groovy]
 ----
@@ -22,11 +22,11 @@ To override this default, implement the `InstanceTabProvider` interface and then
 your own `getRenderer()` method.
 
 
-=== Templating
+==== Templating
 Template files should be placed under `src/main/resources/renderer`.
 See the documentation for your templating engine for specific syntax.
 
-==== Asset references
+===== Asset references
 Provided with the `AbstractInstanceTabProvider` is a helper tag to include
 assets in your Handlebars template that will be served by AssetPipeline.
 Place your assets under `src/assets/{plugin-code}`.
@@ -36,8 +36,9 @@ Place your assets under `src/assets/{plugin-code}`.
 <script src="{{asset "/instance-tab.js"}}" ></script>
 ----
 
-=== Security Policies
-==== User Permissions
+==== Security Policies
+
+===== User Permissions
 Before a template is rendered in the UI, the `InstanceTabProvider.show` method is called to determine if the current user can view the custom Instance Tab.
 For example, you may wish to check that the current `User` has been granted the custom permission defined by your plugin.
 
@@ -55,7 +56,7 @@ Boolean show(Instance instance, User user, Account account) {
 }
 ----
 
-==== Content Security Policy
+===== Content Security Policy
 If your custom UI needs to include external resources such as scripts, stylesheets, or frames,
 you will need to customize the Morpheus `Content-Security-Policy` Header to allow those elements to be loaded in the browser.
 
