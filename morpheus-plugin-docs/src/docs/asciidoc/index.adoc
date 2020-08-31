@@ -3,10 +3,25 @@
 
 == Introduction
 
-The Morephus Plugin API is a Java based library for creating Plugins that add functionality to Morephus.
+The Morpheus Plugin API is a Java based library for creating Plugins that add functionality to Morpheus.
+
+include::GettingStarted.adoc[]
 
 include::Contexts.adoc[]
 
+include::Models.adoc[]
+
 include::HTTPRouting.adoc[]
+
+include::Views.adoc[]
+
+include::Testing.adoc[]
+
+include::PluginTabs.adoc[]
+
+include::PluginClass.adoc[]
+
+include::TaskPlugin.adoc[]
+
 
 include::TaskPlugin.adoc[]
