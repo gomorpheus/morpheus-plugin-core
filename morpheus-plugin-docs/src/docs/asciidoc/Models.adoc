@@ -1,3 +1,3 @@
 == Models
 
-When interacting with Morpheus you must use the models provided in `com.morpheusdata.model.*`. This allows for the context to have strongly typed.
+When interacting with Morpheus you must use the models provided in `com.morpheusdata.model.*`. This allows for the context to be strongly typed.
