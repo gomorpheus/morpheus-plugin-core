@@ -16,6 +16,24 @@ This service defines methods for task execution in a variety of contexts, descri
 `OptionType` is an easy way to create configuration for your new Task.
 Simply provide a list of `com.morpheusdata.model.OptionType` to the `TaskProvider.getOptionTypes` method.
 
+[source,groovy]
+----
+	@Override
+	List<OptionType> getOptionTypes() {
+		OptionType optionType = new OptionType(
+				name: 'myTask',
+				code: 'myTaskText',
+				fieldName: 'myTask',
+				optionSource: true,
+				displayOrder: 0,
+				fieldLabel: 'Text to Reverse',
+				required: true,
+				inputType: OptionType.InputType.TEXT
+		)
+		return [optionType]
+	}
+----
+
 ==== Task Contexts
 
 A task can be run in one of three contexts:
