@@ -35,3 +35,18 @@ The route can either return:
 
 * `HTMLResponse` - simple text, or a full rendered view.
 * `JsonResponse` - an object rendered as json.
+
+After creating a `PluginController`, register it in your plugin like so:
+
+.MyPlugin.java
+[source,java]
+----
+	@Override
+	void initialize() {
+		this.setName("My Custom Task Plugin");
+		CustomTaskProvider taskProvider = new CustomTaskProvider(this, morpheusContext);
+		this.pluginProviders.put(taskProvider.providerCode, taskProvider);
+
+		this.controllers.add(new MyPluginController());
+	}
+----

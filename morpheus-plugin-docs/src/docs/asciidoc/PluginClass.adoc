@@ -1,6 +1,6 @@
 === Plugin Class
 
-Following the example above create your plugin class under `src/main/java/com/example/MyPlugin.java`
+Following the example above, create your plugin class under `src/main/java/com/example/MyPlugin.java`
 
 Your plugin must extend the `com.morephus.core.Plugin` class:
 
@@ -15,12 +15,12 @@ class MyPlugin extends Plugin {
 	void initialize() {
 		this.setName("My Custom Tabs Plugin");
 		CustomTabProvider tabProvider = new CustomTabProvider(this, morpheusContext);
-		this.pluginProviders.put(customTabProvider.providerCode, customTabProvider);
+		this.pluginProviders.put(tabProvider.providerCode, tabProvider);
 	}
 }
 ----
 
-Here we see a basic plugin that initializes a some metadata (the Plugin Name) and registers a custom tab provider.
+Here we see a basic plugin that initializes some metadata (the Plugin Name) and registers a custom tab provider.
 
 === Registering Providers
 
