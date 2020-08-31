@@ -23,5 +23,7 @@ include::PluginClass.adoc[]
 
 include::TaskPlugin.adoc[]
 
+include::PluginTabs.adoc[]
 
-include::TaskPlugin.adoc[]
+include::ApprovalsPlugin.adoc[]
+
