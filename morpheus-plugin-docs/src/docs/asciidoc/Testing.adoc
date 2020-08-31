@@ -1,6 +1,6 @@
 == Testing
 
-We recommend Spock for easily testing your plugin. The interfaces can easily be mocked and stubbed to allow you to test your integrations without a running Morpheus instance.
+We recommend http://spockframework.org/[Spock] for easily testing your plugin. The interfaces can easily be mocked and stubbed to allow you to test your integrations without a running Morpheus instance.
 
 === Example
 
@@ -40,4 +40,4 @@ class InfobloxProviderSpec extends Specification {
 }
 ----
 
-As you can see implementing unit and integration testing for your plugins can be done easily with Spock. Of course any other JVM unit testing framework should work as well.
+As you can see, implementing unit and integration testing for your plugins can be done easily with Spock. Of course any other JVM unit testing framework should work as well.

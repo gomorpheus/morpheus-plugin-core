@@ -3,7 +3,8 @@
 Customize the UI for your Instances by providing your own tabs.
 
 ==== Setup
-Create a new class that extends `AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method. Below is a simple example binding the Instance object to the template model
+Create a new class that extends `com.morpheusdata.core.AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method.
+Below is a simple example binding the Instance object to the template model.
 [source, groovy]
 ----
 @Override
@@ -15,26 +16,15 @@ HTMLResponse renderTemplate(Instance instance) {
 ----
 
 [TIP]
-Use `MorpheusContext.buildInstanceConfig` to get more details about your Instance. See `TaskConfig`
+Use `MorpheusContext.buildInstanceConfig` to get more details about your Instance. See `com.morpheusdata.model.TaskConfig`
 
 https://github.com/jknack/handlebars.java[Handlebars] is the default provided template engine.
-To override this default, implement the `InstanceTabProvider` interface and then write
+To override this default, implement the `com.morpheusdata.core.InstanceTabProvider` interface and then write
 your own `getRenderer()` method.
 
 
-==== Templating
-Template files should be placed under `src/main/resources/renderer`.
-See the documentation for your templating engine for specific syntax.
-
-===== Asset references
-Provided with the `AbstractInstanceTabProvider` is a helper tag to include
-assets in your Handlebars template that will be served by AssetPipeline.
-Place your assets under `src/assets/{plugin-code}`.
-
-
-----
-<script src="{{asset "/instance-tab.js"}}" ></script>
-----
+=== Templating
+See the <<Views.adoc#views, Views>> section and the documentation for your templating engine for specific syntax.
 
 ==== Security Policies
 

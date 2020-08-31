@@ -10,3 +10,6 @@ Network Context provides the ability to query and update network services such a
 
 Compute context allows you to interact with compute resources such as servers
 
+=== Task Context
+
+Task Context allows you to disable tasks and access configuration about the context in which a task is executing.
