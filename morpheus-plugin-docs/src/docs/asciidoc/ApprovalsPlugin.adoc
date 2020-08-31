@@ -3,6 +3,7 @@
 Integrate Morpheus with your own ITSM solution
 
 === Setup
+
 This plugin will enable you to create configuration for several aspects of Approvals within Morpheus.
 
 === Integration
@@ -26,12 +27,14 @@ Each `Request` will have one or more `RequestReference` for each resource associ
 It is important that you specify an `externalId` in the `RequestResponse` and each `RequestReference` so that Morpheus can track the approval status.
 
 The `integrationOptionTypes` you specified are available in the method argument `Policy.configMap`
+
 [source,groovy]
 ----
- String itsmEndpoint = accountIntegration.configMap?.cm?.plugin?."itsm-endpoint"
+String itsmEndpoint = accountIntegration.configMap?.cm?.plugin?."itsm-endpoint"
 ----
 
 and the `policyOptionTypes` you specified are available in the method argument `AccountIntegration.configMap`.
+
 [source,groovy]
 ----
 String myPolicyConfigValue = policy.configMap?."my-policy-config-option"
