@@ -45,7 +45,7 @@ class FileWatcherProvider implements ApprovalProvider {
 		String externalRequestId = "AO_REQ_${request.id}"
 		def resp
 		try {
-			String approvalsDirName = accountIntegration.configMap?.cm?.plugin?."file-location"
+			String approvalsDirName = getApprovalsDir(accountIntegration)
 			println(policy.configMap?."file-watch-policy-1")
 			File approvalsDir = new File(approvalsDirName)
 			if(!approvalsDir.exists()) {
@@ -82,7 +82,7 @@ ${resp.references*.externalId.join(',')}
 	@Override
 	List<Request> monitorApproval(AccountIntegration accountIntegration) {
 		List approvalsResp = []
-		File approvalsDir = new File('src/test/resources/approval-requests')
+		File approvalsDir = new File(getApprovalsDir(accountIntegration))
 		approvalsDir.listFiles().each { File file ->
 			println "reading file $file.absolutePath"
 			List<String> lines = file.readLines()
@@ -99,5 +99,9 @@ ${resp.references*.externalId.join(',')}
 	@Override
 	List<OptionType> policyOptionTypes() {
 		[new OptionType(code: 'plugin-policy-1', name: 'Policy Option 1', fieldName: 'file-watch-policy-1', fieldLabel: 'Custom Policy Option 1', displayOrder: 0)]
+	}
+
+	private getApprovalsDir(AccountIntegration accountIntegration) {
+		accountIntegration.configMap?.cm?.plugin?."file-location"
 	}
 }
