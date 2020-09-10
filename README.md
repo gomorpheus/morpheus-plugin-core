@@ -1,12 +1,12 @@
 # Morpheus Core Plugin Library
 
-This library provides a common framework for extending the Morpheus Ops Orchestration Tool. This includes providing plugin extensions for adding various integrations such as Cloud Integrations, Service Level Integrations or Providers for things like DNS, IPAM, Config Management, Etc.
+This library provides a common framework for extending the Morpheus Ops Orchestration Tool. This includes providing plugin extensions for adding various integrations such as Cloud Integrations, Service Level Integrations or Providers for things like DNS, IPAM, Config Management, UI Extensions, Etc.
 
 ## Creating a Plugin
 
 ### Implementation
 
-A plugin must depend the `morpheus-core` library and implement the `Plugin` class.
+A plugin must depend the `morpheus-plugin-api` library and implement the `Plugin` class.
 
 ### Dependencies
 
