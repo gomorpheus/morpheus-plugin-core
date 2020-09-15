@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * A Template Loader for handlebars that sets some defaulst and uses an injected classloader
+ * A Template Loader for handlebars that sets some defaults and uses an injected classloader
  *
  * Default prefix "hbs/"
  * Default suffix ".hbs"

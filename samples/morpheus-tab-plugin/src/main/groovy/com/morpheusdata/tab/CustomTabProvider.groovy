@@ -45,7 +45,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		TaskConfig config = morpheusContext.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
-		println "server id: ${config.instance?.containers?.first()?.server?.externalId}"
+		println "server id2: ${config.instance?.containers?.first()?.server?.externalId}"
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
@@ -54,11 +54,11 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	Boolean show(Instance instance, User user, Account account) {
 		def show = true
 		println "user has permissions: ${user.permissions}"
-		plugin.permissions.each { Permission permission ->
-			if(user.permissions[permission.code] != permission.availableAccessTypes.last().toString()){
-				show = false
-			}
-		}
+		// plugin.permissions.each { Permission permission ->
+		// 	if(user.permissions[permission.code] != permission.availableAccessTypes.last().toString()){
+		// 		show = false
+		// 	}
+		// }
 		return show
 	}
 

@@ -4,14 +4,17 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.views.HandlebarsRenderer
 import com.morpheusdata.views.ViewModel
 
-class TaskPlugin extends Plugin {
+class ReverseTextTaskPlugin extends Plugin {
+
 	@Override
 	void initialize() {
-		MikeTaskProvider mikeTaskProvider = new MikeTaskProvider(this, morpheusContext)
-		this.setName("Task")
-		this.pluginProviders.put(mikeTaskProvider.providerCode, mikeTaskProvider)
+		ReverseTextTaskProvider reverseTextTaskProvider = new ReverseTextTaskProvider(this, morpheusContext)
+		this.setName("Reverse Text Task Plugin")
+		this.setDescription("Provides a task that can reverse the value of any string input")
+		this.setAuthor("Mike Truso")
+		this.pluginProviders.put(reverseTextTaskProvider.providerCode, reverseTextTaskProvider)
 		this.setRenderer(new HandlebarsRenderer(this.classLoader))
-		this.controllers.add(new MikeTaskController())
+		this.controllers.add(new ReverseTextTaskController())
 		def model = new ViewModel<String>()
 		model.object = "Eric"
 
@@ -23,6 +26,6 @@ class TaskPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.task.disableTask('miketask')
+		morpheusContext.task.disableTask('reverseTextTask')
 	}
 }

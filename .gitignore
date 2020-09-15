@@ -1,5 +1,6 @@
 build/
 plugins/
+testplugins/
 .asscache
 .gradle/
 .idea

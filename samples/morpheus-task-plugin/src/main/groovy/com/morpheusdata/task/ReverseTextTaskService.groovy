@@ -4,10 +4,10 @@ import com.morpheusdata.core.AbstractTaskService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.model.*
 
-class MikeTaskService extends AbstractTaskService {
+class ReverseTextTaskService extends AbstractTaskService {
 	MorpheusContext context
 
-	MikeTaskService(MorpheusContext context) {
+	ReverseTextTaskService(MorpheusContext context) {
 		this.context = context
 	}
 
@@ -25,7 +25,7 @@ class MikeTaskService extends AbstractTaskService {
 		if(container) {
 			config = buildContainerTaskConfig(container, [:], task, [], opts).blockingGet()
 		}
-		context.executeSshCommand('localhost', 8080, 'bob', 'password', 'echo $JAVA_HOME', null, null, null, false, LogLevel.debug, false, null, false)
+	
 		executeTask(task, config)
 	}
 
@@ -74,12 +74,12 @@ class MikeTaskService extends AbstractTaskService {
 
 	TaskResult executeTask(Task task, TaskConfig config) {
 		println config.accountId
-		def taskOption = task.taskOptions.find { it.optionType.code == 'mikeTaskText' }
-		String data = taskOption?.value
+		def taskOption = task.taskOptions.find { it.optionType.code == 'reverseTextTaskText' }
+		String data = taskOption?.value?.reverse()
 		new TaskResult(
 				success: true,
 				data   : data,
-				output : data.reverse()
+				output : data
 		)
 	}
 }

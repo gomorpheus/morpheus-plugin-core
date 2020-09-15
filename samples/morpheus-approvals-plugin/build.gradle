@@ -19,7 +19,6 @@ apply plugin: 'asset-pipeline'
 group = 'com.morpheusdata'
 version = '1.0.1'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
 repositories {
 	mavenLocal()
 	jcenter()
@@ -63,7 +62,7 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-				'Plugin-Class': 'com.morpheusdata.task.TaskPlugin',
+				'Plugin-Class': 'com.morpheusdata.approvals.ApprovalsPlugin',
 				'Plugin-Version': version
 		)
 	}
@@ -91,9 +90,9 @@ publishing {
 			pom.withXml {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
-					name 'morpheus-task-plugin'
+					name 'morpheus-approvals-plugin'
 					description 'Morpheus Plugin API provides the core framework for implementing extension plugins for the morpheus platform'
-					url 'https://github.com/bertramdev/morpheus-task-plugin'
+					url 'https://github.com/bertramdev/morpheus-approvals-plugin'
 					scm {
 						url 'https://github.com/bertramdev/morpheus-core'
 						connection 'scm:https://bertramdev@github.com/gomorpheus/morpheus-core.git'

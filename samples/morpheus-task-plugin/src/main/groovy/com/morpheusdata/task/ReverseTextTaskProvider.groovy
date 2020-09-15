@@ -4,12 +4,12 @@ import com.morpheusdata.core.*
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType
 
-class MikeTaskProvider implements TaskProvider {
+class ReverseTextTaskProvider implements TaskProvider {
 	MorpheusContext morpheusContext
 	Plugin plugin
 	AbstractTaskService service
 
-	MikeTaskProvider(Plugin plugin, MorpheusContext morpheusContext) {
+	ReverseTextTaskProvider(Plugin plugin, MorpheusContext morpheusContext) {
 		this.plugin = plugin
 		this.morpheusContext = morpheusContext
 	}
@@ -26,12 +26,12 @@ class MikeTaskProvider implements TaskProvider {
 
 	@Override
 	ExecutableTaskInterface getService() {
-		return new MikeTaskService(morpheusContext)
+		return new ReverseTextTaskService(morpheusContext)
 	}
 
 	@Override
 	String getTaskCode() {
-		return "miketask"
+		return "reverseTextTask"
 	}
 
 	@Override
@@ -41,12 +41,12 @@ class MikeTaskProvider implements TaskProvider {
 
 	@Override
 	String getTaskName() {
-		return 'Mike Task'
+		return 'Reverse Text'
 	}
 
 	@Override
 	String getTaskDescription() {
-		return 'A custom task that reverses task'
+		return 'A custom task that reverses text'
 	}
 
 	@Override
@@ -77,9 +77,9 @@ class MikeTaskProvider implements TaskProvider {
 	@Override
 	List<OptionType> getOptionTypes() {
 		OptionType optionType = new OptionType(
-				name: 'mikeTask',
-				code: 'mikeTaskText',
-				fieldName: 'mikeTask',
+				name: 'reverseText',
+				code: 'reverseTextTaskText',
+				fieldName: 'reversableText',
 				optionSource: true,
 				displayOrder: 0,
 				fieldLabel: 'Text to Reverse',
@@ -91,12 +91,12 @@ class MikeTaskProvider implements TaskProvider {
 
 	@Override
 	String getProviderCode() {
-		return "mikeTaskService"
+		return "reverseTextTaskService"
 	}
 
 	@Override
 	String getProviderName() {
-		return "Mike Task Service"
+		return "Reverse Text Task"
 	}
 
 }
