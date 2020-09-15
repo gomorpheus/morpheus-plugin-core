@@ -7,11 +7,11 @@ import com.morpheusdata.views.ViewModel
 import com.morpheusdata.web.PluginController
 import com.morpheusdata.web.Route
 
-class MikeTaskController implements PluginController {
+class ReverseTextTaskController implements PluginController {
 	List<Route> getRoutes() {
 		[
-			Route.build("/mikeTask/example", "example", Permission.build("admin", "full")),
-			Route.build("/mikeTask/json", "json", Permission.build("admin", "full"))
+			Route.build("/reverseTask/example", "example", Permission.build("admin", "full")),
+			Route.build("/reverseTask/json", "json", Permission.build("admin", "full"))
 		]
 	}
 

@@ -13,7 +13,7 @@ buildscript {
 
 
 subprojects {
-	version = '0.4.0'
+	version = '0.4.1'
 	apply plugin: 'java'
 	apply plugin: 'com.jfrog.bintray'
 	tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {

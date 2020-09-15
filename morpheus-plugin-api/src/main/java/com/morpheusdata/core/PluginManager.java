@@ -71,13 +71,15 @@ public class PluginManager {
 
 	/**
 	 * This pluginManager endpoint allows for registration and instantiation of a Morpheus Plugin.
-	 * TODO: Plugin manager needs to grab metadata info for registering the right information in Morpheus as far as what the plugin provides.
+	 * The resulting Plugin instance is returned for reference and any post initialization operations the developer
+	 * may want to perform
 	 *
 	 * @param pluginClass
+	 * @return Plugin the instanced Plugin class loaded from the jar
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
+	Plugin registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
 		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
 		ClassLoader pluginClassLoader =  new ChildFirstClassLoader(new URL[]{jarUrl}, pluginManagerClassLoader);
 
@@ -93,14 +95,16 @@ public class PluginManager {
 			this.renderer.addTemplateLoader(pluginClassLoader);
 		}
 		plugins.add(plugin);
+		return plugin;
 	}
 
 	/**
 	 * Given a path to a plugin pathToJar file - create a child classloader, extract the Plugin Manifest and registers.
 	 * @param pathToJar Path to jar file
 	 * @throws Exception if file does not exist
+	 * @return Plugin the instanced Plugin class loaded from the jar
 	 */
-	public void registerPlugin(String pathToJar) throws Exception {
+	public Plugin registerPlugin(String pathToJar) throws Exception {
 		File jarFile = new File(pathToJar);
 		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
 
@@ -116,10 +120,11 @@ public class PluginManager {
 			Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
 			System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
-			registerPlugin(pluginClass, jarFile, pluginVersion);
+			return registerPlugin(pluginClass, jarFile, pluginVersion);
 		} catch (Exception e) {
 			System.out.println("Unable to load plugin class from " + pathToJar);
 			e.printStackTrace();
+			return null;
 		}
 	}
 
