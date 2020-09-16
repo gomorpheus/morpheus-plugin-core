@@ -45,7 +45,6 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
 		TaskConfig config = morpheusContext.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
-		println "server id2: ${config.instance?.containers?.first()?.server?.externalId}"
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}
