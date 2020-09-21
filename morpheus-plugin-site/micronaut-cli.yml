@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.morpheus
+testFramework: junit
+sourceLanguage: groovy
+buildTool: gradle
+features: [app-name, asciidoctor, docker, file-watch, gradle, groovy, groovy-application, http-client, junit, logback, netty-server, readme, shade, yaml]
