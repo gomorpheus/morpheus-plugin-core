@@ -1,0 +1,15 @@
+micronaut:
+  application:
+    name: morpheus-plugin-site
+  server:
+    port: 8090
+  router:
+    static-resources:
+      docs:
+        enabled: true   
+        mapping: "/docs/**"  
+        paths: "classpath:asciidoc"
+      default:
+        enabled: true   
+        mapping: "/**"  
+        paths: "classpath:static"

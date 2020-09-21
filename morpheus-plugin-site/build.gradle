@@ -1,0 +1,97 @@
+plugins {
+    id "org.asciidoctor.jvm.convert" version "3.1.0"
+    id "groovy"
+    id "com.github.johnrengelman.shadow"
+    id "application"
+    id "com.bertramlabs.asset-pipeline" version "3.0.10"
+}
+
+version "0.1"
+group "com.morpheusdata"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+    // for dependencies that are needed for development only
+    developmentOnly
+}
+
+dependencies {
+    runtime 'com.bertramlabs.plugins:asset-pipeline-micronaut:3.0.10'
+    assets 'com.bertramlabs.plugins:less-asset-pipeline:3.0.10'
+    compileOnly(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    compileOnly("io.micronaut:micronaut-inject-groovy")
+    implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    implementation("io.micronaut:micronaut-inject")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.groovy:micronaut-runtime-groovy")
+    implementation("io.micronaut:micronaut-http-server-netty")
+    implementation("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
+    testImplementation("io.micronaut:micronaut-inject-groovy")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+}
+
+test.classpath += configurations.developmentOnly
+
+mainClassName = "com.morpheus.Application"
+
+// use JUnit 5 platform
+test {
+    useJUnitPlatform()
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion('1.8')
+    targetCompatibility = JavaVersion.toVersion('1.8')
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+tasks.withType(JavaExec) {
+    classpath += configurations.developmentOnly
+    jvmArgs('-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+    if (gradle.startParameter.continuous) {
+        systemProperties(
+            'micronaut.io.watch.restart':'true',
+            'micronaut.io.watch.enabled':'true',
+            "micronaut.io.watch.paths":"src/main"
+        )
+    }
+}
+
+assets {
+  // developmentRuntime = false
+  from 'morpheus-plugin-site/src/assets'
+}
+
+// project(':common:shared').projectDir
+
+task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
+    from new File(project(':morpheus-plugin-docs').buildDir,'/docs')
+    into 'src/main/resources/'
+}
+
+[ tasks.run].each { runTask ->
+    configure(runTask) {
+        systemProperties System.properties
+    }
+}
+
+tasks.shadowJar.dependsOn assetCompile
+tasks.assetCompile.dependsOn processResources
+tasks.processResources.dependsOn copyManual
+tasks.assetCompile.dependsOn copyManual
