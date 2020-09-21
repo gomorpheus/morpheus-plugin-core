@@ -1,6 +1,6 @@
 == Getting Started
 
-The structure of a Plugin is a typical "fat jar". The plugin will include `morephus-plugin-api` along with all the dependencies required to run.
+The structure of a Plugin is a typical "fat jar". The plugin will include `morpheus-plugin-api` along with all the dependencies required to run.
 
 === Gradle project
 

@@ -84,9 +84,16 @@ ${resp.references*.externalId.join(',')}
 		List approvalsResp = []
 		File approvalsDir = new File(getApprovalsDir(accountIntegration))
 		approvalsDir.listFiles().each { File file ->
-			println "reading file $file.absolutePath"
-			List<String> lines = file.readLines()
-			approvalsResp << new Request(externalId: file.name - '.txt', refs: [new RequestReference(status: RequestReference.ApprovalStatus.valueOf(lines[0]), externalId: lines[1])])
+			try {
+				if(file.isFile() && file.exists() && file.name.endsWith('.txt')) {
+					println "reading file $file.absolutePath"
+					List<String> lines = file.readLines()
+					approvalsResp << new Request(externalId: file.name - '.txt', refs: [new RequestReference(status: RequestReference.ApprovalStatus.valueOf(lines[0]), externalId: lines[1])])	
+				}
+			} catch(ex) {
+				ex.printStackTrace()	
+			}
+			
 		}
 		approvalsResp
 	}

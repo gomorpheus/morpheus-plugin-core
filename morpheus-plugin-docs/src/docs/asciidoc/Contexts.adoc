@@ -1,6 +1,6 @@
 == Contexts
 
-A context allows you to interact with, query and save data with Morephus.
+A context allows you to interact with, query and save data with Morpheus.
 
 === Network Context
 

@@ -2,12 +2,12 @@
 
 Following the example above, create your plugin class under `src/main/java/com/example/MyPlugin.java`
 
-Your plugin must extend the `com.morephus.core.Plugin` class:
+Your plugin must extend the `com.morpheus.core.Plugin` class:
 
 .MyPlugin.java
 [source,java]
 ----
-import com.morephus.core.Plugin;
+import com.Morpheus.core.Plugin;
 
 class MyPlugin extends Plugin {
 
