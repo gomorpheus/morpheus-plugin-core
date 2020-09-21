@@ -14,11 +14,6 @@ class CypherSamplePlugin extends Plugin {
 		this.setDescription("Provides a random number generator between 1 and specified key value with key /random/xx")
 		this.setAuthor("David Estes")
 		this.pluginProviders.put(randomNumberCypherProvider.providerCode, randomNumberCypherProvider)
-		
-		def model = new ViewModel<String>()
-		model.object = "Eric"
-
-		println this.getRenderer().renderTemplate('instanceTab', model).html
 	}
 
 	/**
