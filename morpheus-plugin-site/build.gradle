@@ -1,7 +1,7 @@
 plugins {
     id "org.asciidoctor.jvm.convert" version "3.1.0"
     id "groovy"
-    id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "com.github.johnrengelman.shadow"
     id "application"
     id "com.bertramlabs.asset-pipeline" version "3.0.10"
 }
@@ -75,10 +75,11 @@ tasks.withType(JavaExec) {
 
 assets {
   // developmentRuntime = false
-  from 'morpheus-plugin-site/src/assets'
+  from "${project.projectDir}/src/assets"
+  // from 'morpheus-plugin-site/src/assets'
 }
 
-// project(':common:shared').projectDir
+// project(':common:shared')
 
 task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
     from new File(project(':morpheus-plugin-docs').buildDir,'/docs')
