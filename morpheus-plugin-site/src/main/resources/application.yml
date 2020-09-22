@@ -7,8 +7,12 @@ micronaut:
     static-resources:
       docs:
         enabled: true   
-        mapping: "/docs/**"  
+        mapping: "/docs/**"
         paths: "classpath:asciidoc"
+     javadocs:
+        enabled: true   
+        mapping: "/api/**"
+        paths: "classpath:javadoc"
       default:
         enabled: true   
         mapping: "/**"  

@@ -86,6 +86,12 @@ task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
     into 'src/main/resources/'
 }
 
+task copyApiDoc(type: Copy, dependsOn: ':morpheus-plugin-api:javadoc') {
+    from new File(project(':morpheus-plugin-api').buildDir,'/docs')
+    into 'src/main/resources/'
+}
+
+
 [ tasks.run].each { runTask ->
     configure(runTask) {
         systemProperties System.properties
@@ -95,4 +101,5 @@ task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
 tasks.shadowJar.dependsOn assetCompile
 tasks.assetCompile.dependsOn processResources
 tasks.processResources.dependsOn copyManual
+tasks.processResources.dependsOn copyApiDoc
 tasks.assetCompile.dependsOn copyManual
