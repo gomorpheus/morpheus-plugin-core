@@ -1,7 +1,7 @@
 plugins {
     id "org.asciidoctor.jvm.convert" version "3.1.0"
     id "groovy"
-    id "com.github.johnrengelman.shadow"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
     id "application"
     id "com.bertramlabs.asset-pipeline" version "3.0.10"
 }
