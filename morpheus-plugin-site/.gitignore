@@ -4,6 +4,8 @@ Thumbs.db
 build/
 target/
 out/
+src/main/resources/asciidoc/
+src/main/resources/javadoc/
 .idea
 *.iml
 *.ipr
