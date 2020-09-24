@@ -1,15 +1,27 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.3.1'
+    }
+}
 plugins {
     id "org.asciidoctor.jvm.convert" version "3.1.0"
     id "groovy"
     id "com.github.johnrengelman.shadow"
     id "application"
-    id "com.bertramlabs.asset-pipeline" version "3.0.10"
+    // id "com.bertramlabs.asset-pipeline" version "3.3.1"
 }
+
+apply plugin: "asset-pipeline"
 
 version "0.1"
 group "com.morpheusdata"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     jcenter()
 }
@@ -20,8 +32,8 @@ configurations {
 }
 
 dependencies {
-    runtime 'com.bertramlabs.plugins:asset-pipeline-micronaut:3.0.10'
-    assets 'com.bertramlabs.plugins:less-asset-pipeline:3.0.10'
+    compile 'com.bertramlabs.plugins:asset-pipeline-micronaut:3.3.1'
+    assets 'com.bertramlabs.plugins:less-asset-pipeline:3.3.1'
     compileOnly(platform("io.micronaut:micronaut-bom:$micronautVersion"))
     compileOnly("io.micronaut:micronaut-inject-groovy")
     implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
