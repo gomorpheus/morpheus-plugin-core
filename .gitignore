@@ -10,3 +10,4 @@ testplugins/
 .idea/
 .DS_Store
 out/
+.assetcache
