@@ -46,8 +46,13 @@ public class ServiceResponse<T> {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Helper to return a generic error response.
 	 * @return A generic error scenario.
+=======
+	 * Create a generic error response
+	 * @return ServiceResponse with success == false
+>>>>>>> web, views, response javadocs
 	 */
 	public static ServiceResponse error() {
 		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
@@ -105,16 +110,24 @@ public class ServiceResponse<T> {
 		return new ServiceResponse(true, null, null, data);
 	}
 
+	/**
+	 * Create a generic success response
+	 * @return success response
+	 */
 	public static ServiceResponse success() {
 		return new ServiceResponse(true, null, null, null);
 	}
 
+	/**
+	 * Build a Map from this object with keys success, msg, errors, data
+	 * @return response Map
+	 */
 	public Map<String,Object> toMap() {
 		return toMap(null);
 	}
 
 	/**
-	 * Seralizes the ServiceResponse to a map.
+	 * Serializes the ServiceResponse to a map.
 	 * @param dataKeyName the name to assign the data keys key in the map
 	 * @return A Map
 	 */
@@ -147,6 +160,10 @@ public class ServiceResponse<T> {
 		return errors.size() > 0;
 	}
 
+	/**
+	 * String representation of the toMap() method
+	 * @return the response as a String
+	 */
 	public String toString() {
 		return toMap().toString();
 	}
@@ -285,12 +302,22 @@ public class ServiceResponse<T> {
 		this.cookies = cookies;
 	}
 
+	/**
+	 * Add a Cookie to the response
+	 * @param key cookie name
+	 * @param value cookie value
+	 */
 	public void addCookie(String key, Object value) {
 		if(this.cookies == null)
 			this.cookies = new HashMap<>();
 		this.cookies.put(key, value.toString());
 	}
 
+	/**
+	 * Find a cookie
+	 * @param key cookie name
+	 * @return the cookie value
+	 */
 	public String getCookie(String key) {
 		if(this.cookies == null)
 			return null;
