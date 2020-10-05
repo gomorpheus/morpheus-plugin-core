@@ -41,7 +41,7 @@ public class HTMLResponse {
 	}
 
 	/**
-	 * helper with html and error response.
+	 * Helper with html and error response.
 	 * @param html html to render
 	 * @param status error status code
 	 * @return HTMLResponse

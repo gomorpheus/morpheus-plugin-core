@@ -32,7 +32,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 *
+	 * Looks up plugin based on path, checks user permissions and responds per the specified ViewModel
 	 * @param path - Path of url, eg /myPlugin/myAction
 	 * @param model - Model to pass to the controller containing the http request objects
 	 * @param usersPermissions - Permissions of the current user

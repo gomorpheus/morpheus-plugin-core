@@ -38,7 +38,6 @@ dependencies {
 
 	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	testImplementation "org.spockframework:spock-core:$spockVersion"
-	testImplementation 'javax.servlet:javax.servlet-api:3.0.1'
 	testImplementation 'cglib:cglib-nodep:3.3.0'
 	testImplementation 'org.objenesis:objenesis:3.1'
 }

@@ -41,11 +41,19 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		engine = new Handlebars(loader);
 	}
 
+	/**
+	 *	Add a child first class loader
+	 * @param classLoader plugin class loader
+	 */
 	public void addTemplateLoader(ClassLoader classLoader) {
 		HandlebarsPluginTemplateLoader loader = new HandlebarsPluginTemplateLoader(classLoader);
 		this.loader.addTemplateLoader(loader);
 	}
 
+	/**
+	 * Remove a class loader
+	 * @param classLoader plugin class loader
+	 */
 	public void removeTemplateLoader(ClassLoader classLoader) {
 		for(TemplateLoader templateLoader : this.loader.getTemplateLoaders()) {
 			if (templateLoader.getClass().getClassLoader() == classLoader) {
@@ -55,6 +63,10 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		}
 	}
 
+	/**
+	 * Get a list of all template loaders
+	 * @return list of template loaders
+	 */
 	public Iterable<TemplateLoader> getTemplateLoaders() {
 		return this.loader.getTemplateLoaders();
 	}
@@ -100,6 +112,11 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		engine.registerHelper("asset", (Helper<String>) (context, options) -> "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context);
 	}
 
+	/**
+	 *	Returns an error response with the exception message in the response html
+	 * @param e the exception
+	 * @return 400 HTTP response
+	 */
 	private HTMLResponse handleError(Exception e) {
 		e.printStackTrace();
 		HTMLResponse response  = new HTMLResponse();
@@ -112,6 +129,13 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		return response;
 	}
 
+	/**
+	 * Merge the template tree using the given context if model is provided, otherwise provide the raw text
+	 *
+	 * @param template the view template
+	 * @param model view model
+	 * @return the response
+	 */
 	private HTMLResponse applyModel(Template template, ViewModel<?> model) {
 		HTMLResponse response = new HTMLResponse();
 		try {

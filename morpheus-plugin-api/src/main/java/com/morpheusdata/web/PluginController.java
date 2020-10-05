@@ -10,5 +10,5 @@ public interface PluginController {
 	 * Defines a list of routes the controller can handle.
 	 * @return List of Routes
 	 */
-	public List<Route> getRoutes();
+	 List<Route> getRoutes();
 }
