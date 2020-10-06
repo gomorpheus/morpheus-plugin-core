@@ -5,7 +5,6 @@ import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.TaskProvider
 import com.morpheusdata.model.OptionType
-import com.morpheusdata.model.Task
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -14,16 +13,16 @@ class TaskProviderSpec extends Specification {
 	@Shared
 	MorpheusContext context
 	@Shared
-	TaskPlugin plugin
+	ReverseTextTaskPlugin plugin
 	@Subject
 	@Shared
-	MikeTaskProvider provider
+	ReverseTextTaskProvider provider
 
 
 	def setup() {
 		context = Mock(MorpheusContextImpl)
-		plugin = Mock(TaskPlugin)
-		provider = new MikeTaskProvider(plugin, context)
+		plugin = Mock(ReverseTextTaskPlugin)
+		provider = new ReverseTextTaskProvider(plugin, context)
 	}
 
 	void "valid provider"() {

@@ -4,8 +4,20 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.views.HandlebarsRenderer
 import com.morpheusdata.views.ViewModel
 
+/**
+ * An Example Task plugin
+ */
 class ReverseTextTaskPlugin extends Plugin {
 
+	/**
+	 * <ul>
+	 * <li>Initializes the plugin name, description, and author.</li>
+	 * <li>Registers the task provider</li>
+	 * <li>Registers a Handlebars template renderer</li>
+	 * <li>Registers an example Controller</li>
+	 * <li>Demonstrates rendering a template</li>
+	 * </ul>
+	 */
 	@Override
 	void initialize() {
 		ReverseTextTaskProvider reverseTextTaskProvider = new ReverseTextTaskProvider(this, morpheusContext)

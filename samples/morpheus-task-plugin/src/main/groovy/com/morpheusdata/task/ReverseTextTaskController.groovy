@@ -7,7 +7,15 @@ import com.morpheusdata.views.ViewModel
 import com.morpheusdata.web.PluginController
 import com.morpheusdata.web.Route
 
+/**
+ * Example PluginController
+ */
 class ReverseTextTaskController implements PluginController {
+
+	/**
+	 * Defines two Routes with the builder method
+	 * @return
+	 */
 	List<Route> getRoutes() {
 		[
 			Route.build("/reverseTask/example", "example", Permission.build("admin", "full")),
@@ -15,11 +23,21 @@ class ReverseTextTaskController implements PluginController {
 		]
 	}
 
+	/**
+	 * As defined in {@link #getRoutes}, Method will be invoked when /reverseTask/example is requested
+	 * @param model
+	 * @return a simple html response
+	 */
 	def example(ViewModel<String> model) {
 		println model
 		return HTMLResponse.success("foo")
 	}
 
+	/**
+	 * As defined in {@link #getRoutes}, Method will be invoked when /reverseTask/json is requested
+	 * @param model
+	 * @return a simple json response
+	 */
 	def json(ViewModel<Map> model) {
 		println model
 		model.object.foo = "fizz"
