@@ -12,6 +12,9 @@ import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 
+/**
+ * Example TabProvider
+ */
 class CustomTabProvider extends AbstractInstanceTabProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
@@ -41,6 +44,11 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 		'Custom Tab 1'
 	}
 
+	/**
+	 * Demonstrates building a TaskConfig to get details about the Instance and renders the html from the specified template.
+	 * @param instance details of an Instance
+	 * @return
+	 */
 	@Override
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
@@ -61,6 +69,10 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 		return show
 	}
 
+	/**
+	 * Allows various sources used in the template to be loaded
+	 * @return
+	 */
 	@Override
 	TabContentSecurityPolicy getContentSecurityPolicy() {
 		def csp = new TabContentSecurityPolicy()
