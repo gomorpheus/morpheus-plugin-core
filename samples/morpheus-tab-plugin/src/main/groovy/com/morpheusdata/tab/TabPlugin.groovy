@@ -3,6 +3,9 @@ package com.morpheusdata.tab
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Permission
 
+/**
+ * Example Custom Tab Plugin
+ */
 class TabPlugin extends Plugin {
 
 	@Override
