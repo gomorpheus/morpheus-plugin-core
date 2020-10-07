@@ -8,6 +8,11 @@ public class JsonResponse<T> {
 	public T data;
 	public Integer status = 200;
 
+	/**
+	 * Helper method to create a successful JsonResponse of an object
+	 * @param data The object to base the model off of
+	 * @return a ViewModel
+	 */
 	public static JsonResponse<?> of(Object data) {
 		JsonResponse<Object> obj = new JsonResponse<Object>();
 		obj.data = data;
