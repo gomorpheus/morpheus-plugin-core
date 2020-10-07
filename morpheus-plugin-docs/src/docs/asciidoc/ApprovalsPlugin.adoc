@@ -1,6 +1,6 @@
 === Approvals plugin
 
-Integrate Morpheus with your own ITSM solution
+Integrate Morpheus with your own ITSM solution. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-approvals-plugin[full example].
 
 ==== Setup
 

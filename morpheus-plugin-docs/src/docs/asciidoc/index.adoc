@@ -31,6 +31,6 @@ include::Testing.adoc[]
 
 include::TaskPlugin.adoc[]
 
-include::PluginTabs.adoc[]
+include::TabsPlugin.adoc[]
 
 include::ApprovalsPlugin.adoc[]
