@@ -44,7 +44,7 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	/**
-	 *	Writes approval requests as text files in the configured approval directory
+	 * Writes approval requests as text files in the configured approval directory
 	 * @param instances List of {@link Instance} or {@link App}
 	 * @param request the Morpheus provision Request
 	 * @param accountIntegration the integration details. OptionType values are keyed under configMap.cm.plugin
