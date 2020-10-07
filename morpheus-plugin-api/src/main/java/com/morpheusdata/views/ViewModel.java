@@ -13,6 +13,11 @@ public class ViewModel<T> {
 	public ServletResponse response;
 	public Integer status = 200;
 
+	/**
+	 * Helper method to create a successful ViewModel of an object
+	 * @param data The object to base the model off of
+	 * @return a ViewModel
+	 */
 	static ViewModel<?> of(Object data) {
 		ViewModel<Object> obj = new ViewModel<>();
 		obj.object = data;
