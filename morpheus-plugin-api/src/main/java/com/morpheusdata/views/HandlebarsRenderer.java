@@ -42,7 +42,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	/**
-	 *	Add a child first class loader
+	 * Add a child first class loader
 	 * @param classLoader plugin class loader
 	 */
 	public void addTemplateLoader(ClassLoader classLoader) {
@@ -113,7 +113,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	}
 
 	/**
-	 *	Returns an error response with the exception message in the response html
+	 * Returns an error response with the exception message in the response html
 	 * @param e the exception
 	 * @return 400 HTTP response
 	 */

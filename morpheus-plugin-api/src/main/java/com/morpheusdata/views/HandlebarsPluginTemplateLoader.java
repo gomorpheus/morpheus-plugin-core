@@ -41,7 +41,7 @@ public class HandlebarsPluginTemplateLoader extends AbstractTemplateLoader {
     }
 
 	/**
-	 *
+	 * Finds the requested resource using the provided ClassLoader
 	 * @param location resource URI
 	 * @return URL for the resource within the plugin
 	 */
