@@ -11,6 +11,9 @@ import com.morpheusdata.model.Request
 import com.morpheusdata.model.RequestReference
 import com.morpheusdata.response.RequestResponse
 
+/**
+ * Example ApprovalProvider
+ */
 class FileWatcherProvider implements ApprovalProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
@@ -40,6 +43,15 @@ class FileWatcherProvider implements ApprovalProvider {
 		return 'File Watcher Approval'
 	}
 
+	/**
+	 * Writes approval requests as text files in the configured approval directory
+	 * @param instances List of {@link Instance} or {@link App}
+	 * @param request the Morpheus provision Request
+	 * @param accountIntegration the integration details. OptionType values are keyed under configMap.cm.plugin
+	 * @param policy the approval policy containing a Map config with values from provided optionTypes
+	 * @param opts provision options
+	 * @return RequestResponse with the created externalRequestId
+	 */
 	@Override
 	RequestResponse createApprovalRequest(List instances, Request request, AccountIntegration accountIntegration, Policy policy, Map opts) {
 		String externalRequestId = "AO_REQ_${request.id}"
@@ -79,6 +91,11 @@ ${resp.references*.externalId.join(',')}
 		resp
 	}
 
+	/**
+	 * Reads the files created in {@link #createApprovalRequest} and marshals them to a list of Request
+	 * @param accountIntegration account integration details
+	 * @return
+	 */
 	@Override
 	List<Request> monitorApproval(AccountIntegration accountIntegration) {
 		List approvalsResp = []
@@ -98,16 +115,29 @@ ${resp.references*.externalId.join(',')}
 		approvalsResp
 	}
 
+	/**
+	 * Create an OptionType for the approvals directory
+	 * @return list of integration OptionType
+	 */
 	@Override
 	List<OptionType> integrationOptionTypes() {
 		[new OptionType(code: 'plugin-integration-1', name: 'File Location', fieldName: 'file-location', fieldLabel: 'File Location', displayOrder: 0)]
 	}
 
+	/**
+	 * Sample Policy OptionType
+	 * @return list of policy OptionType
+	 */
 	@Override
 	List<OptionType> policyOptionTypes() {
 		[new OptionType(code: 'plugin-policy-1', name: 'Policy Option 1', fieldName: 'file-watch-policy-1', fieldLabel: 'Custom Policy Option 1', displayOrder: 0)]
 	}
 
+	/**
+	 * Searches the Integration OptionType configMap for the approvals dir configured in {@link #integrationOptionTypes() integrationOptionTypes}
+	 * @param accountIntegration the AccountIntegration created in the Morpheus UI
+	 * @return directory path
+	 */
 	private getApprovalsDir(AccountIntegration accountIntegration) {
 		accountIntegration.configMap?.cm?.plugin?."file-location"
 	}

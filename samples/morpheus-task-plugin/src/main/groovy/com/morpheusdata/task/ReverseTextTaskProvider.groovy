@@ -4,6 +4,9 @@ import com.morpheusdata.core.*
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType
 
+/**
+ * Example TaskProvider
+ */
 class ReverseTextTaskProvider implements TaskProvider {
 	MorpheusContext morpheusContext
 	Plugin plugin
@@ -74,12 +77,16 @@ class ReverseTextTaskProvider implements TaskProvider {
 		return true
 	}
 
+	/**
+	 * Builds an OptionType to take some text
+	 * @return list of OptionType
+	 */
 	@Override
 	List<OptionType> getOptionTypes() {
 		OptionType optionType = new OptionType(
 				name: 'reverseText',
 				code: 'reverseTextTaskText',
-				fieldName: 'reversableText',
+				fieldName: 'reversibleText',
 				optionSource: true,
 				displayOrder: 0,
 				fieldLabel: 'Text to Reverse',

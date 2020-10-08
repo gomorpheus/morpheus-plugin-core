@@ -40,7 +40,12 @@ public class HandlebarsPluginTemplateLoader extends AbstractTemplateLoader {
 		return new URLTemplateSource(location, resource);
     }
 
-   protected URL getResource(final String location) {
+	/**
+	 * Finds the requested resource using the provided ClassLoader
+	 * @param location resource URI
+	 * @return URL for the resource within the plugin
+	 */
+	protected URL getResource(final String location) {
 		   return classLoader.getResource(location);
    }
 }

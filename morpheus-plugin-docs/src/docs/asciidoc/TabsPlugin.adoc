@@ -1,6 +1,6 @@
 === Instance Tabs
 
-Customize the UI for your Instances by providing your own tabs.
+Customize the UI for your Instances by providing your own tabs. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-tab-plugin[full example].
 
 ==== Setup
 Create a new class that extends `com.morpheusdata.core.AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method.

@@ -4,6 +4,9 @@ import com.morpheusdata.core.AbstractTaskService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.model.*
 
+/**
+ * Example AbstractTaskService. Each method demonstrates building an example TaskConfig for the relevant task type
+ */
 class ReverseTextTaskService extends AbstractTaskService {
 	MorpheusContext context
 
@@ -72,6 +75,13 @@ class ReverseTextTaskService extends AbstractTaskService {
 		executeTask(task, config)
 	}
 
+	/**
+	 * Finds the input text from the OptionType created in {@link ReverseTextTaskProvider#getOptionTypes}.
+	 * Uses Groovy {@link org.codehaus.groovy.runtime.StringGroovyMethods#reverse} on the input text
+	 * @param task
+	 * @param config
+	 * @return data and output are the reversed text
+	 */
 	TaskResult executeTask(Task task, TaskConfig config) {
 		println config.accountId
 		def taskOption = task.taskOptions.find { it.optionType.code == 'reverseTextTaskText' }
