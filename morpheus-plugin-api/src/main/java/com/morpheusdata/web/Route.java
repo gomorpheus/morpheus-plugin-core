@@ -6,14 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Route is a definition of how to handle incoming requests with a plguin controller.
+ * A Route is a definition of how to handle incoming requests with a plugin controller.
  * url it handles (eg: /foo/bar)
  * method in controller to call for given url (eg index)
  * permissions to be checked
  */
 public class Route {
+	/**
+	 * the path it handles (eg: /foo/bar)
+	 */
 	public String url;
+	/**
+	 * method in controller to call for given url (eg index)
+	 */
 	public String method;
+	/**
+	 *  permissions to be checked
+	 */
 	public List<Permission> permissions = new ArrayList<>();
 
 	public Route(String url, String method, List<Permission> permissions) {

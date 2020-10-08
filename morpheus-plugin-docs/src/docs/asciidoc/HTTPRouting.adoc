@@ -14,7 +14,7 @@ class MyPluginController implements PluginController {
 	List<Route> getRoutes() {
 		[
 			Route.build("/myPrefix/example", "html", Permission.build("admin", "full")),
-			Route.build("/mikeTask/json", "json", Permission.build("admin", "full"))
+			Route.build("/reverseTask/json", "json", Permission.build("admin", "full"))
 		]
 	}
 
