@@ -46,13 +46,8 @@ public class ServiceResponse<T> {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Helper to return a generic error response.
 	 * @return A generic error scenario.
-=======
-	 * Create a generic error response
-	 * @return ServiceResponse with success == false
->>>>>>> web, views, response javadocs
 	 */
 	public static ServiceResponse error() {
 		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
