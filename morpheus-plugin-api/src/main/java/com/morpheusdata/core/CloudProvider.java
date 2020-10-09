@@ -21,13 +21,13 @@ public interface CloudProvider extends PluginProvider {
 	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration
 	 * @return Collection of OptionType
 	 */
-	public Collection<OptionType> getOptionTypes();
+	Collection<OptionType> getOptionTypes();
 
 	/**
 	 * Grabs all {@link ComputeServerType} objects that this CloudProvider can represent during a sync or during a provision.
 	 * @return collection of ComputeServerType
 	 */
-	public Collection<ComputeServerType> getComputeServerTypes();
+	Collection<ComputeServerType> getComputeServerTypes();
 
 	/**
 	 * Grabs available provisioning providers related to the target Cloud Plugin. Some clouds have multiple provisioning
