@@ -16,6 +16,7 @@ public class ComputeServerType  extends MorpheusModel {
 	private Boolean containerHypervisor = false; //runs docker
 	private Boolean bareMetalHost = false; //bare metal
 	private Boolean guestVm = false; //is a vm
+	private PlatformType platform;
 
 
 	public String getName() {
@@ -83,6 +84,11 @@ public class ComputeServerType  extends MorpheusModel {
 		this.guestVm = guestVm;
 	}
 
+	public PlatformType getPlatform() {
+		return platform;
+	}
 
-
+	public void setPlatform(PlatformType platform) {
+		this.platform = platform;
+	}
 }
