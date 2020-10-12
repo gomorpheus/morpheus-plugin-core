@@ -7,7 +7,7 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
-import com.morpheusdata.model.Zone
+import com.morpheusdata.model.Cloud
 import com.morpheusdata.response.ServiceResponse
 
 class ExampleCloudProvider implements CloudProvider {
@@ -21,12 +21,12 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	MorpheusContext getMorpheusContext() {
-		return null
+		return this.morpheusContext
 	}
 
 	@Override
 	Plugin getPlugin() {
-		return null
+		return this.plugin
 	}
 
 	@Override
@@ -60,22 +60,22 @@ class ExampleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Zone zoneInfo) {
+	ServiceResponse validate(Cloud zoneInfo) {
 		return null
 	}
 
 	@Override
-	void initializeZone(Zone zoneInfo) {
+	void initializeZone(Cloud zoneInfo) {
 
 	}
 
 	@Override
-	void refresh(Zone zoneInfo) {
-
+	void refresh(Cloud zoneInfo) {
+		println 'refresh run'
 	}
 
 	@Override
-	void refreshDaily(Zone zoneInfo) {
-
+	void refreshDaily(Cloud zoneInfo) {
+		println 'daily refresh run'
 	}
 }
