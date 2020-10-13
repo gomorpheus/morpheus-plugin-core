@@ -41,12 +41,33 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
-		return null
+		OptionType ot1 = new OptionType(
+				name: 'Cloud Access Key',
+				code: 'sample-cloud-access-key',
+				fieldName: 'cloudAccessKey',
+				optionSource: true,
+				displayOrder: 0,
+				fieldLabel: 'API Access Key',
+				required: true,
+				inputType: OptionType.InputType.TEXT
+		)
+		OptionType ot2 = new OptionType(
+				name: 'Cloud Secret Key',
+				code: 'sample-cloud-secret-key',
+				fieldName: 'cloudSecretsKey',
+				optionSource: true,
+				displayOrder: 1,
+				fieldLabel: 'API Secret Key',
+				required: true,
+				inputType: OptionType.InputType.TEXT
+		)
+		return [ot1, ot2]
 	}
 
 	@Override
 	Collection<ComputeServerType> getComputeServerTypes() {
-		return [new ComputeServerType(name: 'Example Cloud Type', code: 'example-cloud-type', platform: PlatformType.mac)]
+		def type1 = new ComputeServerType(name: 'Example Cloud Type', code: 'example-cloud-type', platform: PlatformType.mac)
+		return [type1]
 	}
 
 	@Override
@@ -66,12 +87,12 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	void initializeZone(Cloud zoneInfo) {
-
+		println "Initializing Cloud: ${zoneInfo.code}"
 	}
 
 	@Override
 	void refresh(Cloud zoneInfo) {
-		println 'refresh run'
+		println 'refresh has run'
 	}
 
 	@Override

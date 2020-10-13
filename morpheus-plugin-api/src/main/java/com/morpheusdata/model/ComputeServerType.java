@@ -8,15 +8,15 @@ package com.morpheusdata.model;
  */
 public class ComputeServerType  extends MorpheusModel {
 
-	private String name;
-	private String code;
-	private String description;
-	private String computeService;
-	private Boolean vmHypervisor = false; //runs vms, ex: esxi hypervisor
-	private Boolean containerHypervisor = false; //runs docker
-	private Boolean bareMetalHost = false; //bare metal
-	private Boolean guestVm = false; //is a vm
-	private PlatformType platform;
+	protected String name;
+	protected String code;
+	protected String description;
+	protected String computeService;
+	protected Boolean vmHypervisor = false; //runs vms, ex: esxi hypervisor
+	protected Boolean containerHypervisor = false; //runs docker
+	protected Boolean bareMetalHost = false; //bare metal
+	protected Boolean guestVm = false; //is a vm
+	protected PlatformType platform;
 
 
 	public String getName() {
