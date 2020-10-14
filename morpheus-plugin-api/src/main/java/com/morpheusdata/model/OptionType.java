@@ -268,7 +268,8 @@ public class OptionType extends MorpheusModel {
 		SELECT("select"),
 		CHECKBOX("checkbox"),
 		RADIO("radio"),
-		CODE_EDITOR("code-editor");
+		CODE_EDITOR("code-editor"),
+		PASSWORD("password");
 
 		private final String value;
 

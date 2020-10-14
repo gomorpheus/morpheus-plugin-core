@@ -36,7 +36,7 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	String getProviderName() {
-		return 'ExampleCloud'
+		return 'Example Cloud'
 	}
 
 	@Override
@@ -59,7 +59,7 @@ class ExampleCloudProvider implements CloudProvider {
 				displayOrder: 1,
 				fieldLabel: 'API Secret Key',
 				required: true,
-				inputType: OptionType.InputType.TEXT
+				inputType: OptionType.InputType.PASSWORD
 		)
 		return [ot1, ot2]
 	}
@@ -82,7 +82,7 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
-		return null
+		return new ServiceResponse(success: true)
 	}
 
 	@Override
