@@ -55,7 +55,7 @@ public interface CloudProvider extends PluginProvider {
 	ServiceResponse validate(Cloud cloudInfo);
 
 	/**
-	 * Called when a Cloud/Cloud From Morpheus is first saved. This is a hook provided to take care of initial state
+	 * Called when a Cloud From Morpheus is first saved. This is a hook provided to take care of initial state
 	 * assignment that may need to take place.
 	 * @param cloudInfo instance of the cloud object that is being initialized.
 	 */
