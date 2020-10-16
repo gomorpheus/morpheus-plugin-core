@@ -6,7 +6,7 @@ class CloudPlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		this.name = 'Example Cloudz Plugin'
+		this.name = 'Digital Ocean Plugin'
 		ExampleCloudProvider cloudProvider = new ExampleCloudProvider(this, morpheusContext)
 		ExampleProvisionProvider provisionProvider = new ExampleProvisionProvider(this, morpheusContext)
 		pluginProviders.put(provisionProvider.providerCode, provisionProvider)
