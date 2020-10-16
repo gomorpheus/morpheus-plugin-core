@@ -86,17 +86,23 @@ class ExampleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void initializeZone(Cloud zoneInfo) {
+	ServiceResponse initializeCloud(Cloud zoneInfo) {
 		println "Initializing Cloud: ${zoneInfo.code}"
+		return new ServiceResponse(success: true)
 	}
 
 	@Override
 	void refresh(Cloud zoneInfo) {
-		println 'refresh has run'
+		println "refresh has run for ${zoneInfo.code}"
 	}
 
 	@Override
 	void refreshDaily(Cloud zoneInfo) {
-		println 'daily refresh run'
+		println "daily refresh run for ${zoneInfo.code}"
+	}
+
+	@Override
+	ServiceResponse deleteCloud(Cloud cloudInfo) {
+		return new ServiceResponse(success: true)
 	}
 }
