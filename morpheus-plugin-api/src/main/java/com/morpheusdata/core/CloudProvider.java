@@ -58,8 +58,9 @@ public interface CloudProvider extends PluginProvider {
 	 * Called when a Cloud From Morpheus is first saved. This is a hook provided to take care of initial state
 	 * assignment that may need to take place.
 	 * @param cloudInfo instance of the cloud object that is being initialized.
+	 * @return ServiceResponse
 	 */
-	void initializeZone(Cloud cloudInfo);
+	ServiceResponse initializeCloud(Cloud cloudInfo);
 
 	/**
 	 * Zones/Clouds are refreshed periodically by the Morpheus Environment. This includes things like caching of brownfield
@@ -78,4 +79,10 @@ public interface CloudProvider extends PluginProvider {
 	void refreshDaily(Cloud cloudInfo);
 
 
+	/**
+	 * Called when a Cloud From Morpheus is first saved. This is a hook provided to take care of cleaning up any state.
+	 * @param cloudInfo instance of the cloud object that is being removed.
+	 * @return ServiceResponse
+	 */
+	ServiceResponse deleteCloud(Cloud cloudInfo);
 }
