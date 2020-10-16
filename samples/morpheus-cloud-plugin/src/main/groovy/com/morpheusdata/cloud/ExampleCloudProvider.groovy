@@ -9,6 +9,9 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.response.ServiceResponse
+import com.myjeeva.digitalocean.DigitalOcean
+import com.myjeeva.digitalocean.impl.DigitalOceanClient
+import com.myjeeva.digitalocean.pojo.Account
 
 class ExampleCloudProvider implements CloudProvider {
 	Plugin plugin
@@ -31,33 +34,33 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	String getProviderCode() {
-		return 'example-cloud'
+		return 'digital-ocean-plugin'
 	}
 
 	@Override
 	String getProviderName() {
-		return 'Example Cloud'
+		return 'Digital Ocean2'
 	}
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
-				name: 'Cloud Access Key',
-				code: 'sample-cloud-access-key',
-				fieldName: 'cloudAccessKey',
+				name: 'Username',
+				code: 'do-username',
+				fieldName: 'doUsername',
 				optionSource: true,
 				displayOrder: 0,
-				fieldLabel: 'API Access Key',
+				fieldLabel: 'Username',
 				required: true,
 				inputType: OptionType.InputType.TEXT
 		)
 		OptionType ot2 = new OptionType(
-				name: 'Cloud Secret Key',
-				code: 'sample-cloud-secret-key',
-				fieldName: 'cloudSecretsKey',
+				name: 'API Key',
+				code: 'do-api-key',
+				fieldName: 'doApiKey',
 				optionSource: true,
 				displayOrder: 1,
-				fieldLabel: 'API Secret Key',
+				fieldLabel: 'API Key',
 				required: true,
 				inputType: OptionType.InputType.PASSWORD
 		)
@@ -88,7 +91,14 @@ class ExampleCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse initializeCloud(Cloud zoneInfo) {
 		println "Initializing Cloud: ${zoneInfo.code}"
-		return new ServiceResponse(success: true)
+		DigitalOcean apiClient = new DigitalOceanClient(zoneInfo.configMap.doApiKey)
+		Account accountInfo = apiClient?.accountInfo
+		if(accountInfo?.email) {
+			println accountInfo.toString()
+			return new ServiceResponse(success: true)
+		} else {
+			return new ServiceResponse(success: false, msg: accountInfo?.statusMessage)
+		}
 	}
 
 	@Override
