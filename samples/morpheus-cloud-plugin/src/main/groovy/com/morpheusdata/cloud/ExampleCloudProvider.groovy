@@ -9,13 +9,20 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.response.ServiceResponse
-import com.myjeeva.digitalocean.DigitalOcean
-import com.myjeeva.digitalocean.impl.DigitalOceanClient
-import com.myjeeva.digitalocean.pojo.Account
+import groovy.json.JsonParser
+import groovy.json.JsonSlurper
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
 
 class ExampleCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
+	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
 
 	ExampleCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
@@ -91,19 +98,28 @@ class ExampleCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse initializeCloud(Cloud zoneInfo) {
 		println "Initializing Cloud: ${zoneInfo.code}"
-		DigitalOcean apiClient = new DigitalOceanClient(zoneInfo.configMap.doApiKey)
-		Account accountInfo = apiClient?.accountInfo
-		if(accountInfo?.email) {
-			println accountInfo.toString()
-			return new ServiceResponse(success: true)
+		println "config: ${zoneInfo.configMap}"
+		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/account")
+		http.addHeader("Authorization", "Bearer ${zoneInfo.configMap.doApiKey}")
+
+		CloseableHttpClient client = HttpClients.createDefault()
+		def resp = client.execute(http)
+		println "resp: ${resp}"
+		String responseContent = EntityUtils.toString(resp.entity)
+		println responseContent
+		JsonSlurper slurper = new JsonSlurper()
+		def json = slurper.parseText(responseContent)
+
+		if(resp.statusLine.statusCode == 200 && json.account.status == 'active') {
+			return new ServiceResponse(success: true, content: responseContent)
 		} else {
-			return new ServiceResponse(success: false, msg: accountInfo?.statusMessage)
+			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent)
 		}
 	}
 
 	@Override
 	void refresh(Cloud zoneInfo) {
-		println "refresh has run for ${zoneInfo.code}"
+		println "cloud refresh has run for ${zoneInfo.code}"
 	}
 
 	@Override

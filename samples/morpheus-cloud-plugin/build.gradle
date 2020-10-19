@@ -37,7 +37,8 @@ dependencies {
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
-	implementation "com.myjeeva.digitalocean:digitalocean-api-client:2.17"
+	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
