@@ -55,7 +55,6 @@ class ExampleCloudProvider implements CloudProvider {
 				name: 'Username',
 				code: 'do-username',
 				fieldName: 'doUsername',
-				optionSource: true,
 				displayOrder: 0,
 				fieldLabel: 'Username',
 				required: true,
@@ -65,13 +64,23 @@ class ExampleCloudProvider implements CloudProvider {
 				name: 'API Key',
 				code: 'do-api-key',
 				fieldName: 'doApiKey',
-				optionSource: true,
 				displayOrder: 1,
 				fieldLabel: 'API Key',
 				required: true,
 				inputType: OptionType.InputType.PASSWORD
 		)
-		return [ot1, ot2]
+		OptionType ot3 = new OptionType(
+				name: 'Datacenter',
+				code: 'do-datacenter',
+				fieldName: 'datacenter',
+				optionSource: 'loadDatacenters',
+				displayOrder: 2,
+				fieldLabel: 'Datacenter',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				dependsOn: 'do-api-key'
+		)
+		return [ot1, ot2, ot3]
 	}
 
 	@Override
@@ -87,11 +96,21 @@ class ExampleCloudProvider implements CloudProvider {
 
 	@Override
 	ProvisioningProvider getProvisioningProvider(String providerCode) {
-		return getAvailableProvisioningProviders().find{it.providerCode == providerCode}
+		return getAvailableProvisioningProviders().find { it.providerCode == providerCode }
 	}
 
 	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
+		println "validating Cloud: ${zoneInfo.code}"
+		if (!zoneInfo.configMap.datacenter) {
+			return new ServiceResponse(success: false, msg: 'Choose a datacenter')
+		}
+		if (!zoneInfo.configMap.doApiKey) {
+			return new ServiceResponse(success: false, msg: 'Enter a username')
+		}
+		if (!zoneInfo.configMap.apiKey) {
+			return new ServiceResponse(success: false, msg: 'Enter your api key')
+		}
 		return new ServiceResponse(success: true)
 	}
 
@@ -110,7 +129,7 @@ class ExampleCloudProvider implements CloudProvider {
 		JsonSlurper slurper = new JsonSlurper()
 		def json = slurper.parseText(responseContent)
 
-		if(resp.statusLine.statusCode == 200 && json.account.status == 'active') {
+		if (resp.statusLine.statusCode == 200 && json.account.status == 'active') {
 			return new ServiceResponse(success: true, content: responseContent)
 		} else {
 			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent)
@@ -118,17 +137,34 @@ class ExampleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void refresh(Cloud zoneInfo) {
-		println "cloud refresh has run for ${zoneInfo.code}"
+	void refresh(Cloud cloudInfo) {
+		println "cloud refresh has run for ${cloudInfo.code}"
 	}
 
 	@Override
-	void refreshDaily(Cloud zoneInfo) {
-		println "daily refresh run for ${zoneInfo.code}"
+	void refreshDaily(Cloud cloudInfo) {
+		println "daily refresh run for ${cloudInfo.code}"
 	}
 
 	@Override
 	ServiceResponse deleteCloud(Cloud cloudInfo) {
 		return new ServiceResponse(success: true)
+	}
+
+	List<Map> loadDatacenters(def cloudInfo) {
+		println "load datacenters for ${cloudInfo.code}"
+//		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
+//		http.addHeader("Authorization", "Bearer ${cloudInfo.configMap.doApiKey}")
+		return [
+				[value: 'nyc1', name: 'New York 1', available: true],
+				[value: 'sfo1', name: 'San Francisco 1', available: true],
+				[value: 'nyc2', name: 'New York 2', available: true],
+				[value: 'ams2', name: 'Amsterdam 2', available: true],
+				[value: 'sgp1', name: 'Singapore 1', available: true],
+				[value: 'lon1', name: 'London 1', available: true],
+				[value: 'nyc3', name: 'New York 3', available: true],
+				[value: 'ams3', name: 'Amsterdam 3', available: true],
+				[value: 'fra1', name: 'Frankfurt 1', available: true]
+		]
 	}
 }
