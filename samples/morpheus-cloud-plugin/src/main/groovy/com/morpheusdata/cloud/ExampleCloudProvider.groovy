@@ -108,7 +108,7 @@ class ExampleCloudProvider implements CloudProvider {
 		if (!zoneInfo.configMap.doApiKey) {
 			return new ServiceResponse(success: false, msg: 'Enter a username')
 		}
-		if (!zoneInfo.configMap.apiKey) {
+		if (!zoneInfo.configMap.doApiKey) {
 			return new ServiceResponse(success: false, msg: 'Enter your api key')
 		}
 		return new ServiceResponse(success: true)
@@ -153,6 +153,7 @@ class ExampleCloudProvider implements CloudProvider {
 
 	List<Map> loadDatacenters(def cloudInfo) {
 		println "load datacenters for ${cloudInfo.code}"
+		// TODO fetch dynamically given api key
 //		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
 //		http.addHeader("Authorization", "Bearer ${cloudInfo.configMap.doApiKey}")
 		return [
