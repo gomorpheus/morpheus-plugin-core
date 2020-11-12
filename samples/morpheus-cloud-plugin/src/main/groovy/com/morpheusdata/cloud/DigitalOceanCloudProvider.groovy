@@ -4,27 +4,23 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
-import com.morpheusdata.model.Cloud
 import com.morpheusdata.response.ServiceResponse
-import groovy.json.JsonParser
 import groovy.json.JsonSlurper
-import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 
-class ExampleCloudProvider implements CloudProvider {
+class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
 
-	ExampleCloudProvider(Plugin plugin, MorpheusContext context) {
+	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
