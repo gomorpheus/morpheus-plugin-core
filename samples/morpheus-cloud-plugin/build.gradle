@@ -62,7 +62,7 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-				'Plugin-Class': 'com.morpheusdata.cloud.CloudPlugin',
+				'Plugin-Class': 'com.morpheusdata.cloud.DigitalOceanPlugin',
 				'Plugin-Version': archiveVersion.get()
 		)
 	}
