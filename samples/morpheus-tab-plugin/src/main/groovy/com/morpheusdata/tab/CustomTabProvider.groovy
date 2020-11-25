@@ -60,6 +60,8 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	Boolean show(Instance instance, User user, Account account) {
 		def show = true
 		println "user has permissions: ${user.permissions}"
+		println "instanceType ${instance.instanceTypeCode}"
+		println "provisionType ${instance.provisionType}"
 		// plugin.permissions.each { Permission permission ->
 		// 	if(user.permissions[permission.code] != permission.availableAccessTypes.last().toString()){
 		// 		show = false

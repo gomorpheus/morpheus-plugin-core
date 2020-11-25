@@ -130,6 +130,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		} else {
 			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent)
 		}
+		morpheusContext.compute.createLayout()
+		morpheusContext.compute.createInstanceType()
 	}
 
 	@Override

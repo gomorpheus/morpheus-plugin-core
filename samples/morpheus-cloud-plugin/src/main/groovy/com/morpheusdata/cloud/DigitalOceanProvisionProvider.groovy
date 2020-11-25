@@ -27,32 +27,32 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
-		return null
+		[]
 	}
 
 	@Override
 	String getProvisionTypeCode() {
-		return 'example-provision-type'
+		return 'do-provider'
 	}
 
 	@Override
 	String getName() {
-		return null
+		return 'Droplet Provider'
 	}
 
 	@Override
 	Boolean hasDatastores() {
-		return null
+		return true
 	}
 
 	@Override
 	Boolean hasNetworks() {
-		return null
+		return false
 	}
 
 	@Override
 	Integer getMaxNetworks() {
-		return null
+		return 1
 	}
 
 	@Override
