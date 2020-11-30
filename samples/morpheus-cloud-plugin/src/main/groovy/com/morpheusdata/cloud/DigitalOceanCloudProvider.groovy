@@ -8,9 +8,11 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
+import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
@@ -112,31 +114,36 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse initializeCloud(Cloud zoneInfo) {
+		ServiceResponse serviceResponse
 		println "Initializing Cloud: ${zoneInfo.code}"
 		println "config: ${zoneInfo.configMap}"
-		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/account")
-		http.addHeader("Authorization", "Bearer ${zoneInfo.configMap.doApiKey}")
+		String apiKey = zoneInfo.configMap.doApiKey
+		HttpGet accountGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/account")
 
-		CloseableHttpClient client = HttpClients.createDefault()
-		def resp = client.execute(http)
-		println "resp: ${resp}"
-		String responseContent = EntityUtils.toString(resp.entity)
-		println responseContent
-		JsonSlurper slurper = new JsonSlurper()
-		def json = slurper.parseText(responseContent)
+		// check account
+		def respMap = makeApiCall(accountGet, apiKey)
+		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
+			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-		if (resp.statusLine.statusCode == 200 && json.account.status == 'active') {
-			return new ServiceResponse(success: true, content: responseContent)
+			// TODO
+//			cacheDatacenters(opts)
+			cacheSizes(apiKey)
+//			cacheOsImages(opts)
+//			cacheUserImages(opts)
+
+//			morpheusContext.compute.createLayout()
+//			morpheusContext.compute.createInstanceType()
 		} else {
-			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent)
+			serviceResponse = new ServiceResponse(success: false, msg: respMap.resp?.statusLine?.statusCode, content: respMap.json)
 		}
-		morpheusContext.compute.createLayout()
-		morpheusContext.compute.createInstanceType()
+
+		serviceResponse
 	}
 
 	@Override
 	void refresh(Cloud cloudInfo) {
 		println "cloud refresh has run for ${cloudInfo.code}"
+		cacheSizes(cloudInfo.configMap.doApiKey)
 	}
 
 	@Override
@@ -153,7 +160,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		println "load datacenters for ${cloudInfo.code}"
 		// TODO fetch dynamically given api key
 //		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-//		http.addHeader("Authorization", "Bearer ${cloudInfo.configMap.doApiKey}")
+//		http.addHeader("Authorization", "Bearer ${cloudInfo.configMap.doApApiKeyiKey}")
 		return [
 				[value: 'nyc1', name: 'New York 1', available: true],
 				[value: 'sfo1', name: 'San Francisco 1', available: true],
@@ -165,5 +172,60 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				[value: 'ams3', name: 'Amsterdam 3', available: true],
 				[value: 'fra1', name: 'Frankfurt 1', available: true]
 		]
+	}
+
+	Map makeApiCall(HttpRequestBase http, String apiKey) {
+		CloseableHttpClient client = HttpClients.createDefault()
+		try {
+			http.addHeader("Authorization", "Bearer ${apiKey}")
+			def resp = client.execute(http)
+			try {
+				println "resp: ${resp}"
+				String responseContent = EntityUtils.toString(resp.entity)
+				println responseContent
+				JsonSlurper slurper = new JsonSlurper()
+				def json = slurper.parseText(responseContent)
+				[resp: resp, json: json]
+			} catch (Exception e) {
+				println e.message
+			} finally {
+				resp.close()
+			}
+		} catch (Exception e) {
+			println e.message
+		} finally {
+			client.close()
+		}
+	}
+
+	def cacheSizes(String apiKey) {
+		HttpGet sizesGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
+		Map respMap = makeApiCall(sizesGet, apiKey)
+		List<ServicePlan> servicePlans = []
+		respMap.json?.sizes?.each {
+			def name = getNameForSize(it)
+			def servicePlan = new ServicePlan(
+					code: "doplugin.size.${it.slug}",
+					provisionTypeCode: getProviderCode(),
+					description: name,
+					name: name,
+					editable: false,
+					externalId: it.slug,
+					maxCores: it.vcpus,
+					maxMemory: it.memory.toLong() * 1024l * 1024l, // MB
+					maxStorage: it.disk.toLong() * 1024l * 1024l * 1024l, //GB
+					sortOrder: it.disk.toLong(),
+					price_monthly: it.price_monthly,
+					price_hourly: it.price_hourly
+			)
+			servicePlans << servicePlan
+		}
+
+		morpheusContext.compute.cachePlans(servicePlans)
+	}
+
+	private getNameForSize(sizeData) {
+		def memoryName = sizeData.memory < 1000 ? "${sizeData.memory} MB" : "${sizeData.memory.div(1024l)} GB"
+		"Plugin Droplet ${sizeData.vcpus} CPU, ${memoryName} Memory, ${sizeData.disk}GB Storage"
 	}
 }
