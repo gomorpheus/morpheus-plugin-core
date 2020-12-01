@@ -129,9 +129,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			// TODO
 			loadDatacenters(zoneInfo)
 			cacheSizes(apiKey)
-			listOsImages(zoneInfo)
 //			cacheOsImages(opts)
+			listImages(zoneInfo, false)
 //			cacheUserImages(opts)
+			listImages(zoneInfo, true)
 
 //			morpheusContext.compute.createLayout()
 //			morpheusContext.compute.createInstanceType()
@@ -147,7 +148,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		println "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo.configMap.doApiKey)
 		loadDatacenters(cloudInfo)
-		listOsImages(cloudInfo)
+		listImages(cloudInfo, false) // public OS
+		listImages(cloudInfo, true) // User's private
 	}
 
 	@Override
@@ -172,12 +174,17 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		datacenters
 	}
 
-	def listOsImages(Cloud cloudInfo) {
-		println "list OS Images"
+	def listImages(Cloud cloudInfo, Boolean userImages) {
+		println "list ${userImages ? 'User' : 'OS'} Images"
 		List images = []
 		int pageNum = 1
 		int perPage = 10
-		Map query = [type:'distribution', per_page:"${perPage}", page:"${pageNum}"]
+		Map query = [per_page:"${perPage}", page:"${pageNum}"]
+		if (userImages) {
+			query.private = 'true'
+		} else {
+			query.type = 'distribution'
+		}
 
 		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
 		uriBuilder.path = '/v2/images'
