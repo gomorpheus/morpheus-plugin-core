@@ -13,6 +13,7 @@ import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpRequestBase
+import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
@@ -126,8 +127,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
 			// TODO
-//			cacheDatacenters(opts)
+			loadDatacenters(zoneInfo)
 			cacheSizes(apiKey)
+			listOsImages(zoneInfo)
 //			cacheOsImages(opts)
 //			cacheUserImages(opts)
 
@@ -144,6 +146,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	void refresh(Cloud cloudInfo) {
 		println "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo.configMap.doApiKey)
+		loadDatacenters(cloudInfo)
+		listOsImages(cloudInfo)
 	}
 
 	@Override
@@ -157,21 +161,46 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	List<Map> loadDatacenters(def cloudInfo) {
+		List datacenters = []
 		println "load datacenters for ${cloudInfo.code}"
-		// TODO fetch dynamically given api key
-//		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-//		http.addHeader("Authorization", "Bearer ${cloudInfo.configMap.doApApiKeyiKey}")
-		return [
-				[value: 'nyc1', name: 'New York 1', available: true],
-				[value: 'sfo1', name: 'San Francisco 1', available: true],
-				[value: 'nyc2', name: 'New York 2', available: true],
-				[value: 'ams2', name: 'Amsterdam 2', available: true],
-				[value: 'sgp1', name: 'Singapore 1', available: true],
-				[value: 'lon1', name: 'London 1', available: true],
-				[value: 'nyc3', name: 'New York 3', available: true],
-				[value: 'ams3', name: 'Amsterdam 3', available: true],
-				[value: 'fra1', name: 'Frankfurt 1', available: true]
-		]
+		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
+		def respMap = makeApiCall(http, cloudInfo.configMap.doApiKey)
+		respMap?.json?.regions?.each {
+			datacenters << [value: it.slug, name: it.name, available: it.available]
+		}
+		// TODO cache these?
+		datacenters
+	}
+
+	def listOsImages(Cloud cloudInfo) {
+		println "list OS Images"
+		List images = []
+		int pageNum = 1
+		int perPage = 10
+		Map query = [type:'distribution', per_page:"${perPage}", page:"${pageNum}"]
+
+		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
+		uriBuilder.path = '/v2/images'
+		query.each {k, v ->
+			uriBuilder.addParameter(k, v)
+		}
+
+		HttpGet httpGet = new HttpGet(uriBuilder.build())
+		Map respMap = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
+		images += respMap.json
+		def theresMore = respMap.json.links?.pages?.next ? true: false
+		while (theresMore) {
+			pageNum++
+			query.page = "${pageNum}"
+			uriBuilder.parameters = []
+			query.each {k, v ->
+				uriBuilder.addParameter(k, v)
+			}
+			httpGet = new HttpGet(uriBuilder.build())
+			def moreResults = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
+			images += moreResults.json.images
+			theresMore = moreResults.json.links.pages.next ? true: false
+		}
 	}
 
 	Map makeApiCall(HttpRequestBase http, String apiKey) {
