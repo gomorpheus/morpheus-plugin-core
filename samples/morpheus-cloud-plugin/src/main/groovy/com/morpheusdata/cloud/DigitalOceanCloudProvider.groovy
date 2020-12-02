@@ -4,11 +4,7 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.model.Cloud
-import com.morpheusdata.model.ComputeServerType
-import com.morpheusdata.model.OptionType
-import com.morpheusdata.model.PlatformType
-import com.morpheusdata.model.ServicePlan
+import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
@@ -126,16 +122,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-			// TODO
 			loadDatacenters(zoneInfo)
 			cacheSizes(apiKey)
-//			cacheOsImages(opts)
-			listImages(zoneInfo, false)
-//			cacheUserImages(opts)
-			listImages(zoneInfo, true)
-
-//			morpheusContext.compute.createLayout()
-//			morpheusContext.compute.createInstanceType()
+			morpheusContext.compute.cacheImages(listImages(zoneInfo, false), zoneInfo)
+			morpheusContext.compute.cacheImages(listImages(zoneInfo, true), zoneInfo)
 		} else {
 			serviceResponse = new ServiceResponse(success: false, msg: respMap.resp?.statusLine?.statusCode, content: respMap.json)
 		}
@@ -148,8 +138,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		println "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo.configMap.doApiKey)
 		loadDatacenters(cloudInfo)
-		listImages(cloudInfo, false) // public OS
-		listImages(cloudInfo, true) // User's private
+		morpheusContext.compute.cacheImages(listImages(cloudInfo, false), cloudInfo) // public OS
+		morpheusContext.compute.cacheImages(listImages(cloudInfo, true), cloudInfo) // User's private
 	}
 
 	@Override
@@ -174,12 +164,13 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		datacenters
 	}
 
-	def listImages(Cloud cloudInfo, Boolean userImages) {
+	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
 		println "list ${userImages ? 'User' : 'OS'} Images"
+		List<VirtualImage> virtualImages = []
 		List images = []
 		int pageNum = 1
 		int perPage = 10
-		Map query = [per_page:"${perPage}", page:"${pageNum}"]
+		Map query = [per_page: "${perPage}", page: "${pageNum}"]
 		if (userImages) {
 			query.private = 'true'
 		} else {
@@ -188,26 +179,44 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
 		uriBuilder.path = '/v2/images'
-		query.each {k, v ->
+		query.each { k, v ->
 			uriBuilder.addParameter(k, v)
 		}
 
 		HttpGet httpGet = new HttpGet(uriBuilder.build())
 		Map respMap = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
 		images += respMap.json
-		def theresMore = respMap.json.links?.pages?.next ? true: false
+		def theresMore = respMap.json.links?.pages?.next ? true : false
 		while (theresMore) {
 			pageNum++
 			query.page = "${pageNum}"
 			uriBuilder.parameters = []
-			query.each {k, v ->
+			query.each { k, v ->
 				uriBuilder.addParameter(k, v)
 			}
 			httpGet = new HttpGet(uriBuilder.build())
 			def moreResults = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
 			images += moreResults.json.images
-			theresMore = moreResults.json.links.pages.next ? true: false
+			theresMore = moreResults.json.links.pages.next ? true : false
 		}
+
+		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
+
+		images.each {
+			Map props = [
+					name      : it.name,
+					externalId: it.id,
+					code      : "${imageCodeBase}.${cloudInfo.id}.${it.id}",
+					category  : "${imageCodeBase}.${cloudInfo.id}",
+					imageType : ImageType.qcow2,
+					platform  : it.distribution,
+					isPublic  : it.public,
+					minDisk   : it.min_disk_size,
+					locations : it.regions
+			]
+			virtualImages << new VirtualImage(props)
+		}
+		virtualImages
 	}
 
 	Map makeApiCall(HttpRequestBase http, String apiKey) {
