@@ -88,7 +88,13 @@ public interface MorpheusNetworkContext {
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
 
 
+	Single<Network> save(Network networkPool);
 
+	Single<Network> save(Network networkPool, Boolean flush);
+
+	Single<ComputeServerInterface> save(ComputeServerInterface serverInterface);
+
+	Single<ComputeServerInterface> save(ComputeServerInterface serverInterface, Boolean flush);
 
 	Single<NetworkPool> save(NetworkPool networkPool);
 
@@ -101,8 +107,17 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
 
-
 	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
 
 	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
+
+	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
+
+	Single<Boolean> serverAddToInterfaces(ComputeServer server, ComputeServerInterface serverInterface);
+
+	Single<Boolean> removeServerInterface(Network network, ComputeServer server, Boolean flush);
+
+	Single<Network> findNetworkTypeByCode(String type);
+
+	Single<NetworkDomain> getNetworkDomainById(Long id);
 }

@@ -1,9 +1,12 @@
 package com.morpheusdata.model;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class Container extends MorpheusModel {
-//	public Account account;
+	public Account account;
 	public Instance instance;
 	public String internalName;
 	public String displayName;
@@ -18,7 +21,7 @@ public class Container extends MorpheusModel {
 	public Date dateCreated;
 	public Date lastUpdated;
 	public Boolean statsEnabled = true;
-//	public Status status = Status.pending;
+	public Status status = Status.pending;
 	public String statusMessage;
 	public String errorMessage;
 //	public Status userStatus;
@@ -90,6 +93,11 @@ public class Container extends MorpheusModel {
 //	static hasMany = [files:ContainerFile, mounts:ContainerMount, ports:ContainerPort, logs:ContainerLog,
 //	configMaps:ContainerConfig, volumes:StorageVolume]
 
+	// TODO: implement parsing config
+	public Map getConfigProperty(String prop) {
+		return Collections.emptyMap();
+	}
+
 	void setServerId(Long id) {
 		this.server = new ComputeServer();
 		this.server.id = id;
@@ -103,5 +111,20 @@ public class Container extends MorpheusModel {
 	void setInstanceId(Long id) {
 		this.instance = new Instance();
 		this.instance.id = id;
+	}
+
+	public enum Status {
+		deploying,
+		running,
+		stopped,
+		suspended,
+		failed,
+		pending,
+		expired,
+		stopping,
+		starting,
+		suspending,
+		warning,
+		unknown
 	}
 }

@@ -1,5 +1,6 @@
 package com.morpheusdata.apiutil
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
@@ -54,6 +55,7 @@ import org.apache.http.util.CharArrayBuffer
 import org.apache.http.util.EntityUtils
 import org.xml.sax.SAXParseException
 
+import javax.json.Json
 import javax.net.ssl.SNIServerName
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLParameters
@@ -115,7 +117,7 @@ class RestApiUtil {
 
 			if (opts.body) {
 				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase)request
-				postRequest.setEntity(new StringEntity(opts.body.encodeAsJson().toString()))
+				postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)))
 			}
 
 			withClient(opts) { HttpClient client ->
@@ -331,7 +333,7 @@ class RestApiUtil {
 	static callJsonApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
 		//encode the body
 		if(opts.body && opts.bodyType != 'form' && opts.bodyType != 'multi-part-form' && !(opts.body instanceof String) )
-			opts.body = opts.body.encodeAsJson().toString()
+			opts.body = JsonOutput.toJson(opts.body)
 		//execute
 		def rtn = callApi(url, path, username, password, opts, method)
 		rtn.data = [:]

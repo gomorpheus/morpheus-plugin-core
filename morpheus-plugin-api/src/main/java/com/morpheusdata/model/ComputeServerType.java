@@ -40,7 +40,6 @@ public class ComputeServerType  extends MorpheusModel {
 
 	protected PlatformType platform;
 
-
 	public String getName() {
 		return name;
 	}

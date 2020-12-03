@@ -57,6 +57,12 @@ public class Network extends MorpheusModel {
 	protected Boolean active = true;
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
+	public NetworkServer networkServer;
+	public Account owner;
+	public String category;
+	public String code;
+	public Integer cidrMask;
+
 
 	public void setCloudId(Long id) {
 		this.cloud = new Cloud();
