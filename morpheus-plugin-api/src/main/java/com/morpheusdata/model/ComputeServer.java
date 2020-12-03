@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.List;
+
 /**
  * Representation of a Morpheus ComputeServer database object within the Morpheus platform. Not all data is provided
  * in this implementation that is available in the morpheus core platform for security purposes and internal use.
@@ -8,6 +10,7 @@ package com.morpheusdata.model;
  */
 public class ComputeServer  extends MorpheusModel {
 
+	public Account account;
 	public String uuid;
 	public String name;
 	public String displayName;
@@ -72,4 +75,6 @@ public class ComputeServer  extends MorpheusModel {
 		this.cloud.id = id;
 		markDirty("cloud", cloud);
 	}
+
+	public List<ComputeServerInterface> interfaces;
 }
