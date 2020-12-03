@@ -31,6 +31,11 @@ class FileWatcherProviderSpec extends Specification {
 		provider = new FileWatcherProvider(plugin, context)
 	}
 
+	void "DI works"() {
+		expect:
+		provider.morpheusContext
+	}
+
 	void "writes file"() {
 		given:
 		Policy policy = new Policy(configMap: [someProp: 'someVal'])

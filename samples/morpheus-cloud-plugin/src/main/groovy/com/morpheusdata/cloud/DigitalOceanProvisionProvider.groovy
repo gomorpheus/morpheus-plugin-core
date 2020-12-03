@@ -13,6 +13,7 @@ import com.morpheusdata.response.WorkloadResponse
 import com.sun.corba.se.spi.orbutil.threadpool.Work
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import io.reactivex.Single
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -62,7 +63,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse validateWorkload(Map opts) {
+	Single<ServiceResponse> validateWorkload(Map opts) {
 		return null
 	}
 

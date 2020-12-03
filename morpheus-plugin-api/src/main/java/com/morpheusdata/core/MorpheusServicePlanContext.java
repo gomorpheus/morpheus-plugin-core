@@ -2,7 +2,6 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ServicePlan;
 import com.morpheusdata.model.projection.ServicePlanIdentityProjection;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
