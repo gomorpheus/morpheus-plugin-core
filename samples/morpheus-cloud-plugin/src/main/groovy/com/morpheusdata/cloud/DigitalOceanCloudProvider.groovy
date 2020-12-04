@@ -6,10 +6,13 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URIBuilder
+import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
@@ -100,7 +103,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (!zoneInfo.configMap.datacenter) {
 			return new ServiceResponse(success: false, msg: 'Choose a datacenter')
 		}
-		if (!zoneInfo.configMap.doApiKey) {
+		if (!zoneInfo.configMap.doUsername) {
 			return new ServiceResponse(success: false, msg: 'Enter a username')
 		}
 		if (!zoneInfo.configMap.doApiKey) {
@@ -126,6 +129,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			cacheSizes(apiKey)
 			morpheusContext.compute.cacheImages(listImages(zoneInfo, false), zoneInfo)
 			morpheusContext.compute.cacheImages(listImages(zoneInfo, true), zoneInfo)
+			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(zoneInfo.account).blockingGet()
+			findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
 		} else {
 			serviceResponse = new ServiceResponse(success: false, msg: respMap.resp?.statusLine?.statusCode, content: respMap.json)
 		}
@@ -167,38 +172,14 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
 		println "list ${userImages ? 'User' : 'OS'} Images"
 		List<VirtualImage> virtualImages = []
-		List images = []
-		int pageNum = 1
-		int perPage = 10
-		Map query = [per_page: "${perPage}", page: "${pageNum}"]
+
+		Map queryParams = [:]
 		if (userImages) {
-			query.private = 'true'
+			queryParams.private = 'true'
 		} else {
-			query.type = 'distribution'
+			queryParams.type = 'distribution'
 		}
-
-		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
-		uriBuilder.path = '/v2/images'
-		query.each { k, v ->
-			uriBuilder.addParameter(k, v)
-		}
-
-		HttpGet httpGet = new HttpGet(uriBuilder.build())
-		Map respMap = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
-		images += respMap.json
-		def theresMore = respMap.json.links?.pages?.next ? true : false
-		while (theresMore) {
-			pageNum++
-			query.page = "${pageNum}"
-			uriBuilder.parameters = []
-			query.each { k, v ->
-				uriBuilder.addParameter(k, v)
-			}
-			httpGet = new HttpGet(uriBuilder.build())
-			def moreResults = makeApiCall(httpGet, cloudInfo.configMap.doApiKey)
-			images += moreResults.json.images
-			theresMore = moreResults.json.links.pages.next ? true : false
-		}
+		List images = makePaginatedApiCall(cloudInfo.configMap.doApiKey, '/v2/images', 'images', queryParams)
 
 		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
 
@@ -229,7 +210,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				String responseContent = EntityUtils.toString(resp.entity)
 				println responseContent
 				JsonSlurper slurper = new JsonSlurper()
-				def json = slurper.parseText(responseContent)
+				def json = responseContent ? slurper.parseText(responseContent) : null
 				[resp: resp, json: json]
 			} catch (Exception e) {
 				println e.message
@@ -269,8 +250,56 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		morpheusContext.compute.cachePlans(servicePlans)
 	}
 
+	def makePaginatedApiCall(String apiKey, String path, String resultKey, Map queryParams) {
+		List resultList = []
+		def pageNum = 1
+		def perPage = 10
+		Map query = [per_page: "${perPage}", page: "${pageNum}"]
+		query += queryParams
+
+		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
+		uriBuilder.path = path
+		query.each { k, v ->
+			uriBuilder.addParameter(k, v)
+		}
+
+		HttpGet httpGet = new HttpGet(uriBuilder.build())
+		Map respMap = makeApiCall(httpGet, apiKey)
+		resultList += respMap?.json
+		def theresMore = respMap?.json?.links?.pages?.next ? true : false
+		while (theresMore) {
+			pageNum++
+			query.page = "${pageNum}"
+			uriBuilder.parameters = []
+			query.each { k, v ->
+				uriBuilder.addParameter(k, v)
+			}
+			httpGet = new HttpGet(uriBuilder.build())
+			def moreResults = makeApiCall(httpGet, apiKey)
+			resultList[resultKey] += moreResults.json[resultKey]
+			theresMore = moreResults.json.links.pages.next ? true : false
+		}
+		resultList
+	}
+
+	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {
+		println "find or update keypair for key $keyName"
+		List keyList = makePaginatedApiCall(apiKey, '/v2/account/keys', 'ssh_keys', [:])
+		println "keylist: $keyList"
+		def match = keyList.find { publicKey.startsWith(it.public_key) }
+		println("match: ${match} - list: ${keyList}")
+		if (!match) {
+			println 'key not found in DO'
+			HttpPost httpPost = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/account/keys")
+			httpPost.entity = new StringEntity(JsonOutput.toJson([public_key: publicKey, name: keyName]))
+			def respMap = makeApiCall(httpPost, apiKey)
+			match = respMap.json
+		}
+		match
+	}
+
 	private getNameForSize(sizeData) {
 		def memoryName = sizeData.memory < 1000 ? "${sizeData.memory} MB" : "${sizeData.memory.div(1024l)} GB"
-		"Plugin Droplet ${sizeData.vcpus} CPU, ${memoryName} Memory, ${sizeData.disk}GB Storage"
+		"Plugin Droplet ${sizeData.vcpus} CPU, ${memoryName} Memory, ${sizeData.disk} GB Storage"
 	}
 }
