@@ -7,24 +7,19 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.client.methods.HttpRequestBase
-import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.util.EntityUtils
 
 class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
-	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
-
+	DigitalOceanApiService apiService
+	
 	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
+		apiService = new DigitalOceanApiService()
 	}
 
 	@Override
@@ -118,10 +113,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		println "Initializing Cloud: ${zoneInfo.code}"
 		println "config: ${zoneInfo.configMap}"
 		String apiKey = zoneInfo.configMap.doApiKey
-		HttpGet accountGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/account")
+		HttpGet accountGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account")
 
 		// check account
-		def respMap = makeApiCall(accountGet, apiKey)
+		def respMap = apiService.makeApiCall(accountGet, apiKey)
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
@@ -164,8 +159,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	List<Map> loadDatacenters(def cloudInfo) {
 		List datacenters = []
 		println "load datacenters for ${cloudInfo.code}"
-		HttpGet http = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-		def respMap = makeApiCall(http, cloudInfo.configMap.doApiKey)
+		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
+		def respMap = apiService.apiService.makeApiCall(http, cloudInfo.configMap.doApiKey)
 		respMap?.json?.regions?.each {
 			datacenters << [value: it.slug, name: it.name, available: it.available]
 		}
@@ -183,7 +178,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		} else {
 			queryParams.type = 'distribution'
 		}
-		List images = makePaginatedApiCall(cloudInfo.configMap.doApiKey, '/v2/images', 'images', queryParams)
+		List images = apiService.makePaginatedApiCall(cloudInfo.configMap.doApiKey, '/v2/images', 'images', queryParams)
 
 		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
 
@@ -204,35 +199,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		virtualImages
 	}
 
-	Map makeApiCall(HttpRequestBase http, String apiKey) {
-		CloseableHttpClient client = HttpClients.createDefault()
-		try {
-			http.addHeader("Authorization", "Bearer ${apiKey}")
-			http.addHeader("Content-Type", "application/json")
-			http.addHeader("Accept", "application/json")
-			def resp = client.execute(http)
-			try {
-				println "resp: ${resp}"
-				String responseContent = EntityUtils.toString(resp.entity)
-				println responseContent
-				JsonSlurper slurper = new JsonSlurper()
-				def json = responseContent ? slurper.parseText(responseContent) : null
-				[resp: resp, json: json]
-			} catch (Exception e) {
-				println e.message
-			} finally {
-				resp.close()
-			}
-		} catch (Exception e) {
-			println e.message
-		} finally {
-			client.close()
-		}
-	}
-
 	def cacheSizes(String apiKey) {
-		HttpGet sizesGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
-		Map respMap = makeApiCall(sizesGet, apiKey)
+		HttpGet sizesGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
+		Map respMap = apiService.makeApiCall(sizesGet, apiKey)
 		List<ServicePlan> servicePlans = []
 		respMap.json?.sizes?.each {
 			def name = getNameForSize(it)
@@ -256,52 +225,18 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		morpheusContext.compute.cachePlans(servicePlans)
 	}
 
-	def makePaginatedApiCall(String apiKey, String path, String resultKey, Map queryParams) {
-		List resultList = []
-		def pageNum = 1
-		def perPage = 10
-		Map query = [per_page: "${perPage}", page: "${pageNum}"]
-		query += queryParams
-
-		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
-		uriBuilder.path = path
-		query.each { k, v ->
-			uriBuilder.addParameter(k, v)
-		}
-
-		HttpGet httpGet = new HttpGet(uriBuilder.build())
-		Map respMap = makeApiCall(httpGet, apiKey)
-		resultList += respMap?.json?."$resultKey"
-		println "resultList: $resultList"
-		def theresMore = respMap?.json?.links?.pages?.next ? true : false
-		while (theresMore) {
-			pageNum++
-			query.page = "${pageNum}"
-			uriBuilder.parameters = []
-			query.each { k, v ->
-				uriBuilder.addParameter(k, v)
-			}
-			httpGet = new HttpGet(uriBuilder.build())
-			def moreResults = makeApiCall(httpGet, apiKey)
-			println "moreResults: $moreResults"
-			resultList += moreResults.json[resultKey]
-			theresMore = moreResults.json.links.pages.next ? true : false
-		}
-		resultList
-	}
-
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {
 		keyName = keyName ?: 'morpheus_do_plugin_key'
 		println "find or update keypair for key $keyName"
-		List keyList = makePaginatedApiCall(apiKey, '/v2/account/keys', 'ssh_keys', [:])
+		List keyList = apiService.makePaginatedApiCall(apiKey, '/v2/account/keys', 'ssh_keys', [:])
 		println "keylist: $keyList"
 		def match = keyList.find { publicKey.startsWith(it.public_key) }
 		println("match: ${match} - list: ${keyList}")
 		if (!match) {
 			println 'key not found in DO'
-			HttpPost httpPost = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/account/keys")
+			HttpPost httpPost = new HttpPost("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account/keys")
 			httpPost.entity = new StringEntity(JsonOutput.toJson([public_key: publicKey, name: keyName]))
-			def respMap = makeApiCall(httpPost, apiKey)
+			def respMap = apiService.makeApiCall(httpPost, apiKey)
 			if (respMap.resp.statusLine.statusCode == 200) {
 				match = new KeyPair(name: respMap.json.name, externalId: respMap.json.id, publicKey: respMap.json.public_key, publicFingerprint: respMap.json.fingerprint)
 			} else {
