@@ -3,10 +3,6 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
-import org.apache.http.HttpEntity
-import org.apache.http.StatusLine
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.impl.client.CloseableHttpClient
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -16,14 +12,14 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	@Subject
 	DigitalOceanCloudProvider provider
 	@Shared
-	CloseableHttpClient client
+	DigitalOceanApiService apiService
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
 		MorpheusContext context = Mock(MorpheusContext)
 		provider = new DigitalOceanCloudProvider(plugin, context)
-		client = Mock(CloseableHttpClient)
-		provider.client = client
+		apiService = Mock(DigitalOceanApiService)
+		provider.apiService = apiService
 	}
 
 	void "validate - fail"() {
@@ -62,19 +58,13 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	void "initializeCloud - fail"() {
 		given:
 		Cloud cloud = new Cloud(code: 'doCloud', configMap: [doApiKey: 'abc123'])
-		CloseableHttpResponse response = Mock(CloseableHttpResponse)
-		HttpEntity entity = Mock(HttpEntity)
-		StatusLine statusLine = Mock(StatusLine)
 
 		when:
 		def resp = provider.initializeCloud(cloud)
 
 		then:
-		1 * client.execute(_) >> response
-		1 * response.entity >> entity
-		2 * response.statusLine >> statusLine
-		2 * statusLine.statusCode >> 400
+		1 * apiService.makeApiCall(_, _) >> [resp: [success: false, statusLine: [statusCode: 400]]]
 		!resp.success
-		resp.msg = 400
+		resp.msg == '400'
 	}
 }
