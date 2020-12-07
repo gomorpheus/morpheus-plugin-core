@@ -130,7 +130,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			morpheusContext.compute.cacheImages(listImages(zoneInfo, false), zoneInfo)
 			morpheusContext.compute.cacheImages(listImages(zoneInfo, true), zoneInfo)
 			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(zoneInfo.account).blockingGet()
-			findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
+			if (keyPair) {
+				findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
+			} else {
+				println "no morpheus keys found"
+			}
 		} else {
 			serviceResponse = new ServiceResponse(success: false, msg: respMap.resp?.statusLine?.statusCode, content: respMap.json)
 		}
@@ -204,6 +208,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		CloseableHttpClient client = HttpClients.createDefault()
 		try {
 			http.addHeader("Authorization", "Bearer ${apiKey}")
+			http.addHeader("Content-Type", "application/json")
+			http.addHeader("Accept", "application/json")
 			def resp = client.execute(http)
 			try {
 				println "resp: ${resp}"
@@ -265,7 +271,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 		HttpGet httpGet = new HttpGet(uriBuilder.build())
 		Map respMap = makeApiCall(httpGet, apiKey)
-		resultList += respMap?.json
+		resultList += respMap?.json?."$resultKey"
+		println "resultList: $resultList"
 		def theresMore = respMap?.json?.links?.pages?.next ? true : false
 		while (theresMore) {
 			pageNum++
@@ -276,13 +283,15 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			}
 			httpGet = new HttpGet(uriBuilder.build())
 			def moreResults = makeApiCall(httpGet, apiKey)
-			resultList[resultKey] += moreResults.json[resultKey]
+			println "moreResults: $moreResults"
+			resultList += moreResults.json[resultKey]
 			theresMore = moreResults.json.links.pages.next ? true : false
 		}
 		resultList
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {
+		keyName = keyName ?: 'morpheus_do_plugin_key'
 		println "find or update keypair for key $keyName"
 		List keyList = makePaginatedApiCall(apiKey, '/v2/account/keys', 'ssh_keys', [:])
 		println "keylist: $keyList"
@@ -293,9 +302,14 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			HttpPost httpPost = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/account/keys")
 			httpPost.entity = new StringEntity(JsonOutput.toJson([public_key: publicKey, name: keyName]))
 			def respMap = makeApiCall(httpPost, apiKey)
+			if (respMap.resp.statusLine.statusCode == 200) {
+				match = new KeyPair(name: respMap.json.name, externalId: respMap.json.id, publicKey: respMap.json.public_key, publicFingerprint: respMap.json.fingerprint)
+			} else {
+				println 'failed to add DO ssh key'
+			}
 			match = respMap.json
 		}
-		match
+		new KeyPair(name: match.name, externalId: match.id, publicKey: match.public_key, publicFingerprint: match.fingerprint)
 	}
 
 	private getNameForSize(sizeData) {

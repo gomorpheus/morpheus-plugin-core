@@ -7,5 +7,6 @@ public class KeyPair extends MorpheusModel {
 	public String privateKey;
 	public String passphrase;
 	public String externalId;
+	public String publicFingerprint;
 
 }
