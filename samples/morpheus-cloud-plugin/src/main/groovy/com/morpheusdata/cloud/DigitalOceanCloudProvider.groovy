@@ -160,7 +160,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		List datacenters = []
 		println "load datacenters for ${cloudInfo.code}"
 		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-		def respMap = apiService.apiService.makeApiCall(http, cloudInfo.configMap.doApiKey)
+		def respMap = apiService.makeApiCall(http, cloudInfo.configMap.doApiKey)
 		respMap?.json?.regions?.each {
 			datacenters << [value: it.slug, name: it.name, available: it.available]
 		}
