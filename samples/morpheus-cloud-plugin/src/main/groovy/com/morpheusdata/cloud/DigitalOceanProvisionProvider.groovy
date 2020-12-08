@@ -42,7 +42,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Boolean hasDatastores() {
-		return true
+		return false
 	}
 
 	@Override
@@ -62,22 +62,25 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse runWorkload(Workload workload, Map opts) {
-		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/account")
+		println "DO Provision Provider: runWorkload"
+		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		http.addHeader("Authorization", "Bearer ${workload.server.cloud.configMap.doApiKey}")
 		http.addHeader('Content-Type', 'application/json')
+		http.addHeader('Accept', 'application/json')
 		List<NameValuePair> bodyValues = []
 		def body = [
-				'name':opts.name,
-				'region':opts.datacenterName,
-				'size':opts.sizeRef,
-				'image':opts.imageRef,
-				'ssh_keys':opts.sshKeys,
-				'backups':opts.doBackups == true,
-				'ipv6':opts.ipv6 == true,
-				'user_data':opts.userData,
-				'private_networking':opts.privateNetworking == true
+				'name'              : opts.name,
+				'region'            : opts.datacenterName,
+				'size'              : opts.sizeRef,
+				'image'             : opts.imageRef,
+				'ssh_keys'          : opts.sshKeys,
+				'backups'           : "${ opts.doBackups == true }",
+				'ipv6'              : opts.ipv6 == "true",
+				'user_data'         : opts.userData,
+				'private_networking': opts.privateNetworking == "true"
 		]
-		body.each {k,v ->
+		println "post body: $body"
+		body.each { k, v ->
 			bodyValues.add(new BasicNameValuePair(k, v))
 		}
 		http.entity = new UrlEncodedFormEntity(bodyValues)
@@ -89,10 +92,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		def json = slurper.parseText(responseContent)
 		println json
 
-		if (resp.statusLine.statusCode == 200) {
+		if (resp.statusLine.statusCode == 202) {
+			println "Droplet Created"
 			return new ServiceResponse(success: true, content: responseContent)
 		} else {
-			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent)
+			println "Failed to create droplet: $responseContent"
+			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent, error: responseContent)
 		}
 	}
 
