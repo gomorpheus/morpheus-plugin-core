@@ -108,11 +108,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse initializeCloud(Cloud zoneInfo) {
+	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse serviceResponse
-		println "Initializing Cloud: ${zoneInfo.code}"
-		println "config: ${zoneInfo.configMap}"
-		String apiKey = zoneInfo.configMap.doApiKey
+		println "Initializing Cloud: ${cloud.code}"
+		println "config: ${cloud.configMap}"
+		String apiKey = cloud.configMap.doApiKey
 		HttpGet accountGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account")
 
 		// check account
@@ -120,13 +120,14 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-			loadDatacenters(zoneInfo)
+			loadDatacenters(cloud)
 			cacheSizes(apiKey)
-			morpheusContext.compute.cacheImages(listImages(zoneInfo, false), zoneInfo)
-			morpheusContext.compute.cacheImages(listImages(zoneInfo, true), zoneInfo)
-			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(zoneInfo.account).blockingGet()
+			morpheusContext.compute.cacheImages(listImages(cloud, false), cloud)
+			morpheusContext.compute.cacheImages(listImages(cloud, true), cloud)
+			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
-				findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
+				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
+				morpheusContext.compute.updateKeyPair(updatedKeyPair, cloud)
 			} else {
 				println "no morpheus keys found"
 			}

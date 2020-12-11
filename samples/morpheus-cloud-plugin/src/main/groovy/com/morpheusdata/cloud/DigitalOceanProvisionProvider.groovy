@@ -6,13 +6,12 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.apache.http.NameValuePair
-import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
 
 class DigitalOceanProvisionProvider implements ProvisioningProvider {
@@ -67,7 +66,6 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		http.addHeader("Authorization", "Bearer ${workload.server.cloud.configMap.doApiKey}")
 		http.addHeader('Content-Type', 'application/json')
 		http.addHeader('Accept', 'application/json')
-		List<NameValuePair> bodyValues = []
 		def body = [
 				'name'              : opts.name,
 				'region'            : opts.datacenterName,
@@ -80,10 +78,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 				'private_networking': opts.privateNetworking == "true"
 		]
 		println "post body: $body"
-		body.each { k, v ->
-			bodyValues.add(new BasicNameValuePair(k, v))
-		}
-		http.entity = new UrlEncodedFormEntity(bodyValues)
+		http.entity = new StringEntity(JsonOutput.toJson(body))
 
 		CloseableHttpClient client = HttpClients.createDefault()
 		def resp = client.execute(http)
