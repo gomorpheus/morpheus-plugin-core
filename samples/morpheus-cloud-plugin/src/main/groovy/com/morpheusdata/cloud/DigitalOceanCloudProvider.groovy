@@ -185,7 +185,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 		images.each {
 			Map props = [
-					name      : it.name,
+					name      : "${it.distribution} ${it.name}",
 					externalId: it.id,
 					code      : "${imageCodeBase}.${cloudInfo.code}.${it.id}",
 					category  : "${imageCodeBase}.${cloudInfo.code}",
