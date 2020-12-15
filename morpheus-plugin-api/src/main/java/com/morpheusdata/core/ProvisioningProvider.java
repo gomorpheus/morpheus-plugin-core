@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Workload;
 import com.morpheusdata.response.ServiceResponse;
@@ -102,4 +103,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Response from API
 	 */
 	ServiceResponse removeWorkload(Workload workload,Map opts);
+
+	ServiceResponse getServerDetails(ComputeServer server);
+
 }
