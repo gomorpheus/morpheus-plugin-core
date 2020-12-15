@@ -9,6 +9,7 @@ import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -20,11 +21,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
-	DigitalOceanApiService apiService = new DigitalOceanApiService()
+	DigitalOceanApiService apiService
 
 	DigitalOceanProvisionProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.context = context
+		apiService = new DigitalOceanApiService()
 	}
 
 	@Override
@@ -92,7 +94,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 		if (resp.statusLine.statusCode == 202) {
 			println "Droplet Created"
-			return new ServiceResponse(success: true, content: responseContent)
+			return new ServiceResponse(success: true, data: json.droplet)
 		} else {
 			println "Failed to create droplet: $responseContent"
 			return new ServiceResponse(success: false, msg: resp?.statusLine?.statusCode, content: responseContent, error: responseContent)
@@ -116,7 +118,19 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts) {
-		return null
+		String dropletId = workload.server.externalId
+		println "removeWorkload for server: ${dropletId}"
+		if (!dropletId) {
+			println "no Droplet ID provided"
+			return new ServiceResponse(success: true, msg: 'No Droplet ID provided')
+		}
+		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplet/${dropletId}")
+		Map respMap = apiService.makeApiCall(httpDelete, workload.server.cloud.configMap.doApiKey)
+		if (respMap?.resp?.statusLine?.statusCode == 204) {
+			return new ServiceResponse(success: true)
+		} else {
+			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
+		}
 	}
 
 	@Override

@@ -20,18 +20,19 @@ class DigitalOceanApiService {
 			def resp = client.execute(http)
 			try {
 				println "resp: ${resp}"
-				String responseContent = EntityUtils.toString(resp.entity)
-				println responseContent
+				String responseContent = EntityUtils.toString(resp?.entity)
+				println "content: $responseContent"
 				JsonSlurper slurper = new JsonSlurper()
 				def json = responseContent ? slurper.parseText(responseContent) : null
 				[resp: resp, json: json]
 			} catch (Exception e) {
-				println e.message
+				println "Error making DO API call: ${e.message}"
 			} finally {
 				resp.close()
 			}
 		} catch (Exception e) {
-			println e.message
+			println "Http Client error: ${e.localizedMessage}"
+			e.printStackTrace()
 		} finally {
 			client.close()
 		}
