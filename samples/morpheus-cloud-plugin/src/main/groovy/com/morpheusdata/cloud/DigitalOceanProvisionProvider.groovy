@@ -3,11 +3,13 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
@@ -18,6 +20,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
+	DigitalOceanApiService apiService = new DigitalOceanApiService()
 
 	DigitalOceanProvisionProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
@@ -134,5 +137,41 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	@Override
 	String getProviderName() {
 		return 'Example Cloud Provision Provider'
+	}
+
+	@Override
+	ServiceResponse getServerDetails(ComputeServer server) {
+		println "getServerDetails"
+		ServiceResponse resp = new ServiceResponse(success: false)
+		Boolean pending = true
+		Integer attempts = 0
+		while(pending) {
+			println "attempt $attempts"
+			sleep(1000l * 20l)
+			resp = serverStatus(server)
+			if (resp.success || resp.msg == 'failed') {
+				pending = false
+			}
+			attempts ++
+			if (attempts > 15) {
+				pending = false
+			}
+		}
+		resp
+	}
+
+	ServiceResponse serverStatus(ComputeServer server) {
+		println "check server status for server ${server.externalId}"
+		ServiceResponse resp = new ServiceResponse(success: false)
+		HttpGet httpGet = new HttpGet("/v2/droplets/${server.externalId}")
+		def respMap = apiService.makeApiCall(httpGet, server.cloud.configMap.doApiKey)
+
+		String status = respMap.json.droplet.status
+		println "droplet status: ${status}"
+		if (status == 'active') {
+			resp.success = true
+		}
+		resp.content = respMap.json
+		resp.msg = status
 	}
 }
