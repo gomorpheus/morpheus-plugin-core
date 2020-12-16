@@ -96,7 +96,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		println "stop server: ${dropletId}"
 		if (!dropletId) {
 			println "no Droplet ID provided"
-			return new ServiceResponse(success: true, msg: 'No Droplet ID provided')
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
@@ -113,7 +113,23 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse startWorkload(Workload workload) {
-		return null
+		String dropletId = workload.server.externalId
+		String apiKey = workload.server.cloud.configMap.doApiKey
+		println "startWorkload for server: ${dropletId}"
+		if (!dropletId) {
+			println "no Droplet ID provided"
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
+		}
+		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
+		def body = ['type': 'power_on']
+		http.entity = new StringEntity(JsonOutput.toJson(body))
+		Map respMap = apiService.makeApiCall(http, apiKey)
+
+		if (respMap?.resp?.statusLine?.statusCode == 201) {
+			return new ServiceResponse(success: true, data: respMap.json.action)
+		} else {
+			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
+		}
 	}
 
 	@Override
@@ -127,7 +143,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		println "removeWorkload for server: ${dropletId}"
 		if (!dropletId) {
 			println "no Droplet ID provided"
-			return new ServiceResponse(success: true, msg: 'No Droplet ID provided')
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
 		Map respMap = apiService.makeApiCall(httpDelete, workload.server.cloud.configMap.doApiKey)
