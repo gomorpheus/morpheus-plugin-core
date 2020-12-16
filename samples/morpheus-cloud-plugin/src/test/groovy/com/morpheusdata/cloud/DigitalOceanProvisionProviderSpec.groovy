@@ -48,6 +48,20 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		resp.data.id == 1092647540
 	}
 
+	void "startWorkload - no droplet id"() {
+		given:
+		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
+		Workload workload = new Workload()
+		workload.server = new ComputeServer(name: 'serv1', externalId: null, cloud: cloud)
+
+		when:
+		def resp = provider.startWorkload(workload)
+
+		then:
+		0 * apiService.makeApiCall(_, _)
+		resp.success == false
+	}
+
 	void "startWorkload - fail"() {
 		given:
 		String responseContent = """
@@ -90,6 +104,26 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		}, _)
 		resp.success == true
 		resp.data.id == 1092647540
+	}
+
+	void "stopWorkload - no droplet id"() {
+		given:
+		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
+		Workload workload = new Workload()
+		workload.server = new ComputeServer(name: 'serv1', externalId: null, cloud: cloud)
+
+		when:
+		def resp = provider.stopWorkload(workload)
+
+		then:
+		0 * apiService.makeApiCall({ HttpPost post ->
+			['{"type":"shutdown"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
+		}, _)
+		0 * apiService.makeApiCall({ HttpPost post ->
+			['{"type":"power_off"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
+		}, _)
+		resp.success == false
+		resp.msg == 'No Droplet ID provided'
 	}
 
 	void "stopWorkload and power off"() {
@@ -149,6 +183,82 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 			['{"type":"power_off"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
 		}, _) >> [resp: [statusLine: [statusCode: 400]], json: powerOffJson]
 		resp.success == false
+	}
+
+	void "runWorkload"() {
+		given:
+		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
+		Workload workload = new Workload()
+		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
+		Map serverOpts = [
+				'name'             : 'droplet1',
+				'datacenterName'   : 'nyc1',
+				'sizeRef'          : 's-1vcpu-1gb',
+				'imageRef'         : 'ubuntu-16-04-x64',
+				'sshKeys'          : [12345],
+				'doBackups'        : false,
+				'ipv6'             : "true",
+				'userData'         : null,
+				'privateNetworking': "true"
+		]
+		String createServerResponse = """{
+  "droplet": {
+    "id": 3164494,
+    "name": "example.com",
+    "memory": 1024,
+    "vcpus": 1,
+    "disk": 25,
+    "locked": true,
+    "status": "new"
+    }
+}"""
+		JsonSlurper slurper = new JsonSlurper()
+		def createServerJson = slurper.parseText(createServerResponse)
+
+		when:
+		def resp = provider.runWorkload(workload, serverOpts)
+
+		then:
+		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 202]], json: createServerJson]
+		resp.success == true
+		resp.data.id == 3164494
+	}
+
+	void "runWorkload - fail"() {
+		given:
+		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
+		Workload workload = new Workload()
+		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
+		Map serverOpts = [:]
+		String createServerResponse = """
+{"action":{"id":1092647540,"status":"power_off","type":"shutdown","started_at":"2020-12-16T18:06:52Z","region_slug":"nyc1"}}
+"""
+		JsonSlurper slurper = new JsonSlurper()
+		def createServerJson = slurper.parseText(createServerResponse)
+
+		when:
+		def resp = provider.runWorkload(workload, serverOpts)
+
+		then:
+		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: createServerJson]
+		resp.success == false
+		resp.msg == '400'
+	}
+
+	void "runWorkload - missing apiKey"() {
+		given:
+		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [:])
+		Workload workload = new Workload()
+		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
+		Map serverOpts = [:]
+
+		when:
+		def resp = provider.runWorkload(workload, serverOpts)
+
+		then:
+		0 * apiService.makeApiCall(_, _)
+		resp.success == false
+		resp.msg == 'No API Key provided'
 	}
 
 }

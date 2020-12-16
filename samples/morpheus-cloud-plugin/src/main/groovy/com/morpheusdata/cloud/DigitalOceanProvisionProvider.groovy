@@ -13,8 +13,6 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
-import java.nio.charset.StandardCharsets
-
 class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
@@ -65,6 +63,10 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	@Override
 	ServiceResponse runWorkload(Workload workload, Map opts) {
 		println "DO Provision Provider: runWorkload"
+		String apiKey = workload.server.cloud.configMap.doApiKey
+		if (!apiKey) {
+			return new ServiceResponse(success: false, msg: 'No API Key provided')
+		}
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		def body = [
 				'name'              : opts.name,
@@ -80,7 +82,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		println "post body: $body"
 		http.entity = new StringEntity(JsonOutput.toJson(body))
 
-		def respMap = apiService.makeApiCall(http, workload.server.cloud.configMap.doApiKey)
+		def respMap = apiService.makeApiCall(http, apiKey)
 
 		if (respMap.resp.statusLine.statusCode == 202) {
 			println "Droplet Created"
