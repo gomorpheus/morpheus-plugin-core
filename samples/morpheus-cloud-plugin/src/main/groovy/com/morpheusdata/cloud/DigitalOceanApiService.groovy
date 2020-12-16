@@ -20,7 +20,10 @@ class DigitalOceanApiService {
 			def resp = client.execute(http)
 			try {
 				println "resp: ${resp}"
-				String responseContent = EntityUtils.toString(resp?.entity)
+				String responseContent
+				if(resp?.entity) {
+					responseContent = EntityUtils.toString(resp?.entity)
+				}
 				println "content: $responseContent"
 				JsonSlurper slurper = new JsonSlurper()
 				def json = responseContent ? slurper.parseText(responseContent) : null

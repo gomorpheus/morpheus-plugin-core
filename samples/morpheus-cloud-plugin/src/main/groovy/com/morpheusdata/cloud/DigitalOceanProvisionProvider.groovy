@@ -124,7 +124,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			println "no Droplet ID provided"
 			return new ServiceResponse(success: true, msg: 'No Droplet ID provided')
 		}
-		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplet/${dropletId}")
+		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
 		Map respMap = apiService.makeApiCall(httpDelete, workload.server.cloud.configMap.doApiKey)
 		if (respMap?.resp?.statusLine?.statusCode == 204) {
 			return new ServiceResponse(success: true)
