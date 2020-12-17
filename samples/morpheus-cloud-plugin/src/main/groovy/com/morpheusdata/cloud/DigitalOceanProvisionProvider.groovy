@@ -202,7 +202,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	ServiceResponse serverStatus(ComputeServer server) {
 		println "check server status for server ${server.externalId}"
 		ServiceResponse resp = new ServiceResponse(success: false)
-		HttpGet httpGet = new HttpGet("/v2/droplets/${server.externalId}")
+		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
 		def respMap = apiService.makeApiCall(httpGet, server.cloud.configMap.doApiKey)
 
 		String status = respMap.json.droplet.status
@@ -212,6 +212,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		}
 		resp.content = respMap.json
 		resp.msg = status
+		resp
 	}
 
 	ServiceResponse powerOffServer(String apiKey, String dropletId) {
