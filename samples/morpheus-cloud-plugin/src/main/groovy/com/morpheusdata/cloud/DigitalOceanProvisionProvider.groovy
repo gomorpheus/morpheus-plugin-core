@@ -93,6 +93,17 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		}
 	}
 
+	ServiceResponse resizeServer(ComputeServer server, Map opts) {
+		String apiKey = server.cloud.configMap.doApiKey
+		String dropletId = server.externalId
+		Map body = [
+				'type': 'resize',
+				'disk': true,
+				'size': opts.sizeRef
+		]
+		performDropletAction(dropletId, body, apiKey)
+	}
+
 	@Override
 	ServiceResponse stopWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
@@ -124,16 +135,8 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			println "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
-		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
 		def body = ['type': 'power_on']
-		http.entity = new StringEntity(JsonOutput.toJson(body))
-		Map respMap = apiService.makeApiCall(http, apiKey)
-
-		if (respMap?.resp?.statusLine?.statusCode == 201) {
-			return checkActionComplete(respMap.json.action.id, apiKey)
-		} else {
-			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
-		}
+		performDropletAction(dropletId, body, apiKey)
 	}
 
 	@Override
@@ -217,13 +220,17 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	ServiceResponse powerOffServer(String apiKey, String dropletId) {
 		println "power off server"
-		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
 		def body = ['type': 'power_off']
+		performDropletAction(dropletId, body, apiKey)
+	}
+
+	ServiceResponse performDropletAction(String dropletId, Map body, String apiKey) {
+		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
 		http.entity = new StringEntity(JsonOutput.toJson(body))
 		Map respMap = apiService.makeApiCall(http, apiKey)
 
 		if (respMap?.resp?.statusLine?.statusCode == 201) {
-			return new ServiceResponse(success: true, data: respMap.json.action)
+			return checkActionComplete(respMap.json.action.id, apiKey)
 		} else {
 			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
 		}
@@ -233,22 +240,22 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		try {
 			def pending = true
 			def attempts = 0
-			while(pending) {
-				println ("waiting for action complete...")
+			while (pending) {
+				println("waiting for action complete...")
 				sleep(1000l * 10l)
 				ServiceResponse actionDetail = actionStatus(actionId, apiKey)
-				if(actionDetail.success == true && actionDetail?.data?.status) {
+				if (actionDetail.success == true && actionDetail?.data?.status) {
 					def tmpState = actionDetail.data.status
-					if(tmpState == 'completed' || tmpState == 'failed') {
+					if (tmpState == 'completed' || tmpState == 'failed') {
 						return actionDetail
 					}
 				}
-				attempts ++
-				if(attempts > 60) {
+				attempts++
+				if (attempts > 60) {
 					pending = false
 				}
 			}
-		} catch(e) {
+		} catch (e) {
 			println("An Exception Has Occurred: ${e.message}")
 		}
 		return new ServiceResponse(success: false, msg: 'Too many failed attempts to check Droplet action status')
