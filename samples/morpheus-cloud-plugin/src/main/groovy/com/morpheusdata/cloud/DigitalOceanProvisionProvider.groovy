@@ -141,7 +141,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse restartWorkload(Workload workload) {
-		return null
+		println 'restartWorkload'
+		ServiceResponse stopResult = stopWorkload(workload)
+		if (stopResult.success) {
+			return startWorkload(workload)
+		}
+		stopResult
 	}
 
 	@Override
