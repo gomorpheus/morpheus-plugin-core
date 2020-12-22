@@ -213,12 +213,13 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
 		def respMap = apiService.makeApiCall(httpGet, server.cloud.configMap.doApiKey)
 
-		String status = respMap.json.droplet.status
+		String status = respMap.json?.droplet?.status
 		println "droplet status: ${status}"
 		if (status == 'active') {
 			resp.success = true
 		}
-		resp.content = respMap.json
+		resp.content = respMap.resp
+		resp.data = respMap.json?.droplet
 		resp.msg = status
 		resp
 	}
