@@ -37,6 +37,12 @@ public interface CloudProvider extends PluginProvider {
 	Collection<ProvisioningProvider> getAvailableProvisioningProviders();
 
 	/**
+	 * Grabs available backup providers related to the target Cloud Plugin.
+	 * @return Collection of BackupProvider
+	 */
+	Collection<BackupProvider> getAvailableBackupProviders();
+
+	/**
 	 * Grabs the singleton instance of the provisioning provider based on the code defined in its implementation.
 	 * Typically Providers are singleton and instanced in the {@link Plugin} class
 	 * @param providerCode String representation of the provider short code

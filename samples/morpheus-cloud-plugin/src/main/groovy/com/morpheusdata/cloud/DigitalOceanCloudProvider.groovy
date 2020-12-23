@@ -1,5 +1,6 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.core.BackupProvider
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
@@ -15,7 +16,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
-	
+
 	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
@@ -39,7 +40,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	String getProviderName() {
-		return 'Digital Ocean2'
+		return 'Digital Ocean Plugin'
 	}
 
 	@Override
@@ -85,6 +86,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
 		return plugin.getProvidersByType(ProvisioningProvider) as Collection<ProvisioningProvider>
+	}
+
+	@Override
+	Collection<BackupProvider> getAvailableBackupProviders() {
+		return plugin.getProvidersByType(BackupProvider) as Collection<BackupProvider>
 	}
 
 	@Override

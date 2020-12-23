@@ -5,8 +5,8 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Workload
+import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
-import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import spock.lang.Shared
 import spock.lang.Specification
@@ -39,8 +39,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.startWorkload(workload)
 
 		then:
-		1 * apiService.makeApiCall(_ as HttpPost, _) >> [resp: [statusLine: [statusCode: 201]], json: actionInProgressJson('power_on')]
-		1 * apiService.makeApiCall(_ as HttpGet, _) >> [resp: [statusLine: [statusCode: 200]], json: actionSuccessJson('power_on')]
+		1 * apiService.performDropletAction('drop1111', ['type': 'power_on'], 'abc123') >> new ServiceResponse(success: true, data: actionSuccessJson('power_on').action)
 		resp.success == true
 		resp.data.id == 1092647540
 	}
@@ -55,7 +54,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.startWorkload(workload)
 
 		then:
-		0 * apiService.makeApiCall(_, _)
+		0 * apiService.performDropletAction(_, _, _)
 		resp.success == false
 	}
 
@@ -74,7 +73,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.startWorkload(workload)
 
 		then:
-		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: json]
+		1 * apiService.performDropletAction(_, _, _) >> new ServiceResponse(success: false)
 		resp.success == false
 	}
 
@@ -89,10 +88,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		1 * apiService.makeApiCall(_ as HttpPost, _) >> [resp: [statusLine: [statusCode: 201]], json: actionInProgressJson('shutdown')]
-		1 * apiService.makeApiCall(_ as HttpGet, _) >> [resp: [statusLine: [statusCode: 200]], json: actionSuccessJson('shutdown')]
-		0 * apiService.makeApiCall({ HttpPost post ->
-			['{"type":"power_off"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
-		}, _)
+		1 * apiService.checkActionComplete(_, _) >> new ServiceResponse(success: true, data: actionSuccessJson('shutdown').action)
 		resp.success == true
 		resp.data.id == 1092647540
 	}
@@ -117,13 +113,8 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		String shutdownResponse = """
 {"action":{"id":1092647540,"status":"in-progress","type":"shutdown","started_at":"2020-12-16T18:06:52Z","region_slug":"nyc1"}}
 """
-
-		String powerOffResponse = """
-{"action":{"id":1092647540,"status":"power_off","type":"shutdown","started_at":"2020-12-16T18:06:52Z","region_slug":"nyc1"}}
-"""
 		JsonSlurper slurper = new JsonSlurper()
 		def shutdownJson = slurper.parseText(shutdownResponse)
-		def powerOffJson = slurper.parseText(powerOffResponse)
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
 		Workload workload = new Workload()
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
@@ -135,9 +126,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		1 * apiService.makeApiCall({ HttpPost post ->
 			['{"type":"shutdown"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
 		}, _) >> [resp: [statusLine: [statusCode: 400]], json: shutdownJson]
-		1 * apiService.makeApiCall({ HttpPost post ->
-			['{"type":"power_off"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
-		}, _) >> [resp: [statusLine: [statusCode: 201]], json: powerOffJson]
+		1 * apiService.performDropletAction(_, [type: 'power_off'], _) >> new ServiceResponse(success: true, data: actionSuccessJson('power_off').action)
 		resp.success == true
 		resp.data.id == 1092647540
 	}
@@ -165,9 +154,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		1 * apiService.makeApiCall({ HttpPost post ->
 			['{"type":"shutdown"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
 		}, _) >> [resp: [statusLine: [statusCode: 400]], json: shutdownJson]
-		1 * apiService.makeApiCall({ HttpPost post ->
-			['{"type":"power_off"}'] == new BufferedReader(new InputStreamReader(post.entity.content, StandardCharsets.UTF_8)).collect()
-		}, _) >> [resp: [statusLine: [statusCode: 400]], json: powerOffJson]
+		1 * apiService.performDropletAction(_, [type: 'power_off'], _) >> new ServiceResponse(success: false)
 		resp.success == false
 	}
 
@@ -226,7 +213,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.runWorkload(workload, serverOpts)
 
 		then:
-		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 200]], json: createServerJson]
+		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: createServerJson]
 		resp.success == false
 		resp.msg == '400'
 	}
@@ -258,8 +245,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		resp.success
-		1 * apiService.makeApiCall(_ as HttpPost, _) >> [resp: [statusLine: [statusCode: 201]], json: actionInProgressJson('resize')]
-		1 * apiService.makeApiCall(_ as HttpGet, _) >> [resp: [statusLine: [statusCode: 200]], json: actionSuccessJson('resize')]
+		1 * apiService.performDropletAction('drop1111', ['type': 'resize', disk: true, size: null], 'abc123') >> new ServiceResponse(success: true, data: actionSuccessJson('resize').action)
 	}
 
 	def actionSuccessJson(String type) {
