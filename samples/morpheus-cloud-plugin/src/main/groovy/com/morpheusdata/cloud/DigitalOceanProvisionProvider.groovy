@@ -101,7 +101,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 				'disk': true,
 				'size': opts.sizeRef
 		]
-		performDropletAction(dropletId, body, apiKey)
+		apiService.performDropletAction(dropletId, body, apiKey)
 	}
 
 	@Override
@@ -120,7 +120,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		Map respMap = apiService.makeApiCall(http, apiKey)
 
 		if (respMap?.resp?.statusLine?.statusCode == 201) {
-			return checkActionComplete(respMap.json.action.id, apiKey)
+			return apiService.checkActionComplete(respMap.json.action.id, apiKey)
 		} else {
 			powerOffServer(apiKey, dropletId)
 		}
@@ -136,7 +136,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		def body = ['type': 'power_on']
-		performDropletAction(dropletId, body, apiKey)
+		apiService.performDropletAction(dropletId, body, apiKey)
 	}
 
 	@Override
@@ -227,53 +227,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	ServiceResponse powerOffServer(String apiKey, String dropletId) {
 		println "power off server"
 		def body = ['type': 'power_off']
-		performDropletAction(dropletId, body, apiKey)
+		apiService.performDropletAction(dropletId, body, apiKey)
 	}
 
-	ServiceResponse performDropletAction(String dropletId, Map body, String apiKey) {
-		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}/actions")
-		http.entity = new StringEntity(JsonOutput.toJson(body))
-		Map respMap = apiService.makeApiCall(http, apiKey)
-
-		if (respMap?.resp?.statusLine?.statusCode == 201) {
-			return checkActionComplete(respMap.json.action.id, apiKey)
-		} else {
-			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
-		}
-	}
-
-	ServiceResponse checkActionComplete(Integer actionId, String apiKey) {
-		try {
-			def pending = true
-			def attempts = 0
-			while (pending) {
-				println("waiting for action complete...")
-				sleep(1000l * 10l)
-				ServiceResponse actionDetail = actionStatus(actionId, apiKey)
-				if (actionDetail.success == true && actionDetail?.data?.status) {
-					def tmpState = actionDetail.data.status
-					if (tmpState == 'completed' || tmpState == 'failed') {
-						return actionDetail
-					}
-				}
-				attempts++
-				if (attempts > 60) {
-					pending = false
-				}
-			}
-		} catch (e) {
-			println("An Exception Has Occurred: ${e.message}")
-		}
-		return new ServiceResponse(success: false, msg: 'Too many failed attempts to check Droplet action status')
-	}
-
-	ServiceResponse actionStatus(Integer actionId, String apiKey) {
-		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/actions/${actionId}")
-		def respMap = apiService.makeApiCall(httpGet, apiKey)
-		if (respMap.resp.statusLine.statusCode == 200) {
-			return new ServiceResponse(success: true, data: respMap.json.action)
-		} else {
-			return new ServiceResponse(success: false, msg: respMap.resp.statusLine.statusCode, content: respMap.resp)
-		}
-	}
 }
