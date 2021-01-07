@@ -7,6 +7,7 @@ import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
@@ -61,7 +62,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse runWorkload(Workload workload, Map opts) {
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
 		println "DO Provision Provider: runWorkload"
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		if (!apiKey) {
@@ -69,15 +70,15 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		}
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		def body = [
-				'name'              : opts.name,
-				'region'            : opts.datacenterName,
-				'size'              : opts.sizeRef,
-				'image'             : opts.imageRef,
-				'ssh_keys'          : opts.sshKeys,
-				'backups'           : "${opts.doBackups == true}",
-				'ipv6'              : opts.ipv6 == "true",
-				'user_data'         : opts.userData,
-				'private_networking': opts.privateNetworking == "true"
+				'name'              : workload.name,
+				'region'            : workload.region,
+				'size'              : workload.size,
+				'image'             : workload.image,
+				'ssh_keys'          : workload.sshKeyIds,
+				'backups'           : "${workload.backups}",
+				'ipv6'              : workload.ipv6,
+				'user_data'         : workload.userData,
+				'private_networking': workload.privateNetworking
 		]
 		println "post body: $body"
 		http.entity = new StringEntity(JsonOutput.toJson(body))
@@ -86,7 +87,8 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 		if (respMap.resp.statusLine.statusCode == 202) {
 			println "Droplet Created"
-			return new ServiceResponse(success: true, data: respMap.json.droplet)
+			def droplet = respMap.json.droplet
+			return new ServiceResponse<WorkloadResponse>(success: true, data: new WorkloadResponse(externalId: droplet.id))
 		} else {
 			println "Failed to create droplet: $respMap.resp"
 			return new ServiceResponse(success: false, msg: respMap?.resp?.statusLine?.statusCode, content: respMap.resp, error: respMap.resp)
