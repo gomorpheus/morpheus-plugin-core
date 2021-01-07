@@ -194,7 +194,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		then:
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 202]], json: createServerJson]
 		resp.success == true
-		resp.data.id == 3164494
+		resp.data.externalId == "3164494"
 	}
 
 	void "runWorkload - fail"() {

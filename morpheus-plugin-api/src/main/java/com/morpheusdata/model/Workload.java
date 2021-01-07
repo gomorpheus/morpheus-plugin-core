@@ -16,4 +16,14 @@ public class Workload extends MorpheusModel {
 	 * Most workloads are associated with a corresponding host/server record
 	 */
 	public ComputeServer server;
+
+	public String name;
+	public String region;
+	public String size;
+	public String image;
+	public Boolean backups;
+	public Boolean ipv6;
+	public Boolean privateNetworking;
+	public String sshKeyIds;
+	public String userData;
 }

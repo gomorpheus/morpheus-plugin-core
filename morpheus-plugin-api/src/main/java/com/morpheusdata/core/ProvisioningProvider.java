@@ -4,6 +4,7 @@ import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Workload;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.response.WorkloadResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -71,7 +72,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse runWorkload(Workload workload, Map opts);
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.
