@@ -1,6 +1,7 @@
 package com.morpheusdata.cloud
 
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.http.client.methods.HttpGet
@@ -124,5 +125,21 @@ class DigitalOceanApiService {
 		} else {
 			return new ServiceResponse(success: false, msg: respMap.resp.statusLine.statusCode, content: respMap.resp)
 		}
+	}
+
+	WorkloadResponse dropletToWorkloadResponse(droplet) {
+		WorkloadResponse workloadResponse = new WorkloadResponse()
+		workloadResponse.externalId = droplet?.id
+		def publicNetwork = droplet?.networks?.v4?.find {
+			it.type == 'public'
+		}
+		def privateNetwork = droplet?.networks?.v4?.find {
+			it.type == 'private'
+		}
+		def publicIp = publicNetwork?.ip_address
+		def privateIp = privateNetwork?.ip_address ?: publicIp
+		workloadResponse.publicIp = publicIp
+		workloadResponse.privateIp = privateIp
+		workloadResponse
 	}
 }
