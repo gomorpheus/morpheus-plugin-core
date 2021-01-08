@@ -107,7 +107,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse stopWorkload(Workload workload) {
+	ServiceResponse<WorkloadResponse> stopWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		println "stop server: ${dropletId}"
@@ -129,7 +129,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse startWorkload(Workload workload) {
+	ServiceResponse<WorkloadResponse> startWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		println "startWorkload for server: ${dropletId}"
@@ -189,7 +189,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse getServerDetails(ComputeServer server) {
+	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server) {
 		println "getServerDetails"
 		ServiceResponse resp = new ServiceResponse(success: false)
 		Boolean pending = true
@@ -209,7 +209,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		resp
 	}
 
-	ServiceResponse serverStatus(ComputeServer server) {
+	ServiceResponse<WorkloadResponse> serverStatus(ComputeServer server) {
 		println "check server status for server ${server.externalId}"
 		ServiceResponse resp = new ServiceResponse(success: false)
 		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
@@ -221,12 +221,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			resp.success = true
 		}
 		resp.content = respMap.resp
-		resp.data = respMap.json?.droplet
+		resp.data = apiService.dropletToWorkloadResponse(respMap.json?.droplet)
 		resp.msg = status
 		resp
 	}
 
-	ServiceResponse powerOffServer(String apiKey, String dropletId) {
+	ServiceResponse<WorkloadResponse> powerOffServer(String apiKey, String dropletId) {
 		println "power off server"
 		def body = ['type': 'power_off']
 		apiService.performDropletAction(dropletId, body, apiKey)

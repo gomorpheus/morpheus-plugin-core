@@ -103,8 +103,14 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts map of options
 	 * @return Response from API
 	 */
-	ServiceResponse removeWorkload(Workload workload,Map opts);
+	ServiceResponse removeWorkload(Workload workload, Map opts);
 
+	/**
+	 * Method called at different phases to get the current status of a ComputeServer.
+	 *
+	 * @param server to check status
+	 * @return Response from API
+	 */
 	ServiceResponse getServerDetails(ComputeServer server);
 
 }
