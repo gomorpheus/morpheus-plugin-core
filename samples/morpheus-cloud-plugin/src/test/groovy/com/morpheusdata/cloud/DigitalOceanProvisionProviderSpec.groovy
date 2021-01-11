@@ -4,6 +4,8 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.Instance
+import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
@@ -237,15 +239,19 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	void "resizeServer"() {
 		given:
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
+		Workload workload = new Workload()
 		ComputeServer server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
+		workload.server = server
+		ServicePlan plan = new ServicePlan(externalId: 'plan_123')
+		Instance instance = new Instance(id: 42)
 		Map opts = [:]
 
 		when:
-		def resp = provider.resizeServer(server, opts)
+		def resp = provider.resizeWorkload(instance, workload, plan, opts)
 
 		then:
 		resp.success
-		1 * apiService.performDropletAction('drop1111', ['type': 'resize', disk: true, size: null], 'abc123') >> new ServiceResponse(success: true, data: actionSuccessJson('resize').action)
+		1 * apiService.performDropletAction('drop1111', ['type': 'resize', disk: true, size: 'plan_123'], 'abc123') >> new ServiceResponse(success: true, data: actionSuccessJson('resize').action)
 	}
 
 	def actionSuccessJson(String type) {

@@ -1,8 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.Workload;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
 
@@ -112,5 +110,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Response from API
 	 */
 	ServiceResponse getServerDetails(ComputeServer server);
+
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
 }
