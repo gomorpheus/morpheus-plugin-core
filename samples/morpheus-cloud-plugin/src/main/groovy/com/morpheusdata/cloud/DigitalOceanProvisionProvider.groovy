@@ -4,10 +4,13 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.Instance
 import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
+import com.sun.corba.se.spi.orbutil.threadpool.Work
 import groovy.json.JsonOutput
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
@@ -95,13 +98,14 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		}
 	}
 
-	ServiceResponse resizeServer(ComputeServer server, Map opts) {
-		String apiKey = server.cloud.configMap.doApiKey
-		String dropletId = server.externalId
+	@Override
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts) {
+		String apiKey = workload.server.cloud.configMap.doApiKey
+		String dropletId = workload.server.externalId
 		Map body = [
 				'type': 'resize',
 				'disk': true,
-				'size': opts.sizeRef
+				'size': plan.externalId
 		]
 		apiService.performDropletAction(dropletId, body, apiKey)
 	}
