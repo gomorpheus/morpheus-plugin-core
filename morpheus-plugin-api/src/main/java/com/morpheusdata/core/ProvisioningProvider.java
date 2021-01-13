@@ -111,6 +111,14 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse getServerDetails(ComputeServer server);
 
+	/**
+	 * Issues the remote calls to scale a workload element.
+	 * @param instance to resize
+	 * @param workload to resize
+	 * @param plan containing the new size
+	 * @param opts additional options
+	 * @return Response from API
+	 */
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
 }

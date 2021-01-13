@@ -17,13 +17,48 @@ public class Workload extends MorpheusModel {
 	 */
 	public ComputeServer server;
 
+	/**
+	 * Workload name
+	 */
 	public String name;
+
+	/**
+	 * location
+	 */
 	public String region;
+
+	/**
+	 * Size reference
+	 */
 	public String size;
+
+	/**
+	 * Image reference
+	 */
 	public String image;
+
+	/**
+	 * Supports backups
+	 */
 	public Boolean backups;
+
+	/**
+	 * Supports IPv6
+	 */
 	public Boolean ipv6;
+
+	/**
+	 * Supports private networking
+	 */
 	public Boolean privateNetworking;
+
+	/**
+	 *  Remote reference to ssh keys
+	 */
 	public String sshKeyIds;
+
+	/**
+	 * Remote user config which may be used to configure the Workload on first run
+	 */
 	public String userData;
 }
