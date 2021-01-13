@@ -2,6 +2,9 @@ package com.morpheusdata.model;
 
 import java.math.BigDecimal;
 
+/**
+ * Provides a means to set predefined tiers on memory, storage, cores, and cpu.
+ */
 public class ServicePlan extends MorpheusModel {
 	public String code;
 	public String name;

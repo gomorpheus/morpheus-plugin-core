@@ -86,7 +86,7 @@ public interface CloudProvider extends PluginProvider {
 
 
 	/**
-	 * Called when a Cloud From Morpheus is first saved. This is a hook provided to take care of cleaning up any state.
+	 * Called when a Cloud From Morpheus is removed. This is a hook provided to take care of cleaning up any state.
 	 * @param cloudInfo instance of the cloud object that is being removed.
 	 * @return ServiceResponse
 	 */
