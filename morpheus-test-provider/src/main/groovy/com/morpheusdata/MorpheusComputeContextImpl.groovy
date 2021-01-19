@@ -1,7 +1,10 @@
 package com.morpheusdata
 
 import com.morpheusdata.core.MorpheusComputeContext
+import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
+import com.morpheusdata.model.KeyPair
+import io.reactivex.Single
 
 class MorpheusComputeContextImpl implements MorpheusComputeContext {
 
@@ -9,4 +12,14 @@ class MorpheusComputeContextImpl implements MorpheusComputeContext {
     void updateZoneStatus(Cloud zone, String status, String message, Date syncDate) {
 
     }
+
+	@Override
+	Single<KeyPair> findOrGenerateKeyPair(Account account) {
+		return null
+	}
+
+	@Override
+	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud) {
+		return null
+	}
 }
