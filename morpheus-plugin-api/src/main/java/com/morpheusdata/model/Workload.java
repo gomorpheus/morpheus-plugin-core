@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.List;
+
 /**
  * Represents a workload running in morpheus. This is also known internally to morpheus as a Container object but due
  * to the expansion of where this model is used (the context), it has been renamed in the public api as a Workload
@@ -53,9 +55,9 @@ public class Workload extends MorpheusModel {
 	public Boolean privateNetworking;
 
 	/**
-	 *  Remote reference to ssh keys
+	 *  External reference to ssh keys
 	 */
-	public String sshKeyIds;
+	public List<Long> sshKeyIds;
 
 	/**
 	 * Remote user config which may be used to configure the Workload on first run
