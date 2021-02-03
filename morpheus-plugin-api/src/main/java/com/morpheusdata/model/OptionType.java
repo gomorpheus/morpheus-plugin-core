@@ -262,6 +262,7 @@ public class OptionType extends MorpheusModel {
 
 	public enum InputType {
 		TEXT("text"),
+		PASSWORD("password"),
 		NUMBER("number"),
 		TEXTAREA("textarea"),
 		SELECT("select"),
