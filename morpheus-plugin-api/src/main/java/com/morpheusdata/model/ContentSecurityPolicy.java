@@ -6,7 +6,7 @@ package com.morpheusdata.model;
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">Content Security Policy Header</a>
  * @author Mike Truso
  */
-public class TabContentSecurityPolicy {
+public class ContentSecurityPolicy {
 
 	/**
 	 * CSP frame-src directive
@@ -31,4 +31,10 @@ public class TabContentSecurityPolicy {
 	 * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src">style-src directive</a>
 	 */
 	public String styleSrc;
+
+	/**
+	 * CSP connect-src directive
+	 * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src">style-src directive</a>
+	 */
+	public String connectSrc;
 }

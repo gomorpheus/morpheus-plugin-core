@@ -47,7 +47,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		this.infobloxAPI = api
 	}
 
-	@Override
 	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts) {
 		return null
 	}

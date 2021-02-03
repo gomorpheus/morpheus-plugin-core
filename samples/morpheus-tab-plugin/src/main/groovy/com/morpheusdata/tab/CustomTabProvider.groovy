@@ -5,9 +5,8 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Instance
-import com.morpheusdata.model.Permission
 import com.morpheusdata.model.TaskConfig
-import com.morpheusdata.model.TabContentSecurityPolicy
+import com.morpheusdata.model.ContentSecurityPolicy
 import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
@@ -74,8 +73,8 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	 * @return
 	 */
 	@Override
-	TabContentSecurityPolicy getContentSecurityPolicy() {
-		def csp = new TabContentSecurityPolicy()
+	ContentSecurityPolicy getContentSecurityPolicy() {
+		def csp = new ContentSecurityPolicy()
 		csp.scriptSrc = '*.jsdelivr.net'
 		csp.frameSrc = '*.digitalocean.com'
 		csp.imgSrc = '*.wikimedia.org'

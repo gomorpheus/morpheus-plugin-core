@@ -1,10 +1,7 @@
 package com.morpheusdata.core;
 
 
-import com.morpheusdata.model.Account;
-import com.morpheusdata.model.Instance;
-import com.morpheusdata.model.TabContentSecurityPolicy;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.*;
 import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
 
@@ -43,5 +40,12 @@ public interface InstanceTabProvider extends PluginProvider {
 	 *
 	 * @return policy directives for various source types
 	 */
-	TabContentSecurityPolicy getContentSecurityPolicy();
+	ContentSecurityPolicy getContentSecurityPolicy();
+
+	/**
+	 * Define the scope of this UI element (e.g. global, tab, etc.)
+	 *
+	 * @return scope
+	 */
+	UIScope getContentScope();
 }
