@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.UIScope;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 
@@ -18,5 +19,10 @@ public abstract class AbstractInstanceTabProvider implements InstanceTabProvider
 			renderer.registerAssetHelper(getPlugin().getName());
 		}
 		return renderer;
+	}
+
+	@Override
+	public UIScope getContentScope() {
+		return UIScope.instanceTab;
 	}
 }
