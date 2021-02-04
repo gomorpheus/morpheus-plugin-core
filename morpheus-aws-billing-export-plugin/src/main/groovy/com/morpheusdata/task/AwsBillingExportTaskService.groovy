@@ -7,10 +7,11 @@ import com.bertramlabs.plugins.karman.*
 import groovy.transform.CompileStatic
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-
+import groovy.util.logging.Slf4j
 /**
  * Example AbstractTaskService. Each method demonstrates building an example TaskConfig for the relevant task type
  */
+@Slf4j 
 class AwsBillingExportTaskService extends AbstractTaskService {
 	MorpheusContext context
 
@@ -92,12 +93,12 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 			Date costDate = new Date()
 			billingPeriod = costDate.format('yyyyMM')
 			startDate = getStartOfGmtMonth(costDate)
-			endDate = getEndOfGmtMonth(costDate)
+			endDate = getStartOfNextGmtMonth(costDate)
 		} else {
 			def timezone = TimeZone.getTimeZone("GMT")
 			Date costDate = Date.parse('yyyyMMdd', billingPeriod + '01', timezone)
 			startDate = getStartOfGmtMonth(costDate)
-			endDate = getEndOfGmtMonth(costDate)
+			endDate = getStartOfNextGmtMonth(costDate)
 		}
 
 		def sourceProviderConfig = [provider:'s3', accessKey:accessKey, secretKey:secretKey, region:costingRegion, 
@@ -106,20 +107,21 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 		def targetProviderConfig = [provider:'s3', accessKey:accessKey, secretKey:secretKey, region:targetRegion, useHostCredentials: useHostCredentials, stsAssumeRole: stsAssumeRole]
 		StorageProvider targetProvider = StorageProvider.create(targetProviderConfig)
 
-		return copyReport(startDate,endDate,billingPeriod, sourceBucket, costingBucket, costingFolder, costingReport, sourceProvider,targetProvider, usageAcconutIds)
+		return copyReport(startDate,endDate,billingPeriod, costingBucket, targetBucket, costingFolder, costingReport, sourceProvider,targetProvider, usageAccountIds)
 
 	}
 
 	protected TaskResult copyReport(Date startDate, Date endDate, String period, String sourceBucket, String destinationBucket, String reportFolder, String reportName, StorageProvider sourceProvider, StorageProvider targetProvider, List<String> usageAccountIds) {
-		String output = []
+		List output = []
 		try {
 			String dateFolder = "${startDate.format('yyyyMMdd', TimeZone.getTimeZone('GMT'))}-${endDate.format('yyyyMMdd', TimeZone.getTimeZone('GMT'))}"
-			CloudFile sourceManifest = sourceProvider[sourceBucket][reportFolder + '/' + reportName + '/' + dateFolder + '/' + costingReport + '-Manifest.json']
+			log.info("Getting Report: ${reportFolder + '/' + reportName + '/' + dateFolder + '/' + reportName + '-Manifest.json'}")
+			CloudFile sourceManifest = sourceProvider[sourceBucket][reportFolder + '/' + reportName + '/' + dateFolder + '/' + reportName + '-Manifest.json']
 
 			//Firstly copy the manifest file
 			
 			output << "Copying Manifest To Target for Period: ${period}..."
-			targetManifest = targetProvider[targetBucket][reportFolder + '/' + reportName + '/' + dateFolder + '/' + costingReport + '-Manifest.json']
+			CloudFile targetManifest = targetProvider[destinationBucket][reportFolder + '/' + reportName + '/' + dateFolder + '/' + reportName + '-Manifest.json']
 			String manifestJson = sourceManifest.getText()
 			targetManifest.text = manifestJson
 			targetManifest.save()
@@ -127,11 +129,11 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 			
 			Map manifest = new groovy.json.JsonSlurper().parseText(manifestJson) as Map
 			List<String> reportKeys = manifest.reportKeys as List<String>
-			Long filePosition
+			Long filePosition = 0
 			for(String reportKey in reportKeys) {
 				output << "Copying File ${filePosition + 1} of ${reportKeys.size()} for Period: ${period}..."
-				CloudFile dataFile = storageProvider[sourceBucket][reportKey]
-				CloudFile targetFile = storageProvider[targetBucket][reportKey]
+				CloudFile dataFile = sourceProvider[sourceBucket][reportKey]
+				CloudFile targetFile = targetProvider[destinationBucket][reportKey]
 				GZIPInputStream dataFileStream = new GZIPInputStream(dataFile.getInputStream(), 65536)
 				BufferedReader br = new BufferedReader(new InputStreamReader(dataFileStream))
 				String line
@@ -143,34 +145,37 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 					List<String> lineArgs = splitCsvArgs(line)
 					if(lineCounter == 0) {
 						usageAccountColumn = lineArgs.indexOf("lineItem/UsageAccountId")
-						out << line + "\n"
+						out << (line + "\n").getBytes("UTF-8")
 					} else {
 						String usageAccountId = lineArgs[usageAccountColumn]
 						if(!usageAccountIds || usageAccountIds.contains(usageAccountId)) {
-							out << line + "\n"
+							out << (line + "\n").getBytes("UTF-8")
 						}
 					}
 					lineCounter++
 				}
+				out.finish()
 				out.flush()
-				byteStream.toByteArray()
+				byteStream.flush()
 				targetFile.bytes = byteStream.toByteArray()
 				targetFile.save()
 				filePosition++
 			}
-			output << "Report Copy Completed Into Target ${targetBucket} for Period: ${period}"
+			output << "Report Copy Completed Into Target ${destinationBucket} for Period: ${period}"
 			return new TaskResult(
 				success: true,
 				data   : null,
 				output : output.join("\n")
 			)
 		} catch(ex) {
+			log.error("Error Copying Report: {}",ex.message,ex)
 			return new TaskResult(
 				success: false,
 				data   : null,
 				error  : "Error Copying Report: ${ex.message}",
 				output : output.join("\n")
 			)
+
 		}
 
 
@@ -179,7 +184,7 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 
 	protected Date getStartOfGmtMonth(Date date) {
 		GregorianCalendar rtn = GregorianCalendar.instance
-		rtn.timeZone = gmtTimezone
+		rtn.timeZone = TimeZone.getTimeZone('GMT')
 		rtn.time = date
 		rtn.with {
 			set HOUR_OF_DAY, 0
@@ -191,9 +196,24 @@ class AwsBillingExportTaskService extends AbstractTaskService {
 		return rtn.time
   	}
 
+  	protected getStartOfNextGmtMonth(Date date) {
+		def rtn = GregorianCalendar.instance
+		rtn.timeZone = TimeZone.getTimeZone('GMT')
+		rtn.time = date
+		rtn.with {
+			set HOUR_OF_DAY, 0
+			set MINUTE, 0
+			set SECOND, 0
+			set MILLISECOND, 0
+			set DAY_OF_MONTH, 1
+		}
+		rtn.add(Calendar.MONTH, 1)
+		return rtn.time
+  }
+
 	protected getEndOfGmtMonth(Date date) {
 		def rtn = GregorianCalendar.instance
-		rtn.timeZone = gmtTimezone
+		rtn.timeZone = TimeZone.getTimeZone('GMT')
 		rtn.time = date
 		rtn.with {
 			set HOUR_OF_DAY, 0
