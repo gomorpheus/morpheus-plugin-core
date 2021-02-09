@@ -6,13 +6,21 @@ The plugin architecture requires Morpheus 5 or later.
 
 ## Creating a Plugin
 
-### Implementation
+Ensure you are using a version of the plugin that is compatible with your version of Morpheus. See the releases tab for more info.
 
-A plugin must depend the `morpheus-plugin-api` library and implement the `Plugin` class.
+### Setup a new Gradle project
 
-### Dependencies
+The plugin API is [published to Bintray](https://bintray.com/bertramlabs/gomorpheus/morpheus-plugin-api), include it in your gradle project:
 
-The `PluginManager` creates a new classpath for each plugin loaded. This is done to ensure classes in a plugin do not interfere with Morpheus or other loaded plugins.
+```gradle
+dependencies {
+	implementation 'com.morpheusdata:morpheus-plugin-api:0.6.0'
+}
+```
+
+### Implement your plugin
+
+Create and implement the `Plugin` class.
 
 ### Packaging
 
@@ -31,6 +39,10 @@ jar {
     }
 }
 ```
+
+### Plugin Dependencies
+
+Dependancies your plugin requires such as other clouds sdks or similar will be scoped to your plugins classpath. The `PluginManager` creates a new classpath for each plugin loaded. This is done to ensure classes in a plugin do not interfere with Morpheus or other loaded plugins.
 
 ## Things To Be Done
 
