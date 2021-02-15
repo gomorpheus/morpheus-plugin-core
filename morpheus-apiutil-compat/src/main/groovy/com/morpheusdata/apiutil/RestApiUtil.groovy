@@ -1,6 +1,7 @@
 package com.morpheusdata.apiutil
 
 import groovy.util.logging.Slf4j
+import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.Header
 import org.apache.http.HttpEntity
 import org.apache.http.HttpHost
@@ -124,7 +125,7 @@ class RestApiUtil {
 						}
 
 						response.getHeaders('Set-Cookie').each {
-							MorpheusUtils.extractCookie(it.toString()).each { cookie ->
+							extractCookie(it.toString()).each { cookie ->
 								rtn.addCookie(cookie.key, cookie.value)
 							}
 						}
@@ -159,11 +160,11 @@ class RestApiUtil {
 				}
 			}
 		} catch(SSLProtocolException sslEx) {
-			log.error("Error Occurred calling Infoblox API (SSL Exception): ${sslEx.message}",sslEx)
+			log.error("Error Occurred calling API (SSL Exception): ${sslEx.message}",sslEx)
 			rtn.addError('sslHandshake',  "SSL Handshake Exception (is SNI Misconfigured): ${sslEx.message}")
 			rtn.success = false
 		} catch (e) {
-			log.error("Error Occurred calling Infoblox API: ${e.message}",e)
+			log.error("Error Occurred calling API: ${e.message}",e)
 			rtn.addError('error', e.message)
 			rtn.success = false
 		}
@@ -311,5 +312,13 @@ class RestApiUtil {
 
 	void shutdownClient(Map opts) {
 		// FIXME Shutdown/close client
+	}
+
+	static Map<String, String> extractCookie(String rawCookie) {
+		if(!rawCookie) return null
+		def name = rawCookie.split('=')?.getAt(0)
+		String data = rawCookie?.split("$name=")?.getAt(1)?.split(";")?.getAt(0)
+		def value = data?.substring(1, data?.length() - 1)
+		[(name.toString()): value]
 	}
 }
