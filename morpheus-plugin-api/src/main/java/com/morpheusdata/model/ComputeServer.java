@@ -17,6 +17,8 @@ public class ComputeServer  extends MorpheusModel {
 	public String externalId;
 	public String uniqueId;
 	public Cloud cloud;
+	public ServicePlan plan;
+	public ComputeZone zone;
 
 	public String getUuid() {
 		return uuid;

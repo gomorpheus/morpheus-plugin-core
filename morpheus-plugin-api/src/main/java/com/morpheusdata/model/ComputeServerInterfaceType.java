@@ -1,4 +1,4 @@
-package com.morpheusdata.model
+package com.morpheusdata.model;
 
 class ComputeServerInterfaceType extends MorpheusModel {
 }
