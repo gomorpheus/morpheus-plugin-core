@@ -1,7 +1,5 @@
 package com.lumen.plugin
 
-import com.morpheus.compute.AbstractComputeUtility
-import com.morpheus.util.ApiUtility
 import groovy.util.logging.Slf4j
 
 @Slf4j
