@@ -1,5 +1,6 @@
 package com.morpheusdata.apiutil
 
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.Header
@@ -51,6 +52,7 @@ import org.apache.http.protocol.HttpContext
 import org.apache.http.ssl.SSLContexts
 import org.apache.http.util.CharArrayBuffer
 import org.apache.http.util.EntityUtils
+import org.xml.sax.SAXParseException
 
 import javax.net.ssl.SNIServerName
 import javax.net.ssl.SSLContext
@@ -113,7 +115,7 @@ class RestApiUtil {
 
 			if (opts.body) {
 				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase)request
-				postRequest.setEntity(new StringEntity(opts.body.encodeAsJson().toString()));
+				postRequest.setEntity(new StringEntity(opts.body.encodeAsJson().toString()))
 			}
 
 			withClient(opts) { HttpClient client ->
@@ -320,5 +322,61 @@ class RestApiUtil {
 		String data = rawCookie?.split("$name=")?.getAt(1)?.split(";")?.getAt(0)
 		def value = data?.substring(1, data?.length() - 1)
 		[(name.toString()): value]
+	}
+
+	static callJsonApi(String url, String path, Map opts = [:], String method = 'POST') {
+		callJsonApi(url, path, null, null, opts, method)
+	}
+
+	static callJsonApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+		//encode the body
+		if(opts.body && opts.bodyType != 'form' && opts.bodyType != 'multi-part-form' && !(opts.body instanceof String) )
+			opts.body = opts.body.encodeAsJson().toString()
+		//execute
+		def rtn = callApi(url, path, username, password, opts, method)
+		rtn.data = [:]
+		if(rtn.content?.length() > 0) {
+			try {
+				rtn.data = new JsonSlurper().parseText(rtn.content)
+			} catch(e) {
+				log.debug("Error parsing API response JSON: ${e}", e)
+			}
+		}
+		return rtn
+	}
+
+	static callXmlApi(String url, String path, Map opts = [:], String method = 'POST') {
+		callXmlApi(url, path, null, null, opts, method)
+	}
+
+	static callXmlApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+		//encode the body
+		if(opts.body) {
+			opts.body = opts.body.getBytes('UTF-8')
+			//add xml content type if not set
+			opts.headers = addRequiredHeader(opts.headers, 'Content-Type', 'application/xml')
+		}
+		//execute
+		def rtn = callApi(url, path, username, password, opts, method)
+		rtn.data = [:]
+		if(rtn.content?.length() > 0) {
+			try {
+				rtn.data =  new XmlSlurper(false,true).parseText(rtn.content)
+			}
+			catch (SAXParseException spe) {
+				log.debug("Response is NOT XML: ${rtn.content}")
+			}
+			catch(e) {
+				log.debug("Error parsing API response XML: ${e}", e)
+			}
+		}
+		return rtn
+	}
+
+	static addRequiredHeader(Map headers, String name, String value) {
+		def rtn = headers ?: [:]
+		if(rtn[name] == null)
+			rtn[name] = value
+		return rtn
 	}
 }
