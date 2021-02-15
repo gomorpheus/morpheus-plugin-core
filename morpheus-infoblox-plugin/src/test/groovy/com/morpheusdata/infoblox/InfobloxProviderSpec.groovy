@@ -1,6 +1,7 @@
 package com.morpheusdata.infoblox
 
 import com.morpheusdata.MorpheusContextImpl
+import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusNetworkContext
 import com.morpheusdata.model.Network
@@ -18,7 +19,7 @@ import spock.lang.Subject
 class InfobloxProviderSpec extends Specification {
     @Shared MorpheusContext context
     @Shared InfobloxPlugin plugin
-    @Shared InfobloxAPI infobloxAPI
+    @Shared RestApiUtil infobloxAPI
     @Shared MorpheusNetworkContext networkContext
     @Subject@Shared InfobloxProvider provider
 
@@ -27,7 +28,7 @@ class InfobloxProviderSpec extends Specification {
         networkContext = Mock(MorpheusNetworkContext)
         context.getNetwork() >> networkContext
         plugin = Mock(InfobloxPlugin)
-        infobloxAPI = Mock(InfobloxAPI)
+        infobloxAPI = Mock(RestApiUtil)
         provider = new InfobloxProvider(plugin, context, infobloxAPI)
     }
 

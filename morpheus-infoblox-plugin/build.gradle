@@ -36,6 +36,7 @@ dependencies {
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 	implementation 'commons-net:commons-net:3.6'
+	implementation 'com.morpheusdata:morpheus-apiutil-compat:0.0.1-SNAPSHOT'
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
@@ -90,7 +91,7 @@ task(console, dependsOn: 'classes', type: JavaExec) {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			artifactId 'morpheus-test-provider'
+			artifactId 'morpheus-infoblox-plugin'
 			pom.withXml {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
