@@ -1,5 +1,6 @@
 package com.morpheusdata.infoblox
 
+import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.core.DNSProvider
 import com.morpheusdata.core.IPAMProvider
 import com.morpheusdata.core.MorpheusContext
@@ -31,17 +32,17 @@ import org.apache.http.client.HttpClient
 class InfobloxProvider implements IPAMProvider, DNSProvider {
 	MorpheusContext morpheusContext
 	Plugin plugin
-	InfobloxAPI infobloxAPI
+	RestApiUtil infobloxAPI
 
 	static String LOCK_NAME = 'infoblox.ipam'
 
 	InfobloxProvider(Plugin plugin, MorpheusContext morpheusContext) {
 		this.morpheusContext = morpheusContext
 		this.plugin = plugin
-		this.infobloxAPI = new InfobloxAPI()
+		this.infobloxAPI = new RestApiUtil()
 	}
 
-	InfobloxProvider(Plugin plugin, MorpheusContext morpheusContext, InfobloxAPI api) {
+	InfobloxProvider(Plugin plugin, MorpheusContext morpheusContext, RestApiUtil api) {
 		this.morpheusContext = morpheusContext
 		this.plugin = plugin
 		this.infobloxAPI = api
