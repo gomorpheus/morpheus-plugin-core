@@ -1,5 +1,6 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
@@ -26,7 +27,7 @@ class DigitalOceanApiService {
 			try {
 				println "resp: ${resp}"
 				String responseContent
-				if(resp?.entity) {
+				if (resp?.entity) {
 					responseContent = EntityUtils.toString(resp?.entity)
 				}
 				println "content: $responseContent"
@@ -53,29 +54,25 @@ class DigitalOceanApiService {
 		Map query = [per_page: "${perPage}", page: "${pageNum}"]
 		query += queryParams
 
-		URIBuilder uriBuilder = new URIBuilder(DIGITAL_OCEAN_ENDPOINT)
-		uriBuilder.path = path
-		query.each { k, v ->
-			uriBuilder.addParameter(k, v)
-		}
-
-		HttpGet httpGet = new HttpGet(uriBuilder.build())
-		Map respMap = makeApiCall(httpGet, apiKey)
-		resultList += respMap?.json?."$resultKey"
+		Map opts = [:]
+		opts.headers = [
+				"Authorization": "Bearer ${apiKey}",
+				"Content-Type" : "application/json",
+				"Accept"       : "application/json"
+		]
+		opts.query = query
+		ServiceResponse resp = RestApiUtil.callJsonApi("$DIGITAL_OCEAN_ENDPOINT", path, opts, 'GET')
+		resultList += resp.data."$resultKey"
 		println "resultList: $resultList"
-		def theresMore = respMap?.json?.links?.pages?.next ? true : false
+		def theresMore = resp?.data?.links?.pages?.next ? true : false
 		while (theresMore) {
 			pageNum++
 			query.page = "${pageNum}"
-			uriBuilder.parameters = []
-			query.each { k, v ->
-				uriBuilder.addParameter(k, v)
-			}
-			httpGet = new HttpGet(uriBuilder.build())
-			def moreResults = makeApiCall(httpGet, apiKey)
+			opts.query = query
+			ServiceResponse moreResults = RestApiUtil.callJsonApi("$DIGITAL_OCEAN_ENDPOINT", path, opts, 'GET')
 			println "moreResults: $moreResults"
-			resultList += moreResults.json[resultKey]
-			theresMore = moreResults.json.links.pages.next ? true : false
+			resultList += moreResults.data[resultKey]
+			theresMore = moreResults.data.links.pages.next ? true : false
 		}
 		resultList
 	}

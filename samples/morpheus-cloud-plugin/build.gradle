@@ -39,6 +39,7 @@ dependencies {
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
 	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation project(':morpheus-apiutil-compat')
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
