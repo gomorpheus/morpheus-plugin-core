@@ -11,8 +11,7 @@ package com.morpheusdata.model;
  * @author David Estes
  */
 public class Network extends MorpheusModel {
-//	protected Long zoneId;
-	public Zone zone;
+	public Cloud cloud;
 	protected Long zonePoolId;
 	protected NetworkType type;
 	protected String name;
@@ -59,10 +58,10 @@ public class Network extends MorpheusModel {
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
 
-	public void setZoneId(Long id) {
-		this.zone = new Zone();
-		this.zone.id = id;
-		markDirty("zone", id);
+	public void setCloudId(Long id) {
+		this.cloud = new Cloud();
+		this.cloud.id = id;
+		markDirty("cloud", id);
 	}
 
 	public void setZonePoolId(Long zonePoolId) {

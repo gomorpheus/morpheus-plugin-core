@@ -8,7 +8,15 @@ package com.morpheusdata.model;
  */
 public class ComputeServerType  extends MorpheusModel {
 
-	private String name;
+	protected String name;
+	protected String code;
+	protected String description;
+	protected String computeService;
+	protected Boolean vmHypervisor = false; //runs vms, ex: esxi hypervisor
+	protected Boolean containerHypervisor = false; //runs docker
+	protected Boolean bareMetalHost = false; //bare metal
+	protected Boolean guestVm = false; //is a vm
+	protected PlatformType platform;
 
 
 	public String getName() {
@@ -20,5 +28,67 @@ public class ComputeServerType  extends MorpheusModel {
 		markDirty("name", name);
 	}
 
+	public String getCode() {
+		return code;
+	}
 
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getComputeService() {
+		return computeService;
+	}
+
+	public void setComputeService(String computeService) {
+		this.computeService = computeService;
+	}
+
+	public Boolean getVmHypervisor() {
+		return vmHypervisor;
+	}
+
+	public void setVmHypervisor(Boolean vmHypervisor) {
+		this.vmHypervisor = vmHypervisor;
+	}
+
+	public Boolean getContainerHypervisor() {
+		return containerHypervisor;
+	}
+
+	public void setContainerHypervisor(Boolean containerHypervisor) {
+		this.containerHypervisor = containerHypervisor;
+	}
+
+	public Boolean getBareMetalHost() {
+		return bareMetalHost;
+	}
+
+	public void setBareMetalHost(Boolean bareMetalHost) {
+		this.bareMetalHost = bareMetalHost;
+	}
+
+	public Boolean getGuestVm() {
+		return guestVm;
+	}
+
+	public void setGuestVm(Boolean guestVm) {
+		this.guestVm = guestVm;
+	}
+
+	public PlatformType getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(PlatformType platform) {
+		this.platform = platform;
+	}
 }

@@ -1,8 +1,8 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.Workload;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.response.WorkloadResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -70,7 +70,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse runWorkload(Workload workload, Map opts);
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.
@@ -101,5 +101,24 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts map of options
 	 * @return Response from API
 	 */
-	ServiceResponse removeWorkload(Workload workload,Map opts);
+	ServiceResponse removeWorkload(Workload workload, Map opts);
+
+	/**
+	 * Method called at different phases to get the current status of a ComputeServer.
+	 *
+	 * @param server to check status
+	 * @return Response from API
+	 */
+	ServiceResponse getServerDetails(ComputeServer server);
+
+	/**
+	 * Issues the remote calls to scale a workload element.
+	 * @param instance to resize
+	 * @param workload to resize
+	 * @param plan containing the new size
+	 * @param opts additional options
+	 * @return Response from API
+	 */
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
+
 }

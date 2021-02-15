@@ -13,7 +13,7 @@ public class ComputeServer  extends MorpheusModel {
 	public String displayName;
 	public String externalId;
 	public String uniqueId;
-	public Zone zone;
+	public Cloud cloud;
 
 	public String getUuid() {
 		return uuid;
@@ -60,16 +60,16 @@ public class ComputeServer  extends MorpheusModel {
 		markDirty("uniqueId",uniqueId);
 	}
 
-	public Zone getZone() { return zone; }
+	public Cloud getCloud() { return cloud; }
 
-	public void setZone(Zone zone) {
-		this.zone = zone;
-		markDirty("zone", zone);
+	public void setCloud(Cloud cloud) {
+		this.cloud = cloud;
+		markDirty("cloud", cloud);
 	}
 
-	public void setZoneId(Long id) {
-		this.zone = new Zone();
-		this.zone.id = id;
-		markDirty("zone", zone);
+	public void setCloudId(Long id) {
+		this.cloud = new Cloud();
+		this.cloud.id = id;
+		markDirty("cloud", cloud);
 	}
 }

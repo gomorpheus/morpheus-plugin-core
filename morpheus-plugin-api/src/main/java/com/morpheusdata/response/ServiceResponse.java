@@ -32,6 +32,7 @@ public class ServiceResponse<T> {
 	// TODO: Add jackson or a java json lib.
 	private Object results;
 	private Map<String, String> cookies;
+	public Boolean inProgress = false;
 
 	public ServiceResponse() { }
 
