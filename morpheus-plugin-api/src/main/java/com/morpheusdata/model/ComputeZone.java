@@ -1,7 +1,6 @@
 package com.morpheusdata.model;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 class ComputeZone extends MorpheusModel {
 	public Account account;
@@ -78,4 +77,11 @@ class ComputeZone extends MorpheusModel {
 	public String iacId; //id for infrastructure as code integrations;
 	public String uuid = UUID.randomUUID().toString();
 	public String noProxy;
+
+
+	// TODO: Implement config parsing
+	public Map getConfigMap() {
+//		return parse config string to map;
+		return Collections.emptyMap();
+	}
 }

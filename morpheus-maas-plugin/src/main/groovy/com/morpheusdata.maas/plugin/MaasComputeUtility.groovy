@@ -1,6 +1,5 @@
-package com.lumen.plugin
+package com.morpheusdata.maas.plugin
 
-import com.morpheus.util.*
 import groovy.util.logging.Slf4j
 
 @Slf4j

@@ -2,29 +2,70 @@ package com.lumen.plugin
 
 import com.morpheusdata.MorpheusContextImpl
 import com.morpheusdata.core.MorpheusContext
-import spock.lang.Shared
+import com.morpheusdata.core.MorpheusNetworkContext
+import com.morpheusdata.model.Container
 import spock.lang.Specification
 import spock.lang.Subject
 
 class LumenProvisionProviderSpec extends Specification {
 
-	@Shared MorpheusContext context
-	@Shared LumenPlugin plugin
-	@Subject @Shared LumenProvisionProvider provider
+	@Subject
+	LumenProvisionProvider service
+
+	MorpheusContext context
+	MorpheusNetworkContext networkContext
+	LumenPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContextImpl)
+		networkContext = Mock(MorpheusNetworkContext)
+		context.getNetwork() >> networkContext
 		plugin = Mock(LumenPlugin)
-		provider = new LumenProvisionProvider(plugin, context)
+
+		service = new LumenProvisionProvider(plugin, context)
 	}
 
-	void "Provider valid"() {
+	void "Validate defaults are set correctly"() {
 		expect:
-		provider
-		provider.providerName == "Lumen"
-		provider.providerCode == "lumen-provision"
-		and:
-		provider.provisionComplete(null, null).success
-		provider.deProvisionStarted(null, null).success
+		service.getProviderCode() == 'lumen-provision'
+		service.getProviderName() == 'Lumen'
+		service.DEFAULT_CIDR_MASK == 29
+		service.getDefaultCustomer() == [accountNumber:'morpheus', accountName:'morpheus']
 	}
+
+	void "validateContainer"() {
+		when:"called with no params"
+		def resp = service.validateContainer().blockingGet()
+		then:
+		resp.success
+
+		when:"called with map"
+		resp = service.validateContainer([:]).blockingGet()
+		then:
+		resp.success
+	}
+
+	void "createContainerResources - bad container"() {
+		given:
+		def badContainer = new Container()
+		when:
+		def result = service.createContainerResources(badContainer).blockingGet()
+
+		then:
+		!result.success
+		result.msg == "unknown error preparing network"
+	}
+
+	void "createContainerResources - container"() {
+		given:
+		def container = new Container()
+		when:
+		def result = service.createContainerResources(container).blockingGet()
+
+		then:
+		!result.success
+		result.msg == "unknown error preparing network"
+	}
+
+
 }

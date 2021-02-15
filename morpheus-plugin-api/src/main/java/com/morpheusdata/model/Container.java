@@ -1,7 +1,9 @@
 package com.morpheusdata.model;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Container extends MorpheusModel {
 	public Account account;
@@ -90,6 +92,11 @@ public class Container extends MorpheusModel {
 
 //	static hasMany = [files:ContainerFile, mounts:ContainerMount, ports:ContainerPort, logs:ContainerLog,
 //	configMaps:ContainerConfig, volumes:StorageVolume]
+
+	// TODO: implement parsing config
+	Map getConfigProperty(String prop) {
+		return Collections.emptyMap();
+	}
 
 	void setServerId(Long id) {
 		this.server = new ComputeServer();

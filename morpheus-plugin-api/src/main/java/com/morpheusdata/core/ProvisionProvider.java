@@ -13,6 +13,8 @@ import java.util.Map;
  * @author Eric Helgeson
  */
 public interface ProvisionProvider extends PluginProvider {
+
+	Single<Map> createContainerResources(Container container, Map opts);
 	Single<Map> validateContainer(Map opts);
 	Single<String> getProvisionTypeCode();
 	Single<Map> getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);

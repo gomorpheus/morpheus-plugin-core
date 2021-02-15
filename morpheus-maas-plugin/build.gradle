@@ -16,8 +16,8 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
 
-group = 'com.lumen'
-version = '1.0.1'
+group = 'com.morpheus.maas'
+version = '1.0.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()
@@ -37,7 +37,6 @@ dependencies {
 	implementation 'commons-net:commons-net:3.6'
 	implementation files('./lib/icmp4j.jar')
 	implementation "org.codehaus.gpars:gpars:1.2.1"
-	implementation project(':morpheus-maas-plugin')
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
@@ -66,7 +65,7 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-				'Plugin-Class': 'com.lumen.plugin.LumenPlugin',
+				'Plugin-Class': 'com.morpheus.plugin.MaasPlugin',
 				'Plugin-Version': version
 		)
 	}
@@ -90,13 +89,13 @@ task(console, dependsOn: 'classes', type: JavaExec) {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			artifactId 'morpheus-test-provider'
+			artifactId 'morpheus-maas-provider'
 			pom.withXml {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
-					name 'morpheus-lumen-plugin'
-					description 'Lumen platform'
-					url 'https://github.com/lumen/tbd'
+					name 'morpheus-maas-plugin'
+					description 'MaaS platform'
+					url 'https://github.com/'
 					scm {
 						url 'https://github.com/bertramdev/morpheus-core'
 						connection 'scm:https://bertramdev@github.com/gomorpheus/morpheus-core.git'

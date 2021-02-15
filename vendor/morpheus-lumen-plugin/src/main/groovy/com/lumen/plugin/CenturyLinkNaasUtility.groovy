@@ -3,7 +3,7 @@ package com.lumen.plugin
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class CenturyLinkNaasUtility extends AbstractComputeUtility {
+class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 
 	static waitInterval = 10000l
 	static maxWaitAttempts = 60
