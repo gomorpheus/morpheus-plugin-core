@@ -3,11 +3,12 @@ package com.lumen.plugin
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
+class CenturyLinkNaasUtility extends AbstractComputeUtility {
 
 	static waitInterval = 10000l
 	static maxWaitAttempts = 60
 	static tokenBuffer = 1000l * 60l //60 second buffer
+	static naasTimeoutInSeconds = waitInterval * maxWaitAttempts / 1000l
 
 	static testConnection(Map authConfig) {
 		def rtn = [success:false, invalidLogin:false]
@@ -19,6 +20,90 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 				rtn.invalidLogin = true
 		} catch(e) {
 			log.error("testConnection to ${authConfig.apiUrl}: ${e}")
+		}
+		return rtn
+	}
+
+	static reserveIpVpn(Map authConfig, Map ipConfig, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/services/ipvpn'
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def query = [:]
+			def body = [
+					serviceId:ipConfig.serviceId,
+					bandwidth:(ipConfig.bandwidth ?: 50000),
+					ipv4AddressBlock:ipConfig.cidr,
+					vrf: ipConfig.vrf,
+					requestId: ipConfig.requestId,
+					customer: [name:ipConfig.accountName],
+					timeoutInSeconds: naasTimeoutInSeconds,
+					peDevices: []
+			]
+			for(row in ipConfig.devices)
+				body.peDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan]
+			def requestOpts = [headers:headers, query:query, body:body]
+			log.info("create vpn request: ${requestOpts}")
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("reserveIpVpn results: ${results}, ${ipConfig?.requestId}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.resourceId = results.data.resourceId
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
+		}
+		return rtn
+	}
+
+	static deleteIpVpn(Map authConfig, String resourceId, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/services/ipvpn/' + resourceId
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def requestOpts = [headers:headers]
+			log.info("deleteIpVpn request: ${requestOpts}")
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			log.info("deleteIpVpn results: ${results}, ${resourceId}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.resourceId = results.data.resourceId
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
+		}
+		return rtn
+	}
+
+	static loadVpnService(Map authConfig, String resourceId, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/services/ipvpn/' + resourceId
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def query = [:]
+			def requestOpts = [headers:headers, query:query]
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			log.info("loadInternetService results: ${results}, ${opts?.requestId}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
 		}
 		return rtn
 	}
@@ -36,9 +121,11 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			body.clliCode = ipConfig.clliCode
 			body.cidr = ipConfig.cidr
 			body.customer = [name:ipConfig.accountName]
+			body.timeoutInSeconds = naasTimeoutInSeconds
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("reserve ip request: ${requestOpts}")
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("reserveIpBlock results: ${results}, ${ipConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.resourceId = results.data.resourceId
@@ -63,12 +150,12 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def body = [:]
 			body.requestId = vlanConfig.requestId
 			body.customer = [name:vlanConfig.accountName]
-			body.leafDevices = []
-			for(row in vlanConfig.devices)
-				body.leafDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName]
+			body.serverHostnames = vlanConfig.serverHostnames
+			body.timeoutInSeconds = naasTimeoutInSeconds
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("vlan request: ${requestOpts}")
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("createVlan results: ${results}, ${vlanConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.resourceId = results.data.resourceId
@@ -85,7 +172,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 
 	static createPort(Map authConfig, Map portConfig, Map opts) {
 		def rtn = [success:false, error:false, data:null]
-		def apiPath = authConfig.basePath + 'naasEdgeRequest/ports'
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/leaf/ports'
 		def tokenResults = getToken(authConfig)
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
@@ -94,12 +181,14 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			body.requestId = portConfig.requestId
 			body.productType = portConfig.productType ?: 'EDGE_COMPUTE_INTERNET'
 			body.customer = [name:portConfig.accountName]
-			body.leafDevices = []
-			for(row in portConfig.devices)
-				body.leafDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan]
+			body.serverHostnames = portConfig.serverHostnames
+			body.timeoutInSeconds = naasTimeoutInSeconds
+			body.serviceId = portConfig.circuitId
+			body.vlan = portConfig.vlanId
 			def requestOpts = [headers:headers, query:query, body:body]
-			log.info("port request: ${requestOpts}")
+			log.info("createPort request: ${requestOpts}")
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("createPort results: ${results}, ${portConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.resourceId = results.data.resourceId
@@ -125,12 +214,13 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			body.requestId = pathConfig.requestId
 			body.productType = pathConfig.productType ?: 'EDGE_COMPUTE_INTERNET'
 			body.customer = [name:pathConfig.accountName]
-			body.leafDevices = []
-			for(row in pathConfig.devices)
-				body.leafDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan]
+			body.serverHostnames = pathConfig.serverHostnames
+			body.timeoutInSeconds = naasTimeoutInSeconds
+			body.vlan = pathConfig.vlanId
 			def requestOpts = [headers:headers, query:query, body:body]
-			log.info("path request: ${requestOpts}")
+			log.info("createPath request: ${requestOpts}")
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("createPath results: ${results}, ${pathConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.resourceId = results.data.resourceId
@@ -154,17 +244,19 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def query = [:]
 			def body = [
 					serviceId:serviceConfig.serviceId,
-					bandwidth:(serviceConfig.bandwidth ?: '50000'),
+					bandwidth:(serviceConfig.bandwidth ?: 50000),
 					ipv4AddressBlock:serviceConfig.cidr
 			]
 			body.requestId = serviceConfig.requestId
 			body.customer = [name:serviceConfig.accountName]
+			body.timeoutInSeconds = naasTimeoutInSeconds
 			body.peDevices = []
 			for(row in serviceConfig.devices)
 				body.peDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan, vendor:row.vendor]
 			def requestOpts = [headers:headers, query:query, body:body]
-			log.info("service request: ${requestOpts}")
+			log.info("createInternetService request: ${requestOpts}")
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("createInternetService results: ${results}, ${serviceConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.resourceId = results.data.resourceId
@@ -212,7 +304,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
-			log.info("loadIpBlock results: ${results}")
+			log.info("loadIpBlock results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				//{"resourceId":"IP-07b015ddb2394cf8be3fca5933f71623","requestStatusUrl":"http://naas01-dev.idc1.level3.com:8557/api/v1/ips/IP-07b015ddb2394cf8be3fca5933f71623"}
 				//{"resourceId": "IP-9682fba0ac0544b2ace8b6a72f90b741", "status": "SUCCESS", "operation": "BUILD", "requestDate": "2020-09-16T19:23:11.522", "ipBlock": "216.202.192.32/29"}
@@ -270,7 +362,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
-			log.info("loadVlan results: ${results}")
+			log.info("loadVlan results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				//[resourceId:VLAN-4ebad48c42f242559120d7d53d9a27b1, status:SUCCESS, requestDate:2020-05-19T15:58:55.080, devices:[[deviceName:MINERLABQH001, interfaceName:ae90, subInterface:3, vlan:3], [deviceName:MINERLABQH002, interfaceName:ae90, subInterface:3, vlan:3]]]]
 				rtn.data = results.data
@@ -320,14 +412,14 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 
 	static loadPort(Map authConfig, String resourceId, Map opts) {
 		def rtn = [success:false, error:false, data:null]
-		def apiPath = authConfig.basePath + 'naasEdgeRequest/ports/' + resourceId
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/leaf/ports/' + resourceId
 		def tokenResults = getToken(authConfig)
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
-			log.info("loadPort results: ${results}")
+			log.info("loadPort results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				//[resourceId:PORT-bbf9f43c053046f3943ede10807e14f3, status:SUCCESS, requestDate:2020-05-19T16:05:01.266, serviceId:OH/IRXX/305393/LVLC, devices:[[deviceName:MINERLABQH001, interfaceName:ae90, subInterface:3, vlan:3], [deviceName:MINERLABQH002, interfaceName:ae90, subInterface:3, vlan:3]]]]
 				rtn.data = results.data
@@ -441,7 +533,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
-			log.info("loadInternetService results: ${results}")
+			log.info("loadInternetService results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				//[resourceId:SERVICE-49f44ddfc9f243cfa50513b1c39e2113, status:SUCCESS, requestDate:2020-05-19T16:59:43.968, peDevices:[[interfaces:[[interface:lag-10, outerVlan:10]], device:mnl-ear-1], [interfaces:[[interface:lag-10, outerVlan:10]], device:mnl-ear-2]]]]
 				rtn.data = results.data
@@ -461,8 +553,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 		def attempt = 0
 		def keepGoing = true
 		while(keepGoing == true && attempt < maxWaitAttempts) {
-			//load the vm
-			def results = loadInternetService(authConfig, resourceId, opts)
+			def results = opts.productType == 'EDGE_COMPUTE_IPVPN' ? loadVpnService(authConfig, resourceId, opts) : loadInternetService(authConfig, resourceId, opts)
 			if(results.success == true) {
 				//check status
 				if(results.data.status == 'SUCCESS') {
@@ -519,7 +610,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
-			log.info("deleteIpBlock results: ${results}")
+			log.info("deleteIpBlock results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.success = true
@@ -541,7 +632,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
-			log.info("deleteVlan results: ${results}")
+			log.info("deleteVlan results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.success = true
@@ -557,13 +648,13 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 
 	static deletePort(Map authConfig, String resourceId, Map opts) {
 		def rtn = [success:false, error:false, data:null]
-		def apiPath = authConfig.basePath + 'naasEdgeRequest/ports/' + resourceId
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/leaf/ports/' + resourceId
 		def tokenResults = getToken(authConfig)
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
-			log.info("deletePort results: ${results}")
+			log.info("deletePort results: ${results} ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.success = true
@@ -585,7 +676,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
-			log.info("deletePath results: ${results}")
+			log.info("deletePath results: ${results} ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.success = true
@@ -607,7 +698,7 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
-			log.info("deleteInternetService results: ${results}")
+			log.info("deleteInternetService results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
 				rtn.success = true
@@ -619,6 +710,84 @@ class CenturyLinkNaasUtility { // extends AbstractComputeUtility {
 			}
 		}
 		return rtn
+	}
+
+	static listVrfs(Map authConfig, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + "naasEdgeRequest/vrfs"
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def query = [
+					accountId: authConfig.customerNumber,
+					accountType: "ENTERPRISE_ID",
+					vrfType: "PRIVATE"
+			]
+			def requestOpts = [headers:headers, query:query]
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			log.info("listVrfs results: ${results}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
+		}
+		return rtn
+	}
+
+	static loadVrf(Map authConfig, String resourceId, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/vrfs/' + resourceId
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def query = [:]
+			def requestOpts = [headers:headers, query:query]
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			log.info("loadVrf results: ${results}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
+		}
+		return rtn
+	}
+
+	static createVrf(Map authConfig, Map opts) {
+		def rtn = [success:false, error:false, data:null]
+		def apiPath = authConfig.basePath + 'naasEdgeRequest/vrfs/'
+		def tokenResults = getToken(authConfig)
+		if(tokenResults.success == true) {
+			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
+			def query = [:]
+			def body = [:] // TODO
+			def requestOpts = [headers:headers, query:query, body: body]
+			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			log.info("createVrf results: ${results}")
+			if(results.success == true) {
+				rtn.data = results.data
+				rtn.success = true
+			} else {
+				rtn.data = results.data
+				rtn += parseErrorResults(results)
+				rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
+				rtn.success = false
+			}
+		}
+		return rtn
+	}
+
+	static reserveVrfIp(Map authConfig, String resourceId, Map opts) {
+		print "reserveVrfIp noop"
 	}
 
 	static buildHeaders(Map headers, String accountId, String token) {
