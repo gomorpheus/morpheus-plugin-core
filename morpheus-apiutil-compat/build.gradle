@@ -1,0 +1,73 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		jcenter()
+	}
+	dependencies {
+	}
+}
+
+plugins {
+    id 'groovy'
+    id 'java'
+	id 'idea'
+	id 'maven-publish'
+}
+
+group 'com.morpheusdata'
+version '0.0.1'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+repositories {
+	mavenLocal()
+    mavenCentral()
+	jcenter()
+}
+
+configurations {
+	provided
+}
+
+dependencies {
+	provided project(':morpheus-plugin-api')
+	compile "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	implementation "org.slf4j:slf4j-api:$slf4jVersion"
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation project(':morpheus-test-provider')
+	testImplementation 'net.bytebuddy:byte-buddy:1.9.3'
+	testImplementation 'org.objenesis:objenesis:2.6'
+	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation 'cglib:cglib-nodep:3.2.12'
+}
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+	}
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+	source = sourceSets.main.allJava
+	title = "Morpheus API Utility"
+}
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+	main = 'groovy.ui.Console'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
+test {
+	testLogging {
+		exceptionFormat = 'full'
+		showStandardStreams = true
+	}
+}
