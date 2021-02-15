@@ -40,5 +40,5 @@ public interface PluginProvider {
 	 * Returns true if the Provider is a plugin. Always true for plugin but null or false for Morpheus internal providers.
 	 * @return provider is plugin
 	 */
-	public default boolean isPlugin() { return true; }
+	default boolean isPlugin() { return true; }
 }

@@ -26,4 +26,17 @@ class MorpheusModelSpec extends Specification {
 		and: "property of parent is included"
 		props['id'] == 1
 	}
+
+	void "Instance.getProperties()"() {
+		given:
+		def model = new Instance(description: 'abc123')
+
+		when:
+		def props = model.getProperties()
+
+		then:
+		props.size() == 37
+		and: "private properties are unavailable"
+		props['description'] == null
+	}
 }

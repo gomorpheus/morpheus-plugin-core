@@ -2,7 +2,7 @@ package com.morpheusdata.model;
 
 /**
  * Proxies can be associated with networks for assignment during provisioning or for use when interacting with various
- * public cloud APIS (called provisioning proxies). They can be set on the {@link Network} or in some cases the {@link Zone}
+ * public cloud APIS (called provisioning proxies). They can be set on the {@link Network} or in some cases the {@link Cloud}
  *
  * @author David Estes
  */

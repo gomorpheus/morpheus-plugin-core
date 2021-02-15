@@ -105,7 +105,7 @@ public class NetworkPool extends MorpheusModel {
 	/**
 	 * Sets the external unique identifer as it relates to the integration provider. Whenever syncing something like a Pool record, the unique identifier provided by the third party vendor
 	 * should be stored here for cross referencing during sync.
-	 * @param externalId the external unique identifier representation of this zone from the external integration.
+	 * @param externalId the external unique identifier representation of this cloud from the external integration.
 	 */
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;

@@ -1,7 +1,7 @@
 package com.morpheusdata.model;
 
 /**
- * This is a Model Representation of a Network Domain. It contains information related to any DNS Zone that may be synced
+ * This is a Model Representation of a Network Domain. It contains information related to any DNS Cloud that may be synced
  * via a DNS and/or IPAM provider.
  *
  * @see com.morpheusdata.core.IPAMProvider
@@ -45,7 +45,7 @@ public class NetworkDomain extends MorpheusModel {
 	}
 
 	/**
-	 * Grabs the current Domain name. This should be the fully qualified DNS Name of the Authoritative Zone it represents.
+	 * Grabs the current Domain name. This should be the fully qualified DNS Name of the Authoritative Cloud it represents.
 	 * @return name
 	 */
 	public String getName() {
@@ -53,8 +53,8 @@ public class NetworkDomain extends MorpheusModel {
 	}
 
 	/**
-	 * Sets the current Domain name for the Authoritative zone this record represents.
-	 * @param name The Fully Qualified domain name of the Zone being represented.
+	 * Sets the current Domain name for the Authoritative cloud this record represents.
+	 * @param name The Fully Qualified domain name of the Cloud being represented.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -72,8 +72,8 @@ public class NetworkDomain extends MorpheusModel {
 	}
 
 	/**
-	 * Sets the human readable description text for a DNS Zone. This can be useful for providing more details to the user as to
-	 * what may belong in this zone or where it may be geographically associated to.
+	 * Sets the human readable description text for a DNS Cloud. This can be useful for providing more details to the user as to
+	 * what may belong in this cloud or where it may be geographically associated to.
 	 * @param description a descriptive block of text providing the user with more information about the Domain.
 	 */
 	public void setDescription(String description) {
@@ -83,16 +83,16 @@ public class NetworkDomain extends MorpheusModel {
 
 
 	/**
-	 * A flag to represent whether the authoritative zone in question is a public or internal dns zone.
-	 * @return Boolean state of public zone flag.
+	 * A flag to represent whether the authoritative cloud in question is a public or internal dns cloud.
+	 * @return Boolean state of public cloud flag.
 	 */
 	public Boolean getPublicZone() {
 		return publicZone;
 	}
 
 	/**
-	 * Sets the Public Zone qualifier flag used for defining if the current Zone is a public or internal DNS Zone.
-	 * @param publicZone zone
+	 * Sets the Public Cloud qualifier flag used for defining if the current Cloud is a public or internal DNS Cloud.
+	 * @param publicZone cloud
 	 */
 	public void setPublicZone(Boolean publicZone) {
 		this.publicZone = publicZone;
@@ -158,7 +158,7 @@ public class NetworkDomain extends MorpheusModel {
 	 * Gets the external unique identifier. The externalId is available on most sync related Models and is the unique identifier used by the external integration of the
 	 * correlating object. Whenever syncing something like a Domain record, the unique identifier provided by the third party vendor
 	 * should be stored here for cross referencing during sync.
-	 * @return the external unique identifier representation of this zone from the external integration.
+	 * @return the external unique identifier representation of this cloud from the external integration.
 	 */
 	public String getExternalId() {
 		return externalId;
@@ -167,7 +167,7 @@ public class NetworkDomain extends MorpheusModel {
 	/**
 	 * Sets the external unique identifer as it relates to the integration provider. Whenever syncing something like a Domain record, the unique identifier provided by the third party vendor
 	 * should be stored here for cross referencing during sync.
-	 * @param externalId the external unique identifier representation of this zone from the external integration.
+	 * @param externalId the external unique identifier representation of this cloud from the external integration.
 	 */
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
@@ -183,8 +183,8 @@ public class NetworkDomain extends MorpheusModel {
 	}
 
 	/**
-	 * Sets the OUPath (Organizational Unit) of a Zone that may be used for joining an Active Directory Windows Domain Controller. It is possible
-	 * for multiple Zone Records to exist with the same FQDN, but with a different OU Path qualifier.
+	 * Sets the OUPath (Organizational Unit) of a Cloud that may be used for joining an Active Directory Windows Domain Controller. It is possible
+	 * for multiple Cloud Records to exist with the same FQDN, but with a different OU Path qualifier.
 	 * @param ouPath The String AD representation of an OU when joining a Domain.
 	 */
 	public void setOuPath(String ouPath) {
@@ -192,17 +192,17 @@ public class NetworkDomain extends MorpheusModel {
 	}
 
 	/**
-	 * Gets the string representation of the zone type this Domain record correlates to. An example might be an "authoritative" zone or a "forward" zone.
-	 * @return A string representation of the type of zone this domain record correlates to.
+	 * Gets the string representation of the cloud type this Domain record correlates to. An example might be an "authoritative" cloud or a "forward" cloud.
+	 * @return A string representation of the type of cloud this domain record correlates to.
 	 */
 	public String getZoneType() {
 		return zoneType;
 	}
 
 	/**
-	 * Typically set during sync, allows the sync services to represent the type of zone record being synced. For example there are multiple
+	 * Typically set during sync, allows the sync services to represent the type of cloud record being synced. For example there are multiple
 	 * types of zones when it comes to DNS such as (authoritative, forward, or even reverse).
-	 * @param zoneType A string representation of the type of zone this domain record correlates to.
+	 * @param zoneType A string representation of the type of cloud this domain record correlates to.
 	 */
 	public void setZoneType(String zoneType) {
 		this.zoneType = zoneType;
@@ -211,7 +211,7 @@ public class NetworkDomain extends MorpheusModel {
 	/**
 	 * Gets the flag representing whether or not the Provider of this Domain Record provides DNSSec features. For more information
 	 * please refer to the documentation provided by icann.org regarding DNSSec and what it stands for.
-	 * @return Boolean representation indicating if the referred to zone is providing DNSSec capabilities.
+	 * @return Boolean representation indicating if the referred to cloud is providing DNSSec capabilities.
 	 */
 	public Boolean getDnssec() {
 		return dnssec;
@@ -220,7 +220,7 @@ public class NetworkDomain extends MorpheusModel {
 	/**
 	 * Sets the DNSSec flag. this is typically done via a {@link com.morpheusdata.core.DNSProvider} sync operation. For more information
 	 * please refer to the documentation provided by icann.org regarding DNSSec and what it stands for.
-	 * @param dnssec Boolean representation indicating if the referred to zone is providing DNSSec capabilities.
+	 * @param dnssec Boolean representation indicating if the referred to cloud is providing DNSSec capabilities.
 	 */
 	public void setDnssec(Boolean dnssec) {
 		this.dnssec = dnssec;
