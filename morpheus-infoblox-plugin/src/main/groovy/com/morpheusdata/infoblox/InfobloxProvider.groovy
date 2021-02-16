@@ -1,5 +1,6 @@
 package com.morpheusdata.infoblox
 
+import com.morpheusdata.apiutil.NetworkUtility
 import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.core.DNSProvider
 import com.morpheusdata.core.IPAMProvider
@@ -501,8 +502,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				 refType:'AccountIntegration',
 				 refId: poolServer?.integration?.id,
 				 externalId: add.'_ref',
-				 name: MorpheusUtils.getFriendlyDomainName(add.fqdn),
-				 fqdn: MorpheusUtils.getFqdnDomainName(add.fqdn),
+				 name: NetworkUtility.getFriendlyDomainName(add.fqdn),
+				 fqdn: NetworkUtility.getFqdnDomainName(add.fqdn),
 				 refSource: 'integration',
 				 zoneType: 'Authoritative'])
 		}
@@ -906,7 +907,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 								def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
 								networkPoolIp.networkPoolRange = ipRange
 								networkPoolIp.gatewayAddress = networkPool.gateway ?: network?.gateway
-								networkPoolIp.subnetMask = MorpheusUtils.getNetworkSubnetMask(networkPool, network)
+								networkPoolIp.subnetMask = NetworkUtility.getNetworkSubnetMask(networkPool, network)
 								networkPoolIp.dnsServer = networkPool.dnsServers?.size() > 0 ? networkPool.dnsServers?.join(',') : network?.dnsServers?.join(',')
 								networkPoolIp.interfaceName = network?.interfaceName ?: 'eth0'
 								networkPoolIp.startDate = new Date()
@@ -981,7 +982,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
 						networkPoolIp.networkPoolRange = ipRange
 						networkPoolIp.gatewayAddress = networkPool.gateway ?: network?.gateway
-						networkPoolIp.subnetMask = MorpheusUtils.getNetworkSubnetMask(networkPool, network)
+						networkPoolIp.subnetMask = NetworkUtility.getNetworkSubnetMask(networkPool, network)
 						networkPoolIp.dnsServer = networkPool.dnsServers?.size() > 0 ? networkPool.dnsServers.first() : network?.dnsPrimary
 						networkPoolIp.interfaceName = network?.interfaceName ?: 'eth0'
 						networkPoolIp.startDate = new Date()

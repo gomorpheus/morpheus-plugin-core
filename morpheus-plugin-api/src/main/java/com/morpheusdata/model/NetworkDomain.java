@@ -23,6 +23,7 @@ public class NetworkDomain extends MorpheusModel {
 	private String ouPath;
 	private String zoneType;
 	private Boolean dnssec;
+	public String fqdn;
 
 	/**
 	 * Gets the display name of the current Network Domain. Domains can have a display name for situations where the same
