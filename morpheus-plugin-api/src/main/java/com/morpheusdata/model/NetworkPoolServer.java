@@ -19,7 +19,6 @@ public class NetworkPoolServer extends MorpheusModel {
 	public Integer adminPort;
 	public String status = "ok"; //ok, error, warning, offline
 	public String statusMessage;
-	public String config;
 	public String networkFilter;
 	public String zoneFilter;
 	public String tenantMatch;
@@ -30,7 +29,6 @@ public class NetworkPoolServer extends MorpheusModel {
 	public NetworkPoolServerType type;
 	public AccountIntegration integration;
 	public Account account;
-	public Map<String, Object> configMap;
 
 	public void setAccountId(Long id) {
 		this.account = new Account();

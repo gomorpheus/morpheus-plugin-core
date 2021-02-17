@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.*;
 import javax.json.*;
 
@@ -117,6 +118,35 @@ public class MorpheusModel {
 			//fail silently
 		}
 		return map;
+	}
+
+	public void setConfigMap(HashMap<String, Object> map) {
+		JsonObject object = mapToJson(map);
+		this.config = object.toString();
+	}
+
+	private JsonObject mapToJson(HashMap<String, Object> map) {
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+		for (String key : map.keySet()) {
+			Object val = map.get(key);
+			if (val instanceof String) {
+				builder.add(key, (String) val);
+			} else if (val instanceof Number) {
+				if(val instanceof Integer) {
+					builder.add(key, (Integer) val);
+				} else {
+					builder.add(key, (BigDecimal) val);
+				}
+			} else if(val instanceof Boolean) {
+				builder.add(key, (Boolean) val);
+			} else if(val instanceof Map) {
+				builder.add(key, mapToJson((HashMap<String, Object>) val));
+			} else {
+				builder.add(key, val.toString());
+			}
+		}
+
+		return builder.build();
 	}
 
 	private Map toMap(JsonObject object) {
