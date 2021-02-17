@@ -53,4 +53,27 @@ public class MorpheusUtility {
 		}
 		return list;
 	}
+
+	public static Object getConfigProperty(String prop, String config) {
+		Map configMap = getConfigMap(config);
+		Object propertyValue = null;
+		if(!prop.contains(".")) {
+			propertyValue = configMap.get(prop);
+		} else {
+			String[] parts = prop.split("\\.");
+			Map nestedPart = configMap;
+			for(String part : parts) {
+				if(part.equals(parts[parts.length - 1])) {
+					// last part, look for value
+					propertyValue = nestedPart.get(part);
+				} else {
+					nestedPart = (Map) nestedPart.get(part);
+				}
+				if(nestedPart == null) {
+					break;
+				}
+			}
+		}
+		return propertyValue;
+	}
 }
