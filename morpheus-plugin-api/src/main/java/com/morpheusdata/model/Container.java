@@ -94,7 +94,7 @@ public class Container extends MorpheusModel {
 //	configMaps:ContainerConfig, volumes:StorageVolume]
 
 	// TODO: implement parsing config
-	Map getConfigProperty(String prop) {
+	public Map getConfigProperty(String prop) {
 		return Collections.emptyMap();
 	}
 

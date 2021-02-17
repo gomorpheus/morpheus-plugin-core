@@ -3,6 +3,9 @@ package com.lumen.plugin
 import com.morpheusdata.MorpheusContextImpl
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusNetworkContext
+import com.morpheusdata.model.Account
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.ComputeZone
 import com.morpheusdata.model.Container
 import spock.lang.Specification
 import spock.lang.Subject
@@ -57,14 +60,17 @@ class LumenProvisionProviderSpec extends Specification {
 	}
 
 	void "createContainerResources - container"() {
-		given:
-		def container = new Container()
+		given: "A valid container"
+		def account = new Account()
+		def zone = new ComputeZone()
+		def server = new ComputeServer(zone: zone)
+		def container = new Container(account: account, server: server)
+
 		when:
 		def result = service.createContainerResources(container).blockingGet()
 
 		then:
-		!result.success
-		result.msg == "unknown error preparing network"
+		result.success
 	}
 
 

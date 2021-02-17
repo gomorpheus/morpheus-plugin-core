@@ -38,6 +38,7 @@ dependencies {
 	implementation files('./lib/icmp4j.jar')
 	implementation "org.codehaus.gpars:gpars:1.2.1"
 	implementation project(':morpheus-maas-plugin')
+	implementation project(':morpheus-apiutil-compat')
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')

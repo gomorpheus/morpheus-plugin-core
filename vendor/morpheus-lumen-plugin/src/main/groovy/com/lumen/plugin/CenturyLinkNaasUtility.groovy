@@ -1,5 +1,6 @@
 package com.lumen.plugin
 
+import com.morpheusdata.apiutil.RestApiUtil
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -45,7 +46,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 				body.peDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan]
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("create vpn request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("reserveIpVpn results: ${results}, ${ipConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -69,7 +70,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
 			log.info("deleteIpVpn request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deleteIpVpn results: ${results}, ${resourceId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -93,7 +94,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadInternetService results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -124,7 +125,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			body.timeoutInSeconds = naasTimeoutInSeconds
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("reserve ip request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("reserveIpBlock results: ${results}, ${ipConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -154,7 +155,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			body.timeoutInSeconds = naasTimeoutInSeconds
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("vlan request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("createVlan results: ${results}, ${vlanConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -187,7 +188,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			body.vlan = portConfig.vlanId
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("createPort request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("createPort results: ${results}, ${portConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -219,7 +220,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			body.vlan = pathConfig.vlanId
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("createPath request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("createPath results: ${results}, ${pathConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -255,7 +256,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 				body.peDevices << [deviceName:row.deviceName, interfaceName:row.interfaceName, vlan:row.vlan, vendor:row.vendor]
 			def requestOpts = [headers:headers, query:query, body:body]
 			log.info("createInternetService request: ${requestOpts}")
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("createInternetService results: ${results}, ${serviceConfig?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -279,7 +280,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [machineHostname:resourceId]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadLeafDevices results: ${results}")
 			if(results.success == true) {
 				//{leafDevices:[{deviceName, interfaceName}]}
@@ -303,7 +304,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadIpBlock results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				//{"resourceId":"IP-07b015ddb2394cf8be3fca5933f71623","requestStatusUrl":"http://naas01-dev.idc1.level3.com:8557/api/v1/ips/IP-07b015ddb2394cf8be3fca5933f71623"}
@@ -361,7 +362,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadVlan results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				//[resourceId:VLAN-4ebad48c42f242559120d7d53d9a27b1, status:SUCCESS, requestDate:2020-05-19T15:58:55.080, devices:[[deviceName:MINERLABQH001, interfaceName:ae90, subInterface:3, vlan:3], [deviceName:MINERLABQH002, interfaceName:ae90, subInterface:3, vlan:3]]]]
@@ -418,7 +419,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadPort results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				//[resourceId:PORT-bbf9f43c053046f3943ede10807e14f3, status:SUCCESS, requestDate:2020-05-19T16:05:01.266, serviceId:OH/IRXX/305393/LVLC, devices:[[deviceName:MINERLABQH001, interfaceName:ae90, subInterface:3, vlan:3], [deviceName:MINERLABQH002, interfaceName:ae90, subInterface:3, vlan:3]]]]
@@ -475,7 +476,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadPath results: ${results}")
 			if(results.success == true) {
 				//[resourceId:PATH-550d1cf511ee4d6a9148f0cbe485e846, status:SUCCESS, requestDate:2020-05-19T16:11:30.705, peDevices:[[deviceName:mnl-ear-1, interfaceName:lag-10, vlan:10], [deviceName:mnl-ear-2, interfaceName:lag-10, vlan:10]]]]
@@ -532,7 +533,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadInternetService results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				//[resourceId:SERVICE-49f44ddfc9f243cfa50513b1c39e2113, status:SUCCESS, requestDate:2020-05-19T16:59:43.968, peDevices:[[interfaces:[[interface:lag-10, outerVlan:10]], device:mnl-ear-1], [interfaces:[[interface:lag-10, outerVlan:10]], device:mnl-ear-2]]]]
@@ -587,7 +588,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deleteOrder results: ${results}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -609,7 +610,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deleteIpBlock results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -631,7 +632,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deleteVlan results: ${results} ${opts.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -653,7 +654,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deletePort results: ${results} ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -675,7 +676,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deletePath results: ${results} ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -697,7 +698,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 		if(tokenResults.success == true) {
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def requestOpts = [headers:headers]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 			log.info("deleteInternetService results: ${results}, ${opts?.requestId}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -724,7 +725,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 					vrfType: "PRIVATE"
 			]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("listVrfs results: ${results}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -747,7 +748,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = buildHeaders([:], authConfig.accountId, tokenResults.token)
 			def query = [:]
 			def requestOpts = [headers:headers, query:query]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 			log.info("loadVrf results: ${results}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -771,7 +772,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def query = [:]
 			def body = [:] // TODO
 			def requestOpts = [headers:headers, query:query, body: body]
-			def results = ApiUtility.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 			log.info("createVrf results: ${results}")
 			if(results.success == true) {
 				rtn.data = results.data
@@ -843,7 +844,7 @@ class CenturyLinkNaasUtility { //extends AbstractComputeUtility
 			def headers = ['Content-Type':'application/x-www-form-urlencoded']
 			def requestOpts = [headers:headers, body:body, bodyType:'form']
 			def tokenDate = new Date()
-			def results = ApiUtility.callJsonApi(authConfig.authUrl, apiPath, authConfig.apiKey, authConfig.apiSecret, requestOpts, 'POST')
+			def results = RestApiUtil.callJsonApi(authConfig.authUrl, apiPath, authConfig.apiKey, authConfig.apiSecret, requestOpts, 'POST')
 			rtn.success = results?.success && results?.error != true
 			if(rtn.success == true) {
 				//authConfig.token = rtn.token

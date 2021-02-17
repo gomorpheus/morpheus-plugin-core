@@ -148,9 +148,20 @@ class LumenProvisionProvider extends MaasProvisionProvider {
 			}
 		} catch(e) {
 			log.error("prepareContainer error: ${e}", e)
+			throw e
 			rtn.msg = 'unknown error preparing network'
 		}
 		return Single.just(rtn)
+	}
+
+	def getNaasApiUrl(String url) {
+		def rtn = url
+		if(!url?.toLowerCase()?.startsWith('http'))
+			url = 'https://' + url
+		def slashIndex = rtn?.indexOf('/', 10)
+		if(slashIndex > 10)
+			rtn = rtn.substring(0, slashIndex)
+		return rtn
 	}
 
 	def getNaasAuthConfig(ComputeZone zone, Map customerConfig) {
@@ -182,8 +193,8 @@ class LumenProvisionProvider extends MaasProvisionProvider {
 	private Map getCustomerConfig(Account account) {
 		def rtn = [:]
 		rtn.customerNumber = account?.customerNumber
-		rtn.accountNumber = account.accountNumber ?: defaultCustomer.accountNumber
-		rtn.accountName = account.accountName ?: defaultCustomer.accountName
+		rtn.accountNumber = account?.accountNumber ?: defaultCustomer.accountNumber
+		rtn.accountName = account?.accountName ?: defaultCustomer.accountName
 		return rtn
 	}
 

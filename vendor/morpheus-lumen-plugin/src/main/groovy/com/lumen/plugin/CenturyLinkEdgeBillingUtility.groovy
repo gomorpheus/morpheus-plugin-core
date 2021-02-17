@@ -1,5 +1,6 @@
 package com.lumen.plugin
 
+import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeZone
 import groovy.util.logging.Slf4j
@@ -282,7 +283,7 @@ class CenturyLinkEdgeBillingUtility {
 		]
 		log.info("callLumenBillingApi req headers: ${headers}")
 		log.info("callLumenBillingApi req body: ${body}")
-		def rtn = ApiUtility.callXmlApi(billingConfig.apiUrl, billingConfig.basePath, [headers: headers,  body: body] )
+		def rtn = RestApiUtil.callXmlApi(billingConfig.apiUrl, billingConfig.basePath, [headers: headers, body: body] )
 		log.info("callLumenBillingApi resp: ${rtn}")
 		if (rtn.statusCode != 200) {
 			log.error(rtn.error)

@@ -2,7 +2,7 @@ package com.morpheusdata.model;
 
 import java.util.*;
 
-class ComputeZone extends MorpheusModel {
+public class ComputeZone extends MorpheusModel {
 	public Account account;
 	public Account owner;
 	public String visibility = "private"; //['public', 'private']
@@ -80,8 +80,12 @@ class ComputeZone extends MorpheusModel {
 
 
 	// TODO: Implement config parsing
-	public Map getConfigMap() {
+	public Map<String, String> getConfigMap() {
 //		return parse config string to map;
-		return Collections.emptyMap();
+		Map<String, String> stub = new HashMap<>();
+		stub.put("naasServiceUrl", "https://foobar.com/fizz");
+		stub.put("naasApiKey", "naas-api-key-here");
+		stub.put("naasApiSecret", "naas-api-secret-here");
+		return stub;
 	}
 }
