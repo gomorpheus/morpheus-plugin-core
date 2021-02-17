@@ -84,4 +84,20 @@ class MorpheusModelSpec extends Specification {
 		'config.zone.id' | '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}' || 567
 		'config.foo.id'  | '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}' || null
 	}
+
+	void "setConfigProperty"() {
+		given:
+		MorpheusModel model = new MorpheusModel(config: '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}')
+
+		expect:
+		model.setConfigMap(configMap)
+		expectedConfig == model.getConfig()
+
+		where:
+		configMap                                              | expectedConfig
+		[foo: 'bar']                                           | '{"foo":"bar"}'
+		[zoneId: 345]                                          | '{"zoneId":345}'
+		[capacity: 2.5]                                        | '{"capacity":2.5}'
+		[nested: true, instance: [id: 1, name: 'My Instance']] | '{"nested":true,"instance":{"id":1,"name":"My Instance"}}'
+	}
 }

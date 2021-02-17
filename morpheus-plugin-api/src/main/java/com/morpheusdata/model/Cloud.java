@@ -1,7 +1,5 @@
 package com.morpheusdata.model;
 
-import java.util.Map;
-
 /**
  *	Integrations or connections to public, private, hybrid clouds, or bare metal servers
  */
@@ -27,8 +25,4 @@ public class Cloud extends MorpheusModel {
 	 */
 	public String description;
 
-	/**
-	 * Cloud configuration values
-	 */
-	public Map configMap;
 }

@@ -1,13 +1,9 @@
 package com.morpheusdata.model;
 
-import java.util.Map;
-
 public class AccountIntegration extends MorpheusModel {
 
 	public String uuid;
 	public String name;
-	public String config;
-	public Map<String, Object> configMap;
 	public String type;
 	public String code;
 	public String serviceHost;
