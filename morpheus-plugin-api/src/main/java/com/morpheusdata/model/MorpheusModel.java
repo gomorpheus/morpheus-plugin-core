@@ -173,13 +173,22 @@ public class MorpheusModel {
 
 	private List<Object> toList(JsonArray array) {
 		List<Object> list = new ArrayList<Object>();
-		for (Object value : array) {
+		for(int i = 0; i < array.size(); i++) {
+			JsonValue value = array.get(i);
+			Object val = new Object();
 			if (value instanceof JsonArray) {
-				value = toList((JsonArray) value);
+				val = toList((JsonArray) value);
 			} else if (value instanceof JsonObject) {
-				value = toMap((JsonObject) value);
+				val = toMap((JsonObject) value);
+			} else if(value.getValueType() == JsonValue.ValueType.STRING) {
+				val = array.getString(i);
+			} else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
+				JsonNumber number = array.getJsonNumber(i);
+				val = number.isIntegral() ? number.longValue() : number.doubleValue();
+			} else if(value.getValueType() == JsonValue.ValueType.FALSE || value.getValueType() == JsonValue.ValueType.TRUE) {
+				val = array.getBoolean(i);
 			}
-			list.add(value);
+			list.add(val);
 		}
 		return list;
 	}

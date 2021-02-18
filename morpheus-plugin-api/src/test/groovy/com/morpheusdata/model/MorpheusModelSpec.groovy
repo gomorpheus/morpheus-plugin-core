@@ -56,6 +56,7 @@ class MorpheusModelSpec extends Specification {
 		'{"foo":true}'                                                 | [foo: true]
 		'{"foo":false}'                                                | [foo: false]
 		'{"nested":true, "instance":{"id": 1, "name": "My Instance"}}' | [nested: true, instance: [id: 1, name: 'My Instance']]
+		'{"alist":["a","b","c"]}'                                      | [alist: ['a', 'b', 'c']]
 	}
 
 	void "getConfigMap - malformed json"() {
@@ -83,6 +84,7 @@ class MorpheusModelSpec extends Specification {
 		'config.apiKey'  | '{"zoneId":345, "config":{"apiKey": "foobar"}}'                      || 'foobar'
 		'config.zone.id' | '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}' || 567
 		'config.foo.id'  | '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}' || null
+		'config.alist'   | '{"zoneId":345, "config":{"alist":["a","b","c"]}}'                   || ['a', 'b', 'c']
 	}
 
 	void "setConfigProperty"() {
