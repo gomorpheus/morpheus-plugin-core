@@ -88,4 +88,14 @@ class NetworkUtilitySpec extends Specification {
 		new NetworkPool(netmask: '255.255.240.0') | new Network(cidr: null)              | null                                        || '255.255.240.0'
 	}
 
+
+	void "testHostConnection"() {
+		expect:
+		connected == NetworkUtility.testHostConnection(hostname)
+
+		where:
+		hostname            | connected
+		'google.com'        | true
+		'http://google.com' | false
+	}
 }
