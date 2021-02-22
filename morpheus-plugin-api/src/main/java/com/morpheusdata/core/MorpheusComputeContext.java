@@ -1,11 +1,10 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Account;
-import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.KeyPair;
+import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
 import java.util.Date;
+import java.util.List;
 
 public interface MorpheusComputeContext {
 
@@ -25,4 +24,7 @@ public interface MorpheusComputeContext {
 	 * @return void
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
+
+	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud);
+	Single<Void> cachePlans(List<ServicePlan> servicePlans);
 }
