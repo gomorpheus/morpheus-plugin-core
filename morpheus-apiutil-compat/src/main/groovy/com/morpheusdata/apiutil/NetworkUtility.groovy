@@ -1,11 +1,8 @@
 package com.morpheusdata.apiutil
 
-import com.morpheusdata.model.Account
-import com.morpheusdata.model.Cloud
+
 import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.Container
 import com.morpheusdata.model.Network
-import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkSubnet
 import groovy.util.logging.Slf4j
@@ -529,6 +526,68 @@ class NetworkUtility {
 				rtn = name.substring(name.length() - 1)
 			else
 				rtn = name.substring(name.length() - 1)
+		}
+		return rtn
+	}
+
+	static def testHostConnection(hostname, port = null, doPing = true, doSocket = true, networkProxy = null) {
+		def rtn = false
+		if(doPing == true && networkProxy == null) {
+			try {
+				def command = "ping -c 1 $hostname"
+				def proc = command.execute()
+				proc.waitForOrKill(5000l)
+				log.debug("out: ${proc.text} exit: ${proc.exitValue()}")
+				rtn = !proc.exitValue()
+			} catch(e) {
+				log.warn("test host connection failed: ${hostname} ${e.message}")
+			}
+		}
+		if(rtn == false && doSocket == true && port != null) {
+			if(port == -1) {
+				port = 80
+			}
+			if(networkProxy && networkProxy.proxyHost) {
+				Socket testSocket
+				try {
+					def soTimeout = 20000
+					def proxyHost = new InetSocketAddress(networkProxy.proxyHost, networkProxy.proxyPort)
+					def serverProxy = new Proxy(Proxy.Type.HTTP, proxyHost)
+					testSocket = new Socket(serverProxy)
+					testSocket.setSoTimeout(soTimeout)
+					log.debug("testing socket: ${hostname}:${port}")
+					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout)
+					rtn = true
+				} catch(ex) {
+					log.debug("host connectivity proxy check failed ${hostname} ${port} - ${ex.getMessage()}")
+				} finally {
+					if(testSocket) {
+						try {
+							testSocket.close()
+						} catch(eb) {
+						}
+					}
+				}
+			} else {
+				Socket testSocket
+				try {
+					def soTimeout = 10000
+					testSocket = new Socket()
+					testSocket.setSoTimeout(soTimeout)
+					log.debug("testing socket: ${hostname}:${port}")
+					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout)
+					rtn = true
+				} catch(ex) {
+					log.debug("host connectivity check failed ${hostname} ${port} - ${ex.getMessage()}")
+				} finally {
+					if(testSocket) {
+						try {
+							testSocket.close()
+						} catch(eb) {
+						}
+					}
+				}
+			}
 		}
 		return rtn
 	}
