@@ -1,5 +1,6 @@
 package com.morpheusdata.model
 
+import org.apache.groovy.json.internal.LazyMap
 import spock.lang.Specification
 
 class MorpheusModelSpec extends Specification {
@@ -68,6 +69,19 @@ class MorpheusModelSpec extends Specification {
 		then:
 		noExceptionThrown()
 		configMap == [:]
+	}
+
+	void "setConfigMap"() {
+		given:
+		MorpheusModel model = new MorpheusModel()
+		LazyMap lazyMap = new LazyMap()
+		lazyMap.put('foo', 'bar')
+
+		when:
+		model.setConfigMap(lazyMap)
+
+		then:
+		model.getConfigMap() == [foo: 'bar']
 	}
 
 	void "getConfigProperty"() {
