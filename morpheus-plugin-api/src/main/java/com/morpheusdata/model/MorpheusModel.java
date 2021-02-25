@@ -120,12 +120,12 @@ public class MorpheusModel {
 		return map;
 	}
 
-	public void setConfigMap(HashMap<String, Object> map) {
+	public void setConfigMap(Map<String, Object> map) {
 		JsonObject object = mapToJson(map);
 		this.config = object.toString();
 	}
 
-	private JsonObject mapToJson(HashMap<String, Object> map) {
+	private JsonObject mapToJson(Map<String, Object> map) {
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		for (String key : map.keySet()) {
 			Object val = map.get(key);
@@ -140,7 +140,7 @@ public class MorpheusModel {
 			} else if(val instanceof Boolean) {
 				builder.add(key, (Boolean) val);
 			} else if(val instanceof Map) {
-				builder.add(key, mapToJson((HashMap<String, Object>) val));
+				builder.add(key, mapToJson((Map<String, Object>) val));
 			} else {
 				builder.add(key, val.toString());
 			}
