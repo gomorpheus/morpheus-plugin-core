@@ -70,7 +70,7 @@ class RestApiUtil {
 
 	static Integer WEB_CONNECTION_TIMEOUT = 120 * 1000
 
-	ServiceResponse<Map> callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
+	static ServiceResponse<Map> callApi(String url, String path, String username, String password, Map opts = [:], String method = 'POST') {
 		def rtn = new ServiceResponse<Map>(data: [:])
 		try {
 			def uriBuilder = new URIBuilder("${url}/${path}")
@@ -173,7 +173,7 @@ class RestApiUtil {
 		return rtn
 	}
 
-	private withClient(opts=[:], Closure cl) {
+	private static withClient(opts=[:], Closure cl) {
 		def ignoreSSL = true
 
 		HttpClientBuilder clientBuilder = HttpClients.custom()
