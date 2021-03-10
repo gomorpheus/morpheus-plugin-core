@@ -80,28 +80,29 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	Collection<ComputeServerType> getComputeServerTypes() {
 		//digital ocean
-		def serverTypes = [new ComputeServerType(code:'digitalOceanWindows2', name:'DigitalOcean Windows Node', description:'', platform:PlatformType.windows, agentType: ComputeServerType.AgentType.guest,
+		def serverTypes = [
+			new ComputeServerType(code:'digitalOceanWindows2', name:'DigitalOcean Windows Node', description:'', platform:PlatformType.windows, agentType: ComputeServerType.AgentType.guest,
 				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
 				displayOrder:17, hasAutomation:true,reconfigureSupported: true,
 				containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, guestVm:true,
-		),
+			),
 
-		new ComputeServerType(code:'digitalOceanVm2', name:'DigitalOcean VM Instance', description:'', platform:PlatformType.linux,
+			new ComputeServerType(code:'digitalOceanVm2', name:'DigitalOcean VM Instance', description:'', platform:PlatformType.linux,
 				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
 				displayOrder: 0, hasAutomation:true,reconfigureSupported: true,
 				containerHypervisor:false, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.guest, guestVm:true,
-		),
+			),
 
-		//docker
-		new ComputeServerType(code:'digitalOceanLinux2', name:'DigitalOcean Docker Host', description:'', platform:PlatformType.linux,
+			//docker
+			new ComputeServerType(code:'digitalOceanLinux2', name:'DigitalOcean Docker Host', description:'', platform:PlatformType.linux,
 				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:true, computeService:'digitalOceanComputeService',
 				displayOrder: 16, hasAutomation:true,reconfigureSupported: true,
 				containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,
 				computeTypeCode: 'docker-host',
-		),
+			),
 
-		//kubernetes
-		new ComputeServerType(code:'digitalOceanKubeMaster2', name:'Digital Ocean Kubernetes Master', description:'', platform:PlatformType.linux,
+			//kubernetes
+			new ComputeServerType(code:'digitalOceanKubeMaster2', name:'Digital Ocean Kubernetes Master', description:'', platform:PlatformType.linux,
 				reconfigureSupported: true, enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:true, creatable:true,
 				supportsConsoleKeymap: true, computeService:'digitalOceanComputeService', displayOrder:10,
 				hasAutomation:true, containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host,  clusterType: ComputeServerType.ClusterType.kubernetes,
@@ -109,9 +110,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				optionTypes:[
 
 				]
-		),
-
-		new ComputeServerType(code:'digitalOceanKubeWorker2', name:'Digital Ocean Kubernetes Worker', description:'', platform:PlatformType.linux,
+			),
+			new ComputeServerType(code:'digitalOceanKubeWorker2', name:'Digital Ocean Kubernetes Worker', description:'', platform:PlatformType.linux,
 				reconfigureSupported: true, enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:true, creatable:true,
 				supportsConsoleKeymap: true, computeService:'digitalOceanComputeService', displayOrder:10,
 				hasAutomation:true, containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
@@ -119,7 +119,14 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				optionTypes:[
 
 				]
-		)]
+			),
+			//unmanaged discovered type
+			new ComputeServerType(code:'digitalOceanUnmanaged', name:'Digital Ocean VM', description:'Digital Ocean VM', platform:PlatformType.none, agentType: ComputeServerType.AgentType.guest,
+				enabled:true, selectable:false, externalDelete:true, managed:false, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
+				displayOrder:99, hasAutomation:false,
+				containerHypervisor:false, bareMetalHost:false, vmHypervisor:false, managedServerType:'digitalOceanVm2', guestVm:true, supportsConsoleKeymap: true
+			)
+		]
 
 		return serverTypes
 	}
