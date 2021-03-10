@@ -11,7 +11,7 @@ import org.apache.commons.net.util.SubnetUtils
 import static groovyx.gpars.GParsPool.withPool
 
 @Slf4j
-class NetworkUtility {
+class haha NetworkUtility {
 	static defaultPingTimeout = 3000l
 
 	static Boolean validateIpAddr(String addr) {

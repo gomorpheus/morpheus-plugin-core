@@ -1,47 +1,104 @@
 buildscript {
-	repositories {
-		mavenLocal()
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
-		classpath "com.github.jengelman.gradle.plugins:shadow:6.0.0"
-	}
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:6.0.0"
+        classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
+
+    }
+}
+
+
+plugins {
+    id 'signing'
+}
+
+ext {
+    isBuildSnapshot = version.endsWith('-SNAPSHOT')
+    isReleaseVersion = !isBuildSnapshot
 }
 
 
 
-
-subprojects {
-	version = '0.7.0'
-	apply plugin: 'java'
-	apply plugin: 'com.jfrog.bintray'
-}
+group = 'com.morpheusdata'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
-group = 'com.bertramlabs.plugins'
+if (isReleaseVersion) {
+    apply plugin: "io.github.gradle-nexus.publish-plugin"
+    nexusPublishing {
+        repositories {
+            sonatype {
+                if(project.hasProperty('mavenMorpheusUser')) {
+                    username = mavenMorpheusUser
+                    password = mavenMorpheusPassword
+                }   
+            }
+        }
+    }
+} else {
+    publishing {
+        repositories {
+            maven {
+                url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+                if(project.hasProperty('labsNexusUser')) {
+                    credentials {
+                        username = labsNexusUser
+                        password = labsNexusPassword
+                    }
+                }
+            }
+        }
+    }
+}
+
+subprojects { project ->
+    if(project.name != 'morpheus-plugin-docs' && project.name != 'morpheus-plugin-site' && project.name != 'samples') {
+        apply plugin: 'java'
+        apply plugin: 'maven-publish'
+        apply plugin: 'signing'
+        afterEvaluate {
+            signing {
+                required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+                sign publishing.publications.maven
+            }
+        }
+
+        tasks.withType(Sign) {
+            onlyIf { isReleaseVersion }
+        }
+
+        //do not generate extra load on Nexus with new staging repository if signing fails
+        tasks.withType(io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository).configureEach {
+            shouldRunAfter(tasks.withType(Sign))
+        }
+    }
+    
+}
 
 repositories {
-	mavenLocal()
-	jcenter()
-	mavenCentral()
+    mavenLocal()
+    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'commons-logging:commons-logging:1.1.1'
-	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
-	testImplementation "org.spockframework:spock-core:$spockVersion"
+    implementation 'commons-logging:commons-logging:1.1.1'
+    testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+    testImplementation "org.spockframework:spock-core:$spockVersion"
 }
 
 test {
-	testLogging {
-		exceptionFormat = 'full'
-		showStandardStreams = true
-	}
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
 }
 
 tasks.withType(JavaExec) {
