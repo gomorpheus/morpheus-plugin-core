@@ -44,21 +44,7 @@ sourceSets {
     }
 }
 
-//Define bintrayUser and bintrayKey in ~/.gradle/gradle.properties
-bintray {
-    if(project.hasProperty('bintrayUser')) {
-        user = bintrayUser
-        key = bintrayKey
-    }
-    publications = ['maven']
-    pkg {
-        repo = 'gomorpheus'
-        userOrg = 'bertramlabs'
-        name = 'morpheus-test-provider'
-        vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
-        licenses = ['Apache-2.0']
-    }
-}
+
 
 java {
 	withSourcesJar()
@@ -118,5 +104,3 @@ test {
     }
 }
 
-
-bintrayUpload.dependsOn build
