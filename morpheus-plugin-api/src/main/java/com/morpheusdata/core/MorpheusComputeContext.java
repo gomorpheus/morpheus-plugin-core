@@ -1,6 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.Date;
@@ -25,6 +27,10 @@ public interface MorpheusComputeContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud);
+	Observable<VirtualImage> listVirtualImages(Cloud cloud);
+	Single<Void> saveVirtualImage(List<VirtualImage> virtualImages);
+	Single<Void> updateVirtualImage(List<VirtualImage> virtualImages);
+	Single<Void> removeVirtualImage(List<VirtualImage> virtualImages);
+
 	Single<Void> cachePlans(List<ServicePlan> servicePlans);
 }
