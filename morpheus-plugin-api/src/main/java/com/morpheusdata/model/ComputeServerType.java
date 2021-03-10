@@ -29,6 +29,7 @@ public class ComputeServerType  extends MorpheusModel {
 	private Boolean hasAutomation = true;
 	private Boolean supportsConsoleKeymap = false;
 	private Integer displayOrder;
+	private String managedServerType;
 
 	private AgentType agentType = AgentType.guest;
 	private String computeTypeCode; //dynamic option set there are some common ones though
@@ -223,6 +224,14 @@ public class ComputeServerType  extends MorpheusModel {
 
 	public void setComputeTypeCode(String computeTypeCode) {
 		this.computeTypeCode = computeTypeCode;
+	}
+
+	public String getManagedServerType() {
+		return managedServerType;
+	}
+
+	public void setManagedServerType(String managedServerType) {
+		this.managedServerType = managedServerType;
 	}
 
 
