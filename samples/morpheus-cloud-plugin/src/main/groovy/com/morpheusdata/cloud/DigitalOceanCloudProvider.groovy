@@ -8,6 +8,8 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
+import io.reactivex.Flowable
+import io.reactivex.observables.ConnectableObservable
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -176,8 +178,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 			loadDatacenters(cloud)
 			cacheSizes(apiKey)
-			morpheusContext.compute.cacheImages(listImages(cloud, false), cloud)
-			morpheusContext.compute.cacheImages(listImages(cloud, true), cloud)
+			cacheImages(cloud)
+
 			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
 				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
@@ -197,8 +199,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		println "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo.configMap.doApiKey)
 		loadDatacenters(cloudInfo)
-		morpheusContext.compute.cacheImages(listImages(cloudInfo, false), cloudInfo) // public OS
-		morpheusContext.compute.cacheImages(listImages(cloudInfo, true), cloudInfo) // User's private
+		cacheImages(cloudInfo)
 	}
 
 	@Override
@@ -252,6 +253,40 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			virtualImages << new VirtualImage(props)
 		}
 		virtualImages
+	}
+
+	def cacheImages(Cloud cloud) {
+		List<VirtualImage> virtualImages = listImages(cloud, false)
+		virtualImages += listImages(cloud, true)
+		List externalIds = virtualImages.collect { it.externalId }
+		def addList = []
+
+		ConnectableObservable<VirtualImage> images = morpheusContext.compute.listVirtualImages(cloud).publish()
+
+		//remove
+		images
+				.filter({  img ->
+			return !externalIds.contains(img.externalId)
+		})
+				.buffer(50)
+				.subscribe {
+					morpheusContext.compute.removeVirtualImage(it) }
+
+		images.connect()
+//		//update
+//		images.filter({ img -> externalIds.contains(img.externalId) })
+//				.buffer(50)
+//				.subscribe({ morpheusContext.compute.updateVirtualImage(it) })
+//		//add
+//		externalIds.each {
+//			List<String> persistedExternalIds = []
+//			images.map { it.externalId }.subscribe({ persistedExternalIds << it })
+//			if (!persistedExternalIds.contains(it)) {
+//				addList << it
+//			}
+//		}
+//
+//		morpheusContext.compute.saveVirtualImage(addList)
 	}
 
 	def cacheSizes(String apiKey) {

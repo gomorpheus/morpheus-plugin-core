@@ -6,8 +6,10 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.KeyPair
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.VirtualImage
+import groovy.transform.AutoImplement
 import io.reactivex.Single
 
+@AutoImplement
 class MorpheusComputeContextImpl implements MorpheusComputeContext {
 
     @Override
@@ -22,11 +24,6 @@ class MorpheusComputeContextImpl implements MorpheusComputeContext {
 
 	@Override
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud) {
-		return null
-	}
-
-	@Override
-	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud) {
 		return null
 	}
 
