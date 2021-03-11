@@ -8,7 +8,6 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
-import io.reactivex.Flowable
 import io.reactivex.observables.ConnectableObservable
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -180,10 +179,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			cacheSizes(apiKey)
 			cacheImages(cloud)
 
-			KeyPair keyPair = morpheusContext.compute.findOrGenerateKeyPair(cloud.account).blockingGet()
+			KeyPair keyPair = morpheusContext.cloud.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
 				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
-				morpheusContext.compute.updateKeyPair(updatedKeyPair, cloud)
+				morpheusContext.cloud.updateKeyPair(updatedKeyPair, cloud)
 			} else {
 				println "no morpheus keys found"
 			}
@@ -270,7 +269,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		//update
 		images.filter({ img -> externalIds.contains(img.externalId) })
 				.map { VirtualImage img ->
-\					def match = virtualImages.find { it.externalId == img.externalId }
+					def match = virtualImages.find { it.externalId == img.externalId }
 					virtualImages.remove(match)
 					return img
 				}
@@ -319,7 +318,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			servicePlans << servicePlan
 		}
 
-		morpheusContext.compute.cachePlans(servicePlans)
+		morpheusContext.cloud.cachePlans(servicePlans)
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {

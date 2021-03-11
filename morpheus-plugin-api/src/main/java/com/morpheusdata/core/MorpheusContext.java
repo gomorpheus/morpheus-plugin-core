@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * (i.e. a Connector app could implement the MorpheusContext and relay communication back to the Morpheus Application itself)
  *
- * @see MorpheusComputeContext
+ * @see MorpheusCloudContext
  * @see MorpheusNetworkContext
  * @see MorpheusTaskContext
  *
@@ -28,7 +28,7 @@ public interface MorpheusContext {
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
 	 * @return An Instance of the Compute Context to be used typically by {@link CloudProvider} implementations.
 	 */
-	MorpheusComputeContext getCompute();
+	MorpheusCloudContext getCloud();
 
 
 	/**
