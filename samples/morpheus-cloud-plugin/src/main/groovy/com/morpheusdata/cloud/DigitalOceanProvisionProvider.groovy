@@ -12,11 +12,13 @@ import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import com.sun.corba.se.spi.orbutil.threadpool.Work
 import groovy.json.JsonOutput
+import groovy.util.logging.Slf4j
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
+@Slf4j
 class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
@@ -66,7 +68,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
-		println "DO Provision Provider: runWorkload"
+		log.debug "DO Provision Provider: runWorkload"
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'No API Key provided')
@@ -83,17 +85,17 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 				'user_data'         : workload.userData,
 				'private_networking': workload.privateNetworking
 		]
-		println "post body: $body"
+		log.debug "post body: $body"
 		http.entity = new StringEntity(JsonOutput.toJson(body))
 
 		def respMap = apiService.makeApiCall(http, apiKey)
 
 		if (respMap.resp.statusLine.statusCode == 202) {
-			println "Droplet Created"
+			log.debug "Droplet Created"
 			def droplet = respMap.json.droplet
 			return new ServiceResponse<WorkloadResponse>(success: true, data: new WorkloadResponse(externalId: droplet.id))
 		} else {
-			println "Failed to create droplet: $respMap.resp"
+			log.debug "Failed to create droplet: $respMap.resp"
 			return new ServiceResponse(success: false, msg: respMap?.resp?.statusLine?.statusCode, content: respMap.resp, error: respMap.resp)
 		}
 	}
@@ -114,9 +116,9 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	ServiceResponse<WorkloadResponse> stopWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
 		String apiKey = workload.server.cloud.configMap.doApiKey
-		println "stop server: ${dropletId}"
+		log.debug "stop server: ${dropletId}"
 		if (!dropletId) {
-			println "no Droplet ID provided"
+			log.debug "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 
@@ -136,9 +138,9 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	ServiceResponse<WorkloadResponse> startWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
 		String apiKey = workload.server.cloud.configMap.doApiKey
-		println "startWorkload for server: ${dropletId}"
+		log.debug "startWorkload for server: ${dropletId}"
 		if (!dropletId) {
-			println "no Droplet ID provided"
+			log.debug "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		def body = ['type': 'power_on']
@@ -147,7 +149,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse restartWorkload(Workload workload) {
-		println 'restartWorkload'
+		log.debug 'restartWorkload'
 		ServiceResponse stopResult = stopWorkload(workload)
 		if (stopResult.success) {
 			return startWorkload(workload)
@@ -158,9 +160,9 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts) {
 		String dropletId = workload.server.externalId
-		println "removeWorkload for server: ${dropletId}"
+		log.debug "removeWorkload for server: ${dropletId}"
 		if (!dropletId) {
-			println "no Droplet ID provided"
+			log.debug "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
@@ -194,12 +196,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server) {
-		println "getServerDetails"
+		log.debug "getServerDetails"
 		ServiceResponse resp = new ServiceResponse(success: false)
 		Boolean pending = true
 		Integer attempts = 0
 		while (pending) {
-			println "attempt $attempts"
+			log.debug "attempt $attempts"
 			sleep(1000l * 20l)
 			resp = serverStatus(server)
 			if (resp.success || resp.msg == 'failed') {
@@ -214,13 +216,13 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	ServiceResponse<WorkloadResponse> serverStatus(ComputeServer server) {
-		println "check server status for server ${server.externalId}"
+		log.debug "check server status for server ${server.externalId}"
 		ServiceResponse resp = new ServiceResponse(success: false)
 		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
 		def respMap = apiService.makeApiCall(httpGet, server.cloud.configMap.doApiKey)
 
 		String status = respMap.json?.droplet?.status
-		println "droplet status: ${status}"
+		log.debug "droplet status: ${status}"
 		if (status == 'active') {
 			resp.success = true
 		}
@@ -231,7 +233,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	ServiceResponse<WorkloadResponse> powerOffServer(String apiKey, String dropletId) {
-		println "power off server"
+		log.debug "power off server"
 		def body = ['type': 'power_off']
 		apiService.performDropletAction(dropletId, body, apiKey)
 	}

@@ -8,11 +8,13 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
+import groovy.util.logging.Slf4j
 import io.reactivex.observables.ConnectableObservable
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
+@Slf4j
 class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
@@ -149,7 +151,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
-		println "validating Cloud: ${zoneInfo.code}"
+		log.debug "validating Cloud: ${zoneInfo.code}"
 		if (!zoneInfo.configMap.datacenter) {
 			return new ServiceResponse(success: false, msg: 'Choose a datacenter')
 		}
@@ -165,8 +167,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse serviceResponse
-		println "Initializing Cloud: ${cloud.code}"
-		println "config: ${cloud.configMap}"
+		log.debug "Initializing Cloud: ${cloud.code}"
+		log.debug "config: ${cloud.configMap}"
 		String apiKey = cloud.configMap.doApiKey
 		HttpGet accountGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account")
 
@@ -184,7 +186,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
 				morpheusContext.cloud.updateKeyPair(updatedKeyPair, cloud)
 			} else {
-				println "no morpheus keys found"
+				log.debug "no morpheus keys found"
 			}
 		} else {
 			serviceResponse = new ServiceResponse(success: false, msg: respMap.resp?.statusLine?.statusCode, content: respMap.json)
@@ -195,7 +197,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	void refresh(Cloud cloudInfo) {
-		println "cloud refresh has run for ${cloudInfo.code}"
+		log.debug "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo.configMap.doApiKey)
 		loadDatacenters(cloudInfo)
 		cacheImages(cloudInfo)
@@ -203,7 +205,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	void refreshDaily(Cloud cloudInfo) {
-		println "daily refresh run for ${cloudInfo.code}"
+		log.debug "daily refresh run for ${cloudInfo.code}"
 	}
 
 	@Override
@@ -213,7 +215,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	List<Map> loadDatacenters(def cloudInfo) {
 		List datacenters = []
-		println "load datacenters for ${cloudInfo.code}"
+		log.debug "load datacenters for ${cloudInfo.code}"
 		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
 		def respMap = apiService.makeApiCall(http, cloudInfo.configMap.doApiKey)
 		respMap?.json?.regions?.each {
@@ -224,7 +226,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
-		println "list ${userImages ? 'User' : 'OS'} Images"
+		log.debug "list ${userImages ? 'User' : 'OS'} Images"
 		List<VirtualImage> virtualImages = []
 
 		Map queryParams = [:]
@@ -323,20 +325,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {
 		keyName = keyName ?: 'morpheus_do_plugin_key'
-		println "find or update keypair for key $keyName"
+		log.debug "find or update keypair for key $keyName"
 		List keyList = apiService.makePaginatedApiCall(apiKey, '/v2/account/keys', 'ssh_keys', [:])
-		println "keylist: $keyList"
+		log.debug "keylist: $keyList"
 		def match = keyList.find { publicKey.startsWith(it.public_key) }
-		println("match: ${match} - list: ${keyList}")
+		log.debug("match: ${match} - list: ${keyList}")
 		if (!match) {
-			println 'key not found in DO'
+			log.debug 'key not found in DO'
 			HttpPost httpPost = new HttpPost("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account/keys")
 			httpPost.entity = new StringEntity(JsonOutput.toJson([public_key: publicKey, name: keyName]))
 			def respMap = apiService.makeApiCall(httpPost, apiKey)
 			if (respMap.resp.statusLine.statusCode == 200) {
 				match = new KeyPair(name: respMap.json.name, externalId: respMap.json.id, publicKey: respMap.json.public_key, publicFingerprint: respMap.json.fingerprint)
 			} else {
-				println 'failed to add DO ssh key'
+				log.debug 'failed to add DO ssh key'
 			}
 			match = respMap.json
 		}

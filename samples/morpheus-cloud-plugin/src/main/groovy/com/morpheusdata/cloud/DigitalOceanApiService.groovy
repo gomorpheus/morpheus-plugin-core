@@ -4,6 +4,7 @@ import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.util.logging.Slf4j
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.HttpRequestBase
@@ -13,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 
+@Slf4j
 class DigitalOceanApiService {
 	protected static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
 
@@ -24,22 +26,22 @@ class DigitalOceanApiService {
 			http.addHeader("Accept", "application/json")
 			def resp = client.execute(http)
 			try {
-				println "resp: ${resp}"
+				log.debug "resp: ${resp}"
 				String responseContent
 				if(resp?.entity) {
 					responseContent = EntityUtils.toString(resp?.entity)
 				}
-				println "content: $responseContent"
+				log.debug "content: $responseContent"
 				JsonSlurper slurper = new JsonSlurper()
 				def json = responseContent ? slurper.parseText(responseContent) : null
 				[resp: resp, json: json]
 			} catch (Exception e) {
-				println "Error making DO API call: ${e.message}"
+				log.debug "Error making DO API call: ${e.message}"
 			} finally {
 				resp.close()
 			}
 		} catch (Exception e) {
-			println "Http Client error: ${e.localizedMessage}"
+			log.debug "Http Client error: ${e.localizedMessage}"
 			e.printStackTrace()
 		} finally {
 			client.close()
@@ -62,7 +64,7 @@ class DigitalOceanApiService {
 		HttpGet httpGet = new HttpGet(uriBuilder.build())
 		Map respMap = makeApiCall(httpGet, apiKey)
 		resultList += respMap?.json?."$resultKey"
-		println "resultList: $resultList"
+		log.debug "resultList: $resultList"
 		def theresMore = respMap?.json?.links?.pages?.next ? true : false
 		while (theresMore) {
 			pageNum++
@@ -73,7 +75,7 @@ class DigitalOceanApiService {
 			}
 			httpGet = new HttpGet(uriBuilder.build())
 			def moreResults = makeApiCall(httpGet, apiKey)
-			println "moreResults: $moreResults"
+			log.debug "moreResults: $moreResults"
 			resultList += moreResults.json[resultKey]
 			theresMore = moreResults.json.links.pages.next ? true : false
 		}
@@ -97,7 +99,7 @@ class DigitalOceanApiService {
 			def pending = true
 			def attempts = 0
 			while (pending) {
-				println("waiting for action complete...")
+				log.debug("waiting for action complete...")
 				sleep(1000l * 10l)
 				ServiceResponse actionDetail = actionStatus(actionId, apiKey)
 				if (actionDetail.success == true && actionDetail?.data?.status) {
@@ -112,7 +114,7 @@ class DigitalOceanApiService {
 				}
 			}
 		} catch (e) {
-			println("An Exception Has Occurred: ${e.message}")
+			log.debug("An Exception Has Occurred: ${e.message}")
 		}
 		return new ServiceResponse(success: false, msg: 'Too many failed attempts to check Droplet action status')
 	}
