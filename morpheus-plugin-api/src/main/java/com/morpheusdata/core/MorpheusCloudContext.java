@@ -6,7 +6,7 @@ import io.reactivex.Single;
 import java.util.Date;
 import java.util.List;
 
-public interface MorpheusComputeContext {
+public interface MorpheusCloudContext {
 
 	void updateZoneStatus(Cloud cloud, String status, String message, Date syncDate);
 
@@ -25,6 +25,5 @@ public interface MorpheusComputeContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud);
 	Single<Void> cachePlans(List<ServicePlan> servicePlans);
 }

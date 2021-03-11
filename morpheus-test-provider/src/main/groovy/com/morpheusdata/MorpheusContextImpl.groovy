@@ -1,9 +1,10 @@
 package com.morpheusdata
 
-import com.morpheusdata.core.MorpheusComputeContext
+import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusTaskContext
+import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -18,25 +19,28 @@ import io.reactivex.Single
  */
 class MorpheusContextImpl implements MorpheusContext {
 
-    protected MorpheusComputeContext computeContext
+    protected MorpheusCloudContext cloudContext
     protected MorpheusNetworkContext networkContext
     protected MorpheusTaskContext taskContext
+	protected MorpheusVirtualImageContext virtualImageContext
 
     MorpheusContextImpl() {
-        computeContext = new MorpheusComputeContextImpl()
+        cloudContext = new MorpheusCloudContextImpl()
         networkContext = new MorpheusNetworkContextImpl()
 		taskContext = new MorpheusTaskContextImpl()
+		virtualImageContext = new MorpheusVirtualImageContextImpl()
     }
 
-    MorpheusContextImpl(MorpheusComputeContext computeContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext) {
-        this.computeContext = computeContext
+    MorpheusContextImpl(MorpheusCloudContext cloudContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext, MorpheusVirtualImageContext virtualImageContext) {
+        this.cloudContext = cloudContext
         this.networkContext = networkContext
 		this.taskContext = taskContext
+		this.virtualImageContext = virtualImageContext
     }
 
     @Override
-    MorpheusComputeContext getCompute() {
-        return computeContext
+    MorpheusCloudContext getCloud() {
+        return cloudContext
     }
 
     @Override
@@ -47,6 +51,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusTaskContext getTask() {
 		return taskContext
+	}
+
+	@Override
+	MorpheusVirtualImageContext getVirtualImage() {
+		return virtualImageContext
 	}
 
 	@Override

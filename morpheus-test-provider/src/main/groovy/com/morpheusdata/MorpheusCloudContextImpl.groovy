@@ -1,14 +1,15 @@
 package com.morpheusdata
 
-import com.morpheusdata.core.MorpheusComputeContext
+import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.KeyPair
 import com.morpheusdata.model.ServicePlan
-import com.morpheusdata.model.VirtualImage
+import groovy.transform.AutoImplement
 import io.reactivex.Single
 
-class MorpheusComputeContextImpl implements MorpheusComputeContext {
+@AutoImplement
+class MorpheusCloudContextImpl implements MorpheusCloudContext {
 
     @Override
     void updateZoneStatus(Cloud zone, String status, String message, Date syncDate) {
@@ -22,11 +23,6 @@ class MorpheusComputeContextImpl implements MorpheusComputeContext {
 
 	@Override
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud) {
-		return null
-	}
-
-	@Override
-	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud) {
 		return null
 	}
 
