@@ -64,9 +64,16 @@ public interface MorpheusNetworkContext {
 
 	Single<Boolean> releaseLock(String name, Map opts);
 
-	Single<Void> createSyncedNetworkDomain(Long poolServerId, List addList);
+	/**
+	 * Creates new Network Domains from cache / sync implementations
+	 * This ensures the refType and refId match the poolServer as well as the owner default
+	 * @param poolServerId The id of the {@link NetworkPoolServer} we are saving into
+	 * @param addList List of new {@link NetworkDomain} objects to be inserted into the database
+	 * @return notification of completion if someone really cares about it
+	 */
+	Observable<NetworkDomain> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList);
 
-	Single<List<NetworkDomain>> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList);
+
 
 	Single<List<NetworkPoolIp>> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
 

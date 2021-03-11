@@ -152,12 +152,7 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<Void> createSyncedNetworkDomain(Long poolServerId, List addList) {
-		return null
-	}
-
-	@Override
-	Single<List<NetworkDomain>> findNetworkDomainsByPoolServerAndExternalIdsOrNames(NetworkPoolServer poolServer, List externalIds, List nameList) {
+	Observable<NetworkDomain> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList) {
 		return null
 	}
 
