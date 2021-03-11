@@ -4,6 +4,7 @@ import com.morpheusdata.core.MorpheusComputeContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusTaskContext
+import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -21,17 +22,20 @@ class MorpheusContextImpl implements MorpheusContext {
     protected MorpheusComputeContext computeContext
     protected MorpheusNetworkContext networkContext
     protected MorpheusTaskContext taskContext
+	protected MorpheusVirtualImageContext virtualImageContext
 
     MorpheusContextImpl() {
         computeContext = new MorpheusComputeContextImpl()
         networkContext = new MorpheusNetworkContextImpl()
 		taskContext = new MorpheusTaskContextImpl()
+		virtualImageContext = new MorpheusVirtualImageContextImpl()
     }
 
-    MorpheusContextImpl(MorpheusComputeContext computeContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext) {
+    MorpheusContextImpl(MorpheusComputeContext computeContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext, MorpheusVirtualImageContext virtualImageContext) {
         this.computeContext = computeContext
         this.networkContext = networkContext
 		this.taskContext = taskContext
+		this.virtualImageContext = virtualImageContext
     }
 
     @Override
@@ -47,6 +51,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusTaskContext getTask() {
 		return taskContext
+	}
+
+	@Override
+	MorpheusVirtualImageContext getVirtualImage() {
+		return virtualImageContext
 	}
 
 	@Override

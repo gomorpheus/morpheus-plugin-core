@@ -45,6 +45,8 @@ public interface MorpheusContext {
 	 */
 	MorpheusTaskContext getTask();
 
+	MorpheusVirtualImageContext getVirtualImage();
+
 
 
 	//Common methods used across various contexts

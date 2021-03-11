@@ -261,22 +261,16 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		List externalIds = virtualImages.collect { it.externalId }
 		def addList = []
 
-		ConnectableObservable<VirtualImage> images = morpheusContext.compute.listVirtualImages(cloud).publish()
+		ConnectableObservable<VirtualImage> images = morpheusContext.virtualImage.listVirtualImages(cloud).publish()
 
 		//remove
-		images
-				.filter({  img ->
-			return !externalIds.contains(img.externalId)
-		})
+		images.filter{  img -> return !externalIds.contains(img.externalId)}
 				.buffer(50)
-				.subscribe {
-					morpheusContext.compute.removeVirtualImage(it) }
-
-		images.connect()
-//		//update
-//		images.filter({ img -> externalIds.contains(img.externalId) })
-//				.buffer(50)
-//				.subscribe({ morpheusContext.compute.updateVirtualImage(it) })
+				.subscribe {morpheusContext.virtualImage.removeVirtualImage(it) }
+		//update
+		images.filter({ img -> externalIds.contains(img.externalId) })
+				.buffer(50)
+				.subscribe({ morpheusContext.virtualImage.updateVirtualImage(it) })
 //		//add
 //		externalIds.each {
 //			List<String> persistedExternalIds = []
@@ -287,6 +281,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 //		}
 //
 //		morpheusContext.compute.saveVirtualImage(addList)
+		images.connect()
 	}
 
 	def cacheSizes(String apiKey) {
