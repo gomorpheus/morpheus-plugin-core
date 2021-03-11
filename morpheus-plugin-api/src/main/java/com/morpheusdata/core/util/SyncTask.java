@@ -7,6 +7,42 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This Utility Class provides an rxJava compatible means for syncing remote API objects with local/morpheus backed models
+ * in a persistent database. This handles an efficeint way to match data projection objects with api objects and batches
+ * updates to the backend database for efficient sync. This should be considered the standard method for caching objects
+ * within a {@link com.morpheusdata.core.CloudProvider} and many other provider types.
+ *
+ * <p><strong>Example:</strong></p>
+ * <pre>{@code
+ * Observable<NetworkDomainSyncProjection> domainRecords = morpheusContext.network.listNetworkDomainSyncMatch(poolServer.integration.id)
+ *
+ * SyncTask<NetworkDomainSyncProjection,Map,NetworkDomain> syncTask = new SyncTask(domainRecords, apiItems as Collection<Map>)
+ * syncTask.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
+ *     domainObject.externalId == apiItem.'_ref'
+ * }.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
+ *     domainObject.name == apiItem.name
+ * }.onDelete {removeItems ->
+ *     morpheusContext.network.removeMissingZones(poolServer.integration.id, removeItems)
+ * }.onAdd { itemsToAdd ->
+ *     while (itemsToAdd?.size() > 0) {
+ *         List chunkedAddList = itemsToAdd.take(50)
+ *         itemsToAdd = itemsToAdd.drop(50)
+ *         addMissingZones(poolServer, chunkedAddList)
+ *     }
+ * }.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainSyncProjection,Map>> updateItems ->
+ *     return morpheusContext.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+ * }.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
+ *     updateMatchedZones(poolServer, updateItems)
+ * }.start()
+ * }</pre>
+ * @author David Estes
+ * @param <Projection> The Projection Class Object used for matching the api object to the database object.
+ *                     Typically this Projection Object has fewer properties like {@code id},{@code externalId}, or {@code name}
+ * @param <ApiItem> The Class Object representing the individual API result object coming back in the Collection
+ * @param <Model> The Model Class that the Projection Class is a subset of. This is the Class that needs to be updated
+ *                with changes
+ */
 public class SyncTask<Projection, ApiItem, Model> {
 
 	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<>();
@@ -126,7 +162,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 
 	public void start() {
-		// do all the subscribe crapola;
+		//do all the subscribe crapola;
 		//delete missing
 		domainRecords.filter((Projection domainMatch) -> {
 			return !matchesExisting(domainMatch);
