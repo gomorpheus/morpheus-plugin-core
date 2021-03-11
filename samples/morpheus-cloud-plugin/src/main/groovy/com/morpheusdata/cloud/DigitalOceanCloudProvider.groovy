@@ -5,14 +5,16 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.*
+import com.morpheusdata.model.projection.VirtualImageSyncProjection
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import io.reactivex.observables.ConnectableObservable
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
+import io.reactivex.Observable
 
 @Slf4j
 class DigitalOceanCloudProvider implements CloudProvider {
@@ -257,44 +259,35 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	def cacheImages(Cloud cloud) {
-		List<VirtualImage> virtualImages = listImages(cloud, false)
-		virtualImages += listImages(cloud, true)
-		List externalIds = virtualImages.collect { it.externalId }
-		def addList = []
+		List<VirtualImage> apiImages = listImages(cloud, false)
+		apiImages += listImages(cloud, true)
 
-		ConnectableObservable<VirtualImage> images = morpheusContext.virtualImage.list(cloud).publish()
+		Observable<VirtualImageSyncProjection> domainImages = morpheusContext.virtualImage.listVirtualImageSyncMatch(cloud.id)
+		SyncTask<VirtualImageSyncProjection, VirtualImage, VirtualImage> syncTask = new SyncTask(domainImages, apiImages)
+		syncTask.addMatchFunction { VirtualImageSyncProjection projection, VirtualImage apiImage ->
+			projection.externalId == apiImage.externalId
+		}.onDelete { List<VirtualImageSyncProjection> deleteList ->
+			morpheusContext.virtualImage.remove(deleteList)
+		}.onAdd { createList ->
+			while (createList.size() > 0) {
+				List chunkedList = createList.take(50)
+				createList = createList.drop(50)
+				morpheusContext.virtualImage.create(chunkedList)
+			}
+		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageSyncProjection,VirtualImage>> updateItems ->
+			morpheusContext.virtualImage.listVirtualImagesById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+		}.onUpdate { updateList ->
+			updateMatchedImages(updateList)
+		}.start()
+	}
 
-		//remove
-		images.filter { img -> return !externalIds.contains(img.externalId) }
-				.buffer(50)
-				.subscribe { morpheusContext.virtualImage.remove(it) }
-		//update
-		images.filter({ img -> externalIds.contains(img.externalId) })
-				.map { VirtualImage img ->
-					def match = virtualImages.find { it.externalId == img.externalId }
-					virtualImages.remove(match)
-					return img
-				}
-				.buffer(50)
-				.doFinally {
-					while (virtualImages.size() > 0) {
-						List chunkedList = virtualImages.take(50)
-						virtualImages = virtualImages.drop(50)
-						morpheusContext.virtualImage.save(chunkedList)
-					}
-				}
-				.subscribe({ morpheusContext.virtualImage.update(it) })
-		//add
-//		externalIds.each {
-//			List<String> persistedExternalIds = []
-//			images.map { it.externalId }.subscribe({ persistedExternalIds << it })
-//			if (!persistedExternalIds.contains(it)) {
-//				addList << it
-//			}
-//		}
-//
-//		morpheusContext.compute.saveVirtualImage(addList)
-		images.connect()
+	void updateMatchedImages(List<VirtualImage> updateList) {
+		List<VirtualImage> imagesToUpdate = []
+		for(VirtualImage update in updateList) {
+			//TODO
+			imagesToUpdate << update
+		}
+		morpheusContext.virtualImage.save(imagesToUpdate).blockingGet()
 	}
 
 	def cacheSizes(String apiKey) {
