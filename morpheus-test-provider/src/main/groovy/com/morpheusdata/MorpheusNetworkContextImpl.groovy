@@ -11,7 +11,7 @@ import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
-import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto
+import com.morpheusdata.model.projection.NetworkDomainSyncProjection
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -232,7 +232,7 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Observable<NetworkDomainSyncMatchDto> listNetworkDomainSyncMatch(Long accountIntegrationId) {
+	Observable<NetworkDomainSyncProjection> listNetworkDomainSyncMatch(Long accountIntegrationId) {
 		return null
 	}
 

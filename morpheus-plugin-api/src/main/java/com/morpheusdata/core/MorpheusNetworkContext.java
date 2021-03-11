@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto;
+import com.morpheusdata.model.projection.NetworkDomainSyncProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -72,11 +72,11 @@ public interface MorpheusNetworkContext {
 
 	Single<Void> saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
 
-	Single<Void> removeMissingZones(Long integrationId, List<NetworkDomainSyncMatchDto> removeList);
+	Single<Void> removeMissingZones(Long integrationId, List<NetworkDomainSyncProjection> removeList);
 
 	Single<List> getNetworkDomainByOwner(Account account);
 
-	Observable<NetworkDomainSyncMatchDto> listNetworkDomainSyncMatch(Long accountIntegrationId);
+	Observable<NetworkDomainSyncProjection> listNetworkDomainSyncMatch(Long accountIntegrationId);
 
 	Observable<NetworkDomain> listNetworkDomainsById(Collection<Long> ids);
 

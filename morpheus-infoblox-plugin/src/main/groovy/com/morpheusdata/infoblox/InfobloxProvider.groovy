@@ -22,13 +22,12 @@ import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolServerType
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
-import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto
+import com.morpheusdata.model.projection.NetworkDomainSyncProjection
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Slf4j
-import io.reactivex.observables.ConnectableObservable
 import org.apache.http.entity.ContentType
 import org.apache.http.client.HttpClient
 import io.reactivex.Observable
@@ -456,12 +455,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.debug("listResults: {}", listResults)
 			if (listResults.success) {
 				List infobloxDomains = listResults.results
-				Observable<NetworkDomainSyncMatchDto> domainRecords = morpheusContext.network.listNetworkDomainSyncMatch(poolServer.integration.id)
+				Observable<NetworkDomainSyncProjection> domainRecords = morpheusContext.network.listNetworkDomainSyncMatch(poolServer.integration.id)
 
-				SyncTask<NetworkDomainSyncMatchDto,Map,NetworkDomain> syncTask = new SyncTask(domainRecords, apiItems as Collection<Map>)
-				syncTask.addMatchFunction { NetworkDomainSyncMatchDto domainObject, Map apiItem ->
+				SyncTask<NetworkDomainSyncProjection,Map,NetworkDomain> syncTask = new SyncTask(domainRecords, apiItems as Collection<Map>)
+				syncTask.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
 					domainObject.externalId == apiItem.'_ref'
-				}.addMatchFunction { NetworkDomainSyncMatchDto domainObject, Map apiItem ->
+				}.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
 					domainObject.name == apiItem.name
 				}.onDelete {removeItems ->
 					morpheusContext.network.removeMissingZones(poolServer.integration.id, removeItems)
@@ -471,7 +470,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						itemsToAdd = itemsToAdd.drop(50)
 						addMissingZones(poolServer, chunkedAddList)
 					}
-				}.dtoReplace { List<SyncTask.UpdateItemDto<NetworkDomainSyncMatchDto,Map>> updateItems ->
+				}.dtoReplace { List<SyncTask.UpdateItemDto<NetworkDomainSyncProjection,Map>> updateItems ->
 					return morpheusContext.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
 					updateMatchedZones(poolServer, updateItems)
