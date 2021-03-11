@@ -5,45 +5,45 @@ import io.reactivex.observables.ConnectableObservable;
 import java.util.Collection;
 import java.util.List;
 
-public class SyncTask<T, I, J> {
+public class SyncTask<Projection, ApiItem, Model> {
 
-	private List<MatchFunction<T, I>> matchFunctions;
-	private OnDeleteFunction<T> onDeleteFunction;
-	private ConnectableObservable<T> domainRecords;
+	private List<MatchFunction<Projection, ApiItem>> matchFunctions;
+	private OnDeleteFunction<Projection> onDeleteFunction;
+	private ConnectableObservable<Projection> domainRecords;
 	private Integer bufferSize = 50;
-	private Collection<I> apiItems;
-	private OnLoadObjectDetailsFunction<UpdateItemDto<T,I>,UpdateItem<T,J>> onLoadObjectDetailsFunction;
-	private OnUpdateFunction<UpdateItem<T,J>> onUpdateFunction;
-	private OnAddFunction<I> onAddFunction;
+	private Collection<ApiItem> apiItems;
+	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Projection, Model>> onLoadObjectDetailsFunction;
+	private OnUpdateFunction<UpdateItem<Projection, Model>> onUpdateFunction;
+	private OnAddFunction<ApiItem> onAddFunction;
 
-	public SyncTask(Observable<T> domainRecords, Collection<I> apiItems) {
+	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
 		this.domainRecords = domainRecords.publish();
 		this.apiItems = apiItems;
 	}
 
-	public SyncTask<T, I, J> addMatchFunction(MatchFunction<T, I> matchFunction) {
+	public SyncTask<Projection, ApiItem, Model> addMatchFunction(MatchFunction<Projection, ApiItem> matchFunction) {
 		matchFunctions.add(matchFunction);
 		return this;
 	}
 
-	public SyncTask<T, I, J> onDelete(OnDeleteFunction<T> deleteFunction) {
+	public SyncTask<Projection, ApiItem, Model> onDelete(OnDeleteFunction<Projection> deleteFunction) {
 		this.onDeleteFunction = deleteFunction;
 		return this;
 	}
 
-	public SyncTask<T, I, J> onAdd(OnAddFunction<I> onAddFunction) {
+	public SyncTask<Projection, ApiItem, Model> onAdd(OnAddFunction<ApiItem> onAddFunction) {
 		this.onAddFunction = onAddFunction;
 		return this;
 	}
 
-	public SyncTask<T, I, J> onUpdate(OnUpdateFunction<UpdateItem<T,J>> onUpdateFunction) {
+	public SyncTask<Projection, ApiItem, Model> onUpdate(OnUpdateFunction<UpdateItem<Projection, Model>> onUpdateFunction) {
 		this.onUpdateFunction = onUpdateFunction;
 		return this;
 	}
 
 
 
-	public SyncTask<T, I, J> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<T,I>,UpdateItem<T,J>> onLoadObjectDetailsFunction) {
+	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Projection, Model>> onLoadObjectDetailsFunction) {
 		this.onLoadObjectDetailsFunction = onLoadObjectDetailsFunction;
 		return this;
 	}
@@ -53,51 +53,51 @@ public class SyncTask<T, I, J> {
 		this.bufferSize = bufferSize;
 	}
 
-	public SyncTask<T, I, J> withBufferSize(Integer bufferSize) {
+	public SyncTask<Projection, ApiItem, Model> withBufferSize(Integer bufferSize) {
 		this.bufferSize = bufferSize;
 		return this;
 	}
 
 
-	public class UpdateItemDto<T, I> {
-		public T exsitingItem;
-		public I masterItem;
+	public class UpdateItemDto<Projection, ApiItem> {
+		public Projection existingItem;
+		public ApiItem masterItem;
 	}
 
-	public class UpdateItem<J, I> {
-		public J exsitingItem;
-		public I masterItem;
-	}
-
-	@FunctionalInterface
-	public interface MatchFunction<T, I> {
-		Boolean method(T existingItem, I masterItem);
+	public class UpdateItem<Model, ApiItem> {
+		public Model existingItem;
+		public ApiItem masterItem;
 	}
 
 	@FunctionalInterface
-	public interface OnDeleteFunction<T> {
-		void method(List<T> itemsToDelete);
+	public interface MatchFunction<Projection, ApiItem> {
+		Boolean method(Projection existingItem, ApiItem masterItem);
 	}
 
 	@FunctionalInterface
-	public interface OnAddFunction<I> {
-		void method(Collection<I> itemsToAdd);
+	public interface OnDeleteFunction<Projection> {
+		void method(List<Projection> itemsToDelete);
 	}
 
 	@FunctionalInterface
-	public interface OnUpdateFunction<T> {
-		void method(List<T> itemsToUpdate);
+	public interface OnAddFunction<ApiItem> {
+		void method(Collection<ApiItem> itemsToAdd);
+	}
+
+	@FunctionalInterface
+	public interface OnUpdateFunction<UpdateItems> {
+		void method(List<UpdateItems> itemsToUpdate);
 	}
 
 
 	@FunctionalInterface
-	public interface OnLoadObjectDetailsFunction<T,I> {
-		Observable<I> method(List<T> itemsToLoad);
+	public interface OnLoadObjectDetailsFunction<UpdateItemProjection,UpdateItem> {
+		Observable<UpdateItem> method(List<UpdateItemProjection> itemsToLoad);
 	}
 
-	private Boolean matchesExisting(T domainMatch) {
+	private Boolean matchesExisting(Projection domainMatch) {
 		for (MatchFunction matchFunction : matchFunctions) {
-			for (I apiItem : apiItems) {
+			for (ApiItem apiItem : apiItems) {
 				if (matchFunction.method(domainMatch, apiItem)) {
 					return true;
 				}
@@ -106,12 +106,12 @@ public class SyncTask<T, I, J> {
 		return false;
 	}
 
-	private UpdateItemDto<T,I> buildUpdateItemDto(T domainMatch) {
+	private UpdateItemDto<Projection, ApiItem> buildUpdateItemDto(Projection domainMatch) {
 		for (MatchFunction matchFunction : matchFunctions) {
-			for (I apiItem : apiItems) {
+			for (ApiItem apiItem : apiItems) {
 				if (matchFunction.method(domainMatch, apiItem)) {
-					UpdateItemDto<T,I> updateItem = new UpdateItemDto<T,I>();
-					updateItem.exsitingItem = domainMatch;
+					UpdateItemDto<Projection, ApiItem> updateItem = new UpdateItemDto<Projection, ApiItem>();
+					updateItem.existingItem = domainMatch;
 					updateItem.masterItem = apiItem;
 					apiItems.remove(apiItem); //clear the list out
 					return updateItem;
@@ -125,17 +125,17 @@ public class SyncTask<T, I, J> {
 	public void start() {
 		// do all the subscribe crapola;
 		//delete missing
-		domainRecords.filter((T domainMatch) -> {
+		domainRecords.filter((Projection domainMatch) -> {
 			return !matchesExisting(domainMatch);
-		}).buffer(bufferSize).subscribe((List<T> itemsToDelete) -> {
+		}).buffer(bufferSize).subscribe((List<Projection> itemsToDelete) -> {
 			this.onDeleteFunction.method(itemsToDelete);
 		});
 
-		domainRecords.filter((T domainMatch) -> {
+		domainRecords.filter((Projection domainMatch) -> {
 			return matchesExisting(domainMatch);
-		}).map( (T domainMatch) -> {
+		}).map( (Projection domainMatch) -> {
 			return buildUpdateItemDto(domainMatch);
-		}).buffer(bufferSize).flatMap( (List<UpdateItemDto<T,I>> mapItems) -> {
+		}).buffer(bufferSize).flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
 			return onLoadObjectDetailsFunction.method(mapItems).buffer(50);
 		}).doOnComplete( ()-> {
 			onAddFunction.method(apiItems);
