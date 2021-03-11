@@ -83,51 +83,51 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	Collection<ComputeServerType> getComputeServerTypes() {
 		//digital ocean
 		def serverTypes = [
-			new ComputeServerType(code:'digitalOceanWindows2', name:'DigitalOcean Windows Node', description:'', platform:PlatformType.windows, agentType: ComputeServerType.AgentType.guest,
-				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
-				displayOrder:17, hasAutomation:true,reconfigureSupported: true,
-				containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, guestVm:true,
-			),
+				new ComputeServerType(code: 'digitalOceanWindows2', name: 'DigitalOcean Windows Node', description: '', platform: PlatformType.windows, agentType: ComputeServerType.AgentType.guest,
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
+						displayOrder: 17, hasAutomation: true, reconfigureSupported: true,
+						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, guestVm: true,
+				),
 
-			new ComputeServerType(code:'digitalOceanVm2', name:'DigitalOcean VM Instance', description:'', platform:PlatformType.linux,
-				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
-				displayOrder: 0, hasAutomation:true,reconfigureSupported: true,
-				containerHypervisor:false, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.guest, guestVm:true,
-			),
+				new ComputeServerType(code: 'digitalOceanVm2', name: 'DigitalOcean VM Instance', description: '', platform: PlatformType.linux,
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
+						displayOrder: 0, hasAutomation: true, reconfigureSupported: true,
+						containerHypervisor: false, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.guest, guestVm: true,
+				),
 
-			//docker
-			new ComputeServerType(code:'digitalOceanLinux2', name:'DigitalOcean Docker Host', description:'', platform:PlatformType.linux,
-				enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:false, creatable:true, computeService:'digitalOceanComputeService',
-				displayOrder: 16, hasAutomation:true,reconfigureSupported: true,
-				containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,
-				computeTypeCode: 'docker-host',
-			),
+				//docker
+				new ComputeServerType(code: 'digitalOceanLinux2', name: 'DigitalOcean Docker Host', description: '', platform: PlatformType.linux,
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: true, computeService: 'digitalOceanComputeService',
+						displayOrder: 16, hasAutomation: true, reconfigureSupported: true,
+						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,
+						computeTypeCode: 'docker-host',
+				),
 
-			//kubernetes
-			new ComputeServerType(code:'digitalOceanKubeMaster2', name:'Digital Ocean Kubernetes Master', description:'', platform:PlatformType.linux,
-				reconfigureSupported: true, enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:true, creatable:true,
-				supportsConsoleKeymap: true, computeService:'digitalOceanComputeService', displayOrder:10,
-				hasAutomation:true, containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host,  clusterType: ComputeServerType.ClusterType.kubernetes,
-				computeTypeCode: 'kube-master',
-				optionTypes:[
+				//kubernetes
+				new ComputeServerType(code: 'digitalOceanKubeMaster2', name: 'Digital Ocean Kubernetes Master', description: '', platform: PlatformType.linux,
+						reconfigureSupported: true, enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: true, creatable: true,
+						supportsConsoleKeymap: true, computeService: 'digitalOceanComputeService', displayOrder: 10,
+						hasAutomation: true, containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
+						computeTypeCode: 'kube-master',
+						optionTypes: [
 
-				]
-			),
-			new ComputeServerType(code:'digitalOceanKubeWorker2', name:'Digital Ocean Kubernetes Worker', description:'', platform:PlatformType.linux,
-				reconfigureSupported: true, enabled:true, selectable:false, externalDelete:true, managed:true, controlPower:true, controlSuspend:true, creatable:true,
-				supportsConsoleKeymap: true, computeService:'digitalOceanComputeService', displayOrder:10,
-				hasAutomation:true, containerHypervisor:true, bareMetalHost:false, vmHypervisor:false, agentType:ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
-				computeTypeCode: 'kube-worker',
-				optionTypes:[
+						]
+				),
+				new ComputeServerType(code: 'digitalOceanKubeWorker2', name: 'Digital Ocean Kubernetes Worker', description: '', platform: PlatformType.linux,
+						reconfigureSupported: true, enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: true, creatable: true,
+						supportsConsoleKeymap: true, computeService: 'digitalOceanComputeService', displayOrder: 10,
+						hasAutomation: true, containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
+						computeTypeCode: 'kube-worker',
+						optionTypes: [
 
-				]
-			),
-			//unmanaged discovered type
-			new ComputeServerType(code:'digitalOceanUnmanaged', name:'Digital Ocean VM', description:'Digital Ocean VM', platform:PlatformType.none, agentType: ComputeServerType.AgentType.guest,
-				enabled:true, selectable:false, externalDelete:true, managed:false, controlPower:true, controlSuspend:false, creatable:false, computeService:'digitalOceanComputeService',
-				displayOrder:99, hasAutomation:false,
-				containerHypervisor:false, bareMetalHost:false, vmHypervisor:false, managedServerType:'digitalOceanVm2', guestVm:true, supportsConsoleKeymap: true
-			)
+						]
+				),
+				//unmanaged discovered type
+				new ComputeServerType(code: 'digitalOceanUnmanaged', name: 'Digital Ocean VM', description: 'Digital Ocean VM', platform: PlatformType.none, agentType: ComputeServerType.AgentType.guest,
+						enabled: true, selectable: false, externalDelete: true, managed: false, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
+						displayOrder: 99, hasAutomation: false,
+						containerHypervisor: false, bareMetalHost: false, vmHypervisor: false, managedServerType: 'digitalOceanVm2', guestVm: true, supportsConsoleKeymap: true
+				)
 		]
 
 		return serverTypes
@@ -264,14 +264,26 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		ConnectableObservable<VirtualImage> images = morpheusContext.virtualImage.listVirtualImages(cloud).publish()
 
 		//remove
-		images.filter{  img -> return !externalIds.contains(img.externalId)}
+		images.filter { img -> return !externalIds.contains(img.externalId) }
 				.buffer(50)
-				.subscribe {morpheusContext.virtualImage.removeVirtualImage(it) }
+				.subscribe { morpheusContext.virtualImage.removeVirtualImage(it) }
 		//update
 		images.filter({ img -> externalIds.contains(img.externalId) })
+				.map { VirtualImage img ->
+\					def match = virtualImages.find { it.externalId == img.externalId }
+					virtualImages.remove(match)
+					return img
+				}
 				.buffer(50)
+				.doFinally {
+					while (virtualImages.size() > 0) {
+						List chunkedList = virtualImages.take(50)
+						virtualImages = virtualImages.drop(50)
+						morpheusContext.virtualImage.saveVirtualImage(chunkedList)
+					}
+				}
 				.subscribe({ morpheusContext.virtualImage.updateVirtualImage(it) })
-//		//add
+		//add
 //		externalIds.each {
 //			List<String> persistedExternalIds = []
 //			images.map { it.externalId }.subscribe({ persistedExternalIds << it })
