@@ -12,6 +12,7 @@ import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.projection.NetworkDomainSyncProjection
+import com.morpheusdata.model.projection.NetworkPoolSyncProjection
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -21,15 +22,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
     }
 
-	@Override
-	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer) {
-		return null
-	}
-
-	@Override
-	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServer(NetworkPoolServer poolServer, String property) {
-		return null
-	}
 
 	@Override
 	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServerJoin(NetworkPoolServer poolServer, String joinProperty) {
@@ -41,9 +33,20 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 		return null
 	}
 
+	/**
+	 * Removes Missing Network Pools on the Morpheus side. This accepts the Projection Object instead of the main Object.
+	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
+	 * <p><strong>Example:</strong></p>
+	 * <pre>{@code
+	 * morpheusContext.network.removeMissingPools(poolServer.id, removeItems).blockingGet()
+	 * }</pre>
+	 * @param poolServerId The {@link NetworkPoolServer} id of the server syncing domains
+	 * @param removeList a list of {@link NetworkPool} projections to be removed
+	 * @return a Single {@link Observable} returning the success status of the operation.
+	 */
 	@Override
-	Single<Void> removeMissingPools(Long poolServerId, List removeList) {
-
+	Single<Boolean> removeMissingPools(Long poolServerId, List<NetworkPoolSyncProjection> removeList) {
+		return null
 	}
 
 	@Override
@@ -183,11 +186,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<List> getNetworkDomainByOwner(Account account) {
-
-	}
-
-	@Override
 	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId) {
 		return null
 	}
@@ -243,7 +241,26 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
+	Observable<NetworkPoolSyncProjection> listNetworkPoolSyncMatch(Long poolServerId) {
+		return null
+	}
+
+	/**
+	 * Lists all {@link NetworkDomain} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link NetworkDomain} objects from.
+	 * @return an RxJava Observable stream of {@link NetworkDomain} to be subscribed to.
+	 */
+	@Override
 	Observable<NetworkDomain> listNetworkDomainsById(Collection<Long> ids) {
+		return null
+	}
+
+	/**
+	 * Lists all {@link NetworkPool} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link NetworkPool} objects from.
+	 * @return an RxJava Observable stream of {@link NetworkPool} to be subscribed to.
+	 */
+	Observable<NetworkPool> listNetworkPoolsById(Collection<Long> ids) {
 		return null
 	}
 }
