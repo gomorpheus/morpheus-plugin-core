@@ -11,6 +11,8 @@ import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
+import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
@@ -226,6 +228,16 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds) {
+		return null
+	}
+
+	@Override
+	Observable<NetworkDomainSyncMatchDto> listNetworkDomainSyncMatch(Long accountIntegrationId) {
+		return null
+	}
+
+	@Override
+	Observable<NetworkDomain> listNetworkDomainsById(Collection<Long> ids) {
 		return null
 	}
 }
