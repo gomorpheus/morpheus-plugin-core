@@ -487,19 +487,17 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param addList
 	 */
 	void addMissingZones(NetworkPoolServer poolServer, List addList) {
-		List<Map> missingZonesMap = []
+		List<NetworkDomain> missingZonesMap = []
 		addList?.each { Map add ->
-			missingZonesMap.add(
-				[owner:poolServer.account,
-				 refType:'AccountIntegration',
-				 refId: poolServer?.integration?.id,
-				 externalId: add.'_ref',
-				 name: NetworkUtility.getFriendlyDomainName(add.fqdn),
-				 fqdn: NetworkUtility.getFqdnDomainName(add.fqdn),
-				 refSource: 'integration',
-				 zoneType: 'Authoritative'])
+			NetworkDomain networkDomain = new NetworkDomain()
+			networkDomain.externalId = add.'_ref'
+			networkDomain.name = NetworkUtility.getFriendlyDomainName(add.fqdn as String)
+			networkDomain.fqdn = NetworkUtility.getFqdnDomainName(add.fqdn as String)
+			networkDomain.refSource = 'integration'
+			networkDomain.zoneType = 'Authoritative'
+			missingZonesMap.add(networkDomain)
 		}
-		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList)
+		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList).blockingSubscribe()
 	}
 
 	/**
