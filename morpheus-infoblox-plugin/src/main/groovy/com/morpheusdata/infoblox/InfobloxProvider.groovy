@@ -23,6 +23,7 @@ import com.morpheusdata.model.NetworkPoolServerType
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.projection.NetworkDomainSyncProjection
+import com.morpheusdata.model.projection.NetworkPoolSyncProjection
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
@@ -711,31 +712,25 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		log.info("listResults: {}", listResults.dump())
 
 		if(listResults.success) {
-			def results = [:]
-			results.poolType = poolServer.type
-			results.objList = listResults?.results
-			results.existingItems = morpheusContext.network.getNetworkPoolsByNetworkPoolServer(poolServer, 'externalId').blockingGet()
+			List apiItems = listResults.results as List<Map>
+			Observable<NetworkPoolSyncProjection> poolRecords = morpheusContext.network.listNetworkPoolSyncMatch(poolServer.id)
 
-			def matchFunction = { String morpheusItem, Map cloudItem ->
-				morpheusItem == cloudItem?.'_ref'
-			}
-			def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction)
-			//add list
-			while(syncLists.addList?.size() > 0) {
-				List chunkedAddList = syncLists.addList.take(50)
-				syncLists.addList = syncLists.addList.drop(50)
-				addMissingPools(poolServer, chunkedAddList)
-			}
-			//update list
-			while(syncLists.updateList?.size() > 0) {
-				List chunkedUpdateList = syncLists.updateList.take(50)
-				syncLists.updateList = syncLists.updateList.drop(50)
-				updateMatchedPools(poolServer, chunkedUpdateList)
-			}
-			//removes
-			if(syncLists.removeList?.size() > 0) {
-				morpheusContext.network.removeMissingPools(poolServer.id, syncLists.removeList).blockingGet()
-			}
+			SyncTask<NetworkPoolSyncProjection,Map,NetworkPool> syncTask = new SyncTask(poolRecords, apiItems as Collection<Map>)
+			syncTask.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
+				domainObject.externalId == apiItem.'_ref'
+			}.onDelete {removeItems ->
+				morpheusContext.network.removeMissingPools(poolServer.id, removeItems).blockingGet()
+			}.onAdd { itemsToAdd ->
+				while (itemsToAdd?.size() > 0) {
+					List chunkedAddList = itemsToAdd.take(50)
+					itemsToAdd = itemsToAdd.drop(50)
+					addMissingPools(poolServer, chunkedAddList)
+				}
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolSyncProjection,Map>> updateItems ->
+				return morpheusContext.network.listNetworkPoolsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+			}.onUpdate { List<SyncTask.UpdateItem<NetworkPool,Map>> updateItems ->
+				updatedMatchedPools(poolServer, updateItems)
+			}.start()
 		}
 	}
 

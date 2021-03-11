@@ -3,7 +3,8 @@ package com.morpheusdata.model.projection;
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.NetworkDomain} object for doing a sync match
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
- * @author David estes
+ * @see com.morpheusdata.core.MorpheusNetworkContext
+ * @author David Estes
  */
 public class NetworkDomainSyncProjection {
 	private Long id;
