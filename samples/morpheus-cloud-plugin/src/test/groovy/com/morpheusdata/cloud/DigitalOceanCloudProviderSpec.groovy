@@ -1,6 +1,5 @@
 package com.morpheusdata.cloud
 
-import com.morpheusdata.core.MorpheusComputeContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin
@@ -108,7 +107,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> map.private == 'true'}) >> [[id: 'abc123']]
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> !map.private}) >> [[id: 'def567']]
 		1 * virtualImageContext.listVirtualImages(cloud) >>  listImagesObservable
-//		1 * computeContext.saveVirtualImage([newImage])
+//		1 * virtualImageContext.saveVirtualImage([newImage])
 		1 * virtualImageContext.updateVirtualImage([updateImage])
 		1 * virtualImageContext.removeVirtualImage([removeImage])
 	}
