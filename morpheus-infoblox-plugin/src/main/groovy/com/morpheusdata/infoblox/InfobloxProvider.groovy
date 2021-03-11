@@ -7,6 +7,7 @@ import com.morpheusdata.core.IPAMProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.util.ConnectionUtils
+import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.AccountIntegrationType
 import com.morpheusdata.model.ComputeServer
@@ -21,13 +22,16 @@ import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolServerType
 import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.Workload
+import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.util.MorpheusUtils
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Slf4j
+import io.reactivex.observables.ConnectableObservable
 import org.apache.http.entity.ContentType
 import org.apache.http.client.HttpClient
+import io.reactivex.Observable
 
 @Slf4j
 class InfobloxProvider implements IPAMProvider, DNSProvider {
@@ -451,38 +455,27 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 			log.debug("listResults: {}", listResults)
 			if (listResults.success) {
-				def results = [:]
-				results.objList = listResults?.results
-				morpheusContext.network.getNetworkDomainByOwner(poolServer.account).doOnSuccess({data ->
-					def matchFunction = { existingItem, Map syncItem ->
-						existingItem[0] == syncItem.'_ref'
-					}
-					def secondaryMatchFunction = { existingItem, Map syncItem ->
-						existingItem[1] == syncItem.fqdn
-					}
+				List infobloxDomains = listResults.results
+				Observable<NetworkDomainSyncMatchDto> domainRecords = morpheusContext.network.listNetworkDomainSyncMatch(poolServer.integration.id)
 
-					def syncLists = MorpheusUtils.buildSyncLists(results.existingItems, results.objList, matchFunction, secondaryMatchFunction)
-
-					while (syncLists?.addList?.size() > 0) {
-						List chunkedAddList = syncLists.addList.take(50)
-						syncLists.addList = syncLists.addList.drop(50)
+				SyncTask<NetworkDomainSyncMatchDto,Map,NetworkDomain> syncTask = new SyncTask(domainRecords, apiItems as Collection<Map>)
+				syncTask.addMatchFunction { NetworkDomainSyncMatchDto domainObject, Map apiItem ->
+					domainObject.externalId == apiItem.'_ref'
+				}.addMatchFunction { NetworkDomainSyncMatchDto domainObject, Map apiItem ->
+					domainObject.name == apiItem.name
+				}.onDelete {removeItems ->
+					morpheusContext.network.removeMissingZones(poolServer.integration.id, removeItems)
+				}.onAdd { itemsToAdd ->
+					while (itemsToAdd?.size() > 0) {
+						List chunkedAddList = itemsToAdd.take(50)
+						itemsToAdd = itemsToAdd.drop(50)
 						addMissingZones(poolServer, chunkedAddList)
 					}
-
-					while (syncLists?.updateList?.size() > 0) {
-						List chunkedUpdateList = syncLists.updateList.take(50)
-						syncLists.updateList = syncLists.updateList.drop(50)
-						updateMatchedZones(poolServer, chunkedUpdateList)
-					}
-
-					if (syncLists?.removeList?.size() > 0) {
-						morpheusContext.network.removeMissingZones(poolServer.id, syncLists.removeList).blockingGet()
-					}
-				}).doOnError({error ->
-					log.error(error)
-				}).doOnSubscribe({ sub ->
-					log.debug "Subscribed"
-				})
+				}.dtoReplace { List<SyncTask.UpdateItemDto<NetworkDomainSyncMatchDto,Map>> updateItems ->
+					return morpheusContext.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
+					updateMatchedZones(poolServer, updateItems)
+				}.start()
 			}
 		} catch (e) {
 			log.error("cacheZones error: ${e}", e)
@@ -507,7 +500,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				 refSource: 'integration',
 				 zoneType: 'Authoritative'])
 		}
-		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList).blockingGet()
+		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList)
 	}
 
 	/**
@@ -516,48 +509,30 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param addList
 	 */
 	void updateMatchedZones(NetworkPoolServer poolServer, List updateList) {
-		def externalIds = updateList.collect{ ul -> ul.existingItem[0] }
-		def names = updateList.collect{ ul -> ul.existingItem[1] }
-		morpheusContext.network.findNetworkDomainsByPoolServerAndExternalIdsOrNames(
-			poolServer,
-			externalIds,
-			names
-		).doOnSuccess({ matchedZones ->
-			def matchedZonesByExternalId = matchedZones?.collectEntries{[(it.externalId):it]}
-			def matchedZonesByName = matchedZones?.collectEntries{[(it.name):it]}
-			List<NetworkDomain> domainsToUpdate = []
-			updateList?.each { update ->
-				NetworkDomain existingItem = matchedZonesByExternalId[update.existingItem[0]]
-				if(!existingItem) {
-					existingItem = matchedZonesByName[update.existingItem[1]]
+		def domainsToUpdate = []
+		for(update in updateList) {
+			NetworkDomain existingItem = update.existingItem as NetworkDomain
+			if(existingItem) {
+				def save = false
+				if(!existingItem.externalId) {
+					existingItem.externalId = update.masterItem.'_ref'
+					save = true
 				}
-				if(existingItem) {
-					def save = false
-					if(!existingItem.externalId) {
-						existingItem.externalId = update.masterItem.'_ref'
-						save = true
-					}
-					if(!existingItem.refId) {
-						existingItem.refType = 'AccountIntegration'
-						existingItem.refId = poolServer.integration.id
-						existingItem.refSource = 'integration'
-						save = true
-					}
+				if(!existingItem.refId) {
+					existingItem.refType = 'AccountIntegration'
+					existingItem.refId = poolServer.integration.id
+					existingItem.refSource = 'integration'
+					save = true
+				}
 
-					if(save) {
-						domainsToUpdate.add(existingItem)
-					}
+				if(save) {
+					domainsToUpdate.add(existingItem)
 				}
 			}
-			if(domainsToUpdate.size() > 0) {
-				morpheusContext.network.saveAllNetworkDomains(domainsToUpdate).blockingGet()
-			}
-		}).doOnError({error ->
-			log.error(error)
-		}).doOnSubscribe({ sub ->
-			log.debug "Subscribed"
-		})
-
+		}
+		if(domainsToUpdate.size() > 0) {
+			morpheusContext.network.saveAllNetworkDomains(domainsToUpdate).blockingGet()
+		}
 	}
 	// Cache Zones methods
 	def cacheZoneRecords(NetworkPoolServer poolServer, Map opts) {
