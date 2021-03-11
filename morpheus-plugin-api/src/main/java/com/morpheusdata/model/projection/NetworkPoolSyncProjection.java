@@ -1,11 +1,11 @@
-package com.morpheusdata.model.dto;
+package com.morpheusdata.model.projection;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.NetworkPool} object for doing a sync match
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
  * @author David estes
  */
-public class NetworkPoolSyncMatchDto {
+public class NetworkPoolSyncProjection {
 	private String externalId;
 	private String name;
 

@@ -1,9 +1,7 @@
 package com.morpheusdata.core.util;
 
-import com.morpheusdata.model.dto.NetworkDomainSyncMatchDto;
 import io.reactivex.Observable;
 import io.reactivex.observables.ConnectableObservable;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -129,11 +127,9 @@ public class SyncTask<T, I, J> {
 		//delete missing
 		domainRecords.filter((T domainMatch) -> {
 			return !matchesExisting(domainMatch);
-		})
-				.buffer(bufferSize)
-				.subscribe((List<T> itemsToDelete) -> {
-					this.onDeleteFunction.method(itemsToDelete);
-				});
+		}).buffer(bufferSize).subscribe((List<T> itemsToDelete) -> {
+			this.onDeleteFunction.method(itemsToDelete);
+		});
 
 		domainRecords.filter((T domainMatch) -> {
 			return matchesExisting(domainMatch);
