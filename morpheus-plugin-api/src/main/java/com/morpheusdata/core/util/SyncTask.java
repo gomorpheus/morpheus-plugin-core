@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SyncTask<Projection, ApiItem, Model> {
 
-	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<MatchFunction<Projection, ApiItem>>();
+	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<>();
 	private OnDeleteFunction<Projection> onDeleteFunction;
 	private final ConnectableObservable<Projection> domainRecords;
 	private Integer bufferSize = 50;

@@ -507,12 +507,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param poolServer
 	 * @param addList
 	 */
-	void updateMatchedZones(NetworkPoolServer poolServer, List updateList) {
+	void updateMatchedZones(NetworkPoolServer poolServer, List<SyncTask.UpdateItem<NetworkDomain,Map>> updateList) {
 		def domainsToUpdate = []
-		for(update in updateList) {
+		for(SyncTask.UpdateItem<NetworkDomain,Map> update in updateList) {
 			NetworkDomain existingItem = update.existingItem as NetworkDomain
 			if(existingItem) {
-				def save = false
+				Boolean save = false
 				if(!existingItem.externalId) {
 					existingItem.externalId = update.masterItem.'_ref'
 					save = true
