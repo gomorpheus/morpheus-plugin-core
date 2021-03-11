@@ -2,16 +2,18 @@ package com.morpheusdata.core.util;
 
 import io.reactivex.Observable;
 import io.reactivex.observables.ConnectableObservable;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class SyncTask<Projection, ApiItem, Model> {
 
-	private List<MatchFunction<Projection, ApiItem>> matchFunctions;
+	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<MatchFunction<Projection, ApiItem>>();
 	private OnDeleteFunction<Projection> onDeleteFunction;
-	private ConnectableObservable<Projection> domainRecords;
+	private final ConnectableObservable<Projection> domainRecords;
 	private Integer bufferSize = 50;
-	private Collection<ApiItem> apiItems;
+	private final Collection<ApiItem> apiItems;
 	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Projection, Model>> onLoadObjectDetailsFunction;
 	private OnUpdateFunction<UpdateItem<Projection, Model>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
@@ -59,12 +61,12 @@ public class SyncTask<Projection, ApiItem, Model> {
 	}
 
 
-	public class UpdateItemDto<Projection, ApiItem> {
+	public static class UpdateItemDto<Projection, ApiItem> {
 		public Projection existingItem;
 		public ApiItem masterItem;
 	}
 
-	public class UpdateItem<Model, ApiItem> {
+	public static class UpdateItem<Model, ApiItem> {
 		public Model existingItem;
 		public ApiItem masterItem;
 	}
@@ -96,7 +98,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 	}
 
 	private Boolean matchesExisting(Projection domainMatch) {
-		for (MatchFunction matchFunction : matchFunctions) {
+		for (MatchFunction<Projection,ApiItem> matchFunction : matchFunctions) {
 			for (ApiItem apiItem : apiItems) {
 				if (matchFunction.method(domainMatch, apiItem)) {
 					return true;
@@ -106,8 +108,9 @@ public class SyncTask<Projection, ApiItem, Model> {
 		return false;
 	}
 
+
 	private UpdateItemDto<Projection, ApiItem> buildUpdateItemDto(Projection domainMatch) {
-		for (MatchFunction matchFunction : matchFunctions) {
+		for (MatchFunction<Projection,ApiItem> matchFunction : matchFunctions) {
 			for (ApiItem apiItem : apiItems) {
 				if (matchFunction.method(domainMatch, apiItem)) {
 					UpdateItemDto<Projection, ApiItem> updateItem = new UpdateItemDto<Projection, ApiItem>();
@@ -118,7 +121,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 				}
 			}
 		}
-		return null;
+		return new UpdateItemDto<Projection, ApiItem>();
 	}
 
 
@@ -131,11 +134,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 			this.onDeleteFunction.method(itemsToDelete);
 		});
 
-		domainRecords.filter((Projection domainMatch) -> {
-			return matchesExisting(domainMatch);
-		}).map( (Projection domainMatch) -> {
-			return buildUpdateItemDto(domainMatch);
-		}).buffer(bufferSize).flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
+		domainRecords.filter(this::matchesExisting).map(this::buildUpdateItemDto).buffer(bufferSize).flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
 			return onLoadObjectDetailsFunction.method(mapItems).buffer(50);
 		}).doOnComplete( ()-> {
 			onAddFunction.method(apiItems);
