@@ -2,10 +2,10 @@ package com.morpheusdata.cloud
 
 import com.morpheusdata.core.MorpheusComputeContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.VirtualImage
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -21,14 +21,14 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	@Shared
 	DigitalOceanApiService apiService
 	@Shared
-	MorpheusComputeContext computeContext
+	MorpheusVirtualImageContext virtualImageContext
 
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
 		MorpheusContext context = Mock(MorpheusContext)
-		computeContext = Mock(MorpheusComputeContext)
-		context.getCompute() >> computeContext
+		virtualImageContext = Mock(MorpheusVirtualImageContext)
+		context.getVirtualImage() >> virtualImageContext
 		provider = new DigitalOceanCloudProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -107,9 +107,9 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		then:
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> map.private == 'true'}) >> [[id: 'abc123']]
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> !map.private}) >> [[id: 'def567']]
-		1 * computeContext.listVirtualImages(cloud) >>  listImagesObservable
+		1 * virtualImageContext.listVirtualImages(cloud) >>  listImagesObservable
 //		1 * computeContext.saveVirtualImage([newImage])
-//		1 * computeContext.updateVirtualImage([updateImage])
-		1 * computeContext.removeVirtualImage([removeImage])
+		1 * virtualImageContext.updateVirtualImage([updateImage])
+		1 * virtualImageContext.removeVirtualImage([removeImage])
 	}
 }
