@@ -71,15 +71,27 @@ public interface MorpheusNetworkContext {
 	 * @param addList List of new {@link NetworkDomain} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
 	 */
-	Observable<NetworkDomain> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList);
+	Single<Boolean> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList);
 
+	/**
+	 * Removes Missing Network Domains on the Morpheus side. This accepts the Projection Object instead of the main Object.
+	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
+	 * <p><strong>Example:</strong></p>
+	 * <pre>{@code
+	 * morpheusContext.network.removeMissingNetworkDomains(poolServer.integration.id, removeItems).blockingGet()
+	 * }</pre>
+	 * @param integrationId The integration id of the integration syncing domains
+	 * @param removeList a list of domain projections to be removed
+	 * @return a Single {@link Observable} returning the success status of the operation.
+	 */
+	Single<Boolean> removeMissingNetworkDomains(Long integrationId, List<NetworkDomainSyncProjection> removeList);
 
 
 	Single<List<NetworkPoolIp>> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
 
-	Single<Void> saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
+	Single<Boolean> saveAllNetworkDomains(List<NetworkDomain> domainsToSave);
 
-	Single<Void> removeMissingZones(Long integrationId, List<NetworkDomainSyncProjection> removeList);
+
 
 	Single<List> getNetworkDomainByOwner(Account account);
 

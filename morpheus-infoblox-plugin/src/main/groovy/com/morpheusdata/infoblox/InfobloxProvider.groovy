@@ -454,7 +454,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 			log.debug("listResults: {}", listResults)
 			if (listResults.success) {
-				List infobloxDomains = listResults.results
+				List apiItems = listResults.results as List<Map>
 				Observable<NetworkDomainSyncProjection> domainRecords = morpheusContext.network.listNetworkDomainSyncMatch(poolServer.integration.id)
 
 				SyncTask<NetworkDomainSyncProjection,Map,NetworkDomain> syncTask = new SyncTask(domainRecords, apiItems as Collection<Map>)
@@ -463,7 +463,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}.addMatchFunction { NetworkDomainSyncProjection domainObject, Map apiItem ->
 					domainObject.name == apiItem.name
 				}.onDelete {removeItems ->
-					morpheusContext.network.removeMissingZones(poolServer.integration.id, removeItems)
+					morpheusContext.network.removeMissingNetworkDomains(poolServer.integration.id, removeItems).blockingGet()
 				}.onAdd { itemsToAdd ->
 					while (itemsToAdd?.size() > 0) {
 						List chunkedAddList = itemsToAdd.take(50)
