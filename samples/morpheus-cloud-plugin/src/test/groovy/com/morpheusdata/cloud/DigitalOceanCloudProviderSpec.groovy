@@ -5,9 +5,11 @@ import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.VirtualImage
+import com.morpheusdata.model.projection.VirtualImageSyncProjection
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.Single
 import io.reactivex.annotations.NonNull
 import spock.lang.Shared
 import spock.lang.Specification
@@ -82,14 +84,29 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	void "cacheImages"() {
 		given:
 		Cloud cloud = new Cloud(id: 1,configMap: [doApiKey: 'api_key'])
-		VirtualImage updateImage = new VirtualImage(externalId: 'abc123')
+		VirtualImage updateImage = new VirtualImage(id: 1, externalId: 'abc123')
 		VirtualImage newImage = new VirtualImage(externalId: 'def567')
-		VirtualImage removeImage = new VirtualImage(externalId: 'ghi890')
-		Observable listImagesObservable = Observable.create(new ObservableOnSubscribe<VirtualImage>() {
+		VirtualImage removeImage = new VirtualImage(id: 2, externalId: 'ghi890')
+		Observable listFullObjectsObservable = Observable.create(new ObservableOnSubscribe<VirtualImage>() {
 			@Override
 			void subscribe(@NonNull ObservableEmitter<VirtualImage> emitter) throws Exception {
 				try {
-					List<VirtualImage> images = [updateImage, removeImage]
+					List<VirtualImage> images = [updateImage]
+					for (image in images) {
+						emitter.onNext(image)
+					}
+					emitter.onComplete()
+				} catch(Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
+
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<VirtualImageSyncProjection>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<VirtualImageSyncProjection> emitter) throws Exception {
+				try {
+					List<VirtualImageSyncProjection> images = [new VirtualImageSyncProjection(id: updateImage.id, externalId: updateImage.externalId), new VirtualImageSyncProjection(id: removeImage.id, externalId: removeImage.externalId)]
 					for (image in images) {
 						emitter.onNext(image)
 					}
@@ -106,9 +123,10 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		then:
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> map.private == 'true'}) >> [[id: 'abc123']]
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> !map.private}) >> [[id: 'def567']]
-		1 * virtualImageContext.list(cloud) >>  listImagesObservable
-//		1 * virtualImageContext.saveVirtualImage([newImage])
-		1 * virtualImageContext.update([updateImage])
-		1 * virtualImageContext.remove([removeImage])
+		1 * virtualImageContext.listVirtualImagesById(_) >>  listFullObjectsObservable
+		1 * virtualImageContext.listVirtualImageSyncMatch(_) >>  listSyncProjections
+		1 * virtualImageContext.create({list -> list.size() == 1 && list.first().externalId == newImage.externalId})
+		1 * virtualImageContext.save([updateImage]) >> Single.just([updateImage])
+		1 * virtualImageContext.remove({list -> list.size() == 1 && list.first().externalId == removeImage.externalId})
 	}
 }

@@ -66,5 +66,5 @@ class SyncTaskSpec extends Specification {
 		itemsUpdated == ['abc']
 		itemsAdded == ['ghi']
 	}
-	
+
 }
