@@ -8,8 +8,9 @@ import io.reactivex.Single;
 import java.util.List;
 
 public interface MorpheusVirtualImageContext {
-	Observable<VirtualImage> listVirtualImages(Cloud cloud);
-	Single<Void> saveVirtualImage(List<VirtualImage> virtualImages);
-	Single<Void> updateVirtualImage(List<VirtualImage> virtualImages);
-	Single<Void> removeVirtualImage(List<VirtualImage> virtualImages);
+	Observable<VirtualImage> list(Cloud cloud);
+	Single<Void> save(List<VirtualImage> virtualImages);
+	Single<Void> create(List<VirtualImage> virtualImages);
+	Single<Void> update(List<VirtualImage> virtualImages);
+	Single<Void> remove(List<VirtualImage> virtualImages);
 }

@@ -106,9 +106,9 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		then:
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> map.private == 'true'}) >> [[id: 'abc123']]
 		1 * apiService.makePaginatedApiCall(_,_,_,{map -> !map.private}) >> [[id: 'def567']]
-		1 * virtualImageContext.listVirtualImages(cloud) >>  listImagesObservable
+		1 * virtualImageContext.list(cloud) >>  listImagesObservable
 //		1 * virtualImageContext.saveVirtualImage([newImage])
-		1 * virtualImageContext.updateVirtualImage([updateImage])
-		1 * virtualImageContext.removeVirtualImage([removeImage])
+		1 * virtualImageContext.update([updateImage])
+		1 * virtualImageContext.remove([removeImage])
 	}
 }
