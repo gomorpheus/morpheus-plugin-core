@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.VirtualImage;
-import com.morpheusdata.model.projection.VirtualImageSyncProjection;
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -18,7 +18,7 @@ public interface MorpheusVirtualImageContext {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<VirtualImageSyncProjection> listSyncProjections(Long cloudId);
+	Observable<VirtualImageIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
 	 * Get a list of VirtualImage objects from a list of projection ids
@@ -30,21 +30,21 @@ public interface MorpheusVirtualImageContext {
 	/**
 	 * Save updates to existing VirtualImages
 	 * @param virtualImages updated VirtualImages
-	 * @return resulting VirtualImages
+	 * @return success
 	 */
-	Single<VirtualImage> save(List<VirtualImage> virtualImages);
+	Single<Boolean> save(List<VirtualImage> virtualImages);
 
 	/**
 	 * Create new VirtualImages in Morpheus
 	 * @param virtualImages new VirtualImages to persist
-	 * @return resulting VirtualImages
+	 * @return success
 	 */
-	Single<VirtualImage> create(List<VirtualImage> virtualImages);
+	Single<Boolean> create(List<VirtualImage> virtualImages);
 
 	/**
 	 * Remove persisted VirtualImage from Morpheus
 	 * @param virtualImages Images to delete
-	 * @return void
+	 * @return success
 	 */
-	Single<Void> remove(List<VirtualImageSyncProjection> virtualImages);
+	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages);
 }

@@ -7,8 +7,8 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.VirtualImage
-import com.morpheusdata.model.projection.ServicePlanSyncProjection
-import com.morpheusdata.model.projection.VirtualImageSyncProjection
+import com.morpheusdata.model.projection.ServicePlanIdentityProjection
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -109,11 +109,11 @@ class DigitalOceanCloudProviderSpec extends Specification {
 			}
 		})
 
-		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<VirtualImageSyncProjection>() {
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<VirtualImageIdentityProjection>() {
 			@Override
-			void subscribe(@NonNull ObservableEmitter<VirtualImageSyncProjection> emitter) throws Exception {
+			void subscribe(@NonNull ObservableEmitter<VirtualImageIdentityProjection> emitter) throws Exception {
 				try {
-					List<VirtualImageSyncProjection> images = [new VirtualImageSyncProjection(id: updateImage.id, externalId: updateImage.externalId), new VirtualImageSyncProjection(id: removeImage.id, externalId: removeImage.externalId)]
+					List<VirtualImageIdentityProjection> images = [new VirtualImageIdentityProjection(id: updateImage.id, externalId: updateImage.externalId), new VirtualImageIdentityProjection(id: removeImage.id, externalId: removeImage.externalId)]
 					for (image in images) {
 						emitter.onNext(image)
 					}
@@ -158,11 +158,11 @@ class DigitalOceanCloudProviderSpec extends Specification {
 			}
 		})
 
-		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ServicePlanSyncProjection>() {
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ServicePlanIdentityProjection>() {
 			@Override
-			void subscribe(@NonNull ObservableEmitter<ServicePlanSyncProjection> emitter) throws Exception {
+			void subscribe(@NonNull ObservableEmitter<ServicePlanIdentityProjection> emitter) throws Exception {
 				try {
-					List<ServicePlanSyncProjection> projections = [new ServicePlanSyncProjection(id: updatePlan.id, externalId: updatePlan.externalId), new ServicePlanSyncProjection(id: removePlan.id, externalId: removePlan.externalId)]
+					List<ServicePlanIdentityProjection> projections = [new ServicePlanIdentityProjection(id: updatePlan.id, externalId: updatePlan.externalId), new ServicePlanIdentityProjection(id: removePlan.id, externalId: removePlan.externalId)]
 					for (projection in projections) {
 						emitter.onNext(projection)
 					}

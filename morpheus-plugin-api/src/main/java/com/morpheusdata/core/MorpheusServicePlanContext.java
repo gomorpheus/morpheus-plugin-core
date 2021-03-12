@@ -1,7 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ServicePlan;
-import com.morpheusdata.model.projection.ServicePlanSyncProjection;
+import com.morpheusdata.model.projection.ServicePlanIdentityProjection;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -19,7 +20,7 @@ public interface MorpheusServicePlanContext {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ServicePlanSyncProjection> listSyncProjections(Long cloudId);
+	Observable<ServicePlanIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
 	 * Get a list of ServicePlan objects from a list of projection ids
@@ -33,19 +34,19 @@ public interface MorpheusServicePlanContext {
 	 * @param servicePlans updated servicePlans
 	 * @return resulting servicePlans
 	 */
-	Single<ServicePlan> save(List<ServicePlan> servicePlans);
+	Single<Boolean> save(List<ServicePlan> servicePlans);
 
 	/**
 	 * Create new ServicePlans in Morpheus
 	 * @param servicePlans new servicePlans to persist
 	 * @return resulting servicePlans
 	 */
-	Single<ServicePlan> create(List<ServicePlan> servicePlans);
+	Single<Boolean> create(List<ServicePlan> servicePlans);
 
 	/**
 	 * Remove persisted ServicePlan from Morpheus
 	 * @param servicePlans plans to delete
 	 * @return void
 	 */
-	Single<Void> remove(List<ServicePlanSyncProjection> servicePlans);
+	Single<Boolean> remove(List<ServicePlanIdentityProjection> servicePlans);
 }
