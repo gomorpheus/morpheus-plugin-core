@@ -10,6 +10,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Morpheus Context as it relates to network related operations. This context contains methods for querying things like network pools
+ * network domains, and other network related objects. It also contains methods for applying updates ore creating new objects related to
+ * networks. Typically this class is accessed via the primary {@link MorpheusContext}.
+ *
+ * @author David Estes, Eric Helgeson
+ */
 public interface MorpheusNetworkContext {
 
 	Single<Void> updateNetworkPoolStatus(NetworkPoolServer poolServer, String status, String message);
@@ -42,7 +49,6 @@ public interface MorpheusNetworkContext {
 
 	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId);
 
-	Single<List<NetworkPool>> getPools(NetworkPoolServer poolServer);
 
 	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord);
 
@@ -83,6 +89,14 @@ public interface MorpheusNetworkContext {
 	 */
 	Single<Boolean> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList);
 
+	/**
+	 * Creates new Network Pools from cache / sync implementations
+	 * This ensures proper ownership and pool server association. It also creates the poolRanges attached to the model.
+	 * @param poolServerId The id of the {@link NetworkPoolServer} we are saving into
+	 * @param addList List of new {@link NetworkPool} objects to be inserted into the database
+	 * @return notification of completion if someone really cares about it
+	 */
+	Single<Boolean> createSyncedNetworkPool(Long poolServerId, List<NetworkDomain> addList);
 	/**
 	 * Removes Missing Network Domains on the Morpheus side. This accepts the Projection Object instead of the main Object.
 	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur

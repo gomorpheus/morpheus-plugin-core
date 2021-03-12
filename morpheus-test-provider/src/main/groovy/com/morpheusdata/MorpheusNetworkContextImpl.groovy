@@ -74,11 +74,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 		return null
 	}
 
-	@Override
-	Single<List<NetworkPool>> getPools(NetworkPoolServer poolServer) {
-		return null
-	}
-
     @Override
 	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord) {
         return null
@@ -156,6 +151,17 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<Boolean> createSyncedNetworkDomain(Long poolServerId, List<NetworkDomain> addList) {
+		return Single.just(true)
+	}
+
+	/**
+	 * Creates new Network Pools from cache / sync implementations
+	 * This ensures proper ownership and pool server association. It also creates the poolRanges attached to the model.
+	 * @param poolServerId The id of the {@link NetworkPoolServer} we are saving into
+	 * @param addList List of new {@link NetworkPool} objects to be inserted into the database
+	 * @return notification of completion if someone really cares about it
+	 */
+	Single<Boolean> createSyncedNetworkPool(Long poolServerId, List<NetworkDomain> addList) {
 		return Single.just(true)
 	}
 
