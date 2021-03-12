@@ -18,14 +18,14 @@ public interface MorpheusVirtualImageContext {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<VirtualImageSyncProjection> listVirtualImageSyncMatch(Long cloudId);
+	Observable<VirtualImageSyncProjection> listSyncProjections(Long cloudId);
 
 	/**
 	 * Get a list of VirtualImage objects from a list of projection ids
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of VirtualImages
 	 */
-	Observable<VirtualImage> listVirtualImagesById(Collection<Long> ids);
+	Observable<VirtualImage> listById(Collection<Long> ids);
 
 	/**
 	 * Save updates to existing VirtualImages

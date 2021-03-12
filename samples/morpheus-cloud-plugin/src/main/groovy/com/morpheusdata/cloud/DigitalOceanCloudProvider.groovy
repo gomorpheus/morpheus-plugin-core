@@ -263,7 +263,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		List<VirtualImage> apiImages = listImages(cloud, false)
 		apiImages += listImages(cloud, true)
 
-		Observable<VirtualImageSyncProjection> domainImages = morpheusContext.virtualImageContext.listVirtualImageSyncMatch(cloud.id)
+		Observable<VirtualImageSyncProjection> domainImages = morpheusContext.virtualImageContext.listSyncProjections(cloud.id)
 		SyncTask<VirtualImageSyncProjection, VirtualImage, VirtualImage> syncTask = new SyncTask(domainImages, apiImages)
 		syncTask.addMatchFunction { VirtualImageSyncProjection projection, VirtualImage apiImage ->
 			projection.externalId == apiImage.externalId
@@ -276,7 +276,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				morpheusContext.virtualImageContext.create(chunkedList)
 			}
 		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageSyncProjection,VirtualImage>> updateItems ->
-			morpheusContext.virtualImageContext.listVirtualImagesById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+			morpheusContext.virtualImageContext.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
 			updateMatchedImages(updateList)
 		}.start()
@@ -315,20 +315,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		}
 
 		if (servicePlans) {
-			Observable<ServicePlanSyncProjection> domainPlans = morpheusContext.servicePlan.listServicePlanSyncMatch(cloud.id)
+			Observable<ServicePlanSyncProjection> domainPlans = morpheusContext.servicePlanContext.listSyncProjections(cloud.id)
 			SyncTask<ServicePlanSyncProjection, ServicePlan, ServicePlan> syncTask = new SyncTask(domainPlans, servicePlans)
 			syncTask.addMatchFunction { ServicePlanSyncProjection projection, ServicePlan apiPlan ->
 				projection.externalId == apiPlan.externalId
 			}.onDelete { List<ServicePlanSyncProjection> deleteList ->
-				morpheusContext.servicePlan.remove(deleteList)
+				morpheusContext.servicePlanContext.remove(deleteList)
 			}.onAdd { createList ->
 				while (createList.size() > 0) {
 					List chunkedList = createList.take(50)
 					createList = createList.drop(50)
-					morpheusContext.servicePlan.create(chunkedList)
+					morpheusContext.servicePlanContext.create(chunkedList)
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanSyncProjection, ServicePlan>> updateItems ->
-				morpheusContext.servicePlan.listServicePlansById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+				morpheusContext.servicePlanContext.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 			}.onUpdate { updateList ->
 				updateMatchedPlans(updateList)
 			}.start()
@@ -341,7 +341,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			//TODO
 			plansToUpdate << update
 		}
-		morpheusContext.servicePlan.save(plansToUpdate).blockingGet()
+		morpheusContext.servicePlanContext.save(plansToUpdate).blockingGet()
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {

@@ -19,14 +19,14 @@ public interface MorpheusServicePlanContext {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ServicePlanSyncProjection> listServicePlanSyncMatch(Long cloudId);
+	Observable<ServicePlanSyncProjection> listSyncProjections(Long cloudId);
 
 	/**
 	 * Get a list of ServicePlan objects from a list of projection ids
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of servicePlans
 	 */
-	Observable<ServicePlan> listServicePlansById(Collection<Long> ids);
+	Observable<ServicePlan> listById(Collection<Long> ids);
 
 	/**
 	 * Save updates to existing ServicePlans
