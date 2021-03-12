@@ -25,9 +25,4 @@ class MorpheusCloudContextImpl implements MorpheusCloudContext {
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud) {
 		return null
 	}
-
-	@Override
-	Single<Void> cachePlans(List<ServicePlan> servicePlans) {
-		return null
-	}
 }
