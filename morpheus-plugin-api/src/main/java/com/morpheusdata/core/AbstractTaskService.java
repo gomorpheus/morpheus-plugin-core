@@ -27,7 +27,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildLocalTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildLocalTaskConfig(baseConfig, task, excludes, opts);
+		return getContext().getTaskContext().buildLocalTaskConfig(baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildRemoteTaskConfig(baseConfig, task, excludes, opts);
+		return getContext().getTaskContext().buildRemoteTaskConfig(baseConfig, task, excludes, opts);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.core.IPAMProvider;
+import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author David Estes
  */
-public class NetworkPool extends MorpheusModel {
+public class NetworkPool extends NetworkPoolIdentityProjection {
 
 	/**
 	 * Gets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.

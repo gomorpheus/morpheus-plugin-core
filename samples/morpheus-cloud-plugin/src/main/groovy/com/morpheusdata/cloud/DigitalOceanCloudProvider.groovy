@@ -183,10 +183,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			cacheSizes(apiKey)
 			cacheImages(cloud)
 
-			KeyPair keyPair = morpheusContext.cloud.findOrGenerateKeyPair(cloud.account).blockingGet()
+			KeyPair keyPair = morpheusContext.cloudContext.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
 				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
-				morpheusContext.cloud.updateKeyPair(updatedKeyPair, cloud)
+				morpheusContext.cloudContext.updateKeyPair(updatedKeyPair, cloud)
 			} else {
 				log.debug "no morpheus keys found"
 			}
@@ -262,20 +262,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		List<VirtualImage> apiImages = listImages(cloud, false)
 		apiImages += listImages(cloud, true)
 
-		Observable<VirtualImageSyncProjection> domainImages = morpheusContext.virtualImage.listVirtualImageSyncMatch(cloud.id)
+		Observable<VirtualImageSyncProjection> domainImages = morpheusContext.virtualImageContext.listVirtualImageSyncMatch(cloud.id)
 		SyncTask<VirtualImageSyncProjection, VirtualImage, VirtualImage> syncTask = new SyncTask(domainImages, apiImages)
 		syncTask.addMatchFunction { VirtualImageSyncProjection projection, VirtualImage apiImage ->
 			projection.externalId == apiImage.externalId
 		}.onDelete { List<VirtualImageSyncProjection> deleteList ->
-			morpheusContext.virtualImage.remove(deleteList)
+			morpheusContext.virtualImageContext.remove(deleteList)
 		}.onAdd { createList ->
 			while (createList.size() > 0) {
 				List chunkedList = createList.take(50)
 				createList = createList.drop(50)
-				morpheusContext.virtualImage.create(chunkedList)
+				morpheusContext.virtualImageContext.create(chunkedList)
 			}
 		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageSyncProjection,VirtualImage>> updateItems ->
-			morpheusContext.virtualImage.listVirtualImagesById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+			morpheusContext.virtualImageContext.listVirtualImagesById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
 			updateMatchedImages(updateList)
 		}.start()
@@ -287,7 +287,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			//TODO
 			imagesToUpdate << update
 		}
-		morpheusContext.virtualImage.save(imagesToUpdate).blockingGet()
+		morpheusContext.virtualImageContext.save(imagesToUpdate).blockingGet()
 	}
 
 	def cacheSizes(String apiKey) {
@@ -313,7 +313,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			servicePlans << servicePlan
 		}
 
-		morpheusContext.cloud.cachePlans(servicePlans)
+		morpheusContext.cloudContext.cachePlans(servicePlans)
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {

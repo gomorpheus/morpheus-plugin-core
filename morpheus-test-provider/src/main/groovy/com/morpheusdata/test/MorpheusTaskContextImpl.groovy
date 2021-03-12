@@ -1,4 +1,4 @@
-package com.morpheusdata
+package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusTaskContext
 import com.morpheusdata.model.ComputeServer
