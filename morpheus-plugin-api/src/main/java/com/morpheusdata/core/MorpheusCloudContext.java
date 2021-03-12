@@ -4,7 +4,6 @@ import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
 import java.util.Date;
-import java.util.List;
 
 public interface MorpheusCloudContext {
 
@@ -25,5 +24,4 @@ public interface MorpheusCloudContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Void> cachePlans(List<ServicePlan> servicePlans);
 }
