@@ -64,7 +64,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	}
 
 	@Override
-	MorpheusServicePlanContext getServicePlan() {
+	MorpheusServicePlanContext getServicePlanContext() {
 		return servicePlanContext
 	}
 

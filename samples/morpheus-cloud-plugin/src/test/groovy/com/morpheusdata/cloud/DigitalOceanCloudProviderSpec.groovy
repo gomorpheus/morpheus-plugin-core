@@ -36,7 +36,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		virtualImageContext = Mock(MorpheusVirtualImageContext)
 		context.getVirtualImageContext() >> virtualImageContext
 		servicePlanContext = Mock(MorpheusServicePlanContext)
-		context.servicePlan >> servicePlanContext
+		context.getServicePlanContext() >> servicePlanContext
 		provider = new DigitalOceanCloudProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -130,8 +130,8 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		then:
 		1 * apiService.makePaginatedApiCall(_, _, _, { map -> map.private == 'true' }) >> [[id: 'abc123']]
 		1 * apiService.makePaginatedApiCall(_, _, _, { map -> !map.private }) >> [[id: 'def567']]
-		1 * virtualImageContext.listVirtualImagesById(_) >> listFullObjectsObservable
-		1 * virtualImageContext.listVirtualImageSyncMatch(_) >> listSyncProjections
+		1 * virtualImageContext.listById(_) >> listFullObjectsObservable
+		1 * virtualImageContext.listSyncProjections(_) >> listSyncProjections
 		1 * virtualImageContext.create({ list -> list.size() == 1 && list.first().externalId == newImage.externalId })
 		1 * virtualImageContext.save([updateImage]) >> Single.just([updateImage])
 		1 * virtualImageContext.remove({ list -> list.size() == 1 && list.first().externalId == removeImage.externalId })
@@ -185,8 +185,8 @@ class DigitalOceanCloudProviderSpec extends Specification {
 						]
 				]
 		]
-		1 * servicePlanContext.listServicePlansById(_) >> listFullObjectsObservable
-		1 * servicePlanContext.listServicePlanSyncMatch(_) >> listSyncProjections
+		1 * servicePlanContext.listById(_) >> listFullObjectsObservable
+		1 * servicePlanContext.listSyncProjections(_) >> listSyncProjections
 		1 * servicePlanContext.create({ list -> list.size() == 1 && list.first().externalId == createPlan.externalId })
 		1 * servicePlanContext.save([updatePlan]) >> Single.just([updatePlan])
 		1 * servicePlanContext.remove({ list -> list.size() == 1 && list.first().externalId == removePlan.externalId })

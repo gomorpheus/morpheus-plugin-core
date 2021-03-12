@@ -60,7 +60,7 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Service Plan Context to be used for calls by various providers
 	 */
-	MorpheusServicePlanContext getServicePlan();
+	MorpheusServicePlanContext getServicePlanContext();
 
 
 
