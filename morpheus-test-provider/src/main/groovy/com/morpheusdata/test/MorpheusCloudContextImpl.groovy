@@ -1,4 +1,4 @@
-package com.morpheusdata
+package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.model.Account

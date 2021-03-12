@@ -1,8 +1,8 @@
-package com.morpheusdata
+package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.MorpheusNetworkContext
+import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusTaskContext
 import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.model.ComputeServer
@@ -12,6 +12,7 @@ import com.morpheusdata.model.LogLevel
 import com.morpheusdata.model.Task
 import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.TaskResult
+import com.morpheusdata.test.network.MorpheusNetworkContextImpl
 import io.reactivex.Single
 
 /**
@@ -39,22 +40,22 @@ class MorpheusContextImpl implements MorpheusContext {
     }
 
     @Override
-    MorpheusCloudContext getCloud() {
+    MorpheusCloudContext getCloudContext() {
         return cloudContext
     }
 
     @Override
-    MorpheusNetworkContext getNetwork() {
+    MorpheusNetworkContext getNetworkContext() {
         return networkContext
     }
 
 	@Override
-	MorpheusTaskContext getTask() {
+	MorpheusTaskContext getTaskContext() {
 		return taskContext
 	}
 
 	@Override
-	MorpheusVirtualImageContext getVirtualImage() {
+	MorpheusVirtualImageContext getVirtualImageContext() {
 		return virtualImageContext
 	}
 

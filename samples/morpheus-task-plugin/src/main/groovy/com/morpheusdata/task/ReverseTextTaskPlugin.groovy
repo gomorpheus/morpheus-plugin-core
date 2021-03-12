@@ -38,6 +38,6 @@ class ReverseTextTaskPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.task.disableTask('reverseTextTask')
+		morpheusContext.taskContext.disableTask('reverseTextTask')
 	}
 }

@@ -1,4 +1,4 @@
-package com.morpheusdata
+package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusVirtualImageContext
 import groovy.transform.AutoImplement

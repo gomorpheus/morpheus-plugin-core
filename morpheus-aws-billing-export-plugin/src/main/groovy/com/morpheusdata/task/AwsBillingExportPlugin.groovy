@@ -1,8 +1,6 @@
 package com.morpheusdata.task
 
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.views.HandlebarsRenderer
-import com.morpheusdata.views.ViewModel
 
 /**
  * Main Plugin class for Exporting AWS Billing Report Files into a target S3 Bucket with the ability
@@ -36,6 +34,6 @@ class AwsBillingExportPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.task.disableTask('awsBillingExportTask')
+		morpheusContext.taskContext.disableTask('awsBillingExportTask')
 	}
 }

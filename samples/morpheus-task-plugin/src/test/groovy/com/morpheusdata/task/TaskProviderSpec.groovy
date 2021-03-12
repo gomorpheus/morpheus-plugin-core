@@ -1,6 +1,6 @@
 package com.morpheusdata.task
 
-import com.morpheusdata.MorpheusContextImpl
+import com.morpheusdata.test.MorpheusContextImpl
 import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.TaskProvider

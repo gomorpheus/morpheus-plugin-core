@@ -1,9 +1,9 @@
 package com.morpheusdata.infoblox
 
-import com.morpheusdata.MorpheusContextImpl
+import com.morpheusdata.test.MorpheusContextImpl
 import com.morpheusdata.apiutil.RestApiUtil
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.MorpheusNetworkContext
+import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
@@ -11,7 +11,6 @@ import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.response.ServiceResponse
 import spock.lang.Ignore
-import spock.lang.Narrative
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -26,7 +25,7 @@ class InfobloxProviderSpec extends Specification {
     void setup() {
         context = Mock(MorpheusContextImpl)
         networkContext = Mock(MorpheusNetworkContext)
-        context.getNetwork() >> networkContext
+        context.getNetworkContext() >> networkContext
         plugin = Mock(InfobloxPlugin)
         infobloxAPI = GroovySpy(RestApiUtil, global: true)
 		provider = new InfobloxProvider(plugin, context, infobloxAPI)

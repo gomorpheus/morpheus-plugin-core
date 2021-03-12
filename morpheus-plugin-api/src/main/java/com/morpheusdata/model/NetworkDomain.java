@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
+
 /**
  * This is a Model Representation of a Network Domain. It contains information related to any DNS Cloud that may be synced
  * via a DNS and/or IPAM provider.
@@ -9,20 +11,19 @@ package com.morpheusdata.model;
  *
  * @author David Estes
  */
-public class NetworkDomain extends MorpheusModel {
+public class NetworkDomain extends NetworkDomainIdentityProjection {
 
 
-	private String displayName;
-	private String name;
-	private String description;
-	private Boolean publicZone = false;
-	private String refType;
-	private Long refId;
-	private String refSource = "integration";
-	private String externalId;
-	private String ouPath;
-	private String zoneType;
-	private Boolean dnssec;
+	protected String displayName;
+	protected String name;
+	protected String description;
+	protected Boolean publicZone = false;
+	protected String refType;
+	protected Long refId;
+	protected String refSource = "integration";
+	protected String ouPath;
+	protected String zoneType;
+	protected Boolean dnssec;
 	public String fqdn;
 
 	/**
@@ -44,24 +45,6 @@ public class NetworkDomain extends MorpheusModel {
 		this.displayName = displayName;
 		markDirty("displayName",displayName);
 	}
-
-	/**
-	 * Grabs the current Domain name. This should be the fully qualified DNS Name of the Authoritative Cloud it represents.
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the current Domain name for the Authoritative cloud this record represents.
-	 * @param name The Fully Qualified domain name of the Cloud being represented.
-	 */
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name",name);
-	}
-
 
 	/**
 	 * Gets the human readable description representation of the Domain Record in question. This may get synced in from a provider
@@ -153,25 +136,6 @@ public class NetworkDomain extends MorpheusModel {
 	 */
 	public void setRefSource(String refSource) {
 		this.refSource = refSource;
-	}
-
-	/**
-	 * Gets the external unique identifier. The externalId is available on most sync related Models and is the unique identifier used by the external integration of the
-	 * correlating object. Whenever syncing something like a Domain record, the unique identifier provided by the third party vendor
-	 * should be stored here for cross referencing during sync.
-	 * @return the external unique identifier representation of this cloud from the external integration.
-	 */
-	public String getExternalId() {
-		return externalId;
-	}
-
-	/**
-	 * Sets the external unique identifer as it relates to the integration provider. Whenever syncing something like a Domain record, the unique identifier provided by the third party vendor
-	 * should be stored here for cross referencing during sync.
-	 * @param externalId the external unique identifier representation of this cloud from the external integration.
-	 */
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
 	}
 
 	/**

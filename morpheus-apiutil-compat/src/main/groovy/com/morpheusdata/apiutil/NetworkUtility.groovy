@@ -239,8 +239,8 @@ class NetworkUtility {
 		try {
 			if(server.interfaces) {
 				server.interfaces?.each {
-					if(rtn == null && it.network?.networkProxy)
-						rtn = it.network.networkProxy
+					if(rtn == null && it.getNetworkContext?.networkProxy)
+						rtn = it.getNetworkContext.networkProxy
 				}
 			}
 			if(rtn == null) {
@@ -259,8 +259,8 @@ class NetworkUtility {
 		try {
 			if(server.interfaces) {
 				server.interfaces?.each {
-					if(network == null && it.network)
-						network = it.network
+					if(network == null && it.getNetworkContext)
+						network = it.getNetworkContext
 				}
 			}
 			if(network)
