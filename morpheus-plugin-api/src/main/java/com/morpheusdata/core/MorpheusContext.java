@@ -20,6 +20,8 @@ import java.util.Map;
  * @see MorpheusCloudContext
  * @see MorpheusNetworkContext
  * @see MorpheusTaskContext
+ * @see MorpheusVirtualImageContext
+ * @see MorpheusServicePlanContext
  *
  * @author David Estes
  */
@@ -46,7 +48,19 @@ public interface MorpheusContext {
 	 */
 	MorpheusTaskContext getTaskContext();
 
+	/**
+	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Virtual Image Context to be used for calls by various providers
+	 */
 	MorpheusVirtualImageContext getVirtualImageContext();
+
+	/**
+	 * Returns the Service Plan context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Service Plan Context to be used for calls by various providers
+	 */
+	MorpheusServicePlanContext getServicePlan();
 
 
 

@@ -7,6 +7,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.*
+import com.morpheusdata.model.projection.ServicePlanSyncProjection
 import com.morpheusdata.model.projection.VirtualImageSyncProjection
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
@@ -180,7 +181,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
 			loadDatacenters(cloud)
-			cacheSizes(apiKey)
+			cacheSizes(cloud, apiKey)
 			cacheImages(cloud)
 
 			KeyPair keyPair = morpheusContext.cloudContext.findOrGenerateKeyPair(cloud.account).blockingGet()
@@ -200,7 +201,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	void refresh(Cloud cloudInfo) {
 		log.debug "cloud refresh has run for ${cloudInfo.code}"
-		cacheSizes(cloudInfo.configMap.doApiKey)
+		cacheSizes(cloudInfo, cloudInfo.configMap.doApiKey)
 		loadDatacenters(cloudInfo)
 		cacheImages(cloudInfo)
 	}
@@ -290,7 +291,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		morpheusContext.virtualImageContext.save(imagesToUpdate).blockingGet()
 	}
 
-	def cacheSizes(String apiKey) {
+	def cacheSizes(Cloud cloud, String apiKey) {
 		HttpGet sizesGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
 		Map respMap = apiService.makeApiCall(sizesGet, apiKey)
 		List<ServicePlan> servicePlans = []
@@ -313,7 +314,34 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			servicePlans << servicePlan
 		}
 
-		morpheusContext.cloudContext.cachePlans(servicePlans)
+		if (servicePlans) {
+			Observable<ServicePlanSyncProjection> domainPlans = morpheusContext.servicePlan.listServicePlanSyncMatch(cloud.id)
+			SyncTask<ServicePlanSyncProjection, ServicePlan, ServicePlan> syncTask = new SyncTask(domainPlans, servicePlans)
+			syncTask.addMatchFunction { ServicePlanSyncProjection projection, ServicePlan apiPlan ->
+				projection.externalId == apiPlan.externalId
+			}.onDelete { List<ServicePlanSyncProjection> deleteList ->
+				morpheusContext.servicePlan.remove(deleteList)
+			}.onAdd { createList ->
+				while (createList.size() > 0) {
+					List chunkedList = createList.take(50)
+					createList = createList.drop(50)
+					morpheusContext.servicePlan.create(chunkedList)
+				}
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanSyncProjection, ServicePlan>> updateItems ->
+				morpheusContext.servicePlan.listServicePlansById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+			}.onUpdate { updateList ->
+				updateMatchedPlans(updateList)
+			}.start()
+		}
+	}
+
+	def updateMatchedPlans(List<ServicePlan> plans) {
+		List<ServicePlan> plansToUpdate = []
+		for(ServicePlan update in plans) {
+			//TODO
+			plansToUpdate << update
+		}
+		morpheusContext.servicePlan.save(plansToUpdate).blockingGet()
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {

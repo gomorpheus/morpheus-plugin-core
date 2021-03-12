@@ -1,10 +1,13 @@
 package com.morpheusdata.cloud
 
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.MorpheusServicePlanContext
 import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
+import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.VirtualImage
+import com.morpheusdata.model.projection.ServicePlanSyncProjection
 import com.morpheusdata.model.projection.VirtualImageSyncProjection
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -23,6 +26,8 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	DigitalOceanApiService apiService
 	@Shared
 	MorpheusVirtualImageContext virtualImageContext
+	@Shared
+	MorpheusServicePlanContext servicePlanContext
 
 
 	def setup() {
@@ -30,6 +35,8 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		MorpheusContext context = Mock(MorpheusContext)
 		virtualImageContext = Mock(MorpheusVirtualImageContext)
 		context.getVirtualImageContext() >> virtualImageContext
+		servicePlanContext = Mock(MorpheusServicePlanContext)
+		context.servicePlan >> servicePlanContext
 		provider = new DigitalOceanCloudProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -83,7 +90,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 
 	void "cacheImages"() {
 		given:
-		Cloud cloud = new Cloud(id: 1,configMap: [doApiKey: 'api_key'])
+		Cloud cloud = new Cloud(id: 1, configMap: [doApiKey: 'api_key'])
 		VirtualImage updateImage = new VirtualImage(id: 1, externalId: 'abc123')
 		VirtualImage newImage = new VirtualImage(externalId: 'def567')
 		VirtualImage removeImage = new VirtualImage(id: 2, externalId: 'ghi890')
@@ -96,7 +103,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 						emitter.onNext(image)
 					}
 					emitter.onComplete()
-				} catch(Exception e) {
+				} catch (Exception e) {
 					emitter.onError(e)
 				}
 			}
@@ -111,7 +118,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 						emitter.onNext(image)
 					}
 					emitter.onComplete()
-				} catch(Exception e) {
+				} catch (Exception e) {
 					emitter.onError(e)
 				}
 			}
@@ -121,12 +128,67 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		provider.cacheImages(cloud)
 
 		then:
-		1 * apiService.makePaginatedApiCall(_,_,_,{map -> map.private == 'true'}) >> [[id: 'abc123']]
-		1 * apiService.makePaginatedApiCall(_,_,_,{map -> !map.private}) >> [[id: 'def567']]
-		1 * virtualImageContext.listVirtualImagesById(_) >>  listFullObjectsObservable
-		1 * virtualImageContext.listVirtualImageSyncMatch(_) >>  listSyncProjections
-		1 * virtualImageContext.create({list -> list.size() == 1 && list.first().externalId == newImage.externalId})
+		1 * apiService.makePaginatedApiCall(_, _, _, { map -> map.private == 'true' }) >> [[id: 'abc123']]
+		1 * apiService.makePaginatedApiCall(_, _, _, { map -> !map.private }) >> [[id: 'def567']]
+		1 * virtualImageContext.listVirtualImagesById(_) >> listFullObjectsObservable
+		1 * virtualImageContext.listVirtualImageSyncMatch(_) >> listSyncProjections
+		1 * virtualImageContext.create({ list -> list.size() == 1 && list.first().externalId == newImage.externalId })
 		1 * virtualImageContext.save([updateImage]) >> Single.just([updateImage])
-		1 * virtualImageContext.remove({list -> list.size() == 1 && list.first().externalId == removeImage.externalId})
+		1 * virtualImageContext.remove({ list -> list.size() == 1 && list.first().externalId == removeImage.externalId })
+	}
+
+	void "cacheSizes"() {
+		given:
+		Cloud cloud = new Cloud(id: 1, configMap: [doApiKey: 'api_key'])
+		ServicePlan updatePlan = new ServicePlan(id: 1, externalId: 'abc123')
+		ServicePlan createPlan = new ServicePlan(externalId: 'def567')
+		ServicePlan removePlan = new ServicePlan(id: 2, externalId: 'ghi890')
+		Observable listFullObjectsObservable = Observable.create(new ObservableOnSubscribe<ServicePlan>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<ServicePlan> emitter) throws Exception {
+				try {
+					List<ServicePlan> plans = [updatePlan]
+					for (plan in plans) {
+						emitter.onNext(plan)
+					}
+					emitter.onComplete()
+				} catch (Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
+
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ServicePlanSyncProjection>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<ServicePlanSyncProjection> emitter) throws Exception {
+				try {
+					List<ServicePlanSyncProjection> projections = [new ServicePlanSyncProjection(id: updatePlan.id, externalId: updatePlan.externalId), new ServicePlanSyncProjection(id: removePlan.id, externalId: removePlan.externalId)]
+					for (projection in projections) {
+						emitter.onNext(projection)
+					}
+					emitter.onComplete()
+				} catch (Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
+
+		when:
+		provider.cacheSizes(cloud, 'api_key')
+
+		then:
+		1 * apiService.makeApiCall(_, _) >> [
+				json: [
+						sizes: [
+								[slug: createPlan.externalId, memory: 1024, disk: 25],
+								[slug: updatePlan.externalId, memory: 1024, disk: 25]
+						]
+				]
+		]
+		1 * servicePlanContext.listServicePlansById(_) >> listFullObjectsObservable
+		1 * servicePlanContext.listServicePlanSyncMatch(_) >> listSyncProjections
+		1 * servicePlanContext.create({ list -> list.size() == 1 && list.first().externalId == createPlan.externalId })
+		1 * servicePlanContext.save([updatePlan]) >> Single.just([updatePlan])
+		1 * servicePlanContext.remove({ list -> list.size() == 1 && list.first().externalId == removePlan.externalId })
 	}
 }
