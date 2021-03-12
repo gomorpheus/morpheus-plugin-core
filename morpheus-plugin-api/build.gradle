@@ -102,7 +102,6 @@ publishing {
     repositories {
         maven {
             if( !isReleaseVersion ) {
-                println ("ITS NOT A RELEASE!2")
                 url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
                 if(project.hasProperty('labsNexusUser')) {
                     credentials {
