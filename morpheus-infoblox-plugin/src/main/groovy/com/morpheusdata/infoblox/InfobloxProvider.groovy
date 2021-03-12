@@ -488,7 +488,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 * @param addList
 	 */
 	void addMissingZones(NetworkPoolServer poolServer, List addList) {
-		List<NetworkDomain> missingZonesMap = []
+		List<NetworkDomain> missingZonesList = []
 		addList?.each { Map add ->
 			NetworkDomain networkDomain = new NetworkDomain()
 			networkDomain.externalId = add.'_ref'
@@ -496,9 +496,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			networkDomain.fqdn = NetworkUtility.getFqdnDomainName(add.fqdn as String)
 			networkDomain.refSource = 'integration'
 			networkDomain.zoneType = 'Authoritative'
-			missingZonesMap.add(networkDomain)
+			missingZonesList.add(networkDomain)
 		}
-		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, addList).blockingSubscribe()
+		morpheusContext.network.createSyncedNetworkDomain(poolServer.id, missingZonesList).blockingGet()
 	}
 
 	/**
@@ -734,30 +734,30 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
-	void addMissingPools(NetworkPoolServer poolServer, List chunkedAddList) {
+	void addMissingPools(NetworkPoolServer poolServer, List<Map> chunkedAddList) {
 		def poolType = new NetworkPoolType(code: 'infoblox')
-		chunkedAddList?.each {
-			def networkIp = it.network
-			def networkView = it.network_view
+		List<NetworkPool> missingPoolsList = []
+		List<NetworkPoolRange> ranges = []
+		chunkedAddList?.each { Map add ->
+			def networkIp = add.network
+			def networkView = add.network_view
 			def displayName = networkView ? (networkView + ' ' + networkIp) : networkIp
 			def networkInfo = MorpheusUtils.getNetworkPoolConfig(networkIp)
 			def addConfig = ["poolServer": poolServer, cidr: networkIp, account: poolServer.account,
-							 owner: poolServer.account, name:networkIp, externalId: it.'_ref', displayName: displayName,
+							 owner: poolServer.account, name:networkIp, externalId: add.'_ref', displayName: displayName,
 							 type: poolType, poolEnabled: true, parentType: 'NetworkPoolServer', parentId: poolServer.id]
 			addConfig += networkInfo.config
 			def newNetworkPool =new NetworkPool(addConfig)
-			def newObj = morpheusContext.network.save(newNetworkPool).blockingGet()
-
-			List<NetworkPoolRange> ranges = []
 			networkInfo?.ranges?.each { range ->
-				log.debug("range: ${range}")
 				def rangeConfig = [networkPool: newObj, startAddress: range.startAddress,
 								   endAddress: range.endAddress, addressCount: addConfig.ipCount]
 				def addRange = new NetworkPoolRange(rangeConfig)
-				ranges.add(addRange)
+				newNetworkPool.ipRanges.add(addRange)
 			}
-			morpheusContext.network.save(newObj, ranges).blockingGet()
+			missingPoolsList.add(newNetworkPool)
+
 		}
+		morpheusContext.network.createSyncedNetworkPools(poolServer.id, missingPoolsList).blockingSubscribe()
 	}
 
 	void updateMatchedPools(NetworkPoolServer poolServer, List chunkedUpdateList) {
@@ -1674,6 +1674,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			log.error("test network pool server error: ${e}", e)
 		}
 		return rtn
+	}
+
+	/**
+	 * An IPAM Provider can register pool types for display and capability information when syncing IPAM Pools
+	 * @return a List of {@link NetworkPoolType} to be loaded into the Morpheus database.
+	 */
+	Collection<NetworkPoolType> getNetworkPoolTypes() {
+		return [new NetworkPoolType(code:'infoblox', name:'Infoblox', creatable:false, description:'Infoblox', rangeSupportsCidr: false)];
 	}
 
 	private static Map parseNetworkFilter(String networkFilter) {

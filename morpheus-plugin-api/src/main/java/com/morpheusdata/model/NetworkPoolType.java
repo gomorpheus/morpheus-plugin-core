@@ -31,6 +31,8 @@ public class NetworkPoolType extends MorpheusModel{
 	 */
 	protected Boolean creatable = true;
 
+	private Boolean rangeSupportsCidr = false;
+
 
 	/**
 	 * Fetches the unique code pertaining to this particular network pool type. Morpheus uses codes for easier reference instead
@@ -104,5 +106,23 @@ public class NetworkPoolType extends MorpheusModel{
 	public void setCreatable(Boolean creatable) {
 		this.creatable = creatable;
 		markDirty("creatable",creatable);
+	}
+
+	/**
+	 * Used if the Pool range supports CIDR only as opposed to a start and end ip range. This is primarily used for NSX-T
+	 * TODO: Possibly not really needed
+	 * @return whether or not the range supports the CIDR definition
+	 */
+	public Boolean getRangeSupportsCidr() {
+		return rangeSupportsCidr;
+	}
+
+	/**
+	 * Used if the Pool range supports CIDR only as opposed to a start and end ip range. This is primarily used for NSX-T
+	 * TODO: Possibly not really needed
+	 * @param rangeSupportsCidr the cidr flag
+	 */
+	public void setRangeSupportsCidr(Boolean rangeSupportsCidr) {
+		this.rangeSupportsCidr = rangeSupportsCidr;
 	}
 }

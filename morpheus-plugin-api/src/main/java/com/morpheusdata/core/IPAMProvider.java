@@ -2,6 +2,8 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,5 +142,11 @@ public interface IPAMProvider extends PluginProvider {
 	 * @return a ServiceResponse containing the success state of the delete operation
 	 */
 	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords);
+
+	/**
+	 * An IPAM Provider can register pool types for display and capability information when syncing IPAM Pools
+	 * @return a List of {@link NetworkPoolType} to be loaded into the Morpheus database.
+	 */
+	Collection<NetworkPoolType> getNetworkPoolTypes();
 	
 }
