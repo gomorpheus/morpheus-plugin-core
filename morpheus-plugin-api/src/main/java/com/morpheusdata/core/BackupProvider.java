@@ -2,7 +2,10 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.response.ServiceResponse;
-
+import com.morpheusdata.model.BackupType;
+import com.morpheusdata.model.BackupJob;
+import com.morpheusdata.model.Backup;
+import com.morpheusdata.model.BackupResult;
 import java.util.Map;
 
 /**
@@ -12,8 +15,37 @@ import java.util.Map;
  */
 public interface BackupProvider extends PluginProvider {
 
-	ServiceResponse executeBackup(ComputeServer server, Map opts);
+	// Backup Jobs
+	ServiceResponse configureBackupJob();
+	ServiceResponse validateBackupJob();
+	ServiceResponse createBackupJob();
+	ServiceResponse cloneBackupJob();
+	ServiceResponse addToBackupJob();
+	ServiceResponse deleteBackupJob();
+
+	// Backups
+	ServiceResponse configureBackup();
+	ServiceResponse validateBackup();
+	ServiceResponse createBackup();
+	ServiceResponse deleteBackup();
+
+	// Backup Job Operations
+	ServiceResponse prepareExecuteBackupJob();
+	ServiceResponse executeBackupJob(BackupJob backupJob, Map opts);
+	ServiceResponse cancelBackupJob();
+
+	// Backup Results
+	ServiceResponse deleteBackupResult();
+
+	// Backup Operations
+	ServiceResponse prepareExecuteBackup();
+	ServiceResponse prepareBackupResult();
+	ServiceResponse executeBackup(Backup backup, Map opts);
+	ServiceResponse cancelBackup();
+
+	// Restore Operations
+	ServiceResponse prepareRestoreBackup();
 	ServiceResponse restoreBackup();
-	ServiceResponse getSnapshot();
+	ServiceResponse finalizeRestore();
 
 }

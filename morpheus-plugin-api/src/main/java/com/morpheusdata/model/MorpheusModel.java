@@ -31,6 +31,11 @@ public class MorpheusModel {
 	private LinkedHashMap<String,Object> dirtyProperties = new LinkedHashMap<>();
 
 	/**
+	 * Internal property used to keep track of a fields chages on the currently extended Model class.
+	 */
+	private LinkedHashMap<String,Object> persistedProperties = new LinkedHashMap<>();
+
+	/**
 	 * Gets the uniquely generated ID from the database record stored via the Morpheus appliance.
 	 * @return id
 	 */
@@ -46,7 +51,6 @@ public class MorpheusModel {
 		this.id = id;
 	}
 
-
 	/**
 	 * All setters that are presented to the morpheus API should call markDirty with a string representation of the fieldname.
 	 * This enables the {@link com.morpheusdata.core.MorpheusContext} to reconcile differences and perform differential updates.
@@ -59,10 +63,32 @@ public class MorpheusModel {
 	}
 
 	/**
+	 * All setters that are presented to the morpheus API should call markDirty with a string representation of the fieldname.
+	 * This enables the {@link com.morpheusdata.core.MorpheusContext} to reconcile differences and perform differential updates.
+	 * @param propertyName Name of the property that has been changed
+	 * @param value The newly assigned value the property has been given.
+	 * @param value The old value of the property.
+	 */
+	protected void markDirty(String propertyName, Object value, Object persistedValue) {
+		markDirty(propertyName, value);
+		persistedProperties.put(propertyName, persistedValue);
+	}
+
+	/**
 	 * Marks the corresponding Model clean from all changes. This resets all stored differential value changes.
 	 */
 	public void markClean() {
 		dirtyProperties.clear();
+		persistedProperties.clear();
+	}
+
+	/**
+	 * Checks if a property has been modified
+	 * @param propertyName Name of the property to check
+	 * @return true or false
+	 */
+	public Boolean isDirty(String propertyName) {
+		return dirtyProperties.containsKey(propertyName);
 	}
 
 	/**
