@@ -106,6 +106,13 @@ public interface IPAMProvider extends PluginProvider {
 	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts);
 
 
+	/**
+	 * Called on the first save / update of a pool server integration. Used to do any initialization of a new integration
+	 * Often times this calls the periodic refresh method directly.
+	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
+	 * @param opts an optional map of parameters that could be sent. This may not currently be used and can be assumed blank
+	 * @return a ServiceResponse containing the success state of the initialization phase
+	 */
 	ServiceResponse initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts);
 
 	/**
