@@ -14,12 +14,18 @@ import java.util.List;
  * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkContext}
  * <p><strong>Examples:</strong></p>
  * <pre>{@code
- * morpheusContext.getNetworkContext().getPoolContext()
+ * morpheusContext.getNetwork().getPool()
  * }</pre>
  * @see MorpheusNetworkContext
  * @author David Estes
  */
 public interface MorpheusNetworkPoolContext {
+
+	/**
+	 * Returns the Pool IP Context for dealing with managing IP Allocations regarding Host Records within a {@link NetworkPool}
+	 * @return the Pool IP Context to use for performing IPAM operations within Morpheus.
+	 */
+	MorpheusNetworkPoolIpContext getPoolIp();
 
 	/**
 	 * Lists all network pool projection objects for a specified pool server id aka {@link NetworkPoolServer}.

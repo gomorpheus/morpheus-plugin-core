@@ -184,10 +184,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			cacheSizes(cloud, apiKey)
 			cacheImages(cloud)
 
-			KeyPair keyPair = morpheusContext.cloudContext.findOrGenerateKeyPair(cloud.account).blockingGet()
+			KeyPair keyPair = morpheusContext.cloud.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
 				KeyPair updatedKeyPair = findOrUploadKeypair(apiKey, keyPair.publicKey, keyPair.name)
-				morpheusContext.cloudContext.updateKeyPair(updatedKeyPair, cloud)
+				morpheusContext.cloud.updateKeyPair(updatedKeyPair, cloud)
 			} else {
 				log.debug "no morpheus keys found"
 			}
@@ -263,20 +263,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		List<VirtualImage> apiImages = listImages(cloud, false)
 		apiImages += listImages(cloud, true)
 
-		Observable<VirtualImageIdentityProjection> domainImages = morpheusContext.virtualImageContext.listSyncProjections(cloud.id)
+		Observable<VirtualImageIdentityProjection> domainImages = morpheusContext.virtualImage.listSyncProjections(cloud.id)
 		SyncTask<VirtualImageIdentityProjection, VirtualImage, VirtualImage> syncTask = new SyncTask(domainImages, apiImages)
 		syncTask.addMatchFunction { VirtualImageIdentityProjection projection, VirtualImage apiImage ->
 			projection.externalId == apiImage.externalId
 		}.onDelete { List<VirtualImageIdentityProjection> deleteList ->
-			morpheusContext.virtualImageContext.remove(deleteList)
+			morpheusContext.virtualImage.remove(deleteList)
 		}.onAdd { createList ->
 			while (createList.size() > 0) {
 				List chunkedList = createList.take(50)
 				createList = createList.drop(50)
-				morpheusContext.virtualImageContext.create(chunkedList)
+				morpheusContext.virtualImage.create(chunkedList)
 			}
 		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection,VirtualImage>> updateItems ->
-			morpheusContext.virtualImageContext.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+			morpheusContext.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
 			updateMatchedImages(updateList)
 		}.start()
@@ -288,7 +288,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			//TODO
 			imagesToUpdate << update
 		}
-		morpheusContext.virtualImageContext.save(imagesToUpdate).blockingGet()
+		morpheusContext.virtualImage.save(imagesToUpdate).blockingGet()
 	}
 
 	def cacheSizes(Cloud cloud, String apiKey) {
@@ -315,20 +315,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		}
 
 		if (servicePlans) {
-			Observable<ServicePlanIdentityProjection> domainPlans = morpheusContext.servicePlanContext.listSyncProjections(cloud.id)
+			Observable<ServicePlanIdentityProjection> domainPlans = morpheusContext.servicePlan.listSyncProjections(cloud.id)
 			SyncTask<ServicePlanIdentityProjection, ServicePlan, ServicePlan> syncTask = new SyncTask(domainPlans, servicePlans)
 			syncTask.addMatchFunction { ServicePlanIdentityProjection projection, ServicePlan apiPlan ->
 				projection.externalId == apiPlan.externalId
 			}.onDelete { List<ServicePlanIdentityProjection> deleteList ->
-				morpheusContext.servicePlanContext.remove(deleteList)
+				morpheusContext.servicePlan.remove(deleteList)
 			}.onAdd { createList ->
 				while (createList.size() > 0) {
 					List chunkedList = createList.take(50)
 					createList = createList.drop(50)
-					morpheusContext.servicePlanContext.create(chunkedList)
+					morpheusContext.servicePlan.create(chunkedList)
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanIdentityProjection, ServicePlan>> updateItems ->
-				morpheusContext.servicePlanContext.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+				morpheusContext.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 			}.onUpdate { updateList ->
 				updateMatchedPlans(updateList)
 			}.start()
@@ -341,7 +341,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			//TODO
 			plansToUpdate << update
 		}
-		morpheusContext.servicePlanContext.save(plansToUpdate).blockingGet()
+		morpheusContext.servicePlan.save(plansToUpdate).blockingGet()
 	}
 
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {

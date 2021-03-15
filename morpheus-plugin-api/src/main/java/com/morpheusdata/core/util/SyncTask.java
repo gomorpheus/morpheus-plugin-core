@@ -1,6 +1,9 @@
 package com.morpheusdata.core.util;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.observables.ConnectableObservable;
 
 import java.util.ArrayList;
@@ -181,5 +184,22 @@ public class SyncTask<Projection, ApiItem, Model> {
 		});
 
 		domainRecords.connect();
+	}
+
+	public Observable<Boolean> observe() {
+
+		Observable<Boolean> syncObservable = Observable.create(new ObservableOnSubscribe<Boolean>() {
+			@Override
+			public void subscribe(@NonNull ObservableEmitter<Boolean> emitter) throws Exception {
+				try {
+					start();
+					emitter.onNext(true);
+					emitter.onComplete();
+				} catch(Exception e) {
+					emitter.onError(e);
+				}
+			}
+		});
+		return syncObservable;
 	}
 }

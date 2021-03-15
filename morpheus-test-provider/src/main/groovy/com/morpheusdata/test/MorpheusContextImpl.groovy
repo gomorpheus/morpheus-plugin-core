@@ -44,27 +44,27 @@ class MorpheusContextImpl implements MorpheusContext {
     }
 
     @Override
-    MorpheusCloudContext getCloudContext() {
+    MorpheusCloudContext getCloud() {
         return cloudContext
     }
 
     @Override
-    MorpheusNetworkContext getNetworkContext() {
+    MorpheusNetworkContext getNetwork() {
         return networkContext
     }
 
 	@Override
-	MorpheusTaskContext getTaskContext() {
+	MorpheusTaskContext getTask() {
 		return taskContext
 	}
 
 	@Override
-	MorpheusVirtualImageContext getVirtualImageContext() {
+	MorpheusVirtualImageContext getVirtualImage() {
 		return virtualImageContext
 	}
 
 	@Override
-	MorpheusServicePlanContext getServicePlanContext() {
+	MorpheusServicePlanContext getServicePlan() {
 		return servicePlanContext
 	}
 

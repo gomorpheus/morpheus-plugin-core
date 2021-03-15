@@ -24,14 +24,14 @@ public interface MorpheusNetworkContext {
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An instance of the Network Pool Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkPoolContext getPoolContext();
+	MorpheusNetworkPoolContext getPool();
 
 	/**
 	 * Returns the NetworkDomainContext used for performing updates/queries on {@link NetworkDomain} related assets
 	 * within Morpheus. Most useful when implementing DNS related services.
 	 * @return An instance of the Network Domain Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkDomainContext getDomainContext();
+	MorpheusNetworkDomainContext getDomain();
 
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
@@ -41,8 +41,6 @@ public interface MorpheusNetworkContext {
 	 * @return
 	 */
 	Single<Void> updateNetworkPoolServerStatus(NetworkPoolServer poolServer, String status, String message);
-
-
 
 	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServerJoin(NetworkPoolServer poolServer, String joinProperty);
 
@@ -58,12 +56,6 @@ public interface MorpheusNetworkContext {
 
 	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId);
 
-
-	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord);
-
-	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord, Map opts);
-
-
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
 
 	Single<NetworkDomain> getContainerNetworkDomain(Container container);
@@ -75,10 +67,6 @@ public interface MorpheusNetworkContext {
 	Single<String> getContainerExternalFqdn(Container container);
 
 	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress);
-
-	Single<List> getNetworkDomainByDomainAndRecordType(NetworkDomain domain, String recordType);
-
-	Single<Void> removeMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List removeList);
 
 	Single<String> acquireLock(String name, Map opts);
 
@@ -99,7 +87,6 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkPoolRange> save(NetworkPoolRange networkPoolRange);
 
-	Single<NetworkDomainRecord> save(NetworkDomainRecord domainRecord);
 
 	Single<NetworkPoolIp> save(NetworkPoolIp poolIp);
 
@@ -108,12 +95,7 @@ public interface MorpheusNetworkContext {
 	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
 
 
-
-	Single<Void> saveAll(List<NetworkDomainRecord> domainRecords);
-
 	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
 
 	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
-
-	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
 }

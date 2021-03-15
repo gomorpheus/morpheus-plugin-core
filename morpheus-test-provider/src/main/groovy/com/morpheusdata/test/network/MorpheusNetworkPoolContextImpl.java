@@ -1,6 +1,7 @@
 package com.morpheusdata.test.network;
 
 import com.morpheusdata.core.network.MorpheusNetworkPoolContext;
+import com.morpheusdata.core.network.MorpheusNetworkPoolIpContext;
 import com.morpheusdata.model.NetworkPool;
 import com.morpheusdata.model.NetworkPoolServer;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
@@ -12,10 +13,20 @@ import java.util.List;
 
 public class MorpheusNetworkPoolContextImpl implements MorpheusNetworkPoolContext {
 	/**
+	 * Returns the Pool IP Context for dealing with managing IP Allocations regarding Host Records within a {@link NetworkPool}
+	 *
+	 * @return the Pool IP Context to use for performing IPAM operations within Morpheus.
+	 */
+	@Override
+	public MorpheusNetworkPoolIpContext getPoolIp() {
+		return null;
+	}
+
+	/**
 	 * Lists all network pool projection objects for a specified pool server id aka {@link NetworkPoolServer}.
 	 * The projection is a subset of the properties on a full {@link NetworkPool} object for sync matching.
 	 *
-	 * @param poolServerId
+	 * @param poolServerId the pool server Identifier to scope the list of {@link NetworkPool} query
 	 * @return an RxJava Observable stream of projection objects
 	 */
 	@Override
@@ -68,7 +79,7 @@ public class MorpheusNetworkPoolContextImpl implements MorpheusNetworkPoolContex
 	 * Saves a list of {@link NetworkPool} objects. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
 	 *
-	 * @param poolsToSave
+	 * @param poolsToSave a list of {@link NetworkPool} objects to be saved in bulk
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
 	@Override
