@@ -31,7 +31,7 @@ public interface MorpheusContext {
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
 	 * @return An Instance of the Compute Context to be used typically by {@link CloudProvider} implementations.
 	 */
-	MorpheusCloudContext getCloudContext();
+	MorpheusCloudContext getCloud();
 
 
 	/**
@@ -39,28 +39,28 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An Instance of the Network Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkContext getNetworkContext();
+	MorpheusNetworkContext getNetwork();
 
 	/**
 	 * Returns the Task context used for automation tasks on assets within Morpheus.
 	 * Typically this would be called by a {@link TaskProvider}.
 	 * @return An Instance of the Task Context to be used for calls by various task providers
 	 */
-	MorpheusTaskContext getTaskContext();
+	MorpheusTaskContext getTask();
 
 	/**
 	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Virtual Image Context to be used for calls by various providers
 	 */
-	MorpheusVirtualImageContext getVirtualImageContext();
+	MorpheusVirtualImageContext getVirtualImage();
 
 	/**
 	 * Returns the Service Plan context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Service Plan Context to be used for calls by various providers
 	 */
-	MorpheusServicePlanContext getServicePlanContext();
+	MorpheusServicePlanContext getServicePlan();
 
 
 

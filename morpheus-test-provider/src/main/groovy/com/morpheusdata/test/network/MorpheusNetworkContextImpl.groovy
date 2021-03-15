@@ -32,7 +32,7 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	 * @return An Instance of the Network Pool Context to be used for calls by various network providers
 	 */
 	@Override
-	MorpheusNetworkPoolContext getPoolContext() {
+	MorpheusNetworkPoolContext getPool() {
 		return poolContext
 	}
 
@@ -42,7 +42,7 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	 * @return An instance of the Network Domain Context to be used for calls by various network providers
 	 */
 	@Override
-	MorpheusNetworkDomainContext getDomainContext() {
+	MorpheusNetworkDomainContext getDomain() {
 		return null
 	}
 

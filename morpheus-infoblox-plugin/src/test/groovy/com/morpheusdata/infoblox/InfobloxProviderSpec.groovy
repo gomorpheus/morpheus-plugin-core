@@ -25,7 +25,7 @@ class InfobloxProviderSpec extends Specification {
     void setup() {
         context = Mock(MorpheusContextImpl)
         networkContext = Mock(MorpheusNetworkContext)
-        context.getNetworkContext() >> networkContext
+        context.getNetwork() >> networkContext
         plugin = Mock(InfobloxPlugin)
         infobloxAPI = GroovySpy(RestApiUtil, global: true)
 		provider = new InfobloxProvider(plugin, context, infobloxAPI)

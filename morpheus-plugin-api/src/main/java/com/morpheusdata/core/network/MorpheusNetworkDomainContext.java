@@ -2,12 +2,14 @@ package com.morpheusdata.core.network;
 
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.NetworkDomain;
+import com.morpheusdata.model.NetworkDomainRecord;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This Context deals with interactions related to {@link com.morpheusdata.model.NetworkDomain} objects. It can normally
@@ -17,13 +19,20 @@ import java.util.List;
  *
  * <p><strong>Examples:</strong></p>
  * <pre>{@code
- * morpheusContext.getNetworkContext().getDomainContext()
+ * morpheusContext.getNetwork().getDomain()
  * }</pre>
  *
  * @see MorpheusNetworkContext
  * @author David Estes
  */
 public interface MorpheusNetworkDomainContext {
+
+	/**
+	 * Returns the context for interacting with {@link NetworkDomainRecord} objects
+	 * @return the domain record context for DNS Sync and management
+	 */
+	MorpheusNetworkDomainRecordContext getRecord();
+
 	/**
 	 * Lists all network domain projection objects for a specified integration id.
 	 * The projection is a subset of the properties on a full {@link NetworkDomain} object for sync matching.
@@ -68,4 +77,5 @@ public interface MorpheusNetworkDomainContext {
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
 	Single<Boolean> save(List<NetworkDomain> domainsToSave);
+
 }

@@ -34,9 +34,9 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		Plugin plugin = Mock(Plugin)
 		MorpheusContext context = Mock(MorpheusContext)
 		virtualImageContext = Mock(MorpheusVirtualImageContext)
-		context.getVirtualImageContext() >> virtualImageContext
+		context.getVirtualImage() >> virtualImageContext
 		servicePlanContext = Mock(MorpheusServicePlanContext)
-		context.getServicePlanContext() >> servicePlanContext
+		context.getServicePlan() >> servicePlanContext
 		provider = new DigitalOceanCloudProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService

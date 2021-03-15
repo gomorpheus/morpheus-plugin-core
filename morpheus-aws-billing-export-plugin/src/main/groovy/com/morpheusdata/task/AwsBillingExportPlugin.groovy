@@ -34,6 +34,6 @@ class AwsBillingExportPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.taskContext.disableTask('awsBillingExportTask')
+		morpheusContext.task.disableTask('awsBillingExportTask')
 	}
 }
