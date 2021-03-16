@@ -48,7 +48,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 	@Override
 	Single<ServiceResponse> validateWorkload(Map opts = [:]) {
 		log.debug("validateContainer: ${opts.config}")
-		ServiceResponse rtn = new ServiceResponse([success:true, errors:[:]])
+		ServiceResponse rtn = new ServiceResponse(true, null, [:], null)
 		return Single.just(rtn)
 	}
 
@@ -195,6 +195,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 	// TODO Ported but incomplete implementation.
 	Single<ServiceResponse> runBareMetal(Map runConfig, Map opts) {
+		ComputeServer server
+		Container container
 		def rtn = new ServiceResponse<Map>()
 		try {
 			//async
@@ -370,15 +372,24 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			morpheusContext.cloud.save(server).blockingGet()
 			rtn.success = true
 			rtn.removeServer = false
+			//wait for it to be ready again
+			def waitResults = MaasComputeUtility.waitForMachineRelease(authConfig, server.externalId, releaseOpts)
+			log.info("wait for release results: {}", waitResults)
+			rtn.success = waitResults.success == 'SUCCESS'
+			if(!rtn.success) {
+				rtn.msg = 'Failed waiting for server release'
+			}
+			rtn.removeServer = false
 		} else {
 			rtn.msg = 'Failed to release server'
 		}
-		//wait for it to be ready again
-		def waitResults = MaasComputeUtility.waitForMachineRelease(authConfig, server.externalId, releaseOpts)
-		log.info("wait for release results: {}", waitResults)
-		rtn.success = waitResults.success == 'SUCCESS'
-		rtn.removeServer = false
 		Single.just(rtn)
+	}
+
+	@Override
+	Single<ComputeServer> cleanServer(ComputeServer server) {
+		// nothing right now
+		Single.just(server)
 	}
 
 	@Override

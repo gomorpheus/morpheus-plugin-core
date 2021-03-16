@@ -1,7 +1,21 @@
 package com.morpheusdata.test.network
 
 import com.morpheusdata.core.network.MorpheusNetworkContext
+import com.morpheusdata.core.network.MorpheusNetworkDomainContext
+import com.morpheusdata.core.network.MorpheusNetworkPoolContext
+import com.morpheusdata.core.network.MorpheusNetworkPoolIpContext
+import com.morpheusdata.core.network.MorpheusNetworkPoolRangeContext
+import com.morpheusdata.model.AccountIntegration
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.Container
+import com.morpheusdata.model.NetworkDomain
+import com.morpheusdata.model.NetworkDomainRecord
+import com.morpheusdata.model.NetworkPool
+import com.morpheusdata.model.NetworkPoolIp
+import com.morpheusdata.model.NetworkPoolRange
+import com.morpheusdata.model.NetworkPoolServer
 import groovy.transform.AutoImplement
+import io.reactivex.Single
 
 @AutoImplement
 class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
@@ -31,18 +45,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	 */
 	@Override
 	MorpheusNetworkDomainContext getDomain() {
-		return null
-	}
-
-	/**
-	 * Used for updating the status of a {@link NetworkPoolServer} integration.
-	 * @param poolServer
-	 * @param status
-	 * @param message
-	 * @return
-	 */
-	@Override
-	Single<Void> updateNetworkPoolServerStatus(NetworkPoolServer poolServer, String status, String message) {
 		return null
 	}
 
