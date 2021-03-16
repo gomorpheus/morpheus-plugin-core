@@ -4,6 +4,7 @@ import com.morpheusdata.core.DNSProvider;
 import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 import java.util.List;
@@ -39,13 +40,21 @@ public interface MorpheusNetworkContext {
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
 	 * @param poolServer the pool integration with which we want to update the status.
-	 * @param status the status string of the pool server (ok,syncing,error)
+	 * @param status the status of the pool server (ok,syncing,error)
 	 * @param message the status message for more details. typically only used when status is 'error'.
-	 * TODO: Perhaps change status to an enum.
+	 *
+	 * @return a Completable for notification or subscription
+	 */
+	Completable updateNetworkPoolServerStatus(NetworkPoolServer poolServer, AccountIntegration.Status status, String message);
+
+	/**
+	 * Used for updating the status of a {@link NetworkPoolServer} integration.
+	 * @param poolServer the pool integration with which we want to update the status.
+	 * @param status the status string of the pool server (ok,syncing,error)
 	 *
 	 * @return the on complete state
 	 */
-	Single<Void> updateNetworkPoolServerStatus(NetworkPoolServer poolServer, String status, String message);
+	Completable updateNetworkPoolServerStatus(NetworkPoolServer poolServer, AccountIntegration.Status status);
 
 
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);

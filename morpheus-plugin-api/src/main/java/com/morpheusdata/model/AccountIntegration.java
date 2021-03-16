@@ -26,7 +26,13 @@ public class AccountIntegration extends MorpheusModel {
 	public Boolean serviceFlag;
 	public String servicePrivateKey;
 	public String servicePublicKey;
-
 	public String authPrivateKey;
 	public String authPublicKey;
+
+	public enum Status {
+		ok,
+		warning,
+		syncing,
+		error
+	}
 }
