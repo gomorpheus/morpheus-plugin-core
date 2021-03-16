@@ -164,21 +164,24 @@ public class SyncTask<Projection, ApiItem, Model> {
 		return new UpdateItemDto<Projection, ApiItem>();
 	}
 
-	private Collection<ApiItem> addMissing(Collection<ApiItem> addItems) {
+	private void addMissing(Collection<ApiItem> addItems) {
 		ArrayList<ApiItem> chunkedAddItems = new ArrayList<>();
-		ArrayList<ApiItem> remainingItems = new ArrayList<>();
 		int bufferCounter=0;
-
 		for(ApiItem addItem : addItems) {
 			if(bufferCounter < bufferSize) {
 				chunkedAddItems.add(addItem);
 				bufferCounter++;
 			} else {
-				remainingItems.add(addItem);
+				onAddFunction.method(chunkedAddItems);
+				chunkedAddItems = new ArrayList<>();
+				chunkedAddItems.add(addItem);
+				bufferCounter = 1;
 			}
 		}
-		onAddFunction.method(chunkedAddItems);
-		return remainingItems;
+
+		if(chunkedAddItems.size() > 0) {
+			onAddFunction.method(chunkedAddItems);
+		}
 	}
 
 	public void start() {

@@ -455,18 +455,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 				if(!testResults.success) {
 					//NOTE invalidLogin was only ever set to false.
-					morpheusContext.network.updateNetworkPoolServerStatus(poolServer, 'error', 'error calling infoblox').blockingGet()
+					morpheusContext.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.error, 'error calling infoblox').blockingGet()
 				} else {
 					def addOnMap = [ibapauth: testResults.getCookie('ibapauth')]
 					if (testResults.data.httpClient instanceof HttpClient) {
 						addOnMap.httpClient = testResults.data.httpClient
 						addOnMap.reuse = true
 					}
-					morpheusContext.network.updateNetworkPoolServerStatus(poolServer, 'syncing', null).blockingGet()
+					morpheusContext.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.syncing).blockingGet()
 					testResults.data.addOnMap = addOnMap
 				}
 			} else {
-				morpheusContext.network.updateNetworkPoolServerStatus(poolServer, 'error', 'infoblox api not reachable')
+				morpheusContext.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.error, 'infoblox api not reachable')
 				return ServiceResponse.error("infoblox api not reachable")
 			}
 
@@ -485,7 +485,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				if(addOnMap?.reuse) {
 					infobloxAPI.shutdownClient(addOnMap)
 				}
-				morpheusContext.network.updateNetworkPoolServerStatus(poolServer, 'ok', null).blockingGet()
+				morpheusContext.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.ok).subscribe().dispose()
 			}
 			return testResults
 		} catch(e) {
