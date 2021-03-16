@@ -117,9 +117,9 @@ public interface MorpheusNetworkContext {
 	 * Saves a {@link Network} object. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
 	 * @param networkToSave a Network Object that need to be updated in the database.
-	 * @return the Single Observable stating the success state of the save attempt
+	 * @return the Single Observable stating the resultant Network Object
 	 */
-	Single<Boolean> save(Network networkToSave);
+	Single<Network> save(Network networkToSave);
 
 	//General Network Methods
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
@@ -152,6 +152,15 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
 
-
 	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
+
+	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
+
+	Single<Boolean> serverAddToInterfaces(ComputeServer server, ComputeServerInterface serverInterface);
+
+	Single<Boolean> removeServerInterface(Network network, ComputeServer server, Boolean flush);
+
+	Single<Network> findNetworkTypeByCode(String type);
+
+	Single<NetworkDomain> getNetworkDomainById(Long id);
 }

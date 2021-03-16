@@ -1,21 +1,42 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
+
+import java.util.List;
+
 /**
  * Representation of a Morpheus ComputeServer database object within the Morpheus platform. Not all data is provided
  * in this implementation that is available in the morpheus core platform for security purposes and internal use.
  *
  * @author David Estes
  */
-public class ComputeServer  extends MorpheusModel {
+public class ComputeServer extends ComputeServerIdentityProjection {
 
+	public Account account;
 	public String uuid;
-	public String name;
 	public String displayName;
-	public String externalId;
 	public String uniqueId;
 	public Cloud cloud;
 	public NetworkDomain networkDomain;
+	public ServicePlan plan;
+	public String internalName;
+	public String status = "provisioning";
 	public String hostname;
+	public Long provisionSiteId;
+	public OsType serverOs;
+	public VirtualImage sourceImage;
+	public String osType = "linux"; //linux, windows, unmanaged
+	public String platform;
+	public ComputeZonePool resourcePool;
+	public String serverType;
+	public String consoleHost;
+	public String powerState;
+	public Long maxStorage;
+	public Long maxMemory;
+	public Long maxCores;
+	public Boolean managed;
+	public ComputeServerType computeServerType;
+	public Double hourlyPrice = 0D;
 	public String internalIp;
 	public String externalIp;
 	public String sshHost;
@@ -29,15 +50,6 @@ public class ComputeServer  extends MorpheusModel {
 		markDirty("uuid",uuid);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name",name);
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -45,15 +57,6 @@ public class ComputeServer  extends MorpheusModel {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 		markDirty("displayName",displayName);
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId",externalId);
 	}
 
 	public String getUniqueId() {
@@ -77,4 +80,6 @@ public class ComputeServer  extends MorpheusModel {
 		this.cloud.id = id;
 		markDirty("cloud", cloud);
 	}
+
+	public List<ComputeServerInterface> interfaces;
 }

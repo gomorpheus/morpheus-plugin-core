@@ -36,7 +36,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 38
+		props.size() == 45
 		and: "private properties are unavailable"
 		props['description'] == null
 	}

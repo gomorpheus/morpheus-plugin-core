@@ -12,13 +12,16 @@ import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import com.sun.corba.se.spi.orbutil.threadpool.Work
 import groovy.json.JsonOutput
+import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
+import io.reactivex.Single
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
 @Slf4j
+@AutoImplement // Temp while we work out contexts
 class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
@@ -62,7 +65,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse validateWorkload(Map opts) {
+	Single<ServiceResponse> validateWorkload(Map opts) {
 		return null
 	}
 

@@ -19,8 +19,10 @@ import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.projection.NetworkIdentityProjection
 import io.reactivex.Completable
 import io.reactivex.Observable
+import groovy.transform.AutoImplement
 import io.reactivex.Single
 
+@AutoImplement
 class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	protected MorpheusNetworkPoolContext poolContext;

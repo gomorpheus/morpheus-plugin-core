@@ -54,8 +54,8 @@ public class SyncTask<Projection, ApiItem, Model> {
 	private final ConnectableObservable<Projection> domainRecords;
 	private Integer bufferSize = 50;
 	private final Collection<ApiItem> apiItems;
-	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Projection, Model>> onLoadObjectDetailsFunction;
-	private OnUpdateFunction<UpdateItem<Projection, Model>> onUpdateFunction;
+	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction;
+	private OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
 
 	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
@@ -78,14 +78,14 @@ public class SyncTask<Projection, ApiItem, Model> {
 		return this;
 	}
 
-	public SyncTask<Projection, ApiItem, Model> onUpdate(OnUpdateFunction<UpdateItem<Projection, Model>> onUpdateFunction) {
+	public SyncTask<Projection, ApiItem, Model> onUpdate(OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction) {
 		this.onUpdateFunction = onUpdateFunction;
 		return this;
 	}
 
 
 
-	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Projection, Model>> onLoadObjectDetailsFunction) {
+	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction) {
 		this.onLoadObjectDetailsFunction = onLoadObjectDetailsFunction;
 		return this;
 	}

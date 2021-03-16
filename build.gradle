@@ -59,7 +59,7 @@ if (isReleaseVersion) {
 }
 
 subprojects { project ->
-    if(project.name != 'morpheus-plugin-docs' && project.name != 'morpheus-plugin-site' && project.name != 'samples') {
+    if(project.name != 'morpheus-plugin-docs' && project.name != 'morpheus-plugin-site' && project.name != 'samples' && project.name != 'vendor') {
         apply plugin: 'java'
         apply plugin: 'maven-publish'
         apply plugin: 'signing'
