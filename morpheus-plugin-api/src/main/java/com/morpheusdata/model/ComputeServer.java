@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
+
 import java.util.List;
 
 /**
@@ -8,13 +10,11 @@ import java.util.List;
  *
  * @author David Estes
  */
-public class ComputeServer  extends MorpheusModel {
+public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public Account account;
 	public String uuid;
-	public String name;
 	public String displayName;
-	public String externalId;
 	public String uniqueId;
 	public Cloud cloud;
 	public NetworkDomain networkDomain;
@@ -50,15 +50,6 @@ public class ComputeServer  extends MorpheusModel {
 		markDirty("uuid",uuid);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name",name);
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -66,15 +57,6 @@ public class ComputeServer  extends MorpheusModel {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 		markDirty("displayName",displayName);
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId",externalId);
 	}
 
 	public String getUniqueId() {

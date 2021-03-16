@@ -80,7 +80,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			log.info("allocateResults: {}", allocateResults)
 			if(allocateResults.success == true) {
 				log.info("Looking for server based on allocation results where externId == ${allocateResults.data.system_id}")
-				def server = morpheusContext.cloud.findComputeServerByExternalId(allocateResults.data.system_id).blockingGet()
+				def server
+				morpheusContext.computeServer.listById([allocateResults.data.system_id]).subscribe{server = it}
 				if(!server) {
 					log.info("Syncing server allocated in MaaS but not found in Morpheus")
 					def addedMachine = MaasComputeUtility.loadMachine(authConfig, allocateResults.data.system_id, [:])
@@ -107,7 +108,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 				server.sourceImage = containerImage
 				server.osType = containerOs?.platform
 				server.platform = containerOs?.osName
-				morpheusContext.cloud.save(server, true).blockingGet()
+				morpheusContext.computeServer.save([server]).blockingGet()
 				//return it
 				rtn << server
 			} else {
@@ -235,7 +236,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		try {
 			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionConfig',
 					[status:'configuring', username:opts.processUser], null, [status:'configuring'])
-			def server = morpheusContext.cloud.getComputeServerById(runConfig.server.id).blockingGet()
+			def server
+			morpheusContext.computeServer.listById([runConfig.server.id]).subscribe{server = it}
 			def container = morpheusContext.cloud.getContainerById(runConfig.container.id).blockingGet()
 			def serverUpdates = [sshUsername:runConfig.sshUsername, sshPassword:runConfig.sshPassword, hostname:runConfig.hostName]
 			//refresh the virtual image
@@ -331,7 +333,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 				def authConfig = getAuthConfig(computeServer.cloud)
 				def powerConfig = [:]
 
-				morpheusContext.cloud.updateUserStatus(computeServer, Container.Status.stopped)
+//				morpheusContext.cloud.updateUserStatus(computeServer, Container.Status.stopped)
 
 				def stopResults = MaasComputeUtility.powerOffMachine(authConfig, computeServer.externalId, powerConfig)
 				if(stopResults.success == true) {
@@ -341,7 +343,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 					morpheusContext.cloud.updatePowerState(computeServer.id, 'off').blockingGet()
 
 					if(computeServer.computeServerType?.guestVm) {
-						morpheusContext.cloud.updateAllStatus(computeServer, Container.Status.stopped, Container.Status.stopped).blockingGet()
+						// update container statuses
+//						morpheusContext.cloud.updateAllStatus(computeServer, Container.Status.stopped, Container.Status.stopped).blockingGet()
 						stopServerUsage(computeServer, false)
 						def instanceIds = morpheusContext.cloud.getStoppedContainerInstanceIds(computeServer.id).blockingGet()
 						if(instanceIds) {
@@ -369,7 +372,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		if(releaseResults.success == true) {
 			server.status = 'removing'
 			cleanServer(server)
-			morpheusContext.cloud.save(server).blockingGet()
+			morpheusContext.computeServer.save([server]).blockingGet()
 			rtn.success = true
 			rtn.removeServer = false
 			//wait for it to be ready again

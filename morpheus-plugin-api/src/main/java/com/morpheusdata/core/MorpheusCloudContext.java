@@ -28,16 +28,9 @@ public interface MorpheusCloudContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<ComputeServer> getComputeServerById(Long id);
-
 	Single<Container> getContainerById(Long id);
 
-	Single<ComputeServer> save(ComputeServer computeServer);
-	Single<ComputeServer> save(ComputeServer computeServer, Boolean flush);
-
 	Single<Cloud> getCloudById(Long id);
-
-	Single<ComputeServer> findComputeServerByExternalId(String externalId);
 
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
 
@@ -56,13 +49,8 @@ public interface MorpheusCloudContext {
 	Single<ComputeZonePool> save(ComputeZonePool pool, Cloud cloud, String category);
 //	Single<Void> cacheResourcePools(List<ComputeZonePool> pools, Cloud cloud, String category);
 	Single<List<ComputeZonePool>> readResourcePools(Cloud cloud, String category);
-//	Single<Void> cacheMachines(List<ComputeServer> servers, Cloud cloud, String category);
-
-	Single<Void> updateUserStatus(ComputeServer computeServer, Container.Status status);
 
 	Single<Void> updatePowerState(Long id, String state);
-
-	Single<Void> updateAllStatus(ComputeServer server, Container.Status userStatus, Container.Status status);
 
 	Single<Void> updateInstanceStatus(List<Long> ids, Instance.Status status);
 
