@@ -128,14 +128,10 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkPoolServer> getPoolServerById(Long id);
 
-	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId);
-
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
 
 	Single<NetworkDomain> getContainerNetworkDomain(Container container);
-
-	Single<String> getComputeServerExternalFqdn(ComputeServer computeServer);
-
+	
 	Single<String> getContainerExternalIp(Container container);
 
 	Single<String> getContainerExternalFqdn(Container container);
@@ -151,16 +147,6 @@ public interface MorpheusNetworkContext {
 	Single<Void> deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
 
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
-
-	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
-
-	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds);
-
-	Single<Boolean> serverAddToInterfaces(ComputeServer server, ComputeServerInterface serverInterface);
-
-	Single<Boolean> removeServerInterface(Network network, ComputeServer server, Boolean flush);
-
-	Single<Network> findNetworkTypeByCode(String type);
 
 	Single<NetworkDomain> getNetworkDomainById(Long id);
 }
