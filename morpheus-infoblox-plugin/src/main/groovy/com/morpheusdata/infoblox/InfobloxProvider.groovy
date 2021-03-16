@@ -808,16 +808,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					save = true
 				}
 				if(!existingItem.ipRanges) {
-					def ranges = []
 					log.warn("no ip ranges found!")
 					def networkInfo = MorpheusUtils.getNetworkPoolConfig(networkIp)
 					networkInfo?.ranges?.each { range ->
 						log.info("range: ${range}")
 						def rangeConfig = [networkPool:existingItem, startAddress:range.startAddress, endAddress:range.endAddress, addressCount:networkInfo.config.ipCount]
 						def addRange = new NetworkPoolRange(rangeConfig)
-						ranges.add(addRange)
+						existingItem.addToIpRanges(addRange)
 					}
-					morpheusContext.network.save(existingItem, ranges).subscribe()
 					save = true
 				}
 				if(save) {

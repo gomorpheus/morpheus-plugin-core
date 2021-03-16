@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -422,17 +423,28 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 
 	public List<NetworkPoolRange> ipRanges;
 
+	public void addToIpRanges(NetworkPoolRange range) {
+		if(ipRanges == null) {
+			ipRanges = new ArrayList<>();
+		}
+		ipRanges.add(range);
+		markDirty("ipRanges",ipRanges);
+	}
+
 	public void setPoolServerId(Long id) {
 		this.poolServer = new NetworkPoolServer();
 		this.poolServer.id = id;
+		markDirty("poolServer",this.poolServer);
 	}
 	public void setAccountId(Long id) {
 		this.account = new Account();
 		this.account.id = id;
+		markDirty("account",this.account);
 	}
 
 	public void setOwnerId(Long id) {
 		this.owner = new Account();
 		this.owner.id = id;
+		markDirty("ownerId",id);
 	}
 }
