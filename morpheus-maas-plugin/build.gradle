@@ -16,7 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
 
-group = 'com.morpheus.maas'
+group = 'com.morpheusdata'
 version = '1.0.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
@@ -66,7 +66,7 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-				'Plugin-Class': 'com.morpheus.plugin.MaasPlugin',
+				'Plugin-Class': 'com.morpheusdata.maas.plugin.MaasPlugin',
 				'Plugin-Version': version
 		)
 	}
