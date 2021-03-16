@@ -28,8 +28,6 @@ public interface MorpheusCloudContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Void> cachePlans(List<ServicePlan> servicePlans);
-
 	Single<ComputeServer> getComputeServerById(Long id);
 
 	Single<Container> getContainerById(Long id);
@@ -37,18 +35,9 @@ public interface MorpheusCloudContext {
 	Single<ComputeServer> save(ComputeServer computeServer);
 	Single<ComputeServer> save(ComputeServer computeServer, Boolean flush);
 
-	Single<Void> cacheImages(List<VirtualImage> virtualImages, Cloud cloud);
-
 	Single<Cloud> getCloudById(Long id);
 
 	Single<ComputeServer> findComputeServerByExternalId(String externalId);
-
-	Single<VirtualImage> getVirtualImageById(Long id);
-	Single<VirtualImage> findVirtualImageByExternalId(String externalId);
-	Single<VirtualImage> save(VirtualImage virtualImage);
-	Single<ServicePlan> save(ServicePlan servicePlan);
-	Single<ServicePlan> findServicePlanByExternalId(String externalId);
-
 
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
 

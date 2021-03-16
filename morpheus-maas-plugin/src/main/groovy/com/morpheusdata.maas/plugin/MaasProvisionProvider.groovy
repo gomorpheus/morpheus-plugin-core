@@ -240,7 +240,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			def serverUpdates = [sshUsername:runConfig.sshUsername, sshPassword:runConfig.sshPassword, hostname:runConfig.hostName]
 			//refresh the virtual image
 			if(runConfig.virtualImage)
-				runConfig.virtualImage = morpheusContext.cloud.getVirtualImageById(runConfig.virtualImage?.id).blockingGet()
+				 morpheusContext.virtualImage.listById([runConfig.virtualImage?.id]).subscribe {runConfig.virtualImage = it}
 			setAgentInstallConfig(opts, runConfig.virtualImage)
 			//set the domain
 			if(runConfig.domainId)
