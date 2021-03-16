@@ -1,6 +1,7 @@
 package com.morpheusdata.maas.plugin
 
 import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Cloud
@@ -20,14 +21,17 @@ class MaasProvisionProviderSpec extends Specification {
 	MorpheusContext context
 	MorpheusNetworkContext networkContext
 	MorpheusCloudContext cloudContext
+	MorpheusComputeServerContext computeServerContext
 	MaasPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		networkContext = Mock(MorpheusNetworkContext)
 		cloudContext = Mock(MorpheusCloudContext)
+		computeServerContext = Mock(MorpheusComputeServerContext)
 		context.getNetwork() >> networkContext
 		context.getCloud() >> cloudContext
+		context.getComputeServer() >> computeServerContext
 		plugin = Mock(MaasPlugin)
 
 		service = new MaasProvisionProvider(plugin, context)
@@ -94,7 +98,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.success
 		1 * MaasComputeUtility.releaseMachine(_, _, [erase: true, quick_erase: true]) >> [success: true]
 		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'SUCCESS']
-		1 * cloudContext.save(_) >> Single.just(server)
+		1 * computeServerContext.save(_) >> Single.just(true)
 	}
 
 	void "releaseMachine - release"() {
@@ -113,7 +117,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.success
 		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: true]
 		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'SUCCESS']
-		1 * cloudContext.save(_) >> Single.just(server)
+		1 * computeServerContext.save(_) >> Single.just(true)
 	}
 
 	void "releaseMachine - release fail"() {
@@ -133,7 +137,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.msg == 'Failed to release server'
 		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: false]
 		0 * MaasComputeUtility.waitForMachineRelease(_, _, _)
-		0 * cloudContext.save(_) >> Single.just(server)
+		0 * computeServerContext.save(_)
 	}
 
 	void "releaseMachine - release wait failure"() {
@@ -153,7 +157,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.msg == 'Failed waiting for server release'
 		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: true]
 		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'FAIL']
-		1 * cloudContext.save(_) >> Single.just(server)
+		1 * computeServerContext.save(_) >> Single.just(true)
 	}
 
 	void "stopServer"() {
@@ -169,7 +173,6 @@ class MaasProvisionProviderSpec extends Specification {
 
 		then:
 		resp.success
-		1 * cloudContext.updateUserStatus(_, Container.Status.stopped)
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		1 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
 		1 * cloudContext.updatePowerState(333, 'off')
@@ -188,7 +191,6 @@ class MaasProvisionProviderSpec extends Specification {
 
 		then:
 		!resp.success
-		0 * cloudContext.updateUserStatus(_, Container.Status.stopped)
 		0 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
 		0 * cloudContext.updatePowerState(333, 'off')
@@ -207,7 +209,6 @@ class MaasProvisionProviderSpec extends Specification {
 
 		then:
 		!resp.success
-		1 * cloudContext.updateUserStatus(_, Container.Status.stopped)
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: false]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _)
 		0 * cloudContext.updatePowerState(333, 'off')

@@ -62,6 +62,13 @@ public interface MorpheusContext {
 	 */
 	MorpheusServicePlanContext getServicePlan();
 
+	/**
+	 * Returns the Service Plan context used for syncing machines within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Compute Server Context to be used for calls by various providers
+	 */
+	MorpheusComputeServerContext getComputeServer();
+
 
 
 	//Common methods used across various contexts
