@@ -4,9 +4,13 @@ import com.morpheusdata.core.DNSProvider;
 import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
+import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +61,32 @@ public interface MorpheusNetworkContext {
 	Completable updateNetworkPoolServerStatus(NetworkPoolServer poolServer, AccountIntegration.Status status);
 
 
+	//Network ORM Object Methods
+	/**
+	 * Lists all network projection objects for a specified integration id.
+	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
+	 * @param accountIntegration the {@link AccountIntegration} identifier associated to the networks to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkIdentityProjection> listIdentityProjections(AccountIntegration accountIntegration);
+
+	/**
+	 * Lists all network projection objects for a specified cloud.
+	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
+	 * @param cloud the {@link Cloud} identifier associated to the domains to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkIdentityProjection> listIdentityProjections(Cloud cloud);
+
+	/**
+	 * Lists all {@link Network} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link Network} objects from.
+	 * @return an RxJava Observable stream of {@link Network} to be subscribed to.
+	 */
+	Observable<NetworkIdentityProjection> listById(Collection<Long> ids);
+
+
+	//General Network Methods
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
 
 	Single<NetworkPoolServer> getPoolServerByAccountIntegration(AccountIntegration integration);
@@ -95,11 +125,6 @@ public interface MorpheusNetworkContext {
 	Single<NetworkPoolRange> save(NetworkPoolRange networkPoolRange);
 
 
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp);
-
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool);
-
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts);
 
 
 	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges);

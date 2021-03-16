@@ -18,25 +18,25 @@ public class ComputeServerType  extends MorpheusModel {
 	protected Boolean containerHypervisor = false; //runs docker
 	protected Boolean bareMetalHost = false; //bare metal
 	protected Boolean guestVm = false; //is a vm
-	private Boolean managed = true;
-	private Boolean controlPower = true;
-	private Boolean controlSuspend = false;
-	private Boolean enabled = true;
-	private Boolean selectable = false;
-	private Boolean creatable = false;
-	private Boolean reconfigureSupported=true;
-	private Boolean externalDelete = true;
-	private Boolean hasAutomation = true;
-	private Boolean supportsConsoleKeymap = false;
-	private Integer displayOrder;
-	private String managedServerType;
+	protected Boolean managed = true;
+	protected Boolean controlPower = true;
+	protected Boolean controlSuspend = false;
+	protected Boolean enabled = true;
+	protected Boolean selectable = false;
+	protected Boolean creatable = false;
+	protected Boolean reconfigureSupported=true;
+	protected Boolean externalDelete = true;
+	protected Boolean hasAutomation = true;
+	protected Boolean supportsConsoleKeymap = false;
+	protected Integer displayOrder;
+	protected String managedServerType;
 
-	private AgentType agentType = AgentType.guest;
-	private String computeTypeCode; //dynamic option set there are some common ones though
+	protected AgentType agentType = AgentType.guest;
+	protected String computeTypeCode; //dynamic option set there are some common ones though
 
-	private ClusterType clusterType = ClusterType.none;
+	protected ClusterType clusterType = ClusterType.none;
 
-	private Collection<OptionType> optionTypes;
+	protected Collection<OptionType> optionTypes;
 
 	protected PlatformType platform;
 

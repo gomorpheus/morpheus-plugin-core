@@ -6,6 +6,7 @@ import com.morpheusdata.core.network.MorpheusNetworkPoolContext
 import com.morpheusdata.core.network.MorpheusNetworkPoolIpContext
 import com.morpheusdata.core.network.MorpheusNetworkPoolRangeContext
 import com.morpheusdata.model.AccountIntegration
+import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.NetworkDomain
@@ -14,6 +15,9 @@ import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
+import com.morpheusdata.model.projection.NetworkIdentityProjection
+import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
@@ -47,6 +51,62 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	/**
+	 * Used for updating the status of a {@link NetworkPoolServer} integration.
+	 * @param poolServer the pool integration with which we want to update the status.
+	 * @param status the status of the pool server (ok,syncing,error)
+	 * @param message the status message for more details. typically only used when status is 'error'.
+	 *
+	 * @return a Completable for notification or subscription
+	 */
+	@Override
+	Completable updateNetworkPoolServerStatus(NetworkPoolServer poolServer, AccountIntegration.Status status, String message) {
+		return null
+	}
+
+	/**
+	 * Used for updating the status of a {@link NetworkPoolServer} integration.
+	 * @param poolServer the pool integration with which we want to update the status.
+	 * @param status the status string of the pool server (ok,syncing,error)
+	 *
+	 * @return the on complete state
+	 */
+	@Override
+	Completable updateNetworkPoolServerStatus(NetworkPoolServer poolServer, AccountIntegration.Status status) {
+		return null
+	}
+
+	/**
+	 * Lists all network projection objects for a specified integration id.
+	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
+	 * @param accountIntegration the {@link AccountIntegration} identifier associated to the networks to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	@Override
+	Observable<NetworkIdentityProjection> listIdentityProjections(AccountIntegration accountIntegration) {
+		return null
+	}
+
+	/**
+	 * Lists all network projection objects for a specified cloud.
+	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
+	 * @param cloud the {@link Cloud} identifier associated to the domains to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	@Override
+	Observable<NetworkIdentityProjection> listIdentityProjections(Cloud cloud) {
+		return null
+	}
+
+	/**
+	 * Lists all {@link Network} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link Network} objects from.
+	 * @return an RxJava Observable stream of {@link Network} to be subscribed to.
+	 */
+	@Override
+	Observable<NetworkIdentityProjection> listById(Collection<Long> ids) {
+		return null
+	}
+/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
 	 * @param poolServer
 	 * @param status
