@@ -36,7 +36,7 @@ public interface MorpheusNetworkDomainContext {
 	/**
 	 * Lists all network domain projection objects for a specified integration id.
 	 * The projection is a subset of the properties on a full {@link NetworkDomain} object for sync matching.
-	 * @param accountIntegrationId
+	 * @param accountIntegrationId the {@link AccountIntegration} identifier associated to the domains to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<NetworkDomainIdentityProjection> listIdentityProjections(Long accountIntegrationId);
@@ -77,5 +77,13 @@ public interface MorpheusNetworkDomainContext {
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
 	Single<Boolean> save(List<NetworkDomain> domainsToSave);
+
+	/**
+	 * Saves a {@link NetworkDomain} object. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param domainToSave a Domain Object that need to be updated in the database.
+	 * @return the Single Observable stating the success state of the save attempt
+	 */
+	Single<Boolean> save(NetworkDomain domainToSave);
 
 }

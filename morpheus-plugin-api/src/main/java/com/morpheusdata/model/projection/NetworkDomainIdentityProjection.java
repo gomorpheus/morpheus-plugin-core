@@ -39,7 +39,7 @@ public class NetworkDomainIdentityProjection extends MorpheusModel {
 
 	/**
 	 * Sets the externalId of the network domain. In this class this should not be called directly
-	 * @param externalId
+	 * @param externalId the external API Id of the Zone
 	 */
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;

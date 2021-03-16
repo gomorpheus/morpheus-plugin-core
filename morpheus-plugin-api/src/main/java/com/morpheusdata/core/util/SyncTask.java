@@ -8,6 +8,7 @@ import io.reactivex.observables.ConnectableObservable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -163,6 +164,22 @@ public class SyncTask<Projection, ApiItem, Model> {
 		return new UpdateItemDto<Projection, ApiItem>();
 	}
 
+	private Collection<ApiItem> addMissing(Collection<ApiItem> addItems) {
+		ArrayList<ApiItem> chunkedAddItems = new ArrayList<>();
+		ArrayList<ApiItem> remainingItems = new ArrayList<>();
+		int bufferCounter=0;
+
+		for(ApiItem addItem : addItems) {
+			if(bufferCounter < bufferSize) {
+				chunkedAddItems.add(addItem);
+				bufferCounter++;
+			} else {
+				remainingItems.add(addItem);
+			}
+		}
+		onAddFunction.method(chunkedAddItems);
+		return remainingItems;
+	}
 
 	public void start() {
 		//do all the subscribe crapola;
@@ -176,7 +193,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 		domainRecords.filter(this::matchesExisting).map(this::buildUpdateItemDto).buffer(bufferSize).flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
 			return onLoadObjectDetailsFunction.method(mapItems).buffer(50);
 		}).doOnComplete( ()-> {
-			onAddFunction.method(apiItems);
+			addMissing(apiItems);
 		}).doOnError( (Throwable t) -> {
 			//log.error;
 		}).subscribe( (updateItems) -> {

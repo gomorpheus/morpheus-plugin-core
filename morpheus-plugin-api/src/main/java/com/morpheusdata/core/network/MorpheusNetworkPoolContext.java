@@ -30,7 +30,7 @@ public interface MorpheusNetworkPoolContext {
 	/**
 	 * Lists all network pool projection objects for a specified pool server id aka {@link NetworkPoolServer}.
 	 * The projection is a subset of the properties on a full {@link NetworkPool} object for sync matching.
-	 * @param poolServerId
+	 * @param poolServerId the {@link NetworkPoolServer} Identifier associated with the pools to be listed.
 	 * @return an RxJava Observable stream of projection objects
 	 */
 	Observable<NetworkPoolIdentityProjection> listIdentityProjections(Long poolServerId);
@@ -67,7 +67,7 @@ public interface MorpheusNetworkPoolContext {
 	/**
 	 * Saves a list of {@link NetworkPool} objects. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
-	 * @param poolsToSave
+	 * @param poolsToSave a list oof {@link NetworkPool} objects to be updated in bulk
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
 	Single<Boolean> save(List<NetworkPool> poolsToSave);

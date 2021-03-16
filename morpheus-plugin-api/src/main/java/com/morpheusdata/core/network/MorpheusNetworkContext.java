@@ -14,6 +14,9 @@ import java.util.Map;
  * network domains, and other network related objects. It also contains methods for applying updates ore creating new objects related to
  * networks. Typically this class is accessed via the primary {@link MorpheusContext}.
  *
+ * @see MorpheusNetworkPoolContext
+ * @see MorpheusNetworkDomainContext
+ *
  * @author David Estes, Eric Helgeson
  */
 public interface MorpheusNetworkContext {
@@ -35,18 +38,15 @@ public interface MorpheusNetworkContext {
 
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
-	 * @param poolServer
-	 * @param status
-	 * @param message
-	 * @return
+	 * @param poolServer the pool integration with which we want to update the status.
+	 * @param status the status string of the pool server (ok,syncing,error)
+	 * @param message the status message for more details. typically only used when status is 'error'.
+	 * TODO: Perhaps change status to an enum.
+	 *
+	 * @return the on complete state
 	 */
 	Single<Void> updateNetworkPoolServerStatus(NetworkPoolServer poolServer, String status, String message);
 
-	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServerJoin(NetworkPoolServer poolServer, String joinProperty);
-
-	Single<List> getModelProperties(NetworkPool pool, List<String> joinProperties);
-
-	Single<Void> removeMissingIps(NetworkPool pool, List removeList);
 
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
 
@@ -71,8 +71,6 @@ public interface MorpheusNetworkContext {
 	Single<String> acquireLock(String name, Map opts);
 
 	Single<Boolean> releaseLock(String name, Map opts);
-
-	Single<List<NetworkPoolIp>> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses);
 
 	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
 

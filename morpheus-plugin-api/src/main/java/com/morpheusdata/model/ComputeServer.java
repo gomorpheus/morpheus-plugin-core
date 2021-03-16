@@ -15,6 +15,10 @@ public class ComputeServer  extends MorpheusModel {
 	public String uniqueId;
 	public Cloud cloud;
 	public NetworkDomain networkDomain;
+	public String hostname;
+	public String internalIp;
+	public String externalIp;
+	public String sshHost;
 
 	public String getUuid() {
 		return uuid;
