@@ -59,21 +59,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<List<NetworkPool>> getNetworkPoolsByNetworkPoolServerJoin(NetworkPoolServer poolServer, String joinProperty) {
-		return null
-	}
-
-	@Override
-	Single<List> getModelProperties(NetworkPool pool, List<String> joinProperties) {
-		return null
-	}
-
-	@Override
-	Single<Void> removeMissingIps(NetworkPool pool, List removeList) {
-		return null
-	}
-
-	@Override
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress) {
 		return null
 	}
@@ -90,16 +75,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId) {
-		return null
-	}
-
-	@Override
-	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord) {
-		return null
-	}
-
-	@Override
-	Single<NetworkDomainRecord> saveDomainRecord(NetworkDomainRecord domainRecord, Map opts) {
 		return null
 	}
 
@@ -134,16 +109,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<List> getNetworkDomainByDomainAndRecordType(NetworkDomain domain, String recordType) {
-		return null
-	}
-
-	@Override
-	Single<Void> removeMissingDomainRecords(Long poolServerId, NetworkDomain domain, String recordType, List removeList) {
-		return null
-	}
-
-	@Override
 	Single<String> acquireLock(String name, Map opts) {
 		return null
 	}
@@ -152,12 +117,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	Single<Boolean> releaseLock(String name, Map opts) {
 		return null
 	}
-
-	@Override
-	Single<List<NetworkPoolIp>> getNetworkPoolIpsByNetworkPoolAndExternalIdOrIpAddress(NetworkPool pool, List externalIds, List ipAddresses) {
-		return null
-	}
-
 
 	@Override
 	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId) {
@@ -185,11 +144,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<NetworkDomainRecord> save(NetworkDomainRecord domainRecord) {
-		return null
-	}
-
-	@Override
 	Single<NetworkPoolIp> save(NetworkPoolIp poolIp) {
 		return null
 	}
@@ -204,10 +158,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 		return null
 	}
 
-	@Override
-	Single<Void> saveAll(List<NetworkDomainRecord> domainRecords) {
-		return null
-	}
 
 	@Override
 	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges) {
@@ -219,8 +169,4 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 		return null
 	}
 
-	@Override
-	Single<Map<String, NetworkDomainRecord>> findNetworkDomainRecordByNetworkDomainAndTypeAndExternalIds(NetworkDomain domain, String recordType, List externalIds) {
-		return null
-	}
 }

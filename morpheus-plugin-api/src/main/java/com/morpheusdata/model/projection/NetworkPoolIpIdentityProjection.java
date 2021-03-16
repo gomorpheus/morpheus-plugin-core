@@ -16,6 +16,7 @@ public class NetworkPoolIpIdentityProjection extends MorpheusModel {
 	 * The default constructor for creating a projection object.
 	 * @param id the database id of the object
 	 * @param externalId the API id of the object
+	 * @param ipAddress the uniquely reserved ip address in the pool
 	 */
 	public NetworkPoolIpIdentityProjection(Long id, String externalId, String ipAddress) {
 		this.id = id;

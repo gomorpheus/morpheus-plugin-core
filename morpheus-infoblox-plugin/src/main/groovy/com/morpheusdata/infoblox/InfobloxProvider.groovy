@@ -56,9 +56,46 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		this.infobloxAPI = api
 	}
 
-	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts) {
-		return null
+	/**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 *
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	@Override
+	MorpheusContext getMorpheusContext() {
+		return morpheusContext
 	}
+
+	/**
+	 * Returns the instance of the Plugin class that this provider is loaded from
+	 * @return Plugin class contains references to other providers
+	 */
+	@Override
+	Plugin getPlugin() {
+		return plugin
+	}
+
+	/**
+	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
+	 * that is seeded or generated related to this provider will reference it by this code.
+	 * @return short code string that should be unique across all other plugin implementations.
+	 */
+	@Override
+	String getProviderCode() {
+		return 'infoblox2'
+	}
+
+	/**
+	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+	String getProviderName() {
+		return 'Infoblox2'
+	}
+
 
 	@Override
 	ServiceResponse removeServer(AccountIntegration integration, ComputeServer server, Map opts) {
@@ -68,7 +105,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if(integration) {
 				def domainMatch = morpheusContext.network.getServerNetworkDomain(server).blockingGet()
 				log.info("domainMatch: ${domainMatch}")
-				def domainName = domainMatch?.name ?: 'localdomain'
 				if(domainMatch) {
 					morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, server.id).doOnSuccess({ domainRecord ->
 						if(domainRecord) {
@@ -97,13 +133,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if(integration) {
 				morpheusContext.network.getServerNetworkDomain(server).doOnSuccess({ domainMatch ->
 					if(domainMatch) {
-						def fqdn = morpheusContext.network.getComputeServerExternalFqdn(server).blockingGet()
-						def content = morpheusContext.network.getContainerExternalIp(server).blockingGet() // FIXME how does a server have a container external ip?
+						def fqdn = server.fqdn
+						def content = server.externalIp
 						def domainRecord = new NetworkDomainRecord(name: fqdn,fqdn:fqdn, serverId: server.id, networkDomain: domainMatch, content: content )
 						def results = createRecord(integration,domainRecord,opts)
 						rtn.success = results?.success
 						if(rtn.success) {
-							morpheusContext.network.saveDomainRecord(domainRecord).blockingGet()
+							morpheusContext.network.domain.record.save(domainRecord).blockingGet()
 						}
 					}
 				})
@@ -116,15 +152,23 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
+	/**
+	 * Endpoint called during teardown of a Morpheus Instance Workload. This is also known as a Container database object
+	 * within the Morpheus api due to legacy compatibility. This method implementation should remove any A/PTR/AAAA records
+	 * associated with a {@link Workload} during the teardown phase.
+	 * @param integration The integration for the target DNS Provider implementation.
+	 * @param workload The workload being destroyed within the instance. (Also known as a Container object in the api)
+	 * @param opts parameter options that may affect the deprovisioning behavior
+	 * @return the response status of the deprovisioning request
+	 */
 	@Override
-	ServiceResponse removeContainer(AccountIntegration integration, Container container, Map opts) {
+	ServiceResponse removeWorkload(AccountIntegration integration, Workload workload, Map opts) {
 		log.info("executing container remove for ${container?.id}")
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
 				morpheusContext.network.getContainerNetworkDomain(container).doOnSuccess({ domainMatch ->
 					log.info("domainMatch: ${domainMatch}")
-					def domainName = domainMatch?.name ?: 'localdomain'
 					if(domainMatch) {
 						morpheusContext.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, container.id).doOnSuccess({ domainRecord ->
 							if(domainRecord) {
@@ -147,8 +191,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	@Override
-	ServiceResponse provisionContainer(AccountIntegration integration, Container container, Map opts) {
-		log.info("executing msoft dns provision for ${container?.id}")
+	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts) {
 		def rtn = new ServiceResponse()
 		try {
 			if(integration) {
@@ -469,11 +512,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}.onDelete {removeItems ->
 					morpheusContext.network.domain.remove(poolServer.integration.id, removeItems).blockingGet()
 				}.onAdd { itemsToAdd ->
-					while (itemsToAdd?.size() > 0) {
-						List chunkedAddList = itemsToAdd.take(50)
-						itemsToAdd = itemsToAdd.drop(50)
-						addMissingZones(poolServer, chunkedAddList)
-					}
+					addMissingZones(poolServer, itemsToAdd)
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainIdentityProjection,Map>> updateItems ->
 					return morpheusContext.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
@@ -568,11 +607,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}.onDelete {removeItems ->
 				morpheusContext.network.domain.record.remove(domain, removeItems).blockingGet()
 			}.onAdd { itemsToAdd ->
-				while (itemsToAdd?.size() > 0) {
-					List chunkedAddList = itemsToAdd.take(50)
-					itemsToAdd = itemsToAdd.drop(50)
-					addMissingDomainRecords(domain, recordType, chunkedAddList)
-				}
+				addMissingDomainRecords(domain, recordType, itemsToAdd)
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainRecordIdentityProjection,Map>> updateItems ->
 				return morpheusContext.network.domain.record.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkPool,Map>> updateItems ->
@@ -718,11 +753,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}.onDelete {removeItems ->
 				morpheusContext.network.pool.remove(poolServer.id, removeItems).blockingGet()
 			}.onAdd { itemsToAdd ->
-				while (itemsToAdd?.size() > 0) {
-					List chunkedAddList = itemsToAdd.take(50)
-					itemsToAdd = itemsToAdd.drop(50)
-					addMissingPools(poolServer, chunkedAddList)
-				}
+				addMissingPools(poolServer, itemsToAdd)
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolIdentityProjection,Map>> updateItems ->
 				return morpheusContext.network.pool.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkPool,Map>> updateItems ->
@@ -885,8 +916,11 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 								networkPoolIp.fqdn = assignedHostname
 								networkPoolIp.hostname = assignedHostname
 								networkPoolIp.domain = opts.networkDomain
-
-								morpheusContext.network.save(networkPoolIp, networkPool).blockingGet()
+								if(networkPoolIp.id) {
+									morpheusContext.network.pool.poolIp.save(networkPoolIp)
+								} else {
+									morpheusContext.network.pool.poolIp.create(networkPoolIp)
+								}
 
 								rtn.data.ipAddress = newIp
 								rtn.data.poolIp = networkPoolIp
@@ -957,8 +991,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						networkPoolIp.externalId = nextIp.results['_ref']
 						networkPoolIp.internalId = nextIp.data.aRecordRef
 						networkPoolIp.fqdn = assignedHostname
+						if(networkPoolIp.id) {
+							morpheusContext.network.pool.poolIp.save(networkPoolIp)
+						} else {
+							morpheusContext.network.pool.poolIp.create(networkPoolIp)
+						}
 
-						morpheusContext.network.save(networkPoolIp, networkPool, [flush:true]).blockingGet()
 
 						rtn.results.ipAddress = newIp
 						rtn.results.poolIp = networkPoolIp
@@ -1043,7 +1081,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def newIp = ipResults.results.ipv4addrs?.first()?.ipv4addr
 			networkPoolIp.externalId = ipResults.results?.getAt('_ref')
 			networkPoolIp.ipAddress = newIp
-			morpheusContext.network.save(networkPoolIp)?.blockingGet()
+			if(networkPoolIp.id) {
+				networkPoolIp = morpheusContext.network.pool.poolIp.save(networkPoolIp)?.blockingGet()
+			} else {
+				networkPoolIp = morpheusContext.network.pool.poolIp.create(networkPoolIp)?.blockingGet()
+			}
+
 
 			if(createARecord && domain) {
 				apiPath = getServicePath(poolServer.serviceUrl) + 'record:a'
@@ -1090,7 +1133,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						networkPoolIp.ptrId = prtRecordRef
 					}
 				}
-				morpheusContext.network.save(networkPoolIp).blockingGet()
+				morpheusContext.network.pool.poolIp.save(networkPoolIp).blockingGet()
 			}
 			return ServiceResponse.success(networkPoolIp)
 		} else {
@@ -1150,46 +1193,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} else {
 			return ServiceResponse.error("Record not associated with corresponding record in target provider", null, poolIp)
 		}
-	}
-
-	/**
-	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
-	 *
-	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
-	 */
-	@Override
-	MorpheusContext getMorpheusContext() {
-		return morpheusContext
-	}
-
-	/**
-	 * Returns the instance of the Plugin class that this provider is loaded from
-	 * @return Plugin class contains references to other providers
-	 */
-	@Override
-	Plugin getPlugin() {
-		return plugin
-	}
-
-	/**
-	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
-	 * that is seeded or generated related to this provider will reference it by this code.
-	 * @return short code string that should be unique across all other plugin implementations.
-	 */
-	@Override
-	String getProviderCode() {
-		return 'infoblox'
-	}
-
-	/**
-	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
-	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
-	 *
-	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
-	 */
-	@Override
-	String getProviderName() {
-		return 'Infoblox'
 	}
 
 	/**
@@ -1528,11 +1531,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}.onDelete {removeItems ->
 					morpheusContext.network.pool.poolIp.remove(pool.id, removeItems).blockingGet()
 				}.onAdd { itemsToAdd ->
-					while (itemsToAdd?.size() > 0) {
-						List chunkedAddList = itemsToAdd.take(50)
-						itemsToAdd = itemsToAdd.drop(50)
-						addMissingIps(pool, chunkedAddList)
-					}
+					addMissingIps(pool, itemsToAdd)
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolIpIdentityProjection,Map>> updateItems ->
 					return morpheusContext.network.pool.poolIp.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->

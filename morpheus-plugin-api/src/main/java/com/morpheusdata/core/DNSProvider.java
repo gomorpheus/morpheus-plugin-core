@@ -63,4 +63,15 @@ public interface DNSProvider extends PluginProvider {
 	 * @return a ServiceResponse with the success/error state of the create operation as well as the modified record.
 	 */
 	ServiceResponse createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts);
+
+	/**
+	 * Deletes a Zone Record that is specified on the Morpheus side with the target integration endpoint.
+	 * This could be any record type within the specified integration and the authoritative zone object should be
+	 * associated with the {@link NetworkDomainRecord} parameter.
+	 * @param integration The DNS Integration record which contains things like connectivity info to the DNS Provider
+	 * @param record The zone record object to be deleted on the target integration.
+	 * @param opts opts any additional options that may be used in the future to configure behavior. Currently unused
+	 * @return the ServiceResponse with the success/error of the delete operation.
+	 */
+	ServiceResponse deleteRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts);
 }

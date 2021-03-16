@@ -69,7 +69,7 @@ public interface MorpheusNetworkDomainRecordContext {
 	Single<Boolean> create(NetworkDomainIdentityProjection domain, List<NetworkDomainRecord> addList);
 
 	/**
-	 * Saves a single {@link NetworkDomain} object returning the final result object if any changes occurred during save.
+	 * Saves a single {@link NetworkDomainRecord} object returning the final result object if any changes occurred during save.
 	 * @param domainRecord the Domain Zone Record we wish to persist changes to
 	 * @return the resultant Domain Object containing any additional metadata that may have been applied
 	 */
