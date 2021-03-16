@@ -14,7 +14,6 @@ import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkDomainRecord
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
-import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.projection.NetworkIdentityProjection
 import io.reactivex.Completable
@@ -174,22 +173,12 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<List<NetworkDomain>> getNetworkDomainByTypeAndRefId(String refType, Long refId) {
-		return null
-	}
-
-	@Override
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId) {
 		return null
 	}
 
 	@Override
 	Single<NetworkDomain> getContainerNetworkDomain(Container container) {
-		return null
-	}
-
-	@Override
-	Single<String> getComputeServerExternalFqdn(ComputeServer computeServer) {
 		return null
 	}
 
@@ -230,12 +219,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer) {
-		return null
-	}
-
-
-	@Override
-	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds) {
 		return null
 	}
 

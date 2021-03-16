@@ -1,14 +1,17 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.KeyPair
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
+import io.reactivex.Single
 import org.apache.http.client.methods.HttpPost
 import spock.lang.Shared
 import spock.lang.Specification
@@ -22,10 +25,16 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	DigitalOceanProvisionProvider provider
 	@Shared
 	DigitalOceanApiService apiService
+	@Shared
+	MorpheusContext context
+	@Shared
+	MorpheusCloudContext cloudContext
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
-		MorpheusContext context = Mock(MorpheusContext)
+		context = Mock(MorpheusContext)
+		cloudContext = Mock(MorpheusCloudContext)
+		context.getCloud() >> cloudContext
 		provider = new DigitalOceanProvisionProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -163,7 +172,8 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	void "runWorkload"() {
 		given:
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
-		Workload workload = new Workload()
+		ServicePlan plan = new ServicePlan(externalId: 'plan1')
+		Workload workload = new Workload(plan: plan)
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
 		Map serverOpts = [
 				'name'             : 'droplet1',
@@ -195,6 +205,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 202]], json: createServerJson]
+		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
 		resp.success == true
 		resp.data.externalId == "3164494"
 	}
@@ -202,7 +213,8 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	void "runWorkload - fail"() {
 		given:
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
-		Workload workload = new Workload()
+		ServicePlan plan = new ServicePlan(externalId: 'plan1')
+		Workload workload = new Workload(plan: plan)
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
 		Map serverOpts = [:]
 		String createServerResponse = """
@@ -216,6 +228,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: createServerJson]
+		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
 		resp.success == false
 		resp.msg == '400'
 	}
@@ -232,6 +245,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		0 * apiService.makeApiCall(_, _)
+		0 * cloudContext.findOrGenerateKeyPair(_)
 		resp.success == false
 		resp.msg == 'No API Key provided'
 	}

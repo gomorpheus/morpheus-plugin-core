@@ -79,15 +79,15 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		def body = [
 				'name'              : workload.name,
-				'region'            : workload.region,
-				'size'              : workload.size,
-				'image'             : workload.image,
-				'ssh_keys'          : workload.sshKeyIds,
-				'backups'           : "${workload.backups}",
-				'ipv6'              : workload.ipv6,
+				'region'            : workload.configMap.datacenter,
+				'size'              : workload.plan.externalId,
+				'image'             : workload.configMap.imageId,
+				'backups'           : "${opts.doBackups}",
+				'ipv6'              : opts.ipv6,
 				'user_data'         : workload.userData,
 				'private_networking': workload.privateNetworking
 		]
+		body.keys = morpheusContext.cloud.findOrGenerateKeyPair(workload.account).blockingGet().id
 		log.debug "post body: $body"
 		http.entity = new StringEntity(JsonOutput.toJson(body))
 
