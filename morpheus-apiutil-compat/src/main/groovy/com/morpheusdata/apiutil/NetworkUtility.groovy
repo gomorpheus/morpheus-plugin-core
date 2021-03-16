@@ -244,8 +244,8 @@ class NetworkUtility {
 				}
 			}
 			if(rtn == null) {
-				if(server.zone?.provisioningProxy)
-					rtn = server.zone.provisioningProxy
+				if(server.cloud?.provisioningProxy)
+					rtn = server.cloud.provisioningProxy
 			}
 		} catch(e) {
 			log.error("getServerProxy error: ${e}", e)
@@ -265,8 +265,8 @@ class NetworkUtility {
 			}
 			if(network)
 				rtn = network.noProxy ?: ''
-			if(server.zone.noProxy) {
-				rtn = ((rtn?.tokenize(", ") ?: []) + server.zone.noProxy.tokenize(", ")).join(',')
+			if(server.cloud.noProxy) {
+				rtn = ((rtn?.tokenize(", ") ?: []) + server.cloud.noProxy.tokenize(", ")).join(',')
 			}
 		} catch(e) {
 			log.error("getServerProxyExceptions error: ${e}", e)

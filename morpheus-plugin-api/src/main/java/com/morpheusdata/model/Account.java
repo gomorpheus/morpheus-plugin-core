@@ -42,4 +42,7 @@ public class Account extends MorpheusModel {
 	public Map confs;
 	public Boolean disableSupportMenu;
 	public String supportMenuLinks;
+	public String customerNumber;
+	public String accountNumber;
+	public String accountName;
 }

@@ -9,13 +9,13 @@ class ComputeUtilitySpec extends Specification {
 		expected == ComputeUtility.formatHostname(host, platform)
 
 		where:
-		host              | platform             || expected
-		'LUMEN'           | PlatformType.linux   || 'lumen'
-		'api.lumen'       | PlatformType.linux   || 'api-lumen'
-		'api.lumen,foo'   | PlatformType.linux   || 'api-lumen-foo'
-		"api.lumen'foo"   | PlatformType.linux   || 'api-lumen-foo'
-		"api.lumen'foo"   | PlatformType.linux   || 'api-lumen-foo'
-		"api.lumen'foo--" | PlatformType.windows || 'api-lumen-foo'
+		host             | platform             || expected
+		'MAAS'           | PlatformType.linux   || 'maas'
+		'api.maas'       | PlatformType.linux   || 'api-maas'
+		'api.maas,foo'   | PlatformType.linux   || 'api-maas-foo'
+		"api.maas'foo"   | PlatformType.linux   || 'api-maas-foo'
+		"api.maas'foo"   | PlatformType.linux   || 'api-maas-foo'
+		"api.maas'foo--" | PlatformType.windows || 'api-maas-foo'
 	}
 
 	void "formatProvisionHostname"() {
@@ -23,14 +23,14 @@ class ComputeUtilitySpec extends Specification {
 		expected == ComputeUtility.formatProvisionHostname(host)
 
 		where:
-		host                        | expected
-		'LUMEN'                     | 'lumen'
-		'api.lumen.com'             | 'api.lumen.com'
-		'api.lumen.com '            | 'api.lumen.com-'
-		'https://api.lumen.com'     | 'https://api.lumen.com'
-		'https://api.lumen.com,foo' | 'https://api.lumen.comfoo'
-		"https://api.lumen.com'foo" | 'https://api.lumen.comfoo'
-		'$api.lumenfoo--'           | '$api.lumenfoo--'
+		host                       | expected
+		'MAAS'                     | 'maas'
+		'api.maas.com'             | 'api.maas.com'
+		'api.maas.com '            | 'api.maas.com-'
+		'https://api.maas.com'     | 'https://api.maas.com'
+		'https://api.maas.com,foo' | 'https://api.maas.comfoo'
+		"https://api.maas.com'foo" | 'https://api.maas.comfoo'
+		'$api.maasfoo--'           | '$api.maasfoo--'
 	}
 
 	void "parseGigabytesToBytes"() {
