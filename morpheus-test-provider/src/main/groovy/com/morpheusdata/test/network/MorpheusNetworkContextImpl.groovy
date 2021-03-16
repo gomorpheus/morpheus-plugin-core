@@ -9,6 +9,7 @@ import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
+import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkDomainRecord
 import com.morpheusdata.model.NetworkPool
@@ -106,15 +107,52 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	Observable<NetworkIdentityProjection> listById(Collection<Long> ids) {
 		return null
 	}
-/**
-	 * Used for updating the status of a {@link NetworkPoolServer} integration.
-	 * @param poolServer
-	 * @param status
-	 * @param message
-	 * @return
+
+	/**
+	 * Removes Missing Networks on the Morpheus side. This accepts the Projection Object instead of the main Object.
+	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
+	 * <p><strong>Example:</strong></p>
+	 * <pre>{@code
+	 * morpheusContext.getNetwork().remove(removeItems).blockingGet()
+	 *}</pre>
+	 * @param removeList a list of network projections to be removed
+	 * @return a Single {@link java.util.Observable} returning the success status of the operation.
 	 */
 	@Override
-	Single<Void> updateNetworkPoolServerStatus(NetworkPoolServer poolServer, String status, String message) {
+	Single<Boolean> remove(List<NetworkIdentityProjection> removeList) {
+		return null
+	}
+
+	/**
+	 * Creates new Network Domains from cache / sync implementations
+	 * This ensures the refType and refId match the poolServer as well as the owner default
+	 * @param addList List of new {@link Network} objects to be inserted into the database
+	 * @return notification of completion if someone really cares about it
+	 */
+	@Override
+	Single<Boolean> create(List<Network> addList) {
+		return null
+	}
+
+	/**
+	 * Saves a list of {@link NetworkDomain} objects. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param networksToSave a List of Network objects that need to be updated in the database.
+	 * @return the Single Observable stating the success state of the save attempt
+	 */
+	@Override
+	Single<Boolean> save(List<Network> networksToSave) {
+		return null
+	}
+
+	/**
+	 * Saves a {@link Network} object. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param networkToSave a Network Object that need to be updated in the database.
+	 * @return the Single Observable stating the success state of the save attempt
+	 */
+	@Override
+	Single<Boolean> save(Network networkToSave) {
 		return null
 	}
 
@@ -193,36 +231,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 		return null
 	}
 
-	@Override
-	Single<NetworkPool> save(NetworkPool networkPool) {
-		return null
-	}
-
-	@Override
-	Single<NetworkPoolRange> save(NetworkPoolRange networkPoolRange) {
-		return null
-	}
-
-	@Override
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp) {
-		return null
-	}
-
-	@Override
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool) {
-		return null
-	}
-
-	@Override
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIp, NetworkPool networkPool, Map opts) {
-		return null
-	}
-
-
-	@Override
-	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges) {
-		return null
-	}
 
 	@Override
 	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds) {
