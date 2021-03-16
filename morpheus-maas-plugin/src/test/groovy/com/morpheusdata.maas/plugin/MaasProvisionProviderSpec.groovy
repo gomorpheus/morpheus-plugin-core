@@ -1,8 +1,14 @@
 package com.morpheusdata.maas.plugin
 
+import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Cloud
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.ComputeServerType
+import com.morpheusdata.model.Container
+import com.morpheusdata.response.ServiceResponse
+import io.reactivex.Single
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -13,12 +19,15 @@ class MaasProvisionProviderSpec extends Specification {
 
 	MorpheusContext context
 	MorpheusNetworkContext networkContext
+	MorpheusCloudContext cloudContext
 	MaasPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		networkContext = Mock(MorpheusNetworkContext)
+		cloudContext = Mock(MorpheusCloudContext)
 		context.getNetwork() >> networkContext
+		context.getCloud() >> cloudContext
 		plugin = Mock(MaasPlugin)
 
 		service = new MaasProvisionProvider(plugin, context)
@@ -32,7 +41,7 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "getAuthConfig"() {
 		given:
-		Cloud cloud = new Cloud(configMap: [serviceUrl: 'lumen.com', serviceToken: 'consumerKey:apiKey:secretKey'])
+		Cloud cloud = new Cloud(configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
 
 		when:
 		def config = service.getAuthConfig(cloud)
@@ -52,8 +61,163 @@ class MaasProvisionProviderSpec extends Specification {
 
 		where:
 		url                 | apiUrl
-		'lumen.com'         | 'https://lumen.com'
-		'http://lumen.com'  | 'http://lumen.com'
-		'https://lumen.com' | 'https://lumen.com'
+		'maas.io'         | 'https://maas.io'
+		'http://maas.io'  | 'http://maas.io'
+		'https://maas.io' | 'https://maas.io'
+	}
+
+
+	void "validateWorkload"() {
+		expect:
+		ServiceResponse response = service.validateWorkload(opts).blockingGet()
+		out == response.success
+
+		where:
+		opts         | out
+		[:]          | true
+		[foo: 'bar'] | true
+	}
+
+	void "releaseMachine"() {
+		given:
+		Cloud cloud = new Cloud()
+		ComputeServer server = new ComputeServer(cloud: cloud)
+		Map authConfig = [:]
+		Map opts = [:]
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.releaseMachine(server, authConfig, opts)
+		def resp = respObservable.blockingGet()
+
+		then:
+		resp.success
+		1 * MaasComputeUtility.releaseMachine(_, _, [erase: true, quick_erase: true]) >> [success: true]
+		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'SUCCESS']
+		1 * cloudContext.save(_) >> Single.just(server)
+	}
+
+	void "releaseMachine - release"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [releaseMode: 'release'])
+		ComputeServer server = new ComputeServer(cloud: cloud)
+		Map authConfig = [:]
+		Map opts = [:]
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.releaseMachine(server, authConfig, opts)
+		def resp = respObservable.blockingGet()
+
+		then:
+		resp.success
+		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: true]
+		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'SUCCESS']
+		1 * cloudContext.save(_) >> Single.just(server)
+	}
+
+	void "releaseMachine - release fail"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [releaseMode: 'release'])
+		ComputeServer server = new ComputeServer(cloud: cloud)
+		Map authConfig = [:]
+		Map opts = [:]
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.releaseMachine(server, authConfig, opts)
+		def resp = respObservable.blockingGet()
+
+		then:
+		!resp.success
+		resp.msg == 'Failed to release server'
+		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: false]
+		0 * MaasComputeUtility.waitForMachineRelease(_, _, _)
+		0 * cloudContext.save(_) >> Single.just(server)
+	}
+
+	void "releaseMachine - release wait failure"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [releaseMode: 'release'])
+		ComputeServer server = new ComputeServer(cloud: cloud)
+		Map authConfig = [:]
+		Map opts = [:]
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.releaseMachine(server, authConfig, opts)
+		def resp = respObservable.blockingGet()
+
+		then:
+		!resp.success
+		resp.msg == 'Failed waiting for server release'
+		1 * MaasComputeUtility.releaseMachine(_, _, [erase: false, quick_erase: false]) >> [success: true]
+		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'FAIL']
+		1 * cloudContext.save(_) >> Single.just(server)
+	}
+
+	void "stopServer"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
+		ComputeServerType serverType = new ComputeServerType(controlPower: true)
+		ComputeServer server = new ComputeServer(id: 333, cloud: cloud, managed: true, computeServerType: serverType)
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.stopServer(server)
+		def resp = respObservable.blockingGet()
+
+		then:
+		resp.success
+		1 * cloudContext.updateUserStatus(_, Container.Status.stopped)
+		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
+		1 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
+		1 * cloudContext.updatePowerState(333, 'off')
+	}
+
+	void "stopServer - unmanaged"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
+		ComputeServerType serverType = new ComputeServerType(controlPower: false)
+		ComputeServer server = new ComputeServer(id: 333, cloud: cloud, managed: false, computeServerType: serverType)
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.stopServer(server)
+		def resp = respObservable.blockingGet()
+
+		then:
+		!resp.success
+		0 * cloudContext.updateUserStatus(_, Container.Status.stopped)
+		0 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
+		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
+		0 * cloudContext.updatePowerState(333, 'off')
+	}
+
+	void "stopServer - power off failure"() {
+		given:
+		Cloud cloud = new Cloud(configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
+		ComputeServerType serverType = new ComputeServerType(controlPower: true)
+		ComputeServer server = new ComputeServer(id: 333, cloud: cloud, managed: true, computeServerType: serverType)
+		GroovySpy(MaasComputeUtility, global: true)
+
+		when:
+		def respObservable = service.stopServer(server)
+		def resp = respObservable.blockingGet()
+
+		then:
+		!resp.success
+		1 * cloudContext.updateUserStatus(_, Container.Status.stopped)
+		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: false]
+		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _)
+		0 * cloudContext.updatePowerState(333, 'off')
+	}
+
+	void "runServer"() {
+		expect: "always false"
+		def respObservable = service.runServer(new ComputeServer(), [:])
+		def resp = respObservable.blockingGet()
+		!resp.success
+		resp.error == 'error'
 	}
 }
