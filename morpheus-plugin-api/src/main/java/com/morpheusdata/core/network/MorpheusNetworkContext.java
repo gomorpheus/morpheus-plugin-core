@@ -85,6 +85,41 @@ public interface MorpheusNetworkContext {
 	 */
 	Observable<NetworkIdentityProjection> listById(Collection<Long> ids);
 
+	/**
+	 * Removes Missing Networks on the Morpheus side. This accepts the Projection Object instead of the main Object.
+	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
+	 * <p><strong>Example:</strong></p>
+	 * <pre>{@code
+	 * morpheusContext.getNetwork().remove(removeItems).blockingGet()
+	 * }</pre>
+	 * @param removeList a list of network projections to be removed
+	 * @return a Single {@link Observable} returning the success status of the operation.
+	 */
+	Single<Boolean> remove(List<NetworkIdentityProjection> removeList);
+
+	/**
+	 * Creates new Network Domains from cache / sync implementations
+	 * This ensures the refType and refId match the poolServer as well as the owner default
+	 * @param addList List of new {@link Network} objects to be inserted into the database
+	 * @return notification of completion if someone really cares about it
+	 */
+	Single<Boolean> create(List<Network> addList);
+
+	/**
+	 * Saves a list of {@link NetworkDomain} objects. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param networksToSave a List of Network objects that need to be updated in the database.
+	 * @return the Single Observable stating the success state of the save attempt
+	 */
+	Single<Boolean> save(List<Network> networksToSave);
+
+	/**
+	 * Saves a {@link Network} object. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param networkToSave a Network Object that need to be updated in the database.
+	 * @return the Single Observable stating the success state of the save attempt
+	 */
+	Single<Boolean> save(Network networkToSave);
 
 	//General Network Methods
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);
@@ -117,17 +152,6 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
 
-
-
-
-	Single<NetworkPool> save(NetworkPool networkPool);
-
-	Single<NetworkPoolRange> save(NetworkPoolRange networkPoolRange);
-
-
-
-
-	Single<Void> save(NetworkPool networkPool, List<NetworkPoolRange> ranges);
 
 	Single<Map<String, NetworkPool>> findNetworkPoolsByPoolServerAndExternalIds(NetworkPoolServer pool, List externalIds);
 }
