@@ -440,7 +440,7 @@ class MaasCloudProvider implements CloudProvider {
 			return add
 		}
 		if(networksToAdd.size() > 0) {
-			morpheusContext.network.create(networksToAdd)
+			morpheusContext.network.create(networksToAdd).blockingGet()
 		}
 	}
 
@@ -460,7 +460,7 @@ class MaasCloudProvider implements CloudProvider {
 			}
 		}
 		if(itemsToUpdate.size() > 0) {
-			morpheusContext.network.save(itemsToUpdate)
+			morpheusContext.network.save(itemsToUpdate).blockingGet()
 		}
 	}
 }
