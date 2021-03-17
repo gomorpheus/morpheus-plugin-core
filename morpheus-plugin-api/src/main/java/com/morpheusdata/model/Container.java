@@ -5,6 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @deprecated
+ * Use {@link Workload} instead
+ */
+@Deprecated
 public class Container extends MorpheusModel {
 	public Account account;
 	public Instance instance;
