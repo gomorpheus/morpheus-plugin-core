@@ -84,7 +84,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 				'image'             : workload.configMap.imageId,
 				'backups'           : "${opts.doBackups}",
 				'ipv6'              : opts.ipv6,
-				'user_data'         : workload.userData,
+				'user_data'         : opts.userData,
 				'private_networking': workload.privateNetworking
 		]
 		body.keys = morpheusContext.cloud.findOrGenerateKeyPair(workload.account).blockingGet().id
