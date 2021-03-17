@@ -131,7 +131,7 @@ public interface MorpheusNetworkContext {
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
 
 	Single<NetworkDomain> getContainerNetworkDomain(Container container);
-	
+
 	Single<String> getContainerExternalIp(Container container);
 
 	Single<String> getContainerExternalFqdn(Container container);
