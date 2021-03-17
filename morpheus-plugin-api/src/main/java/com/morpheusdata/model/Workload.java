@@ -17,7 +17,6 @@ public class Workload extends MorpheusModel {
 	protected String name;
 	protected ServicePlan plan;
 	protected Boolean privateNetworking;
-	protected List<Long> sshKeyIds;
 	protected String userData;
 
 	protected Account account;
@@ -131,14 +130,6 @@ public class Workload extends MorpheusModel {
 	public void setPrivateNetworking(Boolean privateNetworking) {
 		this.privateNetworking = privateNetworking;
 		markDirty("privateNetworking", privateNetworking);
-	}
-
-	public List<Long> getSshKeyIds() {
-		return sshKeyIds;
-	}
-
-	public void setSshKeyIds(List<Long> sshKeyIds) {
-		this.sshKeyIds = sshKeyIds;
 	}
 
 	public String getUserData() {
