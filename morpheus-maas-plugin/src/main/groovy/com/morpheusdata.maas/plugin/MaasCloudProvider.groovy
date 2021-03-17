@@ -207,7 +207,7 @@ class MaasCloudProvider implements CloudProvider {
 				def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 				def testResults = MaasComputeUtility.testConnection(authConfig, [:])
 				if (testResults.success) {
-					morpheusContext.cloud.updateZoneStatus(cloud, 'syncing', null, syncDate)
+					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 					//cache stuff
 					def cacheOpts = [:]
 //					//region controllers
@@ -224,16 +224,16 @@ class MaasCloudProvider implements CloudProvider {
 //					cacheFabrics(zone, cacheOpts)
 //					//subnets
 					cacheSubnets(zone, cacheOpts)
-					morpheusContext.cloud.updateZoneStatus(cloud, 'ok', null, syncDate)
+					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				} else {
 					if (testResults.invalidLogin == true) {
-						morpheusContext.cloud.updateZoneStatus(cloud, 'error', 'invalid credentials', syncDate)
+						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'invalid credentials', syncDate)
 					} else {
-						morpheusContext.cloud.updateZoneStatus(cloud, 'error', 'error connecting', syncDate)
+						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'error connecting', syncDate)
 					}
 				}
 			} else {
-				morpheusContext.cloud.updateZoneStatus(cloud, 'offline', 'maas is not reachable', syncDate)
+				morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.offline, 'maas is not reachable', syncDate)
 			}
 			rtn.success = true
 		} catch (e) {

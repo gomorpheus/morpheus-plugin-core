@@ -57,7 +57,7 @@ public class Cloud extends MorpheusModel {
 	public Boolean autoCapacityInProgress = false;
 	public Boolean firewallEnabled = true;
 	public Boolean enabled = true;
-	public String status = "ok"; //ok, error, warning, offline
+	public Status status = Status.ok;
 	public String statusMessage;
 	public Date statusDate;
 	public String errorMessage;
@@ -97,4 +97,12 @@ public class Cloud extends MorpheusModel {
 	public String iacId; //id for infrastructure as code integrations;
 	public String uuid = UUID.randomUUID().toString();
 	public String noProxy;
+
+	public enum Status {
+		ok,
+		syncing,
+		warning,
+		error,
+		offline
+	}
 }

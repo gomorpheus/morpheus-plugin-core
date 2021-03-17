@@ -9,9 +9,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Morpheus Context as it relates to cloud operations. This context contains methods for querying things like {@link ReferenceData}
+ * for {@link OptionType} sources managing other resources needed at Cloud initialization.
+ * Typically this class is accessed via the primary {@link MorpheusContext}.
+ *
+ * @author Mike Truso
+ */
 public interface MorpheusCloudContext {
 
-	void updateZoneStatus(Cloud cloud, String status, String message, Date syncDate);
+
+
+	/**
+	 * Update the status of a Cloud during setup
+	 * @param cloud Cloud instance
+	 * @param status cloud state status
+	 * @param message error or info message
+	 * @param syncDate time of update operation
+	 */
+	void updateZoneStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
 
 	/**
 	 *	Get the ssh credentials associated with an account
