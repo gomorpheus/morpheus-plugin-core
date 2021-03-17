@@ -25,6 +25,15 @@ public class OptionType extends MorpheusModel {
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
+
 	/**
 	 * Gets the Unique code representation of the option type. This is used for tracking changes and should be globally unique. It also
 	 * allows for multiple provider types to reuse the same input field if they share the same option set.
