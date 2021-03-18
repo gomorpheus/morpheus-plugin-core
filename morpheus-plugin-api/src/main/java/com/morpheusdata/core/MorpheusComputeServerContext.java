@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.ComputeServerInterface;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -19,7 +20,7 @@ public interface MorpheusComputeServerContext {
 	 * @param id Server id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ComputeServer> get(Long id);
+	Single<ComputeServer> get(Long id);
 
 	/**
 	 * Get a list of {@link ComputeServer} projections based on Cloud id

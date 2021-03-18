@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,7 +82,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("cloud", cloud);
 	}
 
-	public List<ComputeServerInterface> interfaces;
+	public List<ComputeServerInterface> interfaces = new ArrayList<>();
 
 	public enum PowerState {
 		on,
