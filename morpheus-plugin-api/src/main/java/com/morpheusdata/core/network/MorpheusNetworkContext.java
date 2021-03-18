@@ -42,6 +42,13 @@ public interface MorpheusNetworkContext {
 	MorpheusNetworkDomainContext getDomain();
 
 	/**
+	 * Returns the MorpheusNetworkTypeContext used for performing updates/queries on {@link NetworkType} related assets
+	 * within Morpheus.
+	 * @return An instance of the NetworkTypeContext to be used for calls by various network providers
+	 */
+	MorpheusNetworkTypeContext getType();
+
+	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
 	 * @param poolServer the pool integration with which we want to update the status.
 	 * @param status the status of the pool server (ok,syncing,error)
