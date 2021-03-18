@@ -51,17 +51,12 @@ public interface MorpheusCloudContext {
 
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
 
-	Single<ReferenceData> save(ReferenceData referenceData);
-	Single<ReferenceData> save(ReferenceData referenceData, Boolean flush);
-
-	Single<ReferenceData> save(ReferenceData referenceData, Cloud cloud, String category);
-	Single<Boolean> saveAll(List<ReferenceData> referenceData);
-	Single<Boolean> saveAll(List<ReferenceData> referenceData, Cloud cloud, String category);
-	Single<Boolean> removeMissingReferenceDataByIds(List<Long> longs);
+	Single<Boolean> create(List<ReferenceData> referenceData, Cloud cloud, String category);
+	Single<Boolean> save(List<ReferenceData> referenceData, Cloud cloud, String category);
+	Single<Boolean> remove(List<ReferenceDataSyncProjection> removeItems);
 	Observable<ReferenceDataSyncProjection> listReferenceDataByCategory(Cloud cloud, String code);
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
-	Single<ReferenceData> listReferenceDataByExternalIds(List<Long> externalIds);
-	Single<List<ReferenceData>> findReferenceDataByCategory(Cloud cloud, String category);
+	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
 	Single<Void> updatePowerState(Long id, String state);
 
