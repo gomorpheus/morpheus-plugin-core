@@ -3,6 +3,7 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.OptionType
@@ -36,7 +37,18 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
-		[]
+		//image OptionType
+		OptionType imageOption = new OptionType()
+		imageOption.name = 'image'
+		imageOption.code = 'digital-ocean-image'
+		imageOption.fieldName = 'imageId'
+		imageOption.fieldContext = 'config'
+		imageOption.fieldLabel = 'Image'
+		imageOption.inputType = OptionType.InputType.SELECT
+		imageOption.displayOrder = 100
+		imageOption.required = true
+		imageOption.optionSource = 'pluginImage'
+		[imageOption]
 	}
 
 	@Override
@@ -239,6 +251,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		log.debug "power off server"
 		def body = ['type': 'power_off']
 		apiService.performDropletAction(dropletId, body, apiKey)
+	}
+
+	def pluginImage(Cloud cloud) {
+		List options = []
+		morpheusContext.virtualImage.listSyncProjections(cloud.id).subscribe{options << [name: it.name, value: it.id]}
+		options
 	}
 
 }

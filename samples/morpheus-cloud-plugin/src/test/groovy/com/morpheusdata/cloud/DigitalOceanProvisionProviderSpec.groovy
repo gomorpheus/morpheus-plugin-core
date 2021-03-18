@@ -2,6 +2,7 @@ package com.morpheusdata.cloud
 
 import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
@@ -9,9 +10,14 @@ import com.morpheusdata.model.Instance
 import com.morpheusdata.model.KeyPair
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.Workload
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Single
+import io.reactivex.annotations.NonNull
 import org.apache.http.client.methods.HttpPost
 import spock.lang.Shared
 import spock.lang.Specification
@@ -29,12 +35,16 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	MorpheusContext context
 	@Shared
 	MorpheusCloudContext cloudContext
+	@Shared
+	MorpheusVirtualImageContext virtualImageContext
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
 		context = Mock(MorpheusContext)
 		cloudContext = Mock(MorpheusCloudContext)
+		virtualImageContext = Mock(MorpheusVirtualImageContext)
 		context.getCloud() >> cloudContext
+		context.getVirtualImage() >> virtualImageContext
 		provider = new DigitalOceanProvisionProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -282,6 +292,41 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 """
 		JsonSlurper slurper = new JsonSlurper()
 		slurper.parseText(responseContent)
+	}
+
+	void "optionTypes"() {
+		when:
+		def options = provider.optionTypes
+
+		then:
+		options.size() == 1
+		options.first().optionSource == 'pluginImage'
+	}
+
+	void "pluginImage"() {
+		given:
+		Cloud cloud = new Cloud(id: 123)
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<VirtualImageIdentityProjection>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<VirtualImageIdentityProjection> emitter) throws Exception {
+				try {
+					List<VirtualImageIdentityProjection> images = [new VirtualImageIdentityProjection(id: 1, name: 'ubuntu'), new VirtualImageIdentityProjection(id: 2, name: 'fedora')]
+					for (image in images) {
+						emitter.onNext(image)
+					}
+					emitter.onComplete()
+				} catch (Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
+
+		when:
+		def imageOptions = provider.pluginImage(cloud)
+
+		then:
+		imageOptions == [[name: 'ubuntu', value: 1], [name: 'fedora', value: 2]]
+		1 * virtualImageContext.listSyncProjections(cloud.id) >> listSyncProjections
 	}
 
 }
