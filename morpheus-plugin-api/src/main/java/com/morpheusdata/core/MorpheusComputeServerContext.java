@@ -15,6 +15,13 @@ import java.util.List;
 public interface MorpheusComputeServerContext {
 
 	/**
+	 * Get a {@link ComputeServer} by id.
+	 * @param id Server id
+	 * @return Observable stream of sync projection
+	 */
+	Observable<ComputeServer> get(Long id);
+
+	/**
 	 * Get a list of {@link ComputeServer} projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
