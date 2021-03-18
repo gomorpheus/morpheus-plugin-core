@@ -4,6 +4,7 @@ package com.morpheusdata.test
 import com.morpheusdata.core.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.MorpheusReportContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusServicePlanContext
 import com.morpheusdata.core.MorpheusTaskContext
@@ -74,6 +75,17 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusComputeServerContext getComputeServer() {
 		return computeServerContext
+	}
+
+	/**
+	 * Returns the Custom Report Types Context used for generating custom reports.
+	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
+	 *
+	 * @return an instance of the Report Context
+	 */
+	@Override
+	MorpheusReportContext getReport() {
+		return null
 	}
 
 	@Override
