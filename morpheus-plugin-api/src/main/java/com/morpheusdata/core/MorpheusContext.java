@@ -69,6 +69,13 @@ public interface MorpheusContext {
 	 */
 	MorpheusComputeServerContext getComputeServer();
 
+	/**
+	 * Returns the Custom Report Types Context used for generating custom reports.
+	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
+	 *
+	 * @return an instance of the Report Context
+	 */
+	MorpheusReportContext getReport();
 
 
 	//Common methods used across various contexts
