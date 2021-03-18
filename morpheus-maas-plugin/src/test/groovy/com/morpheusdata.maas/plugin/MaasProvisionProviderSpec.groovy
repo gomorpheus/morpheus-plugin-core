@@ -178,7 +178,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.success
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		1 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
-		1 * cloudContext.updatePowerState(333, 'off')
+		1 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "stopServer - unmanaged"() {
@@ -196,7 +196,7 @@ class MaasProvisionProviderSpec extends Specification {
 		!resp.success
 		0 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
-		0 * cloudContext.updatePowerState(333, 'off')
+		0 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "stopServer - power off failure"() {
@@ -214,7 +214,7 @@ class MaasProvisionProviderSpec extends Specification {
 		!resp.success
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: false]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _)
-		0 * cloudContext.updatePowerState(333, 'off')
+		0 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "runServer"() {

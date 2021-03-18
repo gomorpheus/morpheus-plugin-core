@@ -2,7 +2,6 @@ package com.morpheusdata.core.cloud;
 
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -45,7 +44,8 @@ public interface MorpheusCloudContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Container> getContainerById(Long id);
+	Single<Workload> getWorkloadById(Long id);
+	Observable<Workload> getWorkload(ComputeServer server);
 
 	Single<Cloud> getCloudById(Long id);
 
@@ -58,7 +58,14 @@ public interface MorpheusCloudContext {
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
 	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
-	Single<Void> updatePowerState(Long id, String state);
+	/**
+	 * Update the power state of a server and any related vms
+	 * 
+	 * @param computeServerId id of the {@link ComputeServer}
+	 * @param state power state
+	 * @return void
+	 */
+	Single<Void> updatePowerState(Long computeServerId, ComputeServer.PowerState state);
 
 	Single<Void> updateInstanceStatus(List<Long> ids, Instance.Status status);
 
@@ -66,5 +73,4 @@ public interface MorpheusCloudContext {
 
 	Single<Instance> getInstance(ComputeServer server);
 
-	Single<Container> getContainer(ComputeServer server);
 }
