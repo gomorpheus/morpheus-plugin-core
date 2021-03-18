@@ -15,7 +15,7 @@ class ReverseTextTaskService extends AbstractTaskService {
 	}
 
 	@Override
-	MorpheusContext getContext() {
+	MorpheusContext getMorpheus() {
 		return context
 	}
 

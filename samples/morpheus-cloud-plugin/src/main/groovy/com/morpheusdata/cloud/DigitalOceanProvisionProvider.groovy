@@ -11,7 +11,6 @@ import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
-import com.sun.corba.se.spi.orbutil.threadpool.Work
 import groovy.json.JsonOutput
 import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
@@ -52,7 +51,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	String getProvisionTypeCode() {
+	String getCode() {
 		return 'do-provider'
 	}
 
@@ -99,7 +98,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 				'user_data'         : opts.userData,
 				'private_networking': workload.privateNetworking
 		]
-		body.keys = morpheusContext.cloud.findOrGenerateKeyPair(workload.account).blockingGet().id
+		body.keys = morpheus.cloud.findOrGenerateKeyPair(workload.account).blockingGet().id
 		log.debug "post body: $body"
 		http.entity = new StringEntity(JsonOutput.toJson(body))
 
@@ -190,23 +189,13 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return this.context
 	}
 
 	@Override
 	Plugin getPlugin() {
 		return this.plugin
-	}
-
-	@Override
-	String getProviderCode() {
-		return 'example-cloud-provision'
-	}
-
-	@Override
-	String getProviderName() {
-		return 'Example Cloud Provision Provider'
 	}
 
 	@Override
@@ -255,7 +244,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	def pluginImage(Cloud cloud) {
 		List options = []
-		morpheusContext.virtualImage.listSyncProjections(cloud.id).subscribe{options << [name: it.name, value: it.id]}
+		morpheus.virtualImage.listSyncProjections(cloud.id).subscribe{options << [name: it.name, value: it.id]}
 		options
 	}
 

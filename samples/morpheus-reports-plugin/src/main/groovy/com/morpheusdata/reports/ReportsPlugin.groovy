@@ -1,7 +1,6 @@
 package com.morpheusdata.reports
 
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.model.Permission
 
 /**
  * Example Custom Reports Plugin
@@ -10,8 +9,8 @@ class ReportsPlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		CustomReportProvider customReportProvider = new CustomReportProvider(this, morpheusContext)
-		this.pluginProviders.put(customReportProvider.providerCode, customReportProvider)
+		CustomReportProvider customReportProvider = new CustomReportProvider(this, morpheus)
+		this.pluginProviders.put(customReportProvider.code, customReportProvider)
 		this.setName("Custom Reports")
 		
 	}

@@ -33,7 +33,7 @@ class FileWatcherProviderSpec extends Specification {
 
 	void "DI works"() {
 		expect:
-		provider.morpheusContext
+		provider.morpheus
 	}
 
 	void "writes file"() {

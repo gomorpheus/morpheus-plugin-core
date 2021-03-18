@@ -8,7 +8,7 @@ class PluginManagerSpec extends Specification {
     void "Register and Deregister plugin from jar"() {
         given: "A MorpheusContext & jar"
         def context = Mock(MorpheusContext)
-        String pathToJar = this.class.classLoader.getResource("morpheus-infoblox-plugin-7.0-all.jar").path
+        String pathToJar = this.class.classLoader.getResource("morpheus-infoblox-plugin-1.0.0-all.jar").path
 
         when: "create a plugin manager"
         def manager = new PluginManager(context)

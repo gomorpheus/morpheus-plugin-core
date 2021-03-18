@@ -19,11 +19,10 @@ public interface TaskProvider extends PluginProvider {
 	 * @return a task service
 	 */
 	ExecutableTaskInterface getService();
-	
-	String getTaskCode();
+
 	TaskType.TaskScope getScope();
-	String getTaskName();
-	String getTaskDescription();
+
+	String getDescription();
 
 	/**
 	 * A flag indicating if this task can be configured to execute on a remote context

@@ -18,7 +18,7 @@ class ReverseTextTaskProvider implements TaskProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return morpheusContext
 	}
 
@@ -29,11 +29,11 @@ class ReverseTextTaskProvider implements TaskProvider {
 
 	@Override
 	ExecutableTaskInterface getService() {
-		return new ReverseTextTaskService(morpheusContext)
+		return new ReverseTextTaskService(morpheus)
 	}
 
 	@Override
-	String getTaskCode() {
+	String getCode() {
 		return "reverseTextTask"
 	}
 
@@ -43,12 +43,12 @@ class ReverseTextTaskProvider implements TaskProvider {
 	}
 
 	@Override
-	String getTaskName() {
+	String getName() {
 		return 'Reverse Text'
 	}
 
 	@Override
-	String getTaskDescription() {
+	String getDescription() {
 		return 'A custom task that reverses text'
 	}
 
@@ -95,15 +95,4 @@ class ReverseTextTaskProvider implements TaskProvider {
 		)
 		return [optionType]
 	}
-
-	@Override
-	String getProviderCode() {
-		return "reverseTextTaskService"
-	}
-
-	@Override
-	String getProviderName() {
-		return "Reverse Text Task"
-	}
-
 }

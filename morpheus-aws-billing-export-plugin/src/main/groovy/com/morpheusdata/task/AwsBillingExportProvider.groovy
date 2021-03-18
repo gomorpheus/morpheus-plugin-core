@@ -22,7 +22,7 @@ class AwsBillingExportProvider implements TaskProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return morpheusContext
 	}
 
@@ -37,7 +37,7 @@ class AwsBillingExportProvider implements TaskProvider {
 	}
 
 	@Override
-	String getTaskCode() {
+	String getCode() {
 		return "awsBillingExportTask"
 	}
 
@@ -47,12 +47,12 @@ class AwsBillingExportProvider implements TaskProvider {
 	}
 
 	@Override
-	String getTaskName() {
+	String getName() {
 		return 'AWS Billing Report Export'
 	}
 
 	@Override
-	String getTaskDescription() {
+	String getDescription() {
 		return 'A custom task that reverses text'
 	}
 
@@ -224,16 +224,6 @@ class AwsBillingExportProvider implements TaskProvider {
 		
 
 		return [sourceAccessKey,sourceSecretKey,stsAssumeRole,useHostCredentials,sourceBucket,sourceBucketRegion, targetBucket,targetBucketRegion, awsBillingPeriod,awsReportFolder,awsReportName,awsUsageAccountIds]
-	}
-
-	@Override
-	String getProviderCode() {
-		return "awsBillingExportTaskService"
-	}
-
-	@Override
-	String getProviderName() {
-		return "AWS Billing Export Task"
 	}
 
 }

@@ -132,4 +132,35 @@ class MorpheusContextImpl implements MorpheusContext {
 	Single<TaskConfig> buildComputeServerConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts) {
 		return null
 	}
+
+	/**
+	 * Acquires a distributed lock by key and some additional lock options can be provided
+	 * @param name the key name of the lock to acquire
+	 * @param opts the acquire wait timeout option via key [timeout:ms] as well as the locks ttl via [ttl:ms] property.
+	 * @return a unique lock key id to control concurrent release attempts. send this to releaseLocks opts.lock key
+	 *
+	 * <p><strong>Example:</strong> </p>
+	 * <pre>{@code
+	 * String lockId
+	 * try {*     lockId = morpheusContext.acquireLock('mylock.key',[ttl:600000L,timeout:600000L]);
+	 *     //do stuff
+	 *} finally {*     if(lockId) {*         morpheusContext.releaseLock('mylock.key',[lock: lockId]);
+	 *}*}*}</pre>
+	 */
+	@Override
+	Single<String> acquireLock(String name, Map opts) {
+		return null
+	}
+
+	/**
+	 * Releases a lock key for other threads or nodes to be able to use it.
+	 * It takes an optional set of opts that can be used to scope the lock release to a key hash for concurrency safety
+	 * @param name the key name of the lock to release
+	 * @param opts the opts map of wait timeouts or [lock:lockId] where the lockId is the return of {@link MorpheusContext#acquireLock(String, Map)}
+	 * @return the success state of the release lock attempt
+	 */
+	@Override
+	Single<Boolean> releaseLock(String name, Map opts) {
+		return null
+	}
 }

@@ -20,11 +20,11 @@ class AwsBillingExportPlugin extends Plugin {
 	 */
 	@Override
 	void initialize() {
-		AwsBillingExportProvider awsBillingExportProvider = new AwsBillingExportProvider(this, morpheusContext)
+		AwsBillingExportProvider awsBillingExportProvider = new AwsBillingExportProvider(this, morpheus)
 		this.setName("AWS Billing Report Export Plugin")
 		this.setDescription("Provides a task that can export an AWS Billing report into a new target S3 Bucket")
 		this.setAuthor("David Estes")
-		this.pluginProviders.put(awsBillingExportProvider.providerCode, awsBillingExportProvider)
+		this.pluginProviders.put(awsBillingExportProvider.code, awsBillingExportProvider)
 		
 		
 	}
@@ -34,6 +34,6 @@ class AwsBillingExportPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.task.disableTask('awsBillingExportTask')
+		morpheus.task.disableTask('awsBillingExportTask')
 	}
 }

@@ -10,10 +10,10 @@ class MaasPlugin extends Plugin {
 	@Override
 	void initialize() {
 		this.setName('MaaS Plugin')
-		def maasProvision = new MaasProvisionProvider(this, this.morpheusContext)
-		def maasCloud = new MaasCloudProvider(this, this.morpheusContext)
-		this.pluginProviders.put(maasProvision.providerCode, maasProvision)
-		this.pluginProviders.put(maasCloud.providerCode, maasCloud)
+		def maasProvision = new MaasProvisionProvider(this, this.morpheus)
+		def maasCloud = new MaasCloudProvider(this, this.morpheus)
+		this.pluginProviders.put(maasProvision.code, maasProvision)
+		this.pluginProviders.put(maasCloud.code, maasCloud)
 	}
 
 	@Override

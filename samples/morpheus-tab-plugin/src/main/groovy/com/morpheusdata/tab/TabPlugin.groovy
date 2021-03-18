@@ -10,8 +10,8 @@ class TabPlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		CustomTabProvider customTabProvider = new CustomTabProvider(this, morpheusContext)
-		this.pluginProviders.put(customTabProvider.providerCode, customTabProvider)
+		CustomTabProvider customTabProvider = new CustomTabProvider(this, morpheus)
+		this.pluginProviders.put(customTabProvider.code, customTabProvider)
 		this.setName("Custom Tabs")
 		this.setPermissions([Permission.build('Custom Instance Tab','custom-instance-tab', [Permission.AccessType.none, Permission.AccessType.full])])
 	}

@@ -1,19 +1,17 @@
 package com.morpheusdata.cypher.random
 
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.views.HandlebarsRenderer
-import com.morpheusdata.views.ViewModel
 
 class CypherSamplePlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		RandomNumberCypherProvider randomNumberCypherProvider = new RandomNumberCypherProvider(this, morpheusContext)
+		RandomNumberCypherProvider randomNumberCypherProvider = new RandomNumberCypherProvider(this, morpheus)
 		
 		this.setName("Cypher Random Number Backend")
 		this.setDescription("Provides a random number generator between 1 and specified key value with key /random/xx")
 		this.setAuthor("David Estes")
-		this.pluginProviders.put(randomNumberCypherProvider.providerCode, randomNumberCypherProvider)
+		this.pluginProviders.put(randomNumberCypherProvider.code, randomNumberCypherProvider)
 	}
 
 	/**

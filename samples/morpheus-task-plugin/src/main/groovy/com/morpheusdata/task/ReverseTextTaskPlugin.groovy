@@ -20,11 +20,11 @@ class ReverseTextTaskPlugin extends Plugin {
 	 */
 	@Override
 	void initialize() {
-		ReverseTextTaskProvider reverseTextTaskProvider = new ReverseTextTaskProvider(this, morpheusContext)
+		ReverseTextTaskProvider reverseTextTaskProvider = new ReverseTextTaskProvider(this, morpheus)
 		this.setName("Reverse Text Task Plugin")
 		this.setDescription("Provides a task that can reverse the value of any string input")
 		this.setAuthor("Mike Truso")
-		this.pluginProviders.put(reverseTextTaskProvider.providerCode, reverseTextTaskProvider)
+		this.pluginProviders.put(reverseTextTaskProvider.code, reverseTextTaskProvider)
 		this.setRenderer(new HandlebarsRenderer(this.classLoader))
 		this.controllers.add(new ReverseTextTaskController())
 		def model = new ViewModel<String>()
@@ -38,6 +38,6 @@ class ReverseTextTaskPlugin extends Plugin {
 	 */
 	@Override
 	void onDestroy() {
-		morpheusContext.task.disableTask('reverseTextTask')
+		morpheus.task.disableTask('reverseTextTask')
 	}
 }

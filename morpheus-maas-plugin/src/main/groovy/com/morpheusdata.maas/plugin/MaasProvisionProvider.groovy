@@ -31,19 +31,15 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 
 	@Override
-	String getProviderCode() {
-		return 'maas-provision'
+	String getCode() {
+		return 'maas'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		return 'MaaS'
 	}
 
-	@Override
-	String getProvisionTypeCode() {
-		return 'maas'
-	}
 
 	@Override
 	Single<ServiceResponse> validateWorkload(Map opts = [:]) {

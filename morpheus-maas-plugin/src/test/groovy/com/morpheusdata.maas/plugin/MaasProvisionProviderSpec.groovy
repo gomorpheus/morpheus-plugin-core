@@ -7,7 +7,6 @@ import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
-import com.morpheusdata.model.Container
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Single
 import spock.lang.Specification
@@ -39,8 +38,8 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "Validate defaults are set correctly"() {
 		expect:
-		service.getProviderCode() == 'maas-provision'
-		service.getProviderName() == 'MaaS'
+		service.getCode() == 'maas'
+		service.getName() == 'MaaS'
 	}
 
 	void "getAuthConfig"() {
