@@ -1,5 +1,6 @@
-package com.morpheusdata.core;
+package com.morpheusdata.core.cloud;
 
+import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public interface MorpheusCloudContext {
 
-
+	MorpheusComputeZonePoolContext getPool();
 
 	/**
 	 * Update the status of a Cloud during setup
@@ -61,10 +62,6 @@ public interface MorpheusCloudContext {
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
 	Single<ReferenceData> listReferenceDataByExternalIds(List<Long> externalIds);
 	Single<List<ReferenceData>> findReferenceDataByCategory(Cloud cloud, String category);
-
-	Single<ComputeZonePool> save(ComputeZonePool pool, Cloud cloud, String category);
-//	Single<Void> cacheResourcePools(List<ComputeZonePool> pools, Cloud cloud, String category);
-	Single<List<ComputeZonePool>> readResourcePools(Cloud cloud, String category);
 
 	Single<Void> updatePowerState(Long id, String state);
 

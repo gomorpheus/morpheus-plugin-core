@@ -1,13 +1,13 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.cloud.MorpheusComputeZonePoolContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
-import com.morpheusdata.model.Container
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Single
 import spock.lang.Specification
@@ -22,16 +22,19 @@ class MaasProvisionProviderSpec extends Specification {
 	MorpheusNetworkContext networkContext
 	MorpheusCloudContext cloudContext
 	MorpheusComputeServerContext computeServerContext
+	MorpheusComputeZonePoolContext poolContext
 	MaasPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		networkContext = Mock(MorpheusNetworkContext)
 		cloudContext = Mock(MorpheusCloudContext)
+		poolContext = Mock(MorpheusComputeZonePoolContext)
 		computeServerContext = Mock(MorpheusComputeServerContext)
 		context.getNetwork() >> networkContext
 		context.getCloud() >> cloudContext
 		context.getComputeServer() >> computeServerContext
+		cloudContext.getPool() >> poolContext
 		plugin = Mock(MaasPlugin)
 
 		service = new MaasProvisionProvider(plugin, context)

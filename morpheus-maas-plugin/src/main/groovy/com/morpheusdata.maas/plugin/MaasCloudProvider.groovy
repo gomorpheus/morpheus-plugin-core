@@ -161,22 +161,24 @@ class MaasCloudProvider implements CloudProvider {
 
 	List<Map<String, Object>> maasResourcePools(def cloud) {
 		log.info("maasResourcePools")
-		String serviceUrl = cloud?.serviceUrl ?:cloud?.configMap?.serviceUrl
+		String serviceUrl = cloud?.serviceUrl ?: cloud?.configMap?.serviceUrl
+		List poolOptions = []
 		if (serviceUrl) {
 			def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 			String category = "maas.resourcepool.${cloud.id}"
-			List<ComputeZonePool> cachedPools = morpheusContext.cloud.readResourcePools(cloud, category).blockingGet()
-			if (cachedPools) {
-				return cachedPools.collect { [name: it.name, value: it.externalId] }
-			} else {
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, category).subscribe {
+				poolOptions << [name: it.name, value: it.externalId]
+			}
+			if (!poolOptions) {
 				log.info("no cached pools found")
 				def apiResponse = MaasComputeUtility.listResourcePools(authConfig, [:])
 				if (apiResponse.success) {
+					// TODO cache resource pools
 					return apiResponse.data.collect { [name: it.name, value: it.id] }
 				}
 			}
 		}
-		[]
+		poolOptions
 	}
 
 	List maasReleaseModes(Cloud cloud) {
