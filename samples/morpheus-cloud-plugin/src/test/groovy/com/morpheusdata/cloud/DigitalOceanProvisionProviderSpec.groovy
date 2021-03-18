@@ -1,6 +1,6 @@
 package com.morpheusdata.cloud
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusVirtualImageContext
 import com.morpheusdata.core.Plugin

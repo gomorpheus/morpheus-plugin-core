@@ -1,11 +1,18 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.cloud.MorpheusComputeZonePoolContext
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeZonePool
+import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.annotations.NonNull
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -18,13 +25,16 @@ class MaasCloudProviderSpec extends Specification {
 
 	MorpheusContext context
 	MorpheusCloudContext cloudContext
+	MorpheusComputeZonePoolContext poolContext
 	MaasPlugin plugin
 	@Shared MaasComputeUtility maasComputeUtility
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		cloudContext = Mock(MorpheusCloudContext)
+		poolContext = Mock(MorpheusComputeZonePoolContext)
 		context.getCloud() >> cloudContext
+		cloudContext.getPool() >> poolContext
 		plugin = Mock(MaasPlugin)
 		maasComputeUtility = GroovySpy(MaasComputeUtility, global: true)
 
@@ -58,11 +68,26 @@ class MaasCloudProviderSpec extends Specification {
 	void "maasResourcePools"() {
 		given:
 		Cloud cloud = new Cloud(serviceUrl: 'localhost', serviceToken: 'token')
+		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ComputeZonePoolIdentityProjection>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<ComputeZonePoolIdentityProjection> emitter) throws Exception {
+				try {
+					List<ComputeZonePoolIdentityProjection> projections = [new ComputeZonePoolIdentityProjection(id: 1, name: 'Pool1', externalId: 'pool-1'),]
+					for (projection in projections) {
+						emitter.onNext(projection)
+					}
+					emitter.onComplete()
+				} catch (Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
+
 		when:
 		def pools = service.maasResourcePools(cloud)
 
 		then: "contains the correct values"
-		1 * cloudContext.readResourcePools(_, _) >> Single.just([new ComputeZonePool(id: 1, name: 'Pool1', externalId: 'pool-1')])
+		1 * poolContext.listSyncProjections(_, _) >> listSyncProjections
 		pools == [[name: 'Pool1', value: 'pool-1']]
 
 		and: "is used as an option source"
