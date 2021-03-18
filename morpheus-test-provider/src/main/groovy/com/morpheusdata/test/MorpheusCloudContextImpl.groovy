@@ -1,6 +1,6 @@
 package com.morpheusdata.test
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import groovy.transform.AutoImplement
 
 @AutoImplement

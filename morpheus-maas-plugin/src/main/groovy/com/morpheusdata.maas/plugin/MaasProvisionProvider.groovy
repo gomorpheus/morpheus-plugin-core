@@ -234,7 +234,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 					[status:'configuring', username:opts.processUser], null, [status:'configuring'])
 			def server
 			morpheusContext.computeServer.listById([runConfig.server.id]).subscribe{server = it}
-			def container = morpheusContext.cloud.getContainerById(runConfig.container.id).blockingGet()
+			def container = morpheusContext.cloud.getWorkloadById(runConfig.container.id).blockingGet()
 			def serverUpdates = [sshUsername:runConfig.sshUsername, sshPassword:runConfig.sshPassword, hostname:runConfig.hostName]
 			//refresh the virtual image
 			if(runConfig.virtualImage)
@@ -336,7 +336,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 					def waitResults = MaasComputeUtility.waitForMachinePowerState(authConfig, computeServer.externalId, 'off', powerConfig)
 					log.info("stop server wait results: {}", waitResults)
 					rtn.success = true
-					morpheusContext.cloud.updatePowerState(computeServer.id, 'off').blockingGet()
+					morpheusContext.cloud.updatePowerState(computeServer.id, ComputeServer.PowerState.off).blockingGet()
 
 					if(computeServer.computeServerType?.guestVm) {
 						// update container statuses

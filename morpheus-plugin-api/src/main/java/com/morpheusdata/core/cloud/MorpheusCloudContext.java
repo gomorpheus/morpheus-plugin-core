@@ -1,7 +1,7 @@
-package com.morpheusdata.core;
+package com.morpheusdata.core.cloud;
 
+import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface MorpheusCloudContext {
 
-
+	MorpheusComputeZonePoolContext getPool();
 
 	/**
 	 * Update the status of a Cloud during setup
@@ -44,29 +44,28 @@ public interface MorpheusCloudContext {
 	 */
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
-	Single<Container> getContainerById(Long id);
+	Single<Workload> getWorkloadById(Long id);
+	Observable<Workload> getWorkload(ComputeServer server);
 
 	Single<Cloud> getCloudById(Long id);
 
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
 
-	Single<ReferenceData> save(ReferenceData referenceData);
-	Single<ReferenceData> save(ReferenceData referenceData, Boolean flush);
-
-	Single<ReferenceData> save(ReferenceData referenceData, Cloud cloud, String category);
-	Single<Boolean> saveAll(List<ReferenceData> referenceData);
-	Single<Boolean> saveAll(List<ReferenceData> referenceData, Cloud cloud, String category);
-	Single<Boolean> removeMissingReferenceDataByIds(List<Long> longs);
+	Single<Boolean> create(List<ReferenceData> referenceData, Cloud cloud, String category);
+	Single<Boolean> save(List<ReferenceData> referenceData, Cloud cloud, String category);
+	Single<Boolean> remove(List<ReferenceDataSyncProjection> removeItems);
 	Observable<ReferenceDataSyncProjection> listReferenceDataByCategory(Cloud cloud, String code);
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
-	Single<ReferenceData> listReferenceDataByExternalIds(List<Long> externalIds);
-	Single<List<ReferenceData>> findReferenceDataByCategory(Cloud cloud, String category);
+	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
-	Single<ComputeZonePool> save(ComputeZonePool pool, Cloud cloud, String category);
-//	Single<Void> cacheResourcePools(List<ComputeZonePool> pools, Cloud cloud, String category);
-	Single<List<ComputeZonePool>> readResourcePools(Cloud cloud, String category);
-
-	Single<Void> updatePowerState(Long id, String state);
+	/**
+	 * Update the power state of a server and any related vms
+	 * 
+	 * @param computeServerId id of the {@link ComputeServer}
+	 * @param state power state
+	 * @return void
+	 */
+	Single<Void> updatePowerState(Long computeServerId, ComputeServer.PowerState state);
 
 	Single<Void> updateInstanceStatus(List<Long> ids, Instance.Status status);
 
@@ -74,5 +73,4 @@ public interface MorpheusCloudContext {
 
 	Single<Instance> getInstance(ComputeServer server);
 
-	Single<Container> getContainer(ComputeServer server);
 }

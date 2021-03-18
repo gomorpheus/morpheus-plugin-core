@@ -1,8 +1,9 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.cloud.MorpheusComputeZonePoolContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
@@ -21,16 +22,19 @@ class MaasProvisionProviderSpec extends Specification {
 	MorpheusNetworkContext networkContext
 	MorpheusCloudContext cloudContext
 	MorpheusComputeServerContext computeServerContext
+	MorpheusComputeZonePoolContext poolContext
 	MaasPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		networkContext = Mock(MorpheusNetworkContext)
 		cloudContext = Mock(MorpheusCloudContext)
+		poolContext = Mock(MorpheusComputeZonePoolContext)
 		computeServerContext = Mock(MorpheusComputeServerContext)
 		context.getNetwork() >> networkContext
 		context.getCloud() >> cloudContext
 		context.getComputeServer() >> computeServerContext
+		cloudContext.getPool() >> poolContext
 		plugin = Mock(MaasPlugin)
 
 		service = new MaasProvisionProvider(plugin, context)
@@ -174,7 +178,7 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.success
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		1 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
-		1 * cloudContext.updatePowerState(333, 'off')
+		1 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "stopServer - unmanaged"() {
@@ -192,7 +196,7 @@ class MaasProvisionProviderSpec extends Specification {
 		!resp.success
 		0 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: true]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _) >> [success: true]
-		0 * cloudContext.updatePowerState(333, 'off')
+		0 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "stopServer - power off failure"() {
@@ -210,7 +214,7 @@ class MaasProvisionProviderSpec extends Specification {
 		!resp.success
 		1 * MaasComputeUtility.powerOffMachine(_, _, _) >> [success: false]
 		0 * MaasComputeUtility.waitForMachinePowerState(_, _, 'off', _)
-		0 * cloudContext.updatePowerState(333, 'off')
+		0 * cloudContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
 	void "runServer"() {

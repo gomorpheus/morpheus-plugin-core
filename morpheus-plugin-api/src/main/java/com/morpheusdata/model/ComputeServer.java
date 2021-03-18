@@ -30,7 +30,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public ComputeZonePool resourcePool;
 	public String serverType;
 	public String consoleHost;
-	public String powerState;
+	public PowerState powerState;
 	public Long maxStorage;
 	public Long maxMemory;
 	public Long maxCores;
@@ -82,4 +82,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	}
 
 	public List<ComputeServerInterface> interfaces;
+
+	public enum PowerState {
+		on,
+		off,
+		unknown,
+		paused
+	}
 }
