@@ -1,7 +1,7 @@
 package com.morpheusdata.test
 
 
-import com.morpheusdata.core.MorpheusCloudContext
+import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
