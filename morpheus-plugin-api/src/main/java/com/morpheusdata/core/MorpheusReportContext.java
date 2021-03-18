@@ -26,7 +26,7 @@ public interface MorpheusReportContext {
 	 * efficiency. It is important to leverage displayOrder when processing for proper order on each individual {@link ReportResultRow}
 	 * @param reportResult The report run being processed
 	 * @param rows the list of rows to be added to the system
-	 * @return
+	 * @return success
 	 */
 	Single<Boolean> appendResultRows(ReportResult reportResult, Collection<ReportResultRow> rows);
 
