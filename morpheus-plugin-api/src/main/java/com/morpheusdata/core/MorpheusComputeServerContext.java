@@ -56,4 +56,14 @@ public interface MorpheusComputeServerContext {
 	 * @return success
 	 */
 	Single<Boolean> remove(List<ComputeServerIdentityProjection> computeServers);
+
+	/**
+	 * Update the power state of a server and any related vms
+	 *
+	 * @param computeServerId id of the {@link ComputeServer}
+	 * @param state power state
+	 * @return void
+	 */
+	Single<Void> updatePowerState(Long computeServerId, ComputeServer.PowerState state);
+
 }

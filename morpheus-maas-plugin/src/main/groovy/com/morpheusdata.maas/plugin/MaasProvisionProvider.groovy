@@ -336,7 +336,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 					def waitResults = MaasComputeUtility.waitForMachinePowerState(authConfig, computeServer.externalId, 'off', powerConfig)
 					log.info("stop server wait results: {}", waitResults)
 					rtn.success = true
-					morpheusContext.cloud.updatePowerState(computeServer.id, ComputeServer.PowerState.off).blockingGet()
+					morpheusContext.computeServer.updatePowerState(computeServer.id, ComputeServer.PowerState.off).blockingGet()
 
 					if(computeServer.computeServerType?.guestVm) {
 						// update container statuses

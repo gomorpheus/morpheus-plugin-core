@@ -58,15 +58,6 @@ public interface MorpheusCloudContext {
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
 	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
-	/**
-	 * Update the power state of a server and any related vms
-	 * 
-	 * @param computeServerId id of the {@link ComputeServer}
-	 * @param state power state
-	 * @return void
-	 */
-	Single<Void> updatePowerState(Long computeServerId, ComputeServer.PowerState state);
-
 	Single<Void> updateInstanceStatus(List<Long> ids, Instance.Status status);
 
 	Single<List<Long>> getStoppedContainerInstanceIds(Long containerId);
