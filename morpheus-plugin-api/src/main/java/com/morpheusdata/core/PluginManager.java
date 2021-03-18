@@ -1,6 +1,5 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.views.HandlebarsPluginTemplateLoader;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.views.ViewModel;
@@ -27,7 +26,7 @@ import java.util.jar.Manifest;
 public class PluginManager {
 
 	private ArrayList<Plugin> plugins = new ArrayList<>();
-	private MorpheusContext morpheusContext;
+	private MorpheusContext morpheus;
 	private Dispatcher dispatcher;
 	private Renderer<?> renderer = new HandlebarsRenderer();
 	private final ClassLoader mainLoader = PluginManager.class.getClassLoader();
@@ -35,10 +34,10 @@ public class PluginManager {
 	private final ClassLoader pluginManagerClassLoader = new ClassLoader(mainLoader){};
 
 	PluginManager(MorpheusContext context, Collection<Class<Plugin>> plugins) throws InstantiationException, IllegalAccessException {
-		this.morpheusContext = context;
+		this.morpheus = context;
 		this.dispatcher = new Dispatcher(this);
 
-		if(this.morpheusContext == null) {
+		if(this.morpheus == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
 //		for(Class<Plugin> plugin : plugins) {
@@ -47,10 +46,10 @@ public class PluginManager {
 	}
 
 	public PluginManager(MorpheusContext context) {
-		this.morpheusContext = context;
+		this.morpheus = context;
 		this.dispatcher = new Dispatcher(this);
 
-		if(this.morpheusContext == null) {
+		if(this.morpheus == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
 	}
@@ -64,8 +63,8 @@ public class PluginManager {
 	 * initializing provider classes.
 	 * @return the reference to the main Morpheus Context object used by all providers utilizing this Plugin manager.
 	 */
-	MorpheusContext getMorpheusContext() {
-		return this.morpheusContext;
+	MorpheusContext getMorpheus() {
+		return this.morpheus;
 	}
 
 
@@ -85,7 +84,7 @@ public class PluginManager {
 
 		Plugin plugin = pluginClass.newInstance();
 		plugin.setPluginManager(this);
-		plugin.setMorpheusContext(this.morpheusContext);
+		plugin.setMorpheus(this.morpheus);
 		plugin.setName(pluginClass.toString());
 		plugin.setFileName(jarFile.getAbsolutePath());
 		plugin.setVersion(version);

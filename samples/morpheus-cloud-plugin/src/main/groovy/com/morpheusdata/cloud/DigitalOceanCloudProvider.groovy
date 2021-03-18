@@ -30,7 +30,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return this.morpheusContext
 	}
 
@@ -40,12 +40,12 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		return 'digital-ocean-plugin'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		return 'Digital Ocean Plugin'
 	}
 
@@ -149,7 +149,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	ProvisioningProvider getProvisioningProvider(String providerCode) {
-		return getAvailableProvisioningProviders().find { it.providerCode == providerCode }
+		return getAvailableProvisioningProviders().find { it.code == providerCode }
 	}
 
 	@Override
@@ -268,15 +268,15 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		syncTask.addMatchFunction { VirtualImageIdentityProjection projection, VirtualImage apiImage ->
 			projection.externalId == apiImage.externalId
 		}.onDelete { List<VirtualImageIdentityProjection> deleteList ->
-			morpheusContext.virtualImage.remove(deleteList)
+			morpheus.virtualImage.remove(deleteList)
 		}.onAdd { createList ->
 			while (createList.size() > 0) {
 				List chunkedList = createList.take(50)
 				createList = createList.drop(50)
-				morpheusContext.virtualImage.create(chunkedList)
+				morpheus.virtualImage.create(chunkedList)
 			}
 		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection,VirtualImage>> updateItems ->
-			morpheusContext.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+			morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
 			updateMatchedImages(updateList)
 		}.start()
@@ -299,7 +299,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			def name = getNameForSize(it)
 			def servicePlan = new ServicePlan(
 					code: "doplugin.size.${it.slug}",
-					provisionTypeCode: getProviderCode(),
+					provisionTypeCode: getCode(),
 					description: name,
 					name: name,
 					editable: false,
@@ -320,15 +320,15 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			syncTask.addMatchFunction { ServicePlanIdentityProjection projection, ServicePlan apiPlan ->
 				projection.externalId == apiPlan.externalId
 			}.onDelete { List<ServicePlanIdentityProjection> deleteList ->
-				morpheusContext.servicePlan.remove(deleteList)
+				morpheus.servicePlan.remove(deleteList)
 			}.onAdd { createList ->
 				while (createList.size() > 0) {
 					List chunkedList = createList.take(50)
 					createList = createList.drop(50)
-					morpheusContext.servicePlan.create(chunkedList)
+					morpheus.servicePlan.create(chunkedList)
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanIdentityProjection, ServicePlan>> updateItems ->
-				morpheusContext.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 			}.onUpdate { updateList ->
 				updateMatchedPlans(updateList)
 			}.start()

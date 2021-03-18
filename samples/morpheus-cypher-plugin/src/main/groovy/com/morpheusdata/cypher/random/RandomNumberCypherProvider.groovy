@@ -14,7 +14,7 @@ class RandomNumberCypherProvider implements CypherModuleProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return morpheusContext
 	}
 
@@ -43,12 +43,12 @@ class RandomNumberCypherProvider implements CypherModuleProvider {
 
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		return "randomNumberCypherSecret"
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		return "Random Number Cypher Module"
 	}
 

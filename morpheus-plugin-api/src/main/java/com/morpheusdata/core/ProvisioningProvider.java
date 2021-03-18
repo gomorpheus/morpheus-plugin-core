@@ -23,19 +23,6 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Collection<OptionType> getOptionTypes();
 
 	/**
-	 * Provides a unique code for the implemented provisioning provider  (i.e. vmware, azure,ecs,etc.)
-	 * @return unique String code
-	 */
-	public String getProvisionTypeCode();
-
-	/**
-	 * Returns the Name of the Provisioning Provider
-	 * @return Name
-	 */
-	public String getName();
-
-
-	/**
 	 * Determines if this provision type has datastores that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has datastores
 	 */

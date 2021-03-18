@@ -7,12 +7,12 @@ class DigitalOceanPlugin extends Plugin {
 	@Override
 	void initialize() {
 		this.name = 'Digital Ocean Plugin'
-		DigitalOceanCloudProvider cloudProvider = new DigitalOceanCloudProvider(this, morpheusContext)
-		DigitalOceanProvisionProvider provisionProvider = new DigitalOceanProvisionProvider(this, morpheusContext)
-		DigitalOceanBackupProvider backupProvider = new DigitalOceanBackupProvider(this, morpheusContext)
-		pluginProviders.put(provisionProvider.providerCode, provisionProvider)
-		pluginProviders.put(cloudProvider.providerCode, cloudProvider)
-		pluginProviders.put(backupProvider.providerCode, backupProvider)
+		DigitalOceanCloudProvider cloudProvider = new DigitalOceanCloudProvider(this, morpheus)
+		DigitalOceanProvisionProvider provisionProvider = new DigitalOceanProvisionProvider(this, morpheus)
+		DigitalOceanBackupProvider backupProvider = new DigitalOceanBackupProvider(this, morpheus)
+		pluginProviders.put(provisionProvider.code, provisionProvider)
+		pluginProviders.put(cloudProvider.code, cloudProvider)
+		pluginProviders.put(backupProvider.code, backupProvider)
 	}
 
 	@Override

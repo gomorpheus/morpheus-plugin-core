@@ -13,7 +13,7 @@ public interface PluginProvider {
 	 *
 	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
 	 */
-	MorpheusContext getMorpheusContext();
+	MorpheusContext getMorpheus();
 
 	/**
 	 * Returns the instance of the Plugin class that this provider is loaded from
@@ -26,7 +26,7 @@ public interface PluginProvider {
 	 * that is seeded or generated related to this provider will reference it by this code.
 	 * @return short code string that should be unique across all other plugin implementations.
 	 */
-	String getProviderCode();
+	String getCode();
 
 	/**
 	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
@@ -34,7 +34,7 @@ public interface PluginProvider {
 	 *
 	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
 	 */
-	String getProviderName();
+	String getName();
 
 	/**
 	 * Returns true if the Provider is a plugin. Always true for plugin but null or false for Morpheus internal providers.

@@ -138,9 +138,6 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress);
 
-	Single<String> acquireLock(String name, Map opts);
-
-	Single<Boolean> releaseLock(String name, Map opts);
 
 	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
 

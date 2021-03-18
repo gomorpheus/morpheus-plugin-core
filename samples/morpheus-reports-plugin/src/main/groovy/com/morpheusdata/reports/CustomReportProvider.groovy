@@ -3,21 +3,19 @@ package com.morpheusdata.reports
 import com.morpheusdata.core.AbstractReportProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.model.Account
-import com.morpheusdata.model.Instance
+import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.ReportResult
 import com.morpheusdata.model.ReportType
 import com.morpheusdata.model.ReportResultRow
 import com.morpheusdata.model.ContentSecurityPolicy
-import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
-import groovy.sql.GroovyResultSet
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+import io.reactivex.Observable;
 
 import java.sql.Connection
 
@@ -35,7 +33,7 @@ class CustomReportProvider extends AbstractReportProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		morpheusContext
 	}
 
@@ -45,21 +43,13 @@ class CustomReportProvider extends AbstractReportProvider {
 	}
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		'custom-report-instance-status'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		'Report Instance Status'
-	}
-
-	ReportType getReportType() {
-		ReportType reportType = new ReportType(code:'custom-instance-status-report',name:'Instance Status Report', description: 'Creates a report listing all instances and their statuses.', category: 'inventory', visible:true, masterOnly:false, ownerOnly:false)
-		reportType.supportsAllZoneTypes = true
-		reportType.optionTypes = []
-
-		return reportType
 	}
 
 	 ServiceResponse validateOptions(Map opts) {
@@ -109,11 +99,41 @@ class CustomReportProvider extends AbstractReportProvider {
 		observable.map{ resultRow ->
 			return new ReportResultRow(section: 'data',displayOrder: displayOrder++, data: JsonOutput.toJson(data))
 		}.buffer(50).flatMap { resultRows
-			morpheusContext.report.appendResultRows(reportResult,resultRows)
+			morpheus.report.appendResultRows(reportResult,resultRows)
 		}.doOnComplete {
-			morpheusContext.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
+			morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
 		}.doOnError { Throwable t ->
-			morpheusContext.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
+			morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
 		}.blockingSubscribe()
 	}
-}
+
+	 @Override
+	 String getDescription() {
+		 return "Provides a Sample Report that lists all instances in the database and their status. This Report is not tenant scoped."
+	 }
+
+	 @Override
+	 String getCategory() {
+		 return 'inventory'
+	 }
+
+	 @Override
+	 Boolean getOwnerOnly() {
+		 return false
+	 }
+
+	 @Override
+	 Boolean getMasterOnly() {
+		 return true
+	 }
+
+	 @Override
+	 Boolean getSupportsAllZoneTypes() {
+		 return true
+	 }
+
+	 @Override
+	 List<OptionType> getOptionTypes() {
+		 return []
+	 }
+ }

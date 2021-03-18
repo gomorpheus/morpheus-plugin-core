@@ -17,7 +17,7 @@ public abstract class Plugin implements PluginInterface {
 	protected Map<String, PluginProvider> pluginProviders = new LinkedHashMap<>();
 
 	private PluginManager pluginManager;
-	protected MorpheusContext morpheusContext;
+	protected MorpheusContext morpheus;
 	private ClassLoader classLoader;
 	protected Renderer<?> renderer;
 	protected List<PluginController> controllers = new ArrayList<>();
@@ -76,9 +76,9 @@ public abstract class Plugin implements PluginInterface {
 
 	/**
 	 * Sets the Morpheus Context for use during plugin initialization
-	 * @param morpheusContext
+	 * @param morpheus
 	 */
-	void setMorpheusContext(MorpheusContext morpheusContext) { this.morpheusContext = morpheusContext; }
+	void setMorpheus(MorpheusContext morpheus) { this.morpheus = morpheus; }
 
 	/**
 	 * All plugins reside in a Plugin Manager responsible for loading all plugins. This allows the PluginManager to be accessed

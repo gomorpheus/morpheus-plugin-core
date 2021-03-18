@@ -1,9 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ContentSecurityPolicy;
-import com.morpheusdata.model.ReportResult;
-import com.morpheusdata.model.ReportResultRow;
-import com.morpheusdata.model.ReportType;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
@@ -20,13 +17,24 @@ import java.util.Map;
  * @author David Estes
  */
 public interface ReportProvider extends PluginProvider {
-	ReportType getReportType();
+
 
 	ServiceResponse validateOptions(Map opts);
 
 	void process(ReportResult reportResult);
 
 	//helper context needed for saving results and view info
+	String getDescription();
+
+	String getCategory();
+
+	Boolean getOwnerOnly();
+
+	Boolean getMasterOnly();
+
+	Boolean getSupportsAllZoneTypes();
+
+	List<OptionType> getOptionTypes();
 
 	/**
 	 * Default is Handlebars

@@ -24,7 +24,7 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return morpheusContext
 	}
 
@@ -34,12 +34,12 @@ class FileWatcherProvider implements ApprovalProvider {
 	}
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		return 'file-watcher-approval'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		return 'File Watcher Approval'
 	}
 

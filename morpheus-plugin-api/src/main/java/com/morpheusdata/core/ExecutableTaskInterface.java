@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public interface ExecutableTaskInterface {
 
-	MorpheusContext getContext();
+	MorpheusContext getMorpheus();
 
 	/**
 	 * Task execution in a local context

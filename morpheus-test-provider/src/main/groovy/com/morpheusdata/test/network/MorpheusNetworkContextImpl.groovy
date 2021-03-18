@@ -198,16 +198,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 	}
 
 	@Override
-	Single<String> acquireLock(String name, Map opts) {
-		return null
-	}
-
-	@Override
-	Single<Boolean> releaseLock(String name, Map opts) {
-		return null
-	}
-
-	@Override
 	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId) {
 		return null
 	}

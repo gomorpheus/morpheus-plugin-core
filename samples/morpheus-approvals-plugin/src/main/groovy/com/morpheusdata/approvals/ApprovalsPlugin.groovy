@@ -10,8 +10,8 @@ class ApprovalsPlugin extends Plugin {
 	@Override
 	void initialize() {
 		this.setName('Approvals Plugin')
-		FileWatcherProvider provider = new FileWatcherProvider(this, morpheusContext)
-		this.pluginProviders.put(provider.providerCode, provider)
+		FileWatcherProvider provider = new FileWatcherProvider(this, morpheus)
+		this.pluginProviders.put(provider.code, provider)
 	}
 
 	@Override

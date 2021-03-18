@@ -33,7 +33,7 @@ class MaasCloudProviderSpec extends Specification {
 
 	void "DI works"() {
 		expect:
-		service.morpheusContext
+		service.morpheus
 	}
 
 	void "getOptionTypes"() {

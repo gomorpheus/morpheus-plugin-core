@@ -24,7 +24,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		morpheusContext
 	}
 
@@ -34,12 +34,12 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	}
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		'custom-tab-1'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		'Custom Tab 1'
 	}
 
@@ -51,7 +51,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	@Override
 	HTMLResponse renderTemplate(Instance instance) {
 		ViewModel<String> model = new ViewModel<String>()
-		TaskConfig config = morpheusContext.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
+		TaskConfig config = morpheus.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)
 	}

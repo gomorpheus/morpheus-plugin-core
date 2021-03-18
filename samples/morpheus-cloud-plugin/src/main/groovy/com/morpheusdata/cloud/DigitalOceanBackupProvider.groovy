@@ -36,7 +36,7 @@ class DigitalOceanBackupProvider implements BackupProvider {
 	}
 
 	@Override
-	MorpheusContext getMorpheusContext() {
+	MorpheusContext getMorpheus() {
 		return this.context
 	}
 
@@ -46,12 +46,12 @@ class DigitalOceanBackupProvider implements BackupProvider {
 	}
 
 	@Override
-	String getProviderCode() {
+	String getCode() {
 		return 'do-plugin-backup'
 	}
 
 	@Override
-	String getProviderName() {
+	String getName() {
 		return 'DigitalOcean Plugin Backup Provider'
 	}
 }
