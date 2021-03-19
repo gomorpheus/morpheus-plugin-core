@@ -159,11 +159,11 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	Single<Void> setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
 
-	Single<Void> setProvisionFailed(ComputeServer server, Container container);
-	Single<Void> setProvisionFailed(ComputeServer server, Container container, String errorMessage);
-	Single<Void> setProvisionFailed(ComputeServer server, Container container, String errorMessage, Exception error);
-	Single<Void> setProvisionFailed(ComputeServer server, Container container, String errorMessage, Exception error, Object callbackService);
-	Single<Void> setProvisionFailed(ComputeServer server, Container container, String errorMessage, Exception error, Object callbackService,  Map opts);
+	Single<Void> setProvisionFailed(ComputeServer server, Workload workload);
+	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage);
+	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error);
+	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService);
+	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService,  Map opts);
 
 	// Custom Attributes?
 	Single<Map> buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes);

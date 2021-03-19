@@ -9,7 +9,9 @@ import com.morpheusdata.model.Container
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.ProvisionType
+import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.response.WorkloadResponse
 import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
 import io.reactivex.Single
@@ -121,7 +123,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		return rtn
 	}
 
-	Single<ServiceResponse> runContainer(Container container, Map opts = [:]) {
+	@Override
+	ServiceResponse<WorkloadResponse> runWorkload(Workload container, Map opts = [:]) {
 		def rtn = [success:false]
 		def server = container.server
 		try {
@@ -135,6 +138,12 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			def zoneConfig = opts.zone.getConfigMap()
 			//auth config
 			def authConfig = getAuthConfig(opts.zone)
+
+			//copy container config and ownership to server
+			opts.server.configMap.authConfig = authConfig
+			opts.server.account = opts.container.account
+			morpheusContext.computeServer.save([opts.server]).blockingGet()
+
 			//prepare the subnet
 			def serverInterfaces = container.server.interfaces?.findAll{ it.subnet != null }
 			def serverInterface = serverInterfaces?.find{ it.subnet.cidr != null && it.subnet.vlanId != null }
@@ -193,7 +202,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 	// TODO Ported but incomplete implementation.
 	Single<ServiceResponse> runBareMetal(Map runConfig, Map opts) {
 		ComputeServer server
-		Container container
+		Workload container
 		def rtn = new ServiceResponse<Map>()
 		try {
 			//async
@@ -368,6 +377,8 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		if(releaseResults.success == true) {
 			server.status = 'removing'
 			cleanServer(server)
+			//return ownership to cloud owner
+			server.account = server.cloud.account
 			morpheusContext.computeServer.save([server]).blockingGet()
 			rtn.success = true
 			rtn.removeServer = false
