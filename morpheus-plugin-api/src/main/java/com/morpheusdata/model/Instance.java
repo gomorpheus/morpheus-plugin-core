@@ -50,8 +50,17 @@ public class Instance extends MorpheusModel {
 	public NetworkDomain networkDomain;
 	public ComputeSite site;
 	public UserGroup userGroup;
-
+	protected User createdBy;
 	public List<UserGroup> userGroups;
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy", createdBy);
+	}
 
 	public String getUuid() {
 		return uuid;

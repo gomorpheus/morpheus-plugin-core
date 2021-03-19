@@ -5,11 +5,15 @@ import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.cloud.MorpheusComputeZonePoolContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
+import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
+import com.morpheusdata.model.Instance
+import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Single
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -67,7 +71,7 @@ class MaasProvisionProviderSpec extends Specification {
 		apiUrl == service.getApiUrl(url)
 
 		where:
-		url                 | apiUrl
+		url | apiUrl
 		'maas.io'         | 'https://maas.io'
 		'http://maas.io'  | 'http://maas.io'
 		'https://maas.io' | 'https://maas.io'
@@ -87,8 +91,10 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "releaseMachine"() {
 		given:
-		Cloud cloud = new Cloud()
-		ComputeServer server = new ComputeServer(cloud: cloud)
+		Account cloudAccount = new Account(id: 1)
+		Account serverAccount = new Account(id: 2)
+		Cloud cloud = new Cloud(account: cloudAccount)
+		ComputeServer server = new ComputeServer(cloud: cloud, account: serverAccount)
 		Map authConfig = [:]
 		Map opts = [:]
 		GroovySpy(MaasComputeUtility, global: true)
@@ -101,7 +107,9 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.success
 		1 * MaasComputeUtility.releaseMachine(_, _, [erase: true, quick_erase: true]) >> [success: true]
 		1 * MaasComputeUtility.waitForMachineRelease(_, _, _) >> [success: 'SUCCESS']
-		1 * computeServerContext.save(_) >> Single.just(true)
+
+		and: "account is reset"
+		1 * computeServerContext.save({ List<ComputeServer> serverList -> serverList[0].account == cloudAccount }) >> Single.just(true)
 	}
 
 	void "releaseMachine - release"() {
@@ -223,5 +231,26 @@ class MaasProvisionProviderSpec extends Specification {
 		def resp = respObservable.blockingGet()
 		!resp.success
 		resp.error == 'error'
+	}
+
+	@Ignore
+	void "runWorkload"() {
+		given:
+		Account cloudAccount = new Account(id: 222)
+		Account containerAccount = new Account(id: 333)
+		Cloud cloud = new Cloud(id: 1, account: cloudAccount, configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
+		ComputeServer server = new ComputeServer(cloud: cloud, account: cloudAccount)
+		Instance instance = new Instance(id: 777)
+		Workload workload = new Workload(server: server, account: containerAccount, instance: instance)
+
+		when:
+		def resp = service.runWorkload(workload, runConfig)
+
+		then:
+		resp.success
+		1 * computeServerContext.save({List<ComputeServer> servers -> servers[0].account == containerAccount}) >> Single.just(true)
+		1 * cloudContext.buildContainerUserGroups(*_) >> Single.just([:])
+		// TODO runBareMetal needs implementation and/or convert to spy
+//		1 * service.runBareMetal(_, _) >> Single.just(new ServiceResponse(success: true))
 	}
 }
