@@ -41,6 +41,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public String internalIp;
 	public String externalIp;
 	public String sshHost;
+	protected String sshUsername;
+	protected String sshPassword;
+	public List<ComputeServerInterface> interfaces = new ArrayList<>();
 
 	public String getUuid() {
 		return uuid;
@@ -82,7 +85,23 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("cloud", cloud);
 	}
 
-	public List<ComputeServerInterface> interfaces = new ArrayList<>();
+	public String getSshUsername() {
+		return sshUsername;
+	}
+
+	public void setSshUsername(String sshUsername) {
+		this.sshUsername = sshUsername;
+		markDirty("sshUsername", sshUsername);
+	}
+
+	public String getSshPassword() {
+		return sshPassword;
+	}
+
+	public void setSshPassword(String sshPassword) {
+		this.sshPassword = sshPassword;
+		markDirty("sshPassword", sshPassword);
+	}
 
 	public enum PowerState {
 		on,

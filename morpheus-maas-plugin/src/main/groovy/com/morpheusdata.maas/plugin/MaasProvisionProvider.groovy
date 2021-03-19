@@ -9,6 +9,7 @@ import com.morpheusdata.model.Container
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.ProvisionType
+import com.morpheusdata.model.User
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
@@ -125,7 +126,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload container, Map opts = [:]) {
-		def rtn = [success:false]
+		ServiceResponse<WorkloadResponse> rtn = new ServiceResponse<>(success:false)
 		def server = container.server
 		try {
 			//build config
@@ -141,7 +142,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 			//copy container config and ownership to server
 			opts.server.configMap.authConfig = authConfig
-			opts.server.account = opts.container.account
+			opts.server.account = container.account
 			morpheusContext.computeServer.save([opts.server]).blockingGet()
 
 			//prepare the subnet
@@ -164,7 +165,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			runConfig.virtualImage = opts.server.sourceImage
 			runConfig.platform = opts.server.serverOs?.platform ?: runConfig.platform ?: 'linux'
 			//config is built
-			def createdBy = getInstanceCreateUser(container.instance).blockingGet()
+			User createdBy = container.instance.createdBy
 			def userGroups = container.instance.userGroups?.toList() ?: []
 			if(container.instance.userGroup && userGroups.contains(container.instance.userGroup) == false) {
 				userGroups << container.instance.userGroup
@@ -183,6 +184,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			}
 		} catch(e) {
 			log.error("runContainer error:${e}", e)
+			rtn.error = e.message
 			setProvisionFailed(server, container, 'failed to create server: ' + e.message, e, opts.callbackService, opts)
 		}
 		return rtn
@@ -206,7 +208,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		def rtn = new ServiceResponse<Map>()
 		try {
 			//async
-			rtn.data.inProgress = true
+			rtn.data = [inProgress: true]
 			//run it
 			def runTask = task {
 				def taskResults = insertBareMetal(runConfig, opts)
@@ -233,7 +235,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			log.error("runBareMetal error:${e}", e)
 			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
 		}
-		return rtn
+		return Single.just(rtn)
 	}
 
 	Single<ServiceResponse> insertBareMetal(Map runConfig, Map opts) {
