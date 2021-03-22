@@ -5,7 +5,6 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.Container
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.ProvisionType
@@ -127,13 +126,13 @@ class MaasProvisionProvider implements ProvisioningProvider {
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload container, Map opts = [:]) {
 		ServiceResponse<WorkloadResponse> rtn = new ServiceResponse<>(success:false)
-		def server = container.server
+		ComputeServer server = container.server
 		try {
 			//build config
 			def containerConfig = container.getConfigMap()
 			log.debug("container config: {}", containerConfig)
-			opts.server = container.server
-			opts.zone = container.server.cloud
+			opts.server = server
+			opts.zone = server.cloud
 			opts.account = opts.server.account
 			opts.noAgent = containerConfig.noAgent
 			def zoneConfig = opts.zone.getConfigMap()
@@ -167,7 +166,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			//config is built
 			User createdBy = container.instance.createdBy
 			def userGroups = container.instance.userGroups?.toList() ?: []
-			if(container.instance.userGroup && userGroups.contains(container.instance.userGroup) == false) {
+			if(container.instance.userGroup && !userGroups.contains(container.instance.userGroup)) {
 				userGroups << container.instance.userGroup
 			}
 			runConfig.userConfig = morpheusContext.cloud.buildContainerUserGroups(runConfig.account, runConfig.virtualImage, userGroups, createdBy, opts).blockingGet()
@@ -175,7 +174,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			runConfig.server.sshPassword = runConfig.userConfig.sshPassword
 			rtn.inProgress = true
 			//upload or insert image
-			def runBareMetalResults = runBareMetal(runConfig, opts).blockingGet()
+			def runBareMetalResults = runBareMetal(runConfig, opts)
 			log.info("runBareMetalResults: {}", runBareMetalResults)
 			//TODO - port, path, service
 			if(runBareMetalResults.success) {
@@ -201,89 +200,84 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		rtn
 	}
 
-	// TODO Ported but incomplete implementation.
 	@Override
 	ServiceResponse runBareMetal(Map runConfig, Map opts) {
-		ComputeServer server
-		Workload container
+		ComputeServer server = runConfig.server
+		Workload container = runConfig.container
 		def rtn = new ServiceResponse<Map>()
 		try {
 			//async
 			rtn.data = [inProgress: true]
 			//run it
-			def runTask = task {
-				def taskResults = insertBareMetal(runConfig, opts)
-				log.info("runTask results: {}", taskResults)
-				return taskResults
-			}
-			runTask.onComplete  { runPromise ->
-				def runResults = runPromise //runPromise.value
-				if(runResults.success == true) {
-					finalizeBareMetal(runConfig, runResults, opts)
+				ServiceResponse<Map> insertResult = insertBareMetal(runConfig, opts)
+				log.info("insertBareMetal results: {}", insertResult)
+				if(insertResult.success) {
+					ServiceResponse<Map> finalizeResult = finalizeBareMetal(runConfig, insertResult.data, opts)
+					if(finalizeResult.success) {
+						rtn.success = true
+					} else {
+						setProvisionFailed(server, container, finalizeResult.msg ?: 'failed to finalize server', null, opts.callbackService, opts)
+					}
 				} else {
-					//need the stuff :(
-					setProvisionFailed(server, container, runResults.msg ?: 'failed to run server', null, opts.callbackService, opts)
+					setProvisionFailed(server, container, insertResult.msg ?: 'failed to insert server', null, opts.callbackService, opts)
 				}
-			}
-			//run fails
-			runTask.onError { runError ->
-				log.error("run task error: ${runError}", runError)
-				setProvisionFailed(server, null, 'failed to run server', null, opts.callbackService, opts)
-			}
-			//return success
-			rtn.success = true
 		} catch(e) {
 			log.error("runBareMetal error:${e}", e)
 			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
 		}
+		rtn.data.inProgress = false
 		rtn
 	}
 
-	ServiceResponse insertBareMetal(Map runConfig, Map opts) {
+	@Override
+	ServiceResponse<Map> insertBareMetal(Map runConfig, Map opts) {
 		def taskResults = new ServiceResponse(success:false)
 		try {
-			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionConfig',
-					[status:'configuring', username:opts.processUser], null, [status:'configuring'])
-			def server
+//			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionConfig',
+//					[status:'configuring', username:opts.processUser], null, [status:'configuring'])
+			ComputeServer server
 			morpheusContext.computeServer.listById([runConfig.server.id]).subscribe{server = it}
-			def container = morpheusContext.cloud.getWorkloadById(runConfig.container.id).blockingGet()
+//			Workload container = morpheusContext.cloud.getWorkloadById(runConfig.container.id).blockingGet()
 			def serverUpdates = [sshUsername:runConfig.sshUsername, sshPassword:runConfig.sshPassword, hostname:runConfig.hostName]
 			//refresh the virtual image
-			if(runConfig.virtualImage)
-				 morpheusContext.virtualImage.listById([runConfig.virtualImage?.id]).subscribe {runConfig.virtualImage = it}
-			setAgentInstallConfig(opts, runConfig.virtualImage)
+			if(runConfig.virtualImage) {
+				morpheusContext.virtualImage.listById([runConfig.virtualImage?.id]).subscribe { runConfig.virtualImage = it }
+			}
+//			setAgentInstallConfig(opts, runConfig.virtualImage)
 			//set the domain
-			if(runConfig.domainId)
+			if(runConfig.domainId) {
 				server.networkDomain = morpheusContext.network.getNetworkDomainById(runConfig.domainId).blockingGet()
+			}
 			//build cloud init data
 			def cloudConfigOpts = buildCloudConfigOpts(server.cloud, server, !opts.noAgent, [hostname:runConfig.hostname, hosts:runConfig.hosts,
 																							nativeProvider:true, timezone:runConfig.timezone]).blockingGet()
-			cloudConfigOpts.containerScriptConfig = getContainerScriptConfigMap(container, 'preProvision', opts)
+//			cloudConfigOpts.containerScriptConfig = getContainerScriptConfigMap(container, 'preProvision', opts)
 			//agent install?
-			opts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
+			opts.installAgent = true //opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
 			log.debug("install agent: ${opts.installAgent}")
 			if(serverUpdates.osType == 'windows') {
 				opts.setAdminPassword = false
 				opts.createUsers = false
-				def globalAdminPassword = settingsService.getProvisioningSettings(opts.account).provisioningSettings.windowsPassword?.value
-				if(globalAdminPassword) {
-					opts.findAdminPassword = false
-					cloudConfigOpts.adminPassword = globalAdminPassword
-					serverUpdates.sshPassword = globalAdminPassword
-				}
+//				def globalAdminPassword = settingsService.getProvisioningSettings(opts.account).provisioningSettings.windowsPassword?.value
+//				if(globalAdminPassword) {
+//					opts.findAdminPassword = false
+//					cloudConfigOpts.adminPassword = globalAdminPassword
+//					serverUpdates.sshPassword = globalAdminPassword
+//				}
 			}
 			//save server
-			runConfig.server = applyServerUpdates(server, serverUpdates)
-			runConfig.hostname = server.getExternalHostname()
-			runConfig.domainName = server.getExternalDomain()
+			server = applyServerUpdates(server, serverUpdates)
+			morpheusContext.computeServer.save([server]).blockingGet()
+			runConfig.hostname = server.externalHostname
+			runConfig.domainName = server.externalDomain
 			runConfig.fqdn = runConfig.hostname + '.' + runConfig.domainName
 			//create users - no cloud init
 			opts.createUserList = runConfig.userConfig.createUsers
 			log.debug("create server: {}", runConfig)
-			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionDeploy',
-					[status:'deploying server profile', username:opts.processUser], null, [status:'deploying server profile'])
+//			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionDeploy',
+//					[status:'deploying server profile', username:opts.processUser], null, [status:'deploying server profile'])
 			//cloud init
-			runConfig.cloudConfig = morpheusComputeService.buildCloudUserData(runConfig.platform, runConfig.userConfig, cloudConfigOpts)
+			runConfig.cloudConfig = morpheusContext.cloud.buildUserData(runConfig.platform, runConfig.userConfig, cloudConfigOpts)
 			//prep the server
 			//POST ../nodes/{system_id}/interfaces/?op=create_bond //Bond the 25Gbps NICs into bond0
 			//POST ../subnets //Create Subnet for Public/Internet IP
@@ -306,31 +300,72 @@ class MaasProvisionProvider implements ProvisioningProvider {
 				//update stuff - then wait for it
 				def waitResults = MaasComputeUtility.waitForMachine(authConfig, server.externalId, opts)
 				log.info("wait for deploy results: {}", waitResults)
-				if(waitResults.success == true && waitResults.error == false) {
+				if(waitResults.success && !waitResults.error) {
 					taskResults.success = true
 					taskResults.data = waitResults.data
 					//update
 				} else {
 					taskResults.error = waitResults.error ?: 'unknown error deploying'
 					taskResults.msg = waitResults.msg ?: 'error deploying'
-					taskResults.output = taskResults.msg + ': ' + taskResults.error
-					opts.processOutput = taskResults.output
+					taskResults.content = taskResults.msg + ': ' + taskResults.error
+					opts.processOutput = taskResults.content
 					opts.processError = taskResults.error
 					//error - fail it
 				}
 			} else {
 				taskResults.error = deployResults.error ?: 'unknown error deploying'
 				taskResults.msg = deployResults.msg ?: 'error deploying'
-				taskResults.output = deployResults.msg + ': ' + deployResults.error
+				taskResults.content = deployResults.msg + ': ' + deployResults.error
 				opts.processOutput = deployResults.output
 				opts.processError = deployResults.error
 				//error - fail it
 			}
 		} catch(runException) {
 			log.error("runException: ${runException}", runException)
-			taskResults.message = 'Error running server'
+			taskResults.msg = 'Error running server'
 		}
 		taskResults
+	}
+
+	@Override
+	ServiceResponse<Map> finalizeBareMetal(Map runConfig, ServiceResponse runResults, Map opts) {
+		ServiceResponse<Map> rtn = new ServiceResponse<>(success: false)
+		log.info("runTask onComplete: ${runResults}")
+		ComputeServer server = runConfig.server
+		Workload container = runConfig.container
+		try {
+			if (runResults.success == true) {
+				server.status = 'provisioned'
+				server.managed = true
+				//set network
+				log.info("ip addresses: {}", runResults?.data?.ip_addresses)
+				if (runResults?.data?.ip_addresses?.size() > 0) {
+					String privateIp = runResults?.data?.ip_addresses[0]
+					String publicIp = runResults?.data?.ip_addresses.size() > 1 ? runResults?.data?.ip_addresses[1] : privateIp
+					morpheusContext.network.setComputeServerNetwork(server, privateIp, publicIp, null, null)
+				}
+				//save it
+				Boolean saveSuccess = morpheusContext.computeServer.save([server]).blockingGet()
+//				if(container && opts.callbackService) {
+//						opts.callbackService.provisionContainerCallback(container, runResults, opts)
+//					}
+//					if(server && opts.serverCallback) {
+//						opts.serverCallback.provisionServerCallback(server, runResults, opts)
+//					}
+				rtn.success = saveSuccess
+				if (!saveSuccess) {
+					setProvisionFailed(server, container, 'could not save finalized server', null, opts.callbackService, opts)
+				}
+			} else {
+				//opts.server.statusMessage = 'Failed to run server'
+				setProvisionFailed(server, container, runResults.msg, null, opts.callbackService, opts)
+			}
+
+		} catch (e) {
+			log.error("run task error: {}", e)
+			setProvisionFailed(server, container, "run task error: ${e.message}", e, opts.callbackService, opts)
+		}
+		rtn
 	}
 
 	ServiceResponse stopServer(ComputeServer computeServer) {
@@ -462,5 +497,12 @@ class MaasProvisionProvider implements ProvisioningProvider {
 	static getApiVersion(String apiVersion) {
 		def rtn = '2.0'
 		return rtn
+	}
+
+	private static ComputeServer applyServerUpdates(ComputeServer server, Map configMap) {
+		for (String key in configMap.keySet()) {
+			server.(key) = configMap[key]
+		}
+		server
 	}
 }

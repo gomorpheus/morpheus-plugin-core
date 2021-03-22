@@ -10,6 +10,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.Network
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Single
@@ -244,5 +245,22 @@ class MaasProvisionProviderSpec extends Specification {
 		1 * cloudContext.buildContainerUserGroups(*_) >> Single.just([:])
 		// TODO runBareMetal needs implementation and/or convert to spy
 //		1 * service.runBareMetal(_, _) >> Single.just(new ServiceResponse(success: true))
+	}
+
+	void "finalizeBareMetal"() {
+		given:
+		Map runConfig = [server: new ComputeServer(), container: new Workload()]
+		String privateIp = '192.168.1.29'
+		String publicIp = '7.7.7.7'
+		ServiceResponse runResults = new ServiceResponse(success: true, data: [ip_addresses: [privateIp, publicIp]])
+		Map opts = [:]
+
+		when:
+		def res = service.finalizeBareMetal(runConfig, runResults, opts)
+
+		then:
+		res.success
+		1 * networkContext.setComputeServerNetwork(_, privateIp, publicIp, null, null) >> Single.just(new Network())
+		1 * computeServerContext.save(_) >> Single.just(true)
 	}
 }
