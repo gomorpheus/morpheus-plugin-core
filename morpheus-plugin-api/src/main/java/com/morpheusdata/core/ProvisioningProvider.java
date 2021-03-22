@@ -3,7 +3,6 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
-import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.Map;
@@ -47,7 +46,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts options
 	 * @return Response from API
 	 */
-	Single<ServiceResponse> validateWorkload(Map opts);
+	ServiceResponse validateWorkload(Map opts);
 
 
 	/**
@@ -109,69 +108,68 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
-	Single<Map> createContainerResources(Container container, Map opts);
-//	Single<Map> validateContainer(Map opts);
-	Single<Map> getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);
-//	Single<ServiceResponse> runContainer(Container container, Map opts);
-	Single<ServiceResponse> runServer(ComputeServer server, Map opts);
-//	Single<ServiceResponse> stopContainer(Container container);
-//	Single<ServiceResponse> stopContainer(Container container, Boolean updateStatus);
-//	Single<ServiceResponse> startContainer(Container container);
-//	Single<ServiceResponse> startContainer(Container container, Boolean updateStatus);
-	Single<ServiceResponse> stopServer(ComputeServer computeServer);
-	Single<ServiceResponse> startServer(ComputeServer computeServer);
-//	Single<ServiceResponse> removeContainer(Container container, Map opts);
+	Map createContainerResources(Container container, Map opts);
+//	Map validateContainer(Map opts);
+	Map getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);
+//	ServiceResponse runContainer(Container container, Map opts);
+	ServiceResponse runServer(ComputeServer server, Map opts);
+//	ServiceResponse stopContainer(Container container);
+//	ServiceResponse stopContainer(Container container, Boolean updateStatus);
+//	ServiceResponse startContainer(Container container);
+//	ServiceResponse startContainer(Container container, Boolean updateStatus);
+	ServiceResponse stopServer(ComputeServer computeServer);
+	ServiceResponse startServer(ComputeServer computeServer);
+//	ServiceResponse removeContainer(Container container, Map opts);
 
-	Single<User> getInstanceCreateUser(Instance instance);
-	Single<Map> buildCloudConfigOpts(Cloud cloud, ComputeServer server);
-	Single<Map> buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent);
-	Single<Map> buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent, Map opts);
+	User getInstanceCreateUser(Instance instance);
+	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server);
+	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent);
+	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent, Map opts);
 
-	// CL / MaaS
+	// MaaS
+	ServiceResponse releaseServer(ComputeServer server, Map opts);
+	Map releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts);
+	Map updateReleasePool(ComputeServer server, Map authConfig);
+	ServiceResponse runBareMetal(Map runConfig, Map opts);
+	ComputeServer cleanServer(ComputeServer server);
+	ServiceResponse insertBareMetal(Map runConfig, Map opts);
 
-	Single<ServiceResponse>  releaseServer(ComputeServer server, Map opts);
-	Single<Map> releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts);
-	Single<Map> updateReleasePool(ComputeServer server, Map authConfig);
-	Single<ServiceResponse> runBareMetal(Map runConfig, Map opts);
-	Single<ComputeServer> cleanServer(ComputeServer server);
-	Single<ServiceResponse> insertBareMetal(Map runConfig, Map opts);
+	void setAgentInstallConfig(Map opts);
+	void setAgentInstallConfig(Map opts, VirtualImage virtualImage);
 
-	Single<Void> setAgentInstallConfig(Map opts);
-	Single<Void> setAgentInstallConfig(Map opts, VirtualImage virtualImage);
-
-	Single<ServiceResponse> getBondNetworks(Map bootNic, Collection nicList);
-	Single<Map> finalizeBareMetal(Map runConfig, Map runResults, Map opts);
-	Single<Map> updateServer(ComputeServer server, Map authConfig, Map updateConfig);
+	ServiceResponse getBondNetworks(Map bootNic, Collection nicList);
+	Map finalizeBareMetal(Map runConfig, Map runResults, Map opts);
+	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
 
 	// Billing
-	Single<ServiceResponse> provisionStarted(Account account, Container container);
+	ServiceResponse provisionStarted(Account account, Container container);
 
-	Single<ServiceResponse> provisionComplete(Account account, Container container);
+	ServiceResponse provisionComplete(Account account, Container container);
 
-	Single<ServiceResponse> deProvisionStarted(Account account, Container container);
+	ServiceResponse deProvisionStarted(Account account, Container container);
 
-	Single<ServiceResponse> deProvisionComplete(Account account, Container container);
+	ServiceResponse deProvisionComplete(Account account, Container container);
 
-	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp);
-	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp);
-	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname);
-	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
+	Network setComputeServerNetwork(ComputeServer server, String privateIp);
+	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp);
+	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname);
+	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
 
-	Single<Void> setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
+	void setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
 
-	Single<Void> setProvisionFailed(ComputeServer server, Workload workload);
-	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage);
-	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error);
-	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService);
-	Single<Void> setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService,  Map opts);
+	void setProvisionFailed(ComputeServer server, Workload workload);
+	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage);
+	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error);
+	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService);
+	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService,  Map opts);
 
 	// Custom Attributes?
-	Single<Map> buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes);
-	Single<Map> buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes, Map opts);
-	Single<Map> buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes);
-	Single<Map> buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes, Map opts);
-	Single<Map> buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes);
-	Single<Map> buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes, Map opts);
+	Map buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes);
+	Map buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes, Map opts);
+	Map buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes);
+	Map buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes, Map opts);
+	Map buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes);
+	Map buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes, Map opts);
 
 	HostType getHostType();
 
