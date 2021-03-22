@@ -120,6 +120,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse stopServer(ComputeServer computeServer);
 	ServiceResponse startServer(ComputeServer computeServer);
 //	ServiceResponse removeContainer(Container container, Map opts);
+	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
 
 	User getInstanceCreateUser(Instance instance);
 	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server);
@@ -133,13 +134,12 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse runBareMetal(Map runConfig, Map opts);
 	ComputeServer cleanServer(ComputeServer server);
 	ServiceResponse insertBareMetal(Map runConfig, Map opts);
+	ServiceResponse finalizeBareMetal(Map runConfig, ServiceResponse runResults, Map opts);
 
 	void setAgentInstallConfig(Map opts);
 	void setAgentInstallConfig(Map opts, VirtualImage virtualImage);
 
 	ServiceResponse getBondNetworks(Map bootNic, Collection nicList);
-	Map finalizeBareMetal(Map runConfig, Map runResults, Map opts);
-	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
 
 	// Billing
 	ServiceResponse provisionStarted(Account account, Container container);
@@ -149,11 +149,6 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse deProvisionStarted(Account account, Container container);
 
 	ServiceResponse deProvisionComplete(Account account, Container container);
-
-	Network setComputeServerNetwork(ComputeServer server, String privateIp);
-	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp);
-	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname);
-	Network setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
 
 	void setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
 

@@ -153,4 +153,7 @@ public interface MorpheusNetworkContext {
 	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
 
 	Single<NetworkDomain> getNetworkDomainById(Long id);
+
+	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
+
 }
