@@ -80,7 +80,7 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "validateWorkload"() {
 		expect:
-		ServiceResponse response = service.validateWorkload(opts).blockingGet()
+		ServiceResponse response = service.validateWorkload(opts)
 		out == response.success
 
 		where:
@@ -100,8 +100,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.releaseMachine(server, authConfig, opts)
-		def resp = respObservable.blockingGet()
+		def resp = service.releaseMachine(server, authConfig, opts)
 
 		then:
 		resp.success
@@ -121,8 +120,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.releaseMachine(server, authConfig, opts)
-		def resp = respObservable.blockingGet()
+		def resp = service.releaseMachine(server, authConfig, opts)
 
 		then:
 		resp.success
@@ -140,8 +138,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.releaseMachine(server, authConfig, opts)
-		def resp = respObservable.blockingGet()
+		def resp = service.releaseMachine(server, authConfig, opts)
 
 		then:
 		!resp.success
@@ -160,8 +157,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.releaseMachine(server, authConfig, opts)
-		def resp = respObservable.blockingGet()
+		def resp = service.releaseMachine(server, authConfig, opts)
 
 		then:
 		!resp.success
@@ -179,8 +175,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.stopServer(server)
-		def resp = respObservable.blockingGet()
+		def resp = service.stopServer(server)
 
 		then:
 		resp.success
@@ -197,8 +192,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.stopServer(server)
-		def resp = respObservable.blockingGet()
+		def resp = service.stopServer(server)
 
 		then:
 		!resp.success
@@ -215,8 +209,7 @@ class MaasProvisionProviderSpec extends Specification {
 		GroovySpy(MaasComputeUtility, global: true)
 
 		when:
-		def respObservable = service.stopServer(server)
-		def resp = respObservable.blockingGet()
+		def resp = service.stopServer(server)
 
 		then:
 		!resp.success
@@ -227,8 +220,7 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "runServer"() {
 		expect: "always false"
-		def respObservable = service.runServer(new ComputeServer(), [:])
-		def resp = respObservable.blockingGet()
+		def resp = service.runServer(new ComputeServer(), [:])
 		!resp.success
 		resp.error == 'error'
 	}

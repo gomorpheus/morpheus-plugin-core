@@ -15,7 +15,6 @@ import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
-import io.reactivex.Single
 
 @AutoImplement
 @Slf4j
@@ -45,16 +44,17 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 
 	@Override
-	Single<ServiceResponse> validateWorkload(Map opts = [:]) {
+	ServiceResponse validateWorkload(Map opts = [:]) {
 		log.debug("validateContainer: ${opts.config}")
 		ServiceResponse rtn = new ServiceResponse(true, null, [:], null)
-		return Single.just(rtn)
+		rtn
 	}
 
-	Single<Map> getInstanceServers(Instance instance, ProvisionType provisionType, Map opts) {
+	@Override
+	Map getInstanceServers(Instance instance, ProvisionType provisionType, Map opts) {
 		def rtn = []
-		def lock
-		def lockId
+//		def lock
+//		def lockId
 		try {
 			//which zone
 			Cloud cloud = null
@@ -68,7 +68,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			}
 			//if(!zone) //what to do?
 			//get a lock
-			lockId = "maas.provision.${cloud.id}".toString()
+//			lockId = "maas.provision.${cloud.id}".toString()
 //			lock = lockService.acquireLock(lockId, [timeout:maasTimeout]) // TODO Lock service
 			String objCategory = "maas.server.${cloud.id}"
 			// Allocate a server
@@ -190,7 +190,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		return rtn
 	}
 
-	Single<ServiceResponse> runServer(ComputeServer server, Map opts) {
+	ServiceResponse runServer(ComputeServer server, Map opts) {
 		def rtn = ServiceResponse.error()
 		try {
 			//for provisioning hosts
@@ -198,11 +198,12 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			log.error("runContainer error:${e}", e)
 			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
 		}
-		return Single.just(rtn)
+		rtn
 	}
 
 	// TODO Ported but incomplete implementation.
-	Single<ServiceResponse> runBareMetal(Map runConfig, Map opts) {
+	@Override
+	ServiceResponse runBareMetal(Map runConfig, Map opts) {
 		ComputeServer server
 		Workload container
 		def rtn = new ServiceResponse<Map>()
@@ -235,11 +236,11 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			log.error("runBareMetal error:${e}", e)
 			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
 		}
-		return Single.just(rtn)
+		rtn
 	}
 
-	Single<ServiceResponse> insertBareMetal(Map runConfig, Map opts) {
-		def taskResults = [success:false]
+	ServiceResponse insertBareMetal(Map runConfig, Map opts) {
+		def taskResults = new ServiceResponse(success:false)
 		try {
 			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionConfig',
 					[status:'configuring', username:opts.processUser], null, [status:'configuring'])
@@ -329,10 +330,10 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			log.error("runException: ${runException}", runException)
 			taskResults.message = 'Error running server'
 		}
-		return taskResults
+		taskResults
 	}
 
-	Single<ServiceResponse> stopServer(ComputeServer computeServer) {
+	ServiceResponse stopServer(ComputeServer computeServer) {
 		log.debug("stopServer: ${computeServer}")
 		def rtn = new ServiceResponse<Map>()
 		try {
@@ -366,10 +367,10 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		} catch(e) {
 			log.error("stopServer error: {}", e)
 		}
-		return Single.just(rtn)
+		rtn
 	}
 
-	Single<Map> releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts) {
+	Map releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts) {
 		Map rtn = [:]
 		//check the zone config for release mode
 		def releaseMode = server.cloud.getConfigProperty('releaseMode') ?: 'quick-delete'
@@ -395,13 +396,13 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		} else {
 			rtn.msg = 'Failed to release server'
 		}
-		Single.just(rtn)
+		rtn
 	}
 
 	@Override
-	Single<ComputeServer> cleanServer(ComputeServer server) {
+	ComputeServer cleanServer(ComputeServer server) {
 		// nothing right now
-		Single.just(server)
+		server
 	}
 
 	@Override
