@@ -46,6 +46,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public List<ComputeServerInterface> interfaces = new ArrayList<>();
 	protected String externalHostname;
 	protected String externalDomain;
+	protected String externalFqdn;
+	protected String apiKey;
 
 	public String getUuid() {
 		return uuid;
@@ -121,6 +123,24 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setExternalDomain(String externalDomain) {
 		this.externalDomain = externalDomain;
 		markDirty("externalDomain", externalDomain);
+	}
+
+	public String getExternalFqdn() {
+		return externalFqdn;
+	}
+
+	public void setExternalFqdn(String externalFqdn) {
+		this.externalFqdn = externalFqdn;
+		markDirty("externalFqdn", externalFqdn);
+	}
+
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+		markDirty("apiKey", apiKey);
 	}
 
 	public enum PowerState {

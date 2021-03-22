@@ -123,8 +123,6 @@ public interface ProvisioningProvider extends PluginProvider {
 	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
 
 	User getInstanceCreateUser(Instance instance);
-	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server);
-	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent);
 	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent, Map opts);
 
 	// MaaS
