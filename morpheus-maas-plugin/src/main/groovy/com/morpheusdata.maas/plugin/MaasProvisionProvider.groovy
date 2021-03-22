@@ -7,6 +7,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.ProvisionType
 import com.morpheusdata.model.User
 import com.morpheusdata.model.Workload
@@ -177,7 +178,9 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			def runBareMetalResults = runBareMetal(runConfig, opts)
 			log.info("runBareMetalResults: {}", runBareMetalResults)
 			//TODO - port, path, service
-			if(runBareMetalResults.success) {
+			if (runBareMetalResults.success) {
+				rtn.success = true
+			} else {
 				//error - image not found
 				setProvisionFailed(server, container, 'server config error', null, opts.callbackService, opts)
 			}
@@ -186,6 +189,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			rtn.error = e.message
 			setProvisionFailed(server, container, 'failed to create server: ' + e.message, e, opts.callbackService, opts)
 		}
+		rtn.inProgress = false
 		return rtn
 	}
 
@@ -212,7 +216,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 				ServiceResponse<Map> insertResult = insertBareMetal(runConfig, opts)
 				log.info("insertBareMetal results: {}", insertResult)
 				if(insertResult.success) {
-					ServiceResponse<Map> finalizeResult = finalizeBareMetal(runConfig, insertResult.data, opts)
+					ServiceResponse<Map> finalizeResult = finalizeBareMetal(runConfig, insertResult, opts)
 					if(finalizeResult.success) {
 						rtn.success = true
 					} else {
@@ -224,6 +228,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		} catch(e) {
 			log.error("runBareMetal error:${e}", e)
 			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
+			rtn.error = e.message
 		}
 		rtn.data.inProgress = false
 		rtn
@@ -250,7 +255,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			}
 			//build cloud init data
 			def cloudConfigOpts = buildCloudConfigOpts(server.cloud, server, !opts.noAgent, [hostname:runConfig.hostname, hosts:runConfig.hosts,
-																							nativeProvider:true, timezone:runConfig.timezone]).blockingGet()
+																							nativeProvider:true, timezone:runConfig.timezone])
 //			cloudConfigOpts.containerScriptConfig = getContainerScriptConfigMap(container, 'preProvision', opts)
 			//agent install?
 			opts.installAgent = true //opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
@@ -277,7 +282,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 //			opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionDeploy',
 //					[status:'deploying server profile', username:opts.processUser], null, [status:'deploying server profile'])
 			//cloud init
-			runConfig.cloudConfig = morpheusContext.cloud.buildUserData(runConfig.platform, runConfig.userConfig, cloudConfigOpts)
+			runConfig.cloudConfig = morpheusContext.cloud.buildUserData(PlatformType.valueOf(runConfig.platform), runConfig.userConfig, cloudConfigOpts).blockingGet()
 			//prep the server
 			//POST ../nodes/{system_id}/interfaces/?op=create_bond //Bond the 25Gbps NICs into bond0
 			//POST ../subnets //Create Subnet for Public/Internet IP
@@ -364,6 +369,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		} catch (e) {
 			log.error("run task error: {}", e)
 			setProvisionFailed(server, container, "run task error: ${e.message}", e, opts.callbackService, opts)
+			rtn.error = e.message
 		}
 		rtn
 	}
@@ -501,8 +507,40 @@ class MaasProvisionProvider implements ProvisioningProvider {
 
 	private static ComputeServer applyServerUpdates(ComputeServer server, Map configMap) {
 		for (String key in configMap.keySet()) {
-			server.(key) = configMap[key]
+			server."$key" = configMap[key]
 		}
 		server
+	}
+
+	@Override
+	Map buildCloudConfigOpts(Cloud zone, ComputeServer server, Boolean installAgent = true, Map opts = [:]) {
+		opts = opts ?: [:]
+		opts.nativeProvider = (opts.nativeProvider == true)
+		opts.apiKey = server.apiKey
+		opts.hostname = server.getExternalHostname()
+		opts.domainName = server.getExternalDomain()
+		opts.server = server
+		opts.zone = zone
+		opts.virtualImage = opts.virtualImage ?: opts.server.sourceImage
+		opts.fqdn = server.getExternalFqdn()
+		opts.hosts = opts.hostname
+		opts.installAgent = false
+		opts.agentMode = zone.agentMode
+		opts.isSysprep = opts.virtualImage?.isSysprep ?: false
+		if(opts.virtualImage?.osType?.code != 'ubuntu.14.04.64' && opts.virtualImage?.osType?.code != 'ubuntu.14.04') {
+			opts.encryptChangedPasswords = true
+		}
+		if(opts.domainName && opts.domainName != '')
+			opts.hosts = opts.fqdn + ' ' + opts.hostname + ' localhost'
+		else
+			opts.hosts = opts.hostname
+		if(opts.domainName && opts.domainName != '' && opts.domainName != 'localdomain')
+			opts.fullHostname = opts.fqdn
+		else
+			opts.fullHostname = opts.hostname
+		if(installAgent == true && zone.agentMode == 'cloudInit')
+			opts.installAgent = true
+		opts.timezone = opts.timezone ?: zone.timezone
+		return opts
 	}
 }

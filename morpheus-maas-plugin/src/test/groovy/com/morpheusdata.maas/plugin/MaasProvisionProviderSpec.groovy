@@ -13,8 +13,11 @@ import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Single
-import spock.lang.Ignore
+import io.reactivex.annotations.NonNull
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -226,25 +229,44 @@ class MaasProvisionProviderSpec extends Specification {
 		resp.error == 'error'
 	}
 
-	@Ignore
 	void "runWorkload"() {
 		given:
+		GroovySpy(MaasComputeUtility, global: true)
 		Account cloudAccount = new Account(id: 222)
 		Account containerAccount = new Account(id: 333)
 		Cloud cloud = new Cloud(id: 1, account: cloudAccount, configMap: [serviceUrl: 'maas.io', serviceToken: 'consumerKey:apiKey:secretKey'])
 		ComputeServer server = new ComputeServer(cloud: cloud, account: cloudAccount)
 		Instance instance = new Instance(id: 777)
 		Workload workload = new Workload(server: server, account: containerAccount, instance: instance)
+		Map runConfig = [:]
+		Observable listFullObjectsObservable = Observable.create(new ObservableOnSubscribe<ComputeServer>() {
+			@Override
+			void subscribe(@NonNull ObservableEmitter<ComputeServer> emitter) throws Exception {
+				try {
+					List<ComputeServer> images = [server]
+					for (image in images) {
+						emitter.onNext(image)
+					}
+					emitter.onComplete()
+				} catch (Exception e) {
+					emitter.onError(e)
+				}
+			}
+		})
 
 		when:
 		def resp = service.runWorkload(workload, runConfig)
 
 		then:
 		resp.success
-		1 * computeServerContext.save({List<ComputeServer> servers -> servers[0].account == containerAccount}) >> Single.just(true)
+		3 * computeServerContext.save({List<ComputeServer> servers -> servers[0].account == containerAccount}) >> Single.just(true)
 		1 * cloudContext.buildContainerUserGroups(*_) >> Single.just([:])
-		// TODO runBareMetal needs implementation and/or convert to spy
-//		1 * service.runBareMetal(_, _) >> Single.just(new ServiceResponse(success: true))
+
+		and: "other method mocks"
+		1 * computeServerContext.listById(_) >> listFullObjectsObservable
+		1 * cloudContext.buildUserData(_, _, _) >> Single.just([:])
+		1 * MaasComputeUtility.deployMachine(_, _, _, _) >> [success: true]
+		1 * MaasComputeUtility.waitForMachine(_, _, _) >> [success: true, data: [ip_addresses: ['a.b.c.d', 'e.f.g.h']]]
 	}
 
 	void "finalizeBareMetal"() {
