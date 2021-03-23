@@ -8,6 +8,8 @@ The plugin architecture requires Morpheus 5 or later.
 
 Ensure you are using a version of the plugin that is compatible with your version of Morpheus. See the releases tab for more info.
 
+Also, be sure your plugin source and target compatibility is set for Java 8 (`1.8`).
+
 ### Setup a new Gradle project
 
 The plugin API is [published to Bintray](https://bintray.com/bertramlabs/gomorpheus/morpheus-plugin-api), include it in your gradle project:
@@ -17,6 +19,8 @@ dependencies {
 	implementation 'com.morpheusdata:morpheus-plugin-api:0.6.0'
 }
 ```
+
+**NOTE:** The plugin API has significant changes for 0.8.0 as we move to add cloud plugin support and enhance ease of development. This will be the required target for Morpheus 5.3.1 when it is released
 
 ### Implement your plugin
 
@@ -46,8 +50,7 @@ Dependancies your plugin requires such as other clouds sdks or similar will be s
 
 ## Things To Be Done
 
-* Morpheus Core interfaces and javadoc
-* Gradle Plugin packager implementation (Similar to Jenkins JPI Plugin for Gradle)
-* Test Provider implementation for allowing users to easily run automation testing on their provider
-* Option Type Specification for custom inputs
-* Rx Java
+* Morpheus Backup Provider in development
+* Morpheus Cloud Provider in development
+* Morpheus Network Service Provider in development
+
