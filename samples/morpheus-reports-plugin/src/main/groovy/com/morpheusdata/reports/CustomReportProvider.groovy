@@ -11,7 +11,6 @@ import com.morpheusdata.model.ContentSecurityPolicy
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 import com.morpheusdata.response.ServiceResponse
-import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
@@ -64,7 +63,6 @@ class CustomReportProvider extends AbstractReportProvider {
 	@Override
 	HTMLResponse renderTemplate(ReportResult reportResult, Map<String, List<ReportResultRow>> reportRowsBySection) {
 		ViewModel<String> model = new ViewModel<String>()
-		
 		model.object = reportRowsBySection
 		getRenderer().renderTemplate("hbs/instanceReport", model)
 	}
@@ -88,23 +86,29 @@ class CustomReportProvider extends AbstractReportProvider {
 		morpheusContext.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
 		Long displayOrder = 0
 		List<GroovyRowResult> results = []
-
+		Connection dbConnection
+		
 		try {
-			Connection dbConnection = morpheusContext.report.getReadOnlyDatabaseConnection().blockingGet()
+			dbConnection = morpheusContext.report.getReadOnlyDatabaseConnection().blockingGet()
 			results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
 		} finally {
 			morpheusContext.report.releaseDatabaseConnection(dbConnection)
 		}
+		log.info("Results: ${results}")
 		Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
 		observable.map{ resultRow ->
-			return new ReportResultRow(section: 'data',displayOrder: displayOrder++, data: JsonOutput.toJson(data))
-		}.buffer(50).flatMap { resultRows
-			morpheus.report.appendResultRows(reportResult,resultRows)
-		}.doOnComplete {
+			log.info("Mapping resultRow ${resultRow}")
+			Map<String,Object> data = [name: resultRow.name, id: resultRow.id, status: resultRow.status]
+			ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
+			log.info("resultRowRecord: ${resultRowRecord.dump()}")
+			return resultRowRecord
+		}.buffer(50).doOnComplete {
 			morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
 		}.doOnError { Throwable t ->
 			morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
-		}.blockingSubscribe()
+		}.subscribe {resultRows ->
+			morpheus.report.appendResultRows(reportResult,resultRows).blockingGet()
+		}
 	}
 
 	 @Override
@@ -134,6 +138,6 @@ class CustomReportProvider extends AbstractReportProvider {
 
 	 @Override
 	 List<OptionType> getOptionTypes() {
-		 return []
+		 [new OptionType(code: 'status-report-search', name: 'Search', fieldName: 'instancePhrase', fieldLabel: 'Search Phrase', displayOrder: 0)]
 	 }
  }

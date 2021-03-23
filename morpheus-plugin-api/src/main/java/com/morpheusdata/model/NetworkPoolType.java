@@ -31,7 +31,7 @@ public class NetworkPoolType extends MorpheusModel{
 	 */
 	protected Boolean creatable = true;
 
-	private Boolean rangeSupportsCidr = false;
+	protected Boolean rangeSupportsCidr = false;
 
 
 	/**
