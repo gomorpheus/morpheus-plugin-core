@@ -251,7 +251,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 //			setAgentInstallConfig(opts, runConfig.virtualImage)
 			//set the domain
 			if(runConfig.domainId) {
-				server.networkDomain = morpheusContext.network.getNetworkDomainById(runConfig.domainId).blockingGet()
+				server.networkDomain = morpheusContext.network.domain.get(runConfig.domainId).blockingGet()
 			}
 			//build cloud init data
 			def cloudConfigOpts = buildCloudConfigOpts(server.cloud, server, !opts.noAgent, [hostname:runConfig.hostname, hosts:runConfig.hosts,

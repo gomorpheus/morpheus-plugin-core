@@ -49,6 +49,33 @@ public interface MorpheusNetworkDomainContext {
 	Observable<NetworkDomain> listById(Collection<Long> ids);
 
 	/**
+	 * Gets a Network Domain by the id
+	 * @param id the Identifier of the {@link NetworkDomain} that is being requested.
+	 * @return an instance of the NetworkDomain with all metadata pertaining to it.
+	 */
+	Single<NetworkDomain> get(Long id);
+
+	/**
+	 * Gets the network domain assigned to a server. This is relevant when doing IPAM/DNS operations.
+	 * It looks for the primary domain object by checking the interfaces and any domain overrides on the server.
+	 * This method may go away as a server in theory can belong to many domains.
+	 *
+	 * @param computeServerId the Server Object Identifier to check against
+	 * @return a NetworkDomain instance of the associated domain. if it exists
+	 */
+	Single<NetworkDomain> findByServer(Long computeServerId);
+
+	/**
+	 * Gets the network domain assigned to a workload/container. This is relevant when doing IPAM/DNS operations.
+	 * It looks for the primary domain object by checking the interfaces and any domain overrides on the server.
+	 * This method may go away as a server in theory can belong to many domains.
+	 *
+	 * @param workloadId the Workload/Container Object Identifier to check against
+	 * @return a NetworkDomain instance of the associated domain. if it exists
+	 */
+	Single<NetworkDomain> findByWorkload(Long workloadId);
+
+	/**
 	 * Removes Missing Network Domains on the Morpheus side. This accepts the Projection Object instead of the main Object.
 	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
 	 * <p><strong>Example:</strong></p>

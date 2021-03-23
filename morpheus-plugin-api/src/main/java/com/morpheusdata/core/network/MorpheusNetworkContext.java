@@ -145,15 +145,6 @@ public interface MorpheusNetworkContext {
 
 	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress);
 
-
-	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId);
-
-	Single<Void> deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord);
-
-	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer);
-
-	Single<NetworkDomain> getNetworkDomainById(Long id);
-
 	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
 
 }

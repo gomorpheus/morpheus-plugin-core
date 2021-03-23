@@ -35,6 +35,8 @@ import org.apache.http.entity.ContentType
 import org.apache.http.client.HttpClient
 import io.reactivex.Observable
 
+import javax.xml.ws.Service
+
 @Slf4j
 class InfobloxProvider implements IPAMProvider, DNSProvider {
 	MorpheusContext morpheusContext
@@ -93,124 +95,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	@Override
 	String getName() {
 		return 'Infoblox2'
-	}
-
-
-	@Override
-	ServiceResponse removeServer(AccountIntegration integration, ComputeServer server, Map opts) {
-		log.info("executing container remove for ${server?.id}")
-		def rtn = new ServiceResponse()
-		try {
-			if(integration) {
-				def domainMatch = morpheus.network.getServerNetworkDomain(server).blockingGet()
-				log.info("domainMatch: ${domainMatch}")
-				if(domainMatch) {
-					morpheus.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, server.id).doOnSuccess({ domainRecord ->
-						if(domainRecord) {
-							def results = deleteRecord(integration, domainRecord, opts)
-							rtn.success = results?.success
-							if(rtn.success) {
-								morpheus.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord).blockingGet()
-							}
-						}
-					})
-				}
-			} else {
-				log.warn("no integration")
-			}
-		} catch(e) {
-			log.error("removeServer error: ${e}", e)
-		}
-		return rtn
-	}
-
-	@Override
-	ServiceResponse provisionServer(AccountIntegration integration, ComputeServer server, Map opts) {
-		log.info("executing msoft dns provision for ${server?.id}")
-		def rtn = new ServiceResponse()
-		try {
-			if(integration) {
-				morpheus.network.getServerNetworkDomain(server).doOnSuccess({ domainMatch ->
-					if(domainMatch) {
-						def fqdn = server.fqdn
-						def content = server.externalIp
-						def domainRecord = new NetworkDomainRecord(name: fqdn,fqdn:fqdn, serverId: server.id, networkDomain: domainMatch, content: content )
-						def results = createRecord(integration,domainRecord,opts)
-						rtn.success = results?.success
-						if(rtn.success) {
-							morpheus.network.domain.record.save(domainRecord).blockingGet()
-						}
-					}
-				})
-			} else {
-				log.warn("no integration")
-			}
-		} catch(e) {
-			log.error("provisionServer error: ${e}", e)
-		}
-		return rtn
-	}
-
-	/**
-	 * Endpoint called during teardown of a Morpheus Instance Workload. This is also known as a Container database object
-	 * within the Morpheus api due to legacy compatibility. This method implementation should remove any A/PTR/AAAA records
-	 * associated with a {@link Workload} during the teardown phase.
-	 * @param integration The integration for the target DNS Provider implementation.
-	 * @param workload The workload being destroyed within the instance. (Also known as a Container object in the api)
-	 * @param opts parameter options that may affect the deprovisioning behavior
-	 * @return the response status of the deprovisioning request
-	 */
-	@Override
-	ServiceResponse removeWorkload(AccountIntegration integration, Workload workload, Map opts) {
-		log.info("executing container remove for ${container?.id}")
-		def rtn = new ServiceResponse()
-		try {
-			if(integration) {
-				morpheus.network.getContainerNetworkDomain(container).doOnSuccess({ domainMatch ->
-					log.info("domainMatch: ${domainMatch}")
-					if(domainMatch) {
-						morpheus.network.getNetworkDomainRecordByNetworkDomainAndContainerId(domainMatch, container.id).doOnSuccess({ domainRecord ->
-							if(domainRecord) {
-								def results = deleteRecord(integration,domainRecord,opts)
-								rtn.success = results?.success
-								if(rtn.success) {
-									morpheus.network.deleteNetworkDomainAndRecord(domainMatch, domainRecord).blockingGet()
-								}
-							}
-						})
-					}
-				})
-			} else {
-				log.warn("no integration")
-			}
-		} catch(e) {
-			log.error("removeContainer error: ${e}", e)
-		}
-		return rtn
-	}
-
-	@Override
-	ServiceResponse provisionWorkload(AccountIntegration integration, Workload workload, Map opts) {
-		def rtn = new ServiceResponse()
-		try {
-			if(integration) {
-				morpheus.network.getContainerNetworkDomain(container).doOnSuccess({ domainMatch ->
-					def fqdn = morpheus.network.getContainerExternalFqdn(container).blockingGet()
-					def containerExternalIp = morpheus.network.getContainerExternalIp(container).blockingGet()
-					def domainRecord = new NetworkDomainRecord(name: fqdn, fqdn: fqdn, containerId: container.id, serverId: container.server.id, networkDomain: domainMatch, content: containerExternalIp)
-					def results = createRecord(integration,domainRecord,opts)
-					rtn.success = results?.success
-					if(rtn.success) {
-						morpheus.network.saveDomainRecord(domainRecord).blockingGet()
-					}
-				})
-			} else {
-				log.warn("no integration")
-			}
-		} catch(e) {
-			log.error("provisionContainer error: ${e}", e)
-		}
-		return rtn
 	}
 
 	/**
@@ -301,8 +185,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	def refreshDnsIntegration(AccountIntegration integration) { return null }
 
 	@Override
-	ServiceResponse createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts) {
-		def rtn = new ServiceResponse()
+	ServiceResponse<NetworkDomainRecord> createRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts) {
+		ServiceResponse<NetworkDomainRecord> rtn = new ServiceResponse<>()
 		try {
 			if(integration) {
 
@@ -393,7 +277,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				log.info("createRecord results: ${results}")
 				if(results.success) {
 					record.externalId = results.content.substring(1, results.content.length() - 1)
-					morpheus.network.domain.record.save(record).blockingGet()
+					return new ServiceResponse<NetworkDomainRecord>(true,null,null,record)
+					rtn.data = record
 					rtn.success = true
 				}
 			} else {
@@ -671,7 +556,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		}
 	}
 
-	void addMissingDomainRecords(NetworkDomainIdentityProjection domain, String recordType, List addList) {
+	void addMissingDomainRecords(NetworkDomainIdentityProjection domain, String recordType, Collection<Map> addList) {
 		List<NetworkDomainRecord> records = []
 		addList?.each {
 			def addConfig = [networkDomain: domain, externalId:it.'_ref', name: recordType == 'PTR' ? it.ptrdname : it.name, fqdn: "${it.name}.${it.zone ?: ""}", type: recordType, source: 'sync']
@@ -1102,8 +987,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 					def aRecordRef = results.content.substring(1, results.content.length() - 1)
 					def domainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: hostname, fqdn: hostname, source: 'user', type: 'A', externalId: aRecordRef)
-//					domainRecord.addToContent(newIp)
-					morpheus.network.saveDomainRecord(domainRecord).blockingGet()
+					morpheus.network.domain.record.create(domainRecord).blockingGet()
 					networkPoolIp.internalId = aRecordRef
 				}
 				if(createPtrRecord) {
@@ -1125,7 +1009,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					} else {
 						String prtRecordRef = results.content.substring(1, results.content.length() - 1)
 						def ptrDomainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: ptrName, fqdn: hostname, source: 'user', type: 'PTR', externalId: prtRecordRef)
-						morpheus.network.saveDomainRecord(ptrDomainRecord).blockingGet()
+						morpheus.network.domain.record.create(ptrDomainRecord).blockingGet()
 						log.info("got PTR record: {}",results)
 						networkPoolIp.ptrId = prtRecordRef
 					}
