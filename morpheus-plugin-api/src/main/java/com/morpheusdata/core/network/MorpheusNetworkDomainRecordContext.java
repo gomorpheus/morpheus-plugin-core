@@ -43,6 +43,23 @@ public interface MorpheusNetworkDomainRecordContext {
 	 */
 	Observable<NetworkDomainRecord> listById(Collection<Long> ids);
 
+
+	/**
+	 * Finds the DNS Record associated with the specified workloadId (aka containerId) within the specified {@link NetworkDomain}
+	 * @param domainMatch the current domain we are querying against
+	 * @param workloadId the id of the container/workload element associated to the record
+	 * @return the DNS Zone record associated with the workload
+	 */
+	Single<NetworkDomainRecord> findByNetworkDomainAndWorkloadId(NetworkDomainIdentityProjection domainMatch, Long workloadId);
+
+	/**
+	 * Finds the DNS Record associated with the specified serverId from {@link com.morpheusdata.model.ComputeServer} within the specified {@link NetworkDomain}
+	 * @param domainMatch the current domain we are querying against
+	 * @param serverId the id of the server element associated to the record
+	 * @return the DNS Zone record associated with the server
+	 */
+	Single<NetworkDomainRecord> findByNetworkDomainAndServerId(NetworkDomainIdentityProjection domainMatch, Long serverId);
+
 	/**
 	 * Removes {@link NetworkDomainRecord} objects from a DNS Domain in bulk. This is typically used when syncing with
 	 * the DNS Integration.
@@ -51,6 +68,14 @@ public interface MorpheusNetworkDomainRecordContext {
 	 * @return the success state Observable of the operation. make sure you subscribe.
 	 */
 	Single<Boolean>  remove(NetworkDomainIdentityProjection domain, List<NetworkDomainRecordIdentityProjection> removeList);
+
+	/**
+	 * Removes a {@link NetworkDomainRecord} object from a DNS Domain. This is often used when handling teardown implementations of DNS Providers.
+	 * @param domain The Domain scope for the record being deleted. This method is scoped to the Zone for safety.
+	 * @param removeRecord the Zone record that is to be deleted
+	 * @return the success state Observable of the operation. make sure you subscribe.
+	 */
+	Single<Boolean>  remove(NetworkDomainIdentityProjection domain, NetworkDomainRecordIdentityProjection removeRecord);
 
 	/**
 	 * Creates a single {@link NetworkDomain} object returning the final result object if any changes occurred during save.

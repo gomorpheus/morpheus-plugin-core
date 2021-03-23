@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
+import com.morpheusdata.model.NetworkDomain;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
