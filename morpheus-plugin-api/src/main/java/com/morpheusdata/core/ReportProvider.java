@@ -23,15 +23,35 @@ public interface ReportProvider extends PluginProvider {
 
 	void process(ReportResult reportResult);
 
-	//helper context needed for saving results and view info
+	/**
+	 * A short description of the report for the user to better understand its purpose.
+	 * @return the description string
+	 */
 	String getDescription();
 
+	/**
+	 * Gets the category string for the report. Reports can be organized by category when viewing.
+	 * @return the category string (i.e. inventory)
+	 */
 	String getCategory();
 
+	/**
+	 * Only the owner of the report result can view the results.
+	 * @return whether this report type can be read by the owning user only or not
+	 */
 	Boolean getOwnerOnly();
 
+	/**
+	 * Some reports can only be run by the master tenant for security reasons. This informs Morpheus that the report type
+	 * is a master tenant only report.
+	 * @return whether or not this report is for the master tenant only.
+	 */
 	Boolean getMasterOnly();
 
+	/**
+	 *
+	 * @return
+	 */
 	Boolean getSupportsAllZoneTypes();
 
 	List<OptionType> getOptionTypes();
