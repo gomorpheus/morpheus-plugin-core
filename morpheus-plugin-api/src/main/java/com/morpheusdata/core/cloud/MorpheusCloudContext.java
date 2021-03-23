@@ -64,6 +64,6 @@ public interface MorpheusCloudContext {
 
 	Single<Instance> getInstance(ComputeServer server);
 
-	Single<Map> buildUserData(PlatformType platformType, Map userConfig, Map cloudConfig);
+	Single<String> buildUserData(PlatformType platformType, Map userConfig, Map cloudConfig);
 
 }
