@@ -19,7 +19,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 
 	/**
 	 * Gets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
+	 *
 	 * @return the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public String getTypeCode() {
@@ -28,7 +28,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 
 	/**
 	 * Sets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
+	 *
 	 * @param typeCode the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public void setTypeCode(String typeCode) {

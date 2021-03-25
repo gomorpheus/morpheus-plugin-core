@@ -1,6 +1,8 @@
 == Getting Started
 
-The structure of a Plugin is a typical "fat jar". The plugin will include `morpheus-plugin-api` along with all the dependencies required to run.
+The structure of a Plugin is a typical "fat jar" (aka shadowJar). The plugin will include `morpheus-plugin-api` along with all the dependencies required to run. Though not required, it is often conventional to use the groovy programming language when developing plugins as can be seen in the samples. Morpheus is based on the groovy runtime and therefore allows full use of groovy 2.5.x.
+
+The Structure of a project often starts with a gradle build along with a `Plugin` class implementation and a manifest that points to this class. This is the entrypoint for the plugin where all metadata about the plugin is defined as well as all `Providers` offered by the plugin are registered.
 
 === Gradle project
 
