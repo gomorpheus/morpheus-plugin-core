@@ -16,31 +16,14 @@ import com.morpheusdata.views.ViewModel
  */
 class CustomTabProvider extends AbstractInstanceTabProvider {
 	Plugin plugin
-	MorpheusContext morpheusContext
+	MorpheusContext morpheus
+
+	String code = 'custom-tab-1'
+	String name = 'Custom Tab 1'
 
 	CustomTabProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
-		this.morpheusContext = context
-	}
-
-	@Override
-	MorpheusContext getMorpheus() {
-		morpheusContext
-	}
-
-	@Override
-	Plugin getPlugin() {
-		plugin
-	}
-
-	@Override
-	String getCode() {
-		'custom-tab-1'
-	}
-
-	@Override
-	String getName() {
-		'Custom Tab 1'
+		this.morpheus = context
 	}
 
 	/**

@@ -4,7 +4,7 @@ Add custom Tasks types to Morpheus. See a https://github.com/gomorpheus/morpheus
 
 ==== Setup
 
-Tasks (called Jobs in the UI) are useful components of your provisioning workflow.
+Tasks are useful components of your provisioning workflow.
 This plugin allows you to create custom Tasks
 
 - Create a new class that implements `com.morpheusdata.core.TaskProvider`

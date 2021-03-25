@@ -9,6 +9,7 @@ import java.util.Map;
  * Any plugin for Morpheus that provides DNS Related integration points should use this for implementing
  * DNS Related Services used throughout the orchestration process
  *
+ * @since 0.8.0
  * @author David Estes
  */
 public interface DNSProvider extends PluginProvider {

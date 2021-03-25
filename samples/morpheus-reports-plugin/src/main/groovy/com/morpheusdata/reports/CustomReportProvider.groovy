@@ -19,7 +19,12 @@ import io.reactivex.Observable;
 import java.sql.Connection
 
 /**
- * Example TabProvider
+ * A Sample Custom Report that lists all instances as well as their current status
+ * This report does not take into account user permissions currently and simply uses a direct SQL Connection using Groovy SQL with RxJava to generate a set of results.
+ *
+ * A renderer is also defined to render the HTML via Handlebars templates.
+ *
+ * @author David Estes
  */
  @Slf4j
 class CustomReportProvider extends AbstractReportProvider {
@@ -83,16 +88,21 @@ class CustomReportProvider extends AbstractReportProvider {
 
 
 	void process(ReportResult reportResult) {
-		morpheusContext.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
+		morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
 		Long displayOrder = 0
 		List<GroovyRowResult> results = []
 		Connection dbConnection
 		
 		try {
-			dbConnection = morpheusContext.report.getReadOnlyDatabaseConnection().blockingGet()
-			results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
+			dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
+			if(reportResult.configMap?.phrase) {
+				String phraseMatch = "${reportResult.configMap?.phrase}%"
+				results = new Sql(dbConnection).rows("SELECT id,name,status from instance WHERE name LIKE ${phraseMatch} order by name asc;")
+			} else {
+				results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
+			}
 		} finally {
-			morpheusContext.report.releaseDatabaseConnection(dbConnection)
+			morpheus.report.releaseDatabaseConnection(dbConnection)
 		}
 		log.info("Results: ${results}")
 		Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
@@ -138,6 +148,6 @@ class CustomReportProvider extends AbstractReportProvider {
 
 	 @Override
 	 List<OptionType> getOptionTypes() {
-		 [new OptionType(code: 'status-report-search', name: 'Search', fieldName: 'instancePhrase', fieldLabel: 'Search Phrase', displayOrder: 0)]
+		 [new OptionType(code: 'status-report-search', name: 'Search', fieldName: 'phrase', fieldContext: 'config', fieldLabel: 'Search Phrase', displayOrder: 0)]
 	 }
  }
