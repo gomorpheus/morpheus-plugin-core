@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.WorkloadIdentityProjection;
+
 import java.util.Date;
 import java.util.List;
 
@@ -11,10 +13,9 @@ import java.util.List;
  *
  * @author David Estes
  */
-public class Workload extends MorpheusModel {
+public class Workload extends WorkloadIdentityProjection {
 	protected String uuid;
 	protected ComputeServer server;
-	protected String name;
 	protected ServicePlan plan;
 	protected Boolean privateNetworking;
 	protected String userData;
@@ -67,7 +68,6 @@ public class Workload extends MorpheusModel {
 	protected String externalIp;
 	//external mapping;
 	protected String internalId; //id of the pod;
-	protected String externalId; //id of the container;
 	protected String uniqueId; //id to the container engine;
 	protected String controlId; //id in the scheduler;
 	protected String monitorId; //id of the monitor;
@@ -104,15 +104,6 @@ public class Workload extends MorpheusModel {
 	public void setServer(ComputeServer server) {
 		this.server = server;
 		markDirty("server", server);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
 	}
 
 	public ServicePlan getPlan() {
@@ -552,15 +543,6 @@ public class Workload extends MorpheusModel {
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
 		markDirty("internalId", internalId);
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
 	}
 
 	public String getUniqueId() {

@@ -395,7 +395,10 @@ class MaasProvisionProvider implements ProvisioningProvider {
 						// update container statuses
 //						morpheusContext.cloud.updateAllStatus(computeServer, Container.Status.stopped, Container.Status.stopped).blockingGet()
 						stopServerUsage(computeServer, false)
-						def instanceIds = morpheusContext.cloud.getStoppedContainerInstanceIds(computeServer.id).blockingGet()
+						List<Long> instanceIds = []
+						morpheusContext.cloud.getStoppedContainerInstanceIds(computeServer.id).subscribe{
+							instanceIds << it.id
+						}
 						if(instanceIds) {
 							morpheusContext.cloud.updateInstanceStatus(instanceIds, Instance.Status.stopped)
 						}
