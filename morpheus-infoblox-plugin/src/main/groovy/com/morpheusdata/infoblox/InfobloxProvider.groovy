@@ -17,6 +17,7 @@ import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.model.NetworkPoolType
+import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection
 import com.morpheusdata.model.projection.NetworkDomainRecordIdentityProjection
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection
@@ -1518,6 +1519,19 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	Collection<NetworkPoolType> getNetworkPoolTypes() {
 		return [new NetworkPoolType(code:'infoblox', name:'Infoblox', creatable:false, description:'Infoblox', rangeSupportsCidr: false)];
+	}
+
+	/**
+	 * Provide custom configuration options when creating a new {@link AccountIntegration}
+	 * @return a List of OptionType
+	 */
+	@Override
+	List<OptionType> getIntegrationOptionTypes() {
+		return [
+				new OptionType(code: 'infoblox.serviceUrl', type: OptionType.InputType.TEXT, fieldName: 'serviceUrl', fieldLabel: 'API Url', fieldContext: 'domain', displayOrder: 0),
+				new OptionType(code: 'infoblox.serviceUsername', type: OptionType.InputType.TEXT, fieldName: 'serviceUsername', fieldLabel: 'Username', fieldContext: 'domain', displayOrder: 1),
+				new OptionType(code: 'infoblox.servicePassword', type: OptionType.InputType.PASSWORD, fieldName: 'servicePassword', fieldLabel: 'Password', fieldContext: 'domain', displayOrder: 2)
+		]
 	}
 
 	private static Map parseNetworkFilter(String networkFilter) {

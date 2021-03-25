@@ -4,6 +4,7 @@ import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -142,5 +143,11 @@ public interface IPAMProvider extends PluginProvider {
 	 * @return a List of {@link NetworkPoolType} to be loaded into the Morpheus database.
 	 */
 	Collection<NetworkPoolType> getNetworkPoolTypes();
+
+	/**
+	 * Provide custom configuration options when creating a new {@link AccountIntegration}
+	 * @return a List of OptionType
+	 */
+	List<OptionType> getIntegrationOptionTypes();
 	
 }

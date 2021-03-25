@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,4 +35,10 @@ public interface DNSProvider extends PluginProvider {
 	 * @return the ServiceResponse with the success/error of the delete operation.
 	 */
 	ServiceResponse deleteRecord(AccountIntegration integration, NetworkDomainRecord record, Map opts);
+
+	/**
+	 * Provide custom configuration options when creating a new {@link AccountIntegration}
+	 * @return a List of OptionType
+	 */
+	List<OptionType> getIntegrationOptionTypes();
 }

@@ -4,7 +4,6 @@ import com.morpheusdata.core.DNSProvider;
 import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -136,12 +135,6 @@ public interface MorpheusNetworkContext {
 	Single<NetworkPoolServer> getPoolServerById(Long id);
 
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId);
-
-	Single<NetworkDomain> getContainerNetworkDomain(Container container);
-
-	Single<String> getContainerExternalIp(Container container);
-
-	Single<String> getContainerExternalFqdn(Container container);
 
 	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress);
 

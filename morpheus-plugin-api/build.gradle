@@ -40,6 +40,8 @@ dependencies {
 	implementation 'org.glassfish:javax.json:1.1.4'
 	implementation 'javax.json:javax.json-api:1.1.4'
 
+	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+
 	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	testImplementation "org.spockframework:spock-core:$spockVersion"
 	testImplementation 'cglib:cglib-nodep:3.3.0'
