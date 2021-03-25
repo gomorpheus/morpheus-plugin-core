@@ -11,6 +11,7 @@ import io.reactivex.Single;
  * morpheusContext.getNetwork().getType()
  * }</pre>
  * @see MorpheusNetworkContext
+ * @since 0.8.0
  * @author Eric Helgeson
  */
 public interface MorpheusNetworkTypeContext {

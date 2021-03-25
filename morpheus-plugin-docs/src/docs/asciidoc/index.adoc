@@ -4,7 +4,7 @@
 
 == Introduction
 
-The Morpheus Plugin API is a Java based library for creating Plugins that add functionality to Morpheus. The Plugin api supports implementing providers to Morpheus of the following types:
+The Morpheus Plugin API is a Java 8 based library for creating Plugins that add functionality to Morpheus. The Plugin api supports implementing providers to Morpheus of the following types:
 
 * UI Extensions
 * Task Types
@@ -12,6 +12,10 @@ The Morpheus Plugin API is a Java based library for creating Plugins that add fu
 * DNS
 * Approvals
 * Cypher Modules
+* Custom Reports
+* Cloud Providers
+
+include::ReleaseNotes.adoc[]
 
 include::GettingStarted.adoc[]
 

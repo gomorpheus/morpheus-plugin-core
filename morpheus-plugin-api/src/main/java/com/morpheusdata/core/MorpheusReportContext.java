@@ -16,6 +16,7 @@ import java.util.Collection;
  * Rows have sections like 'data', or 'header'. This can affect the display in how you render things from the HTML output side.
  *
  * @see ReportProvider
+ * @since 0.8.0
  * @author David Estes
  *
  */
