@@ -6,6 +6,7 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServerType
@@ -199,7 +200,7 @@ class MaasCloudProvider implements CloudProvider {
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
 			log.info("apiHost: ${apiHost}, port: ${apiPort}")
-			def hostOnline = NetworkUtility.testHostConnection(apiHost, apiPort, true, true, cloud.apiProxy)
+			def hostOnline = ConnectionUtils.testHostConnection(apiHost, apiPort, true, true, cloud.apiProxy)
 			log.info("hostOnline: $hostOnline")
 			if (hostOnline) {
 				cloud.serviceUrl = apiUrl
