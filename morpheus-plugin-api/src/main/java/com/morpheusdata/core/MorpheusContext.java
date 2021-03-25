@@ -190,7 +190,7 @@ public interface MorpheusContext {
 	 * }
 	 * }</pre>
 	 */
-	Single<String> acquireLock(String name, Map opts);
+	Single<String> acquireLock(String name, Map<String,Object> opts);
 
 	/**
 	 * Releases a lock key for other threads or nodes to be able to use it.
@@ -199,5 +199,12 @@ public interface MorpheusContext {
 	 * @param opts the opts map of wait timeouts or [lock:lockId] where the lockId is the return of {@link MorpheusContext#acquireLock(String, Map)}
 	 * @return the success state of the release lock attempt
 	 */
-	Single<Boolean> releaseLock(String name, Map opts);
+	Single<Boolean> releaseLock(String name, Map<String,Object> opts);
+
+
+	Boolean testHostConnection(String hostname);
+	Boolean testHostConnection(String hostname, Integer port);
+	Boolean testHostConnection(String hostname, Integer port, boolean doPing);
+	Boolean testHostConnection(String hostname, Integer port, boolean doPing, boolean doSocket);
+	Boolean testHostConnection(String hostname, Integer port, boolean doPing, boolean doSocket, NetworkProxy networkProxy);
 }
