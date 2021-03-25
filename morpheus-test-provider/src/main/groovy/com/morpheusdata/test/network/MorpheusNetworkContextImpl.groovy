@@ -1,24 +1,11 @@
 package com.morpheusdata.test.network
 
-import com.morpheusdata.core.network.MorpheusNetworkContext
-import com.morpheusdata.core.network.MorpheusNetworkDomainContext
-import com.morpheusdata.core.network.MorpheusNetworkPoolContext
-import com.morpheusdata.core.network.MorpheusNetworkPoolIpContext
-import com.morpheusdata.core.network.MorpheusNetworkPoolRangeContext
-import com.morpheusdata.model.AccountIntegration
-import com.morpheusdata.model.Cloud
-import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.Container
-import com.morpheusdata.model.Network
-import com.morpheusdata.model.NetworkDomain
-import com.morpheusdata.model.NetworkDomainRecord
-import com.morpheusdata.model.NetworkPool
-import com.morpheusdata.model.NetworkPoolIp
-import com.morpheusdata.model.NetworkPoolServer
+import com.morpheusdata.core.network.*
+import com.morpheusdata.model.*
 import com.morpheusdata.model.projection.NetworkIdentityProjection
+import groovy.transform.AutoImplement
 import io.reactivex.Completable
 import io.reactivex.Observable
-import groovy.transform.AutoImplement
 import io.reactivex.Single
 
 @AutoImplement
@@ -194,21 +181,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<NetworkPoolIp> loadNetworkPoolIp(NetworkPool pool, String ipAddress) {
-		return null
-	}
-
-	@Override
-	Single<NetworkDomainRecord> getNetworkDomainRecordByNetworkDomainAndContainerId(NetworkDomain domainMatch, Long containerId) {
-		return null
-	}
-
-	@Override
-	Single<Void> deleteNetworkDomainAndRecord(NetworkDomain networkDomain, NetworkDomainRecord domainRecord) {
-		return null
-	}
-
-	@Override
-	Single<NetworkDomain> getServerNetworkDomain(ComputeServer computeServer) {
 		return null
 	}
 

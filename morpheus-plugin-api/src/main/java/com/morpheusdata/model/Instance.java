@@ -1,12 +1,13 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.InstanceIdentityProjection;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class Instance extends MorpheusModel {
+public class Instance extends InstanceIdentityProjection {
 	private String uuid;
-	private String name;
 	private String description;
 	public String instanceTypeName;
 	public String instanceTypeCode;
@@ -69,15 +70,6 @@ public class Instance extends MorpheusModel {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
 	}
 
 	public String getDescription() {

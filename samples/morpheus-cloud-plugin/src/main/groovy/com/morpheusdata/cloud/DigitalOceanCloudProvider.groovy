@@ -242,6 +242,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
 
+		log.info("images: $images")
 		images.each {
 			Map props = [
 					name      : "${it.distribution} ${it.name}",
@@ -256,6 +257,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			]
 			virtualImages << new VirtualImage(props)
 		}
+		log.info("api images: $virtualImages")
 		virtualImages
 	}
 
@@ -292,6 +294,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	def cacheSizes(Cloud cloud, String apiKey) {
+		log.info("cacheSizes")
 		HttpGet sizesGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
 		Map respMap = apiService.makeApiCall(sizesGet, apiKey)
 		List<ServicePlan> servicePlans = []
@@ -313,7 +316,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			)
 			servicePlans << servicePlan
 		}
-
+		log.info("api service plans: $servicePlans")
 		if (servicePlans) {
 			Observable<ServicePlanIdentityProjection> domainPlans = morpheusContext.servicePlan.listSyncProjections(cloud.id)
 			SyncTask<ServicePlanIdentityProjection, ServicePlan, ServicePlan> syncTask = new SyncTask(domainPlans, servicePlans)

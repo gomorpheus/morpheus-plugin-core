@@ -76,7 +76,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	Single<ServiceResponse> validateWorkload(Map opts) {
+	ServiceResponse validateWorkload(Map opts) {
 		return null
 	}
 
