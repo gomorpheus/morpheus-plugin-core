@@ -9,8 +9,6 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.AccountIntegration
-import com.morpheusdata.model.AccountIntegrationType
-import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkDomainRecord
@@ -18,9 +16,7 @@ import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolRange
 import com.morpheusdata.model.NetworkPoolServer
-import com.morpheusdata.model.NetworkPoolServerType
 import com.morpheusdata.model.NetworkPoolType
-import com.morpheusdata.model.Workload
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection
 import com.morpheusdata.model.projection.NetworkDomainRecordIdentityProjection
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection
@@ -710,39 +706,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		if(poolsToUpdate.size() > 0) {
 			morpheus.network.pool.save(poolsToUpdate)
 		}
-	}
-
-	/**
-	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link NetworkPoolServerType} objects representing the available pool types provided by this Provider.
-	 */
-	@Override
-	Set<NetworkPoolServerType> getProvidedPoolServerTypes() {
-		[new NetworkPoolServerType(
-			code: 'infoblox',
-			name: 'Infoblox',
-			isPlugin: true,
-			selectable: true,
-			poolService: 'infobloxNetworkPoolService',
-			description: 'Infoblox IPAM'
-		)]
-	}
-
-	@Override
-	Set<AccountIntegrationType> getProvidedAccountIntegrationTypes() {
-		[new AccountIntegrationType(
-			name:'Infoblox',
-			code:'infoblox',
-			category:'ipam',
-			enabled:false,
-			viewSet:'ipam',
-			optionTypes:[],
-			hasCMDB:false,
-			hasCM:false,
-			hasDNS: true,
-			hasApprovals:false,
-			integrationService:'networkPoolService'
-		)]
 	}
 
 	/**

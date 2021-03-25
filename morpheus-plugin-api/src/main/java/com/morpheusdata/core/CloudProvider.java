@@ -12,6 +12,8 @@ import java.util.Collection;
  * This includes syncing assets related to things like VirtualMachines or Containers for various cloud types. For
  * integrating with actual provisioning a {@link ProvisioningProvider} is also available.
  * TODO : Still a Work In Progress and not yet supported
+ *
+ * @since 0.8.0
  * @author David Estes
  */
 public interface CloudProvider extends PluginProvider {

@@ -13,7 +13,7 @@ import java.util.Set;
  * both interfaces
  *
  * @see DNSProvider
- *
+ * @since 0.8.0
  * @author David Estes
  */
 public interface IPAMProvider extends PluginProvider {
@@ -55,19 +55,6 @@ public interface IPAMProvider extends PluginProvider {
 	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
 	 */
 	void refresh(NetworkPoolServer poolServer);
-
-
-	/**
-	 * Returns a list of provided pool types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link NetworkPoolServerType} objects representing the available pool types provided by this Provider.
-	 */
-	Set<NetworkPoolServerType> getProvidedPoolServerTypes();
-
-	/**
-	 * Returns a list of account integration types that are available for use. These are synchronized by the IPAM Provider via a Context.
-	 * @return A Set of {@link AccountIntegrationType} objects representing the available account integration provided by this Provider.
-	 */
-	Set<AccountIntegrationType> getProvidedAccountIntegrationTypes();
 
 	/*
 	 * Target endpoint used to allocate an IP Address during provisioning of Instances

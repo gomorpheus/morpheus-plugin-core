@@ -11,6 +11,7 @@ import java.util.Map;
  * Provides methods for interacting with the provisioning engine of Morpheus. This is akin to dealing with requests made
  * from "Add Instance" or from Application Blueprints
  *
+ * @since 0.8.0
  * @author David Estes
  */
 public interface ProvisioningProvider extends PluginProvider {
