@@ -2,7 +2,9 @@ package com.morpheusdata.core.cloud;
 
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
+import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Date;
@@ -58,9 +60,16 @@ public interface MorpheusCloudContext {
 	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
 	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
+	/**
+	 * Update a collection of Instances to a particular status.
+	 *
+	 * @param ids {@link Instance} id list
+	 * @param status instance status
+	 * @return null
+	 */
 	Single<Void> updateInstanceStatus(List<Long> ids, Instance.Status status);
 
-	Single<List<Long>> getStoppedContainerInstanceIds(Long containerId);
+	Observable<InstanceIdentityProjection> getStoppedContainerInstanceIds(Long computeServerId);
 
 	Single<Instance> getInstance(ComputeServer server);
 
