@@ -1,7 +1,8 @@
 package com.morpheusdata.maas.plugin
 
 import com.morpheusdata.apiutil.ComputeUtility
-import com.morpheusdata.apiutil.RestApiUtil
+//import com.morpheusdata.apiutil.RestApiUtil
+import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeZonePool
@@ -147,18 +148,19 @@ class MaasComputeUtility {
 
 	static listResources(Map authConfig, String resourceName, Map opts) {
 		def rtn = [success:false, error:false, data:null]
-		def apiPath = authConfig.basePath + '/' + resourceName + '/'
+		String apiPath = authConfig.basePath + '/' + resourceName + '/'
 		def headers = buildHeaders([:])
 		def query = opts.query ?: [:]
-		def requestOpts = [headers:headers, query:query]
-		requestOpts.oauth = authConfig.oauth
-		ServiceResponse results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
+
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
+		ServiceResponse results = RestApiUtil.callJsonApi(authConfig.apiUrl as String, apiPath, null, null, requestOpts, 'GET')
 		log.info("listResources {} results: {}", resourceName, results)
-		if(results.success == true) {
+		if(results.success) {
 			rtn.data = results.data
 			rtn.success = true
 		} else {
-			rtn.data = results
+			rtn.data = results.toMap()
 			rtn += parseErrorResults(results)
 			rtn.msg = rtn.msg ?: results?.description ?: 'unknown error'
 		}
@@ -258,7 +260,7 @@ class MaasComputeUtility {
 		def requestOpts = [headers:headers, query:query]
 		requestOpts.oauth = authConfig.oauth
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
-		if(results.success == true) {
+		if(results.success) {
 			rtn.data = results.data
 			rtn.success = true
 		} else {

@@ -3,6 +3,7 @@ package com.morpheusdata.maas.plugin
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.HostType
@@ -479,13 +480,12 @@ class MaasProvisionProvider implements ProvisioningProvider {
 		//key format - consumerKey:apiKey:apiSecret
 		def apiKeyList = apiKey.tokenize(':')
 		//set the oauth info
-		rtn.oauth = [
-				version:'1',
+		rtn.oauth = new RestApiUtil.RestOptions.OauthOptions(version:'1',
 				consumerKey:apiKeyList[0],
 				consumerSecret:'',
 				apiKey:apiKeyList[1],
-				apiSecret:apiKeyList[2]
-		]
+				apiSecret:apiKeyList[2])
+
 		//base path
 		rtn.basePath = '/MAAS/api/' + rtn.apiVersion
 		//done
