@@ -109,6 +109,18 @@ public class RestApiUtil {
 				request.addHeader("Authorization",credHeader);
 			}
 
+			//if bearer token
+			if(opts.apiToken != null) {
+				int newLine = opts.apiToken.indexOf('\n');
+				if(newLine > -1)
+					opts.apiToken = opts.apiToken.substring(0, newLine);
+				request.addHeader("Authorization", "Bearer " + opts.apiToken);
+			}
+			//if its oauth signing
+			if(opts.oauth != null) {
+				OauthUtility.signOAuthRequestPlainText(request, opts.oauth.consumerKey, opts.oauth.consumerSecret, opts.oauth.apiKey, opts.oauth.apiSecret, opts);
+			}
+
 			// Headers
 			if(opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
 				request.addHeader("Content-Type", "application/json");
@@ -403,6 +415,16 @@ public class RestApiUtil {
 		Boolean keepAlive=false;
 		Boolean ignoreSSL=true;
 		Integer timeout = 30000;
+		OauthOptions oauth;
+		String apiToken;
 		HttpClient httpClient; //optional pass the client
+
+		public static class OauthOptions {
+			String version;
+			String consumerKey;
+			String consumerSecret;
+			String apiKey;
+			String apiSecret;
+		}
 	}
 }

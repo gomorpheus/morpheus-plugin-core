@@ -1,9 +1,6 @@
 package com.morpheusdata.core.util;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.Container;
 import com.morpheusdata.model.NetworkProxy;
-import com.morpheusdata.response.ServiceResponse;
 
 import java.net.Proxy;
 import java.net.InetSocketAddress;
@@ -12,7 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class provides a few static utility methods for verify reachability to target apis/hosts that may be used by third
- * party provider implementations
+ * party provider implementations.
+ *
  *
  * @author David Estes
  */
@@ -29,9 +27,9 @@ public class ConnectionUtils {
 		return testHostConnectivity(hostname,port,doPingTest,true,null);
 	}
 
-	public static Boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
-		Boolean rtn = false;
-		if(doPingTest == true && networkProxy == null) {
+	public static boolean testHostConnectivity(String hostname, Integer port, Boolean doPingTest, Boolean doSocketTest, NetworkProxy networkProxy) {
+		boolean rtn = false;
+		if(doPingTest && networkProxy == null) {
 			try {
 				String command = "ping -c 1 " + hostname;
 				Process process = Runtime.getRuntime().exec(command);
@@ -45,7 +43,7 @@ public class ConnectionUtils {
 //				log.warn("test host connection failed: ${hostname} ${e.message}")
 			}
 		}
-		if(rtn == false && doSocketTest == true && port != null) {
+		if(!rtn && doSocketTest && port != null) {
 			if(port == -1) {
 				port = 80;
 			}
@@ -59,7 +57,7 @@ public class ConnectionUtils {
 					testSocket.setSoTimeout(soTimeout);
 					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout);
 					rtn = true;
-				} catch(Exception ex) {
+				} catch(Exception ignored) {
 //					log.debug("host connectivity proxy check failed ${hostname} ${port} - ${ex.getMessage()}")
 				} finally {
 					if(testSocket != null) { try{ testSocket.close();} catch(Exception eb){}}
@@ -72,7 +70,7 @@ public class ConnectionUtils {
 					testSocket.setSoTimeout(soTimeout);
 					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout);
 					rtn = true;
-				} catch(Exception ex) {
+				} catch(Exception ignored) {
 //					log.debug("host connectivity check failed ${hostname} ${port} - ${ex.getMessage()}")
 				} finally {
 					if(testSocket != null) { try{ testSocket.close();} catch(Exception eb){}}
