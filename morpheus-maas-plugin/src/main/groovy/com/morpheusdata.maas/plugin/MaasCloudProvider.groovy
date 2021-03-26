@@ -1,6 +1,5 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.apiutil.NetworkUtility
 import com.morpheusdata.core.BackupProvider
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext

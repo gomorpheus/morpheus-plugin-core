@@ -1,7 +1,6 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.apiutil.ComputeUtility
-//import com.morpheusdata.apiutil.RestApiUtil
+import com.morpheusdata.core.util.ComputeUtility
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
