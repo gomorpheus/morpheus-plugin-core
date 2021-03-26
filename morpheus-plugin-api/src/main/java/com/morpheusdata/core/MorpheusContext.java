@@ -201,10 +201,4 @@ public interface MorpheusContext {
 	 */
 	Single<Boolean> releaseLock(String name, Map<String,Object> opts);
 
-
-	Boolean testHostConnection(String hostname);
-	Boolean testHostConnection(String hostname, Integer port);
-	Boolean testHostConnection(String hostname, Integer port, boolean doPing);
-	Boolean testHostConnection(String hostname, Integer port, boolean doPing, boolean doSocket);
-	Boolean testHostConnection(String hostname, Integer port, boolean doPing, boolean doSocket, NetworkProxy networkProxy);
 }
