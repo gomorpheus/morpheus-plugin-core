@@ -76,7 +76,7 @@ public class RestApiUtil {
 
 		try {
 
-			URIBuilder uriBuilder = new URIBuilder("${url}/${path}");
+			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
 					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey));
@@ -126,8 +126,10 @@ public class RestApiUtil {
 				request.addHeader("Content-Type", "application/json");
 			}
 
-			for(String headerKey : opts.headers.keySet()) {
-				request.addHeader(headerKey, opts.headers.get(headerKey));
+			if(opts.headers != null && !opts.headers.isEmpty()) {
+				for (String headerKey : opts.headers.keySet()) {
+					request.addHeader(headerKey, opts.headers.get(headerKey));
+				}
 			}
 
 

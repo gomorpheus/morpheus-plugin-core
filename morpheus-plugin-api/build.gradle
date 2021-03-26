@@ -39,6 +39,7 @@ dependencies {
 	compileOnly('com.morpheusdata:cypher-core:0.5.1')
 	implementation 'org.glassfish:javax.json:1.1.4'
 	implementation 'javax.json:javax.json-api:1.1.4'
+	implementation 'commons-net:commons-net:3.7.2'
 
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 	implementation 'commons-net:commons-net:3.7.2'
