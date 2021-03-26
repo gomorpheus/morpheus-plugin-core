@@ -22,22 +22,22 @@ public class NetworkUtility {
 	static private Pattern ip4AddressPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	static private Pattern ip4CidrPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$");
 
-	static Boolean validateIpAddr(String addr) {
+	static public Boolean validateIpAddr(String addr) {
 		Pattern pattern = Pattern.compile("w3schools", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = ip4AddressPattern.matcher(addr);
 		return matcher.matches();
 	}
 
-	static Boolean validateIpAddrOrCidr(String addr) {
+	static public Boolean validateIpAddrOrCidr(String addr) {
 		return validateCidr(addr) || validateIpAddr(addr);
 	}
 
-	static Boolean validateCidr(String addr) {
+	static public Boolean validateCidr(String addr) {
 		Matcher matcher = ip4CidrPattern.matcher(addr);
 		return matcher.matches();
 	}
 
-	static CidrInfo getNetworkCidrConfig(String cidr) {
+	static public CidrInfo getNetworkCidrConfig(String cidr) {
 		CidrInfo rtn = new CidrInfo();
 		try {
 			if(cidr.indexOf(':') > -1) {
@@ -60,7 +60,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static class CidrInfo {
+	static public class CidrInfo {
 		public ArrayList<CidrRange> ranges = new ArrayList<>();
 		public CidrConfig config = new CidrConfig();
 		public String address;
@@ -77,7 +77,7 @@ public class NetworkUtility {
 
 	}
 
-	static Integer getIpAddressCountBetween(String startAddress, String endAddress) {
+	static public Integer getIpAddressCountBetween(String startAddress, String endAddress) {
 		Integer cnt = 0;
 		try {
 			if(validateIpAddr(startAddress) && validateIpAddr(endAddress)) {
@@ -106,7 +106,7 @@ public class NetworkUtility {
 	}
 
 	//gets a cidr string for the actual address and mask
-	static String networkToCidr(String address, String netmask) {
+	static public String networkToCidr(String address, String netmask) {
 		String rtn = null;
 		try {
 			SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(address, netmask).getInfo();
@@ -118,7 +118,7 @@ public class NetworkUtility {
 	}
 
 	//gets a cidr string for the first address and mask
-	static String networkToDisplayCidr(String address, String netmask) {
+	static public String networkToDisplayCidr(String address, String netmask) {
 		String rtn = null;
 		try {
 			SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(address, netmask).getInfo();
@@ -133,7 +133,7 @@ public class NetworkUtility {
 	}
 
 	//remove the cidr mask if there is one
-	static String cidrToAddress(String address) {
+	static public String cidrToAddress(String address) {
 		String rtn = null;
 		if(address != null && address.indexOf('/') > -1)
 			rtn = address.substring(0, address.indexOf('/'));
@@ -145,7 +145,7 @@ public class NetworkUtility {
 	}
 
 	//return the cidr if the address is in cidr form
-	static String addressToCidr(String address) {
+	static public String addressToCidr(String address) {
 		String rtn = null;
 		if(address != null && address.indexOf('/') > -1) {
 			SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(address).getInfo();
@@ -154,7 +154,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String addressToSubnet(String address) {
+	static public String addressToSubnet(String address) {
 		String rtn = null;
 		if(address != null && address.indexOf('/') > -1) {
 			rtn = new SubnetUtils(address).getInfo().getNetmask();
@@ -162,7 +162,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String extractCidr(String address, String cidr, String netmask) {
+	static public String extractCidr(String address, String cidr, String netmask) {
 		String rtn = null;
 		if(cidr != null) {
 			//if cidr is there - use it
@@ -180,7 +180,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String extractSubnet(String address, String cidr, String netmask) {
+	static public String extractSubnet(String address, String cidr, String netmask) {
 		String rtn = "255.255.255.0";
 		String newCidr = extractCidr(address, cidr, netmask);
 		if(newCidr != null)
@@ -188,7 +188,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String hexToSubnetMask(String hexAddress) {
+	static public String hexToSubnetMask(String hexAddress) {
 		String rtn = null;
 		if(hexAddress != null && hexAddress.length() > 7) {
 			String firstOct = hexAddress.substring(0, 2);
@@ -203,7 +203,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String networkToPrefixLength(String address, String netmask) {
+	static public String networkToPrefixLength(String address, String netmask) {
 		String rtn = null;
 		String cidr = networkToCidr(address, netmask);
 		if(cidr != null && cidr.length() > 0) {
@@ -214,7 +214,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String getNetworkSubnetMask(NetworkPool networkPool, Network network, NetworkSubnet subnet) {
+	static public String getNetworkSubnetMask(NetworkPool networkPool, Network network, NetworkSubnet subnet) {
 		String rtn = null;
 		try {
 			if(subnet != null) {
@@ -240,16 +240,16 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String getServiceUrlHost(String serviceUrl) throws MalformedURLException {
+	static public String getServiceUrlHost(String serviceUrl) throws MalformedURLException {
 		return new URL(serviceUrl).getHost();
 	}
 
-	static Integer getServiceUrlPort(String serviceUrl) throws MalformedURLException {
+	static public Integer getServiceUrlPort(String serviceUrl) throws MalformedURLException {
 		URL urlObj = new URL(serviceUrl);
 		return urlObj.getPort() > 0 ? urlObj.getPort() : (urlObj.getProtocol().toLowerCase() == "https" ? 443 : 80);
 	}
 
-	static String getDomainRecordFqdn(String name, String domain) {
+	static public String getDomainRecordFqdn(String name, String domain) {
 		String rtn = null;
 		if(name.contains(domain)) {
 			rtn = getFqdnDomainName(name);
@@ -267,7 +267,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String getDomainRecordName(String name, String domain) {
+	static public String getDomainRecordName(String name, String domain) {
 		String rtn = null;
 		if(domain != null && name != null) {
 			domain = getFqdnDomainName(domain);
@@ -282,7 +282,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String getFriendlyDomainName(String name) {
+	static public String getFriendlyDomainName(String name) {
 		if(name != null) {
 			name = name.toLowerCase();
 			if(name.endsWith(".")) {
@@ -292,7 +292,7 @@ public class NetworkUtility {
 		return name;
 	}
 
-	static String getFqdnDomainName(String name) {
+	public static String getFqdnDomainName(String name) {
 		if(name != null) {
 			name = name.toLowerCase();
 			if(!name.endsWith("."))
@@ -301,15 +301,15 @@ public class NetworkUtility {
 		return name;
 	}
 
-	static String cleanHostname(String name) {
+	static public String cleanHostname(String name) {
 		return name.replaceAll(" ", "-");
 	}
 
-	static String getNextIpAddress(String ipAddress) throws UnknownHostException {
+	static public String getNextIpAddress(String ipAddress) throws UnknownHostException {
 		return getNextIpAddress(ipAddress,1);
 	}
 
-	static String getNextIpAddress(String ipAddress, Integer increment) throws UnknownHostException {
+	static public String getNextIpAddress(String ipAddress, Integer increment) throws UnknownHostException {
 		InetAddress address = InetAddress.getByName(ipAddress);
 		byte[] newAddress = address.getAddress();
 		for(int x =0 ;x<increment;x++) {
@@ -322,7 +322,7 @@ public class NetworkUtility {
 	}
 
 
-	static Integer getMinPort(String portRange) {
+	static public Integer getMinPort(String portRange) {
 		if(portRange.contains("-")) {
 			String[] ports = portRange.split("-");
 			return Integer.parseInt(ports[0]);
@@ -331,7 +331,7 @@ public class NetworkUtility {
 		}
 	}
 
-	static Integer getMaxPort(String portRange) {
+	static public Integer getMaxPort(String portRange) {
 		if(portRange.contains("-")) {
 			String[] ports = portRange.split("-");
 			return Integer.parseInt(ports[1]);
@@ -340,7 +340,7 @@ public class NetworkUtility {
 		}
 	}
 
-	static List<String> getNetworksFromRange(String ipStart, String ipEnd) {
+	static public List<String> getNetworksFromRange(String ipStart, String ipEnd) {
 		long start = ipToLong(ipStart);
 		long end = ipToLong(ipEnd);
 		ArrayList<String> result = new ArrayList<>();
@@ -375,7 +375,7 @@ public class NetworkUtility {
 		return result;
 	}
 
-	static long ipToLong(String ipstr) {
+	static public long ipToLong(String ipstr) {
 		String[] ipAddressInArray = ipstr.split("\\.");
 		long num = 0L;
 		long ip = 0L;
@@ -386,15 +386,15 @@ public class NetworkUtility {
 		return num;
 	}
 
-	static String longToIp(Long longIP) {
+	static public String longToIp(Long longIP) {
 		return String.valueOf(longIP >>> 24) + "." + String.valueOf((longIP & 0x00FFFFFF) >>> 16) + "." + String.valueOf((longIP & 0x0000FFFF) >>> 8) + "." + String.valueOf(longIP & 0x000000FF);
 	}
 
-	static Long iMask(Integer s) {
+	static public Long iMask(Integer s) {
 		return Math.round(Math.pow(2, 32) - Math.pow(2, (32 - s)));
 	}
 
-	static Boolean checkIpv4Ip(String ipAddress) {
+	static public Boolean checkIpv4Ip(String ipAddress) {
 		Boolean rtn = false;
 		if(ipAddress != null) {
 			if(ipAddress.indexOf('.') > 0 && !ipAddress.startsWith("169"))
@@ -403,7 +403,7 @@ public class NetworkUtility {
 		return rtn;
 	}
 
-	static String getIpAddressType(String ipAddress) throws UnknownHostException {
+	static public String getIpAddressType(String ipAddress) throws UnknownHostException {
 		InetAddress address = InetAddress.getByName(ipAddress);
 		if (address instanceof Inet6Address) {
 			return "ipv6";
@@ -414,7 +414,7 @@ public class NetworkUtility {
 		}
 	}
 
-	static String getIpAddressIndex(String name) {
+	static public String getIpAddressIndex(String name) {
 		String rtn = null;
 		if(name != null) {
 			if(name.startsWith("eth"))
