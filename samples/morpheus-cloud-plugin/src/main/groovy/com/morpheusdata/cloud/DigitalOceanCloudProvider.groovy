@@ -253,7 +253,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 					platform  : it.distribution,
 					isPublic  : it.public,
 					minDisk   : it.min_disk_size,
-					locations : it.regions
+					locations : it.regions,
+					account   : cloudInfo.account,
+					refId     : cloudInfo.id,
+					refType   : 'ComputeZone'
 			]
 			virtualImages << new VirtualImage(props)
 		}
@@ -272,12 +275,13 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		}.onDelete { List<VirtualImageIdentityProjection> deleteList ->
 			morpheus.virtualImage.remove(deleteList)
 		}.onAdd { createList ->
+			log.info("Creating ${createList?.size()} new images")
 			while (createList.size() > 0) {
 				List chunkedList = createList.take(50)
 				createList = createList.drop(50)
-				morpheus.virtualImage.create(chunkedList)
+				morpheus.virtualImage.create(chunkedList).blockingGet()
 			}
-		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection,VirtualImage>> updateItems ->
+		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, VirtualImage>> updateItems ->
 			morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
 			updateMatchedImages(updateList)
@@ -286,7 +290,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	void updateMatchedImages(List<VirtualImage> updateList) {
 		List<VirtualImage> imagesToUpdate = []
-		for(VirtualImage update in updateList) {
+		for (VirtualImage update in updateList) {
 			//TODO
 			imagesToUpdate << update
 		}
@@ -328,10 +332,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				while (createList.size() > 0) {
 					List chunkedList = createList.take(50)
 					createList = createList.drop(50)
-					morpheus.servicePlan.create(chunkedList)
+					morpheus.servicePlan.create(chunkedList).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanIdentityProjection, ServicePlan>> updateItems ->
-				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
+				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>).subscribe()
 			}.onUpdate { updateList ->
 				updateMatchedPlans(updateList)
 			}.start()
@@ -340,7 +344,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	def updateMatchedPlans(List<ServicePlan> plans) {
 		List<ServicePlan> plansToUpdate = []
-		for(ServicePlan update in plans) {
+		for (ServicePlan update in plans) {
 			//TODO
 			plansToUpdate << update
 		}
