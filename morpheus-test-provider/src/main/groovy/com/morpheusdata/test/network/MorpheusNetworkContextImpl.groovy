@@ -12,8 +12,6 @@ import io.reactivex.Single
 class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	protected MorpheusNetworkPoolContext poolContext;
-	protected MorpheusNetworkPoolIpContext poolIpContext;
-	protected MorpheusNetworkPoolRangeContext poolRangeContext;
 
 	MorpheusNetworkContextImpl() {
 		poolContext = new MorpheusNetworkPoolContextImpl()
@@ -161,21 +159,6 @@ class MorpheusNetworkContextImpl implements MorpheusNetworkContext {
 
 	@Override
 	Single<NetworkPoolIp> getNetworkIp(NetworkPool networkPool, String assignedType, Long assignedId, Long subAssignedId) {
-		return null
-	}
-
-	@Override
-	Single<NetworkDomain> getContainerNetworkDomain(Container container) {
-		return null
-	}
-
-	@Override
-	Single<String> getContainerExternalIp(Container container) {
-		return null
-	}
-
-	@Override
-	Single<String> getContainerExternalFqdn(Container container) {
 		return null
 	}
 
