@@ -19,6 +19,9 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String platform;
 	protected Long minDisk;
 	protected List<String> locations;
+	protected OsType osType;
+	protected String refId;
+	protected String refType;
 
 	public Account getAccount() {
 		return account;
@@ -108,5 +111,32 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
 		markDirty("locations", locations);
+	}
+
+	public OsType getOsType() {
+		return osType;
+	}
+
+	public void setOsType(OsType osType) {
+		this.osType = osType;
+		markDirty("osType", osType);
+	}
+
+	public String getRefId() {
+		return refId;
+	}
+
+	public void setRefId(String refId) {
+		this.refId = refId;
+		markDirty("refId", refId);
+	}
+
+	public String getRefType() {
+		return refType;
+	}
+
+	public void setRefType(String refType) {
+		this.refType = refType;
+		markDirty("refType", refType);
 	}
 }
