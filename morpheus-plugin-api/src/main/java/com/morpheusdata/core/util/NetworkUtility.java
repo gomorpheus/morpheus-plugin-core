@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility methods for Network operations.
+ *
+ * @author David Estes
+ * @since 0.8.0
+ */
 public class NetworkUtility {
 
 	static Logger log = LoggerFactory.getLogger(NetworkUtility.class);
@@ -21,7 +27,6 @@ public class NetworkUtility {
 	static private Pattern ip4CidrPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$");
 
 	static public Boolean validateIpAddr(String addr) {
-		Pattern pattern = Pattern.compile("w3schools", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = ip4AddressPattern.matcher(addr);
 		return matcher.matches();
 	}

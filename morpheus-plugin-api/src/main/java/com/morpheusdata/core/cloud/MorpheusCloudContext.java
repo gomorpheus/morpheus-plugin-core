@@ -4,7 +4,6 @@ import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
-import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Date;
@@ -17,6 +16,7 @@ import java.util.Map;
  * Typically this class is accessed via the primary {@link MorpheusContext}.
  *
  * @author Mike Truso
+ * @since 0.8.0
  */
 public interface MorpheusCloudContext {
 

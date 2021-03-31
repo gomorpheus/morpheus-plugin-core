@@ -55,7 +55,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-
+/**
+ * Utility methods for calling external APIs in a standardized way.
+ *
+ * @author David Estes
+ * @since 0.8.0
+ */
 public class RestApiUtil {
 	static Logger log = LoggerFactory.getLogger(RestApiUtil.class);
 

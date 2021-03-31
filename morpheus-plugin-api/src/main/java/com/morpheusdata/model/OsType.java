@@ -1,5 +1,13 @@
 package com.morpheusdata.model;
 
+/**
+ * Describes an Operating System at a high level
+ * @see com.morpheusdata.model.ComputeServer
+ * @see com.morpheusdata.model.VirtualImage
+ *
+ * @author Eric Helgeson, Mike Truso
+ * @since 0.8.0
+ */
 public class OsType extends MorpheusModel {
 
 	protected String code;
