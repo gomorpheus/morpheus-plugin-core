@@ -337,7 +337,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 					morpheus.servicePlan.create(chunkedList).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanIdentityProjection, ServicePlan>> updateItems ->
-				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>).subscribe()
+				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 			}.onUpdate { updateList ->
 				updateMatchedPlans(updateList)
 			}.start()
