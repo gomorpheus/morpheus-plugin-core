@@ -43,7 +43,8 @@ class MaasCloudProvider implements CloudProvider {
 				displayOrder: 0,
 				fieldLabel: 'MaaS Api Url',
 				required: true,
-				inputType: OptionType.InputType.TEXT
+				inputType: OptionType.InputType.TEXT,
+				fieldContext: 'domain'
 		)
 		OptionType serviceToken = new OptionType(
 				name: 'API Key',
@@ -52,7 +53,8 @@ class MaasCloudProvider implements CloudProvider {
 				displayOrder: 1,
 				fieldLabel: 'API Key',
 				required: true,
-				inputType: OptionType.InputType.TEXT
+				inputType: OptionType.InputType.TEXT,
+				fieldContext: 'domain'
 		)
 		OptionType availablePool = new OptionType(
 				name: 'Available Pool',
@@ -63,7 +65,8 @@ class MaasCloudProvider implements CloudProvider {
 				fieldLabel: 'Available Pool',
 				required: false,
 				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'maas-service-url'
+				dependsOn: 'maas-service-url',
+				fieldContext: 'config'
 		)
 
 		OptionType releaseMode = new OptionType(
@@ -75,6 +78,7 @@ class MaasCloudProvider implements CloudProvider {
 				fieldLabel: 'Release Mode',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
+				fieldContext: 'config'
 		)
 
 		OptionType releasePoolName = new OptionType(
@@ -86,7 +90,8 @@ class MaasCloudProvider implements CloudProvider {
 				fieldLabel: 'Release Pool',
 				required: false,
 				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'maas-service-url'
+				dependsOn: 'maas-service-url',
+				fieldContext: 'config'
 		)
 		[serviceUrl, serviceToken, availablePool, releasePoolName, releaseMode]
 	}
@@ -119,7 +124,8 @@ class MaasCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse validate(Cloud cloudInfo) {
-		return null
+		log.info("MaaS validate")
+		return new ServiceResponse(success: true)
 	}
 
 	@Override
@@ -190,20 +196,21 @@ class MaasCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
-		log.debug "Initializing Cloud: ${cloud.code}"
-		log.debug "config: ${cloud.configMap}"
+		log.info "Initializing Cloud: ${cloud.code}"
+		log.info "config: ${cloud.configMap}"
 		try {
 			def syncDate = new Date()
-			String apiUrl = cloud.configMap.serviceUrl
+			String apiUrl = cloud.serviceUrl
 			def apiUrlObj = new URL(apiUrl)
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
 			log.info("apiHost: ${apiHost}, port: ${apiPort}")
-			def hostOnline = ConnectionUtils.testHostConnection(apiHost, apiPort, true, true, cloud.apiProxy)
+//			def hostOnline = ConnectionUtils.testHostConnection(apiHost, apiPort, true, true, cloud.apiProxy)
+			def hostOnline = true
 			log.info("hostOnline: $hostOnline")
 			if (hostOnline) {
-				cloud.serviceUrl = apiUrl
-				cloud.serviceToken = cloud.configMap.serviceToken
+//				cloud.serviceUrl = apiUrl
+//				cloud.serviceToken = cloud.configMap.serviceToken
 				def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 				def testResults = MaasComputeUtility.testConnection(authConfig, [:])
 				if (testResults.success) {
@@ -223,7 +230,7 @@ class MaasCloudProvider implements CloudProvider {
 //					//fabrocs
 //					cacheFabrics(zone, cacheOpts)
 //					//subnets
-					cacheSubnets(zone, cacheOpts)
+					cacheSubnets(cloud, cacheOpts)
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				} else {
 					if (testResults.invalidLogin == true) {

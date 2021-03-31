@@ -11,9 +11,7 @@ import java.util.Date;
 public class ServicePlan extends ServicePlanIdentityProjection {
 	public Account account;
 	public Account owner;
-	public String code;
 	public String category;
-	public String name;
 	public String description;
 	public String visibility = "public"; //['public', 'private'];
 	public Boolean active = true;
@@ -22,7 +20,6 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public Date dateCreated;
 	public Date lastUpdated;
 	public String internalId;
-	public String externalId;
 	public String configs;
 	public String serverType;
 	public String serverClass; //hardware classes on clouds;
