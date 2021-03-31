@@ -58,7 +58,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				displayOrder: 0,
 				fieldLabel: 'Username',
 				required: true,
-				inputType: OptionType.InputType.TEXT
+				inputType: OptionType.InputType.TEXT,
+				fieldContext: 'config'
 		)
 		OptionType ot2 = new OptionType(
 				name: 'API Key',
@@ -67,7 +68,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				displayOrder: 1,
 				fieldLabel: 'API Key',
 				required: true,
-				inputType: OptionType.InputType.PASSWORD
+				inputType: OptionType.InputType.PASSWORD,
+				fieldContext: 'config'
 		)
 		OptionType ot3 = new OptionType(
 				name: 'Datacenter',
@@ -78,7 +80,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				fieldLabel: 'Datacenter',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'do-api-key'
+				dependsOn: 'do-api-key',
+				fieldContext: 'config'
 		)
 		return [ot1, ot2, ot3]
 	}
