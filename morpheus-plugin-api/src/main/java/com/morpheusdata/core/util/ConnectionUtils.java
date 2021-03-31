@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  *
  *
  * @author David Estes
+ * @since 0.8.0
  */
 public class ConnectionUtils {
 	static Boolean testHostConnectivity(String hostname) {

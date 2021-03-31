@@ -2,6 +2,12 @@ package com.morpheusdata.model;
 
 import java.util.UUID;
 
+/**
+ * Network interface of a ComputeServer
+ *
+ * @author Eric Helgeson
+ * @since 0.8.0
+ */
 public class ComputeServerInterface extends MorpheusModel {
 	public String refType;
 	public Long refId;

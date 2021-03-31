@@ -5,6 +5,12 @@ import com.morpheusdata.model.PlatformType;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+/**
+ * Utility methods for compute operations.
+ *
+ * @author David Estes
+ * @since 0.8.0
+ */
 public class ComputeUtility {
 
 	static public Long ONE_BYTE = 1L;

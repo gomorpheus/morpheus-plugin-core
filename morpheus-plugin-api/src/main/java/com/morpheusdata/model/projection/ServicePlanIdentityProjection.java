@@ -7,6 +7,7 @@ import com.morpheusdata.model.MorpheusModel;
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
  * @see com.morpheusdata.core.MorpheusServicePlanContext
  * @author Mike Truso
+ * @since 0.8.0
  */
 public class ServicePlanIdentityProjection extends MorpheusModel {
 	public String code;
