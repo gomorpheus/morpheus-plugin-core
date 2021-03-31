@@ -279,22 +279,22 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			while (createList.size() > 0) {
 				List chunkedList = createList.take(50)
 				createList = createList.drop(50)
-				morpheus.virtualImage.create(chunkedList).blockingGet()
+				morpheus.virtualImage.create(chunkedList, cloud).blockingGet()
 			}
 		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, VirtualImage>> updateItems ->
 			morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>)
 		}.onUpdate { updateList ->
-			updateMatchedImages(updateList)
+			updateMatchedImages(updateList, cloud)
 		}.start()
 	}
 
-	void updateMatchedImages(List<VirtualImage> updateList) {
+	void updateMatchedImages(List<VirtualImage> updateList, Cloud cloud) {
 		List<VirtualImage> imagesToUpdate = []
 		for (VirtualImage update in updateList) {
 			//TODO
 			imagesToUpdate << update
 		}
-		morpheusContext.virtualImage.save(imagesToUpdate).blockingGet()
+		morpheusContext.virtualImage.save(imagesToUpdate, cloud).blockingGet()
 	}
 
 	def cacheSizes(Cloud cloud, String apiKey) {
@@ -316,7 +316,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 					maxStorage: it.disk.toLong() * 1024l * 1024l * 1024l, //GB
 					sortOrder: it.disk.toLong(),
 					price_monthly: it.price_monthly,
-					price_hourly: it.price_hourly
+					price_hourly: it.price_hourly,
+					refType: 'ComputeZone',
+					refId: cloud.id
 			)
 			servicePlans << servicePlan
 		}

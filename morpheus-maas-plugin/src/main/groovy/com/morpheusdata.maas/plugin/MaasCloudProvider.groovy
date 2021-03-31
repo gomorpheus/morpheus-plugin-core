@@ -356,7 +356,7 @@ class MaasCloudProvider implements CloudProvider {
 							for(cloudImage in chunkedAddList) {
 								itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage))
 							}
-							morpheus.virtualImage.save(itemsToSave).blockingGet()
+							morpheus.virtualImage.save(itemsToSave, cloud).blockingGet()
 						}
 					}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
 						return morpheus.cloud.listReferenceDataById(updateItems.collect { it.existingItem.externalId } as List<Long>)
@@ -371,7 +371,7 @@ class MaasCloudProvider implements CloudProvider {
 								toSave.add(virtualImage)
 							}
 						}
-						morpheus.virtualImage.save(toSave).blockingGet()
+						morpheus.virtualImage.save(toSave, cloud).blockingGet()
 					}.start()
 				} catch(e) {
 					log.error("cacheImages error: ${e}", e)
