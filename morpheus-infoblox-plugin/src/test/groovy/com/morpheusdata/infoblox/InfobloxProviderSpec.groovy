@@ -1,7 +1,7 @@
 package com.morpheusdata.infoblox
 
 import com.morpheusdata.test.MorpheusContextImpl
-import com.morpheusdata.apiutil.RestApiUtil
+import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.model.Network

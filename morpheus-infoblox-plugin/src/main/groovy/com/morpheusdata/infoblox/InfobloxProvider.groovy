@@ -298,7 +298,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					apiPath = getServicePath(poolServer.serviceUrl) + record.externalId
 					//we have an A Record to delete
 					def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																																	requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																																	contentType:ContentType.APPLICATION_JSON), 'DELETE')
 					log.info("deleteRecord results: ${results}")
 					if(results.success) {
 						rtn.success = true
@@ -590,7 +590,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'],
-																												query:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
+																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
@@ -944,7 +944,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					body.extattrs = extraAttributes
 				}
 				results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												body:body, requestContentType: ContentType.APPLICATION_JSON), 'POST')
+																												body:body, contentType: ContentType.APPLICATION_JSON), 'POST')
 				if(!results.success) {
 					log.warn("A Record Creation Failed")
 				} else {
@@ -1017,7 +1017,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 			def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																												contentType:ContentType.APPLICATION_JSON), 'DELETE')
 			if(results?.success && !results.hasErrors()) {
 				if(poolIp.internalId) {
 					apiPath = getServicePath(poolServer.serviceUrl) + poolIp.internalId
@@ -1028,7 +1028,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					apiPath = getServicePath(poolServer.serviceUrl) + poolIp.ptrId
 					//we have an A Record to delete
 					results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																													requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																													contentType:ContentType.APPLICATION_JSON), 'DELETE')
 					log.info("Clearing out PTR Record ${results?.success}")
 				}
 				return ServiceResponse.success(poolIp)
@@ -1149,7 +1149,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def ref = networkPool.externalId
 			def networkPath = getServicePath(poolServer.serviceUrl) + "${ref}"
 			results = infobloxAPI.callApi(serviceUrl, networkPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												body:[num:1], query: [_function:'next_available_ip']), 'POST')
+																												body:[num:1], queryParams: [_function:'next_available_ip']), 'POST')
 			def jsonResponse = new JsonSlurper().parseText(results.content)
 
 			if(!jsonResponse?.ips && jsonResponse?.ips?.size() < 1) {
@@ -1198,7 +1198,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																											requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																											contentType:ContentType.APPLICATION_JSON), 'DELETE')
 		rtn.success = (results?.success && !results?.hasErrors())
 		if(rtn.success) {
 			rtn.content = results.content ? new JsonSlurper().parseText(results.content) : [:]
@@ -1207,14 +1207,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				apiPath = getServicePath(poolServer.serviceUrl) + poolIp.internalId
 				//we have an A Record to delete
 				results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																												contentType:ContentType.APPLICATION_JSON), 'DELETE')
 				log.info("Clearing out A Record ${results?.success}")
 			}
 			if(poolIp.ptrId) {
 				apiPath = getServicePath(poolServer.serviceUrl) + poolIp.ptrId
 				//we have a ptr Record to delete
 				results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																												requestContentType:ContentType.APPLICATION_JSON), 'DELETE')
+																												contentType:ContentType.APPLICATION_JSON), 'DELETE')
 				log.info("Clearing out PTR Record ${results?.success}")
 			}
 		}
@@ -1227,7 +1227,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def apiPath = getServicePath(poolServer.serviceUrl) + path
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
 		def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
-																											requestContentType:ContentType.APPLICATION_JSON), 'GET')
+																											contentType:ContentType.APPLICATION_JSON), 'GET')
 		rtn.success = results?.success && !results?.hasErrors()
 		log.debug("getItem results: ${results}")
 		if(rtn.success) {
@@ -1255,8 +1255,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					pageQuery['_page_id'] = pageId
 				}
 				//load results
-				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], query: pageQuery,
-																													requestContentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
+				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], queryParams: pageQuery,
+																													contentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
 				log.debug("listNetworks results: ${results.toMap()}")
 				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
@@ -1287,8 +1287,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} else {
 			def pageQuery = parseNetworkFilter(poolServer.networkFilter)
 			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
-			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, query:pageQuery,
-																												requestContentType:ContentType.APPLICATION_JSON), 'GET')
+			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
+																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 			rtn.data = results.data
 			if(rtn.success) {
@@ -1317,8 +1317,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				if(pageId != null)
 					pageQuery['_page_id'] = pageId
 				//load results
-				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], query:pageQuery,
-																													requestContentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
+				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], queryParams:pageQuery,
+																													contentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
 				log.debug("listZones results: ${results}")
 				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
@@ -1348,8 +1348,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 		} else {
 			def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
-			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, query:pageQuery,
-																												requestContentType:ContentType.APPLICATION_JSON), 'GET')
+			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
+																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 			if(rtn.success) {
 				rtn.results = results.content ? new JsonSlurper().parseText(results.content)?.result : [:]
@@ -1465,7 +1465,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'],
-																												query:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
+																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
