@@ -32,6 +32,7 @@ public interface MorpheusVirtualImageContext {
 	/**
 	 * Save updates to existing VirtualImages
 	 * @param virtualImages updated VirtualImages
+	 * @param cloud the Cloud instance
 	 * @return success
 	 */
 	Single<Boolean> save(List<VirtualImage> virtualImages, Cloud cloud);
@@ -39,6 +40,7 @@ public interface MorpheusVirtualImageContext {
 	/**
 	 * Create new VirtualImages in Morpheus
 	 * @param virtualImages new VirtualImages to persist
+	 * @param cloud the Cloud instance
 	 * @return success
 	 */
 	Single<Boolean> create(List<VirtualImage> virtualImages, Cloud cloud);
