@@ -9,6 +9,7 @@ import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
+import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
@@ -16,6 +17,7 @@ import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.ReferenceData
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection
+import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.NetworkIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
@@ -396,8 +398,35 @@ class MaasCloudProvider implements CloudProvider {
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
 			log.info("resource pools to cache: $apiItems")
-			// TODO computeZonePool sync
-//			cacheReferenceData(cloud, category, apiItems)
+			Observable<ComputeZonePoolIdentityProjection> domainRecords = morpheus.cloud.pool.listSyncProjections(cloud.id, category)
+			SyncTask<ComputeZonePoolIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, apiItems)
+			syncTask.addMatchFunction { ComputeZonePoolIdentityProjection domainObject, Map apiItem ->
+				domainObject.externalId == apiItem.externalId
+			}.onDelete { removeItems ->
+				morpheus.cloud.pool.remove(removeItems).blockingGet()
+			}.onAdd { itemsToAdd ->
+				while (itemsToAdd?.size() > 0) {
+					List<Map> chunkedAddList = itemsToAdd.take(50)
+					itemsToAdd = itemsToAdd.drop(50)
+					List<ComputeZonePool> itemsToSave = []
+					for(resourcePool in chunkedAddList) {
+						itemsToSave.add(MaasComputeUtility.resourcePoolToComputeZonePool(resourcePool, cloud, category))
+					}
+					morpheus.cloud.pool.create(itemsToSave).blockingGet()
+				}
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItems ->
+				return morpheus.cloud.pool.listById(updateItems.collect { it.existingItem.externalId } as List<Long>)
+			}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
+				List<ComputeZonePool> toSave = []
+				for(item in updateItems) {
+					ComputeZonePool computeZonePool = MaasComputeUtility.resourcePoolToComputeZonePool(item.masterItem, cloud)
+					def existing = item.existingItem
+					if(computeZonePool.name != existing.name) {
+						toSave.add(computeZonePool)
+					}
+				}
+				morpheus.cloud.pool.save(toSave).blockingGet()
+			}.start()
 		}
 	}
 
