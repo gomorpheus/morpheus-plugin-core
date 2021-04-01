@@ -5,9 +5,9 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
+import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkType
@@ -15,6 +15,7 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.ReferenceData
 import com.morpheusdata.model.VirtualImage
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection
 import com.morpheusdata.model.projection.NetworkIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
@@ -281,6 +282,7 @@ class MaasCloudProvider implements CloudProvider {
 		def apiResponse = MaasComputeUtility.listRegionControllers(authConfig, opts)
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
+			log.info("region controllers to cache: $apiItems")
 			cacheReferenceData(cloud, category, apiItems)
 		}
 	}
@@ -393,17 +395,47 @@ class MaasCloudProvider implements CloudProvider {
 		def apiResponse = MaasComputeUtility.listResourcePools(authConfig, opts)
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
-			cacheReferenceData(cloud, category, apiItems)
+			log.info("resource pools to cache: $apiItems")
+			// TODO computeZonePool sync
+//			cacheReferenceData(cloud, category, apiItems)
 		}
 	}
 
 	def cacheMachines(Cloud cloud, Map opts) {
 		def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
-		String category = "maas.server.${cloud.id}"
 		def apiResponse = MaasComputeUtility.listMachines(authConfig, opts)
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
-			cacheReferenceData(cloud, category, apiItems)
+			log.info("machines to cache: $apiItems")
+			Observable<ComputeServerIdentityProjection> domainRecords = morpheus.computeServer.listSyncProjections(cloud.id)
+			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, apiItems)
+			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map apiItem ->
+				domainObject.externalId == apiItem.externalId
+			}.onDelete { removeItems ->
+				morpheus.computeServer.remove(removeItems).blockingGet()
+			}.onAdd { itemsToAdd ->
+				while (itemsToAdd?.size() > 0) {
+					List<Map> chunkedAddList = itemsToAdd.take(50)
+					itemsToAdd = itemsToAdd.drop(50)
+					List<ComputeServer> itemsToSave = []
+					for(maasMachine in chunkedAddList) {
+						itemsToSave.add(MaasComputeUtility.machineToComputeServer(maasMachine, cloud))
+					}
+					morpheus.computeServer.create(itemsToSave).blockingGet()
+				}
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map>> updateItems ->
+				return morpheus.computeServer.listById(updateItems.collect { it.existingItem.externalId } as List<Long>)
+			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
+				List<ComputeServer> toSave = []
+				for(item in updateItems) {
+					ComputeServer machine = MaasComputeUtility.machineToComputeServer(item.masterItem, cloud)
+					def existing = item.existingItem
+					if(machine.name != existing.name) {
+						toSave.add(machine)
+					}
+				}
+				morpheus.computeServer.save(toSave).blockingGet()
+			}.start()
 		}
 	}
 
