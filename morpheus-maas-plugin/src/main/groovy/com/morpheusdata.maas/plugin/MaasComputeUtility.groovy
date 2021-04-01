@@ -811,4 +811,10 @@ class MaasComputeUtility {
 //		addConfig.platform = addConfig.osType?.platform
 		new VirtualImage(addConfig)
 	}
+
+	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category) {
+		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description,
+				externalId: resourcePool.id, cloud:cloud, code: category + ".${resourcePool.id}", category: category,
+				refType:'ComputeZone', refId:cloud.id)
+	}
 }
