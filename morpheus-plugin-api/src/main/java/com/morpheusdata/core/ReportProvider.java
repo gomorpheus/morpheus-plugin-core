@@ -58,7 +58,7 @@ import java.util.Map;
  * @since 0.8.0
  * @author David Estes
  */
-public interface ReportProvider extends PluginProvider {
+public interface ReportProvider extends UIExtensionProvider {
 
 
 	ServiceResponse validateOptions(Map opts);
@@ -91,25 +91,14 @@ public interface ReportProvider extends PluginProvider {
 	Boolean getMasterOnly();
 
 	/**
-	 *
-	 * @return
+	 * Detects whether or not this report is scopable to all cloud types or not
+	 * TODO: Implement this for custom reports (NOT YET USABLE)
+	 * @return whether or not the report is supported by all cloud types. This allows for cloud type specific reports
 	 */
 	Boolean getSupportsAllZoneTypes();
 
 	List<OptionType> getOptionTypes();
 
-	/**
-	 * Default is Handlebars
-	 * @return renderer of specified type
-	 */
-	Renderer<?> getRenderer();
-
-	/**
-	 * Add policies for resources loaded from external sources.
-	 *
-	 * @return policy directives for various source types
-	 */
-	ContentSecurityPolicy getContentSecurityPolicy();
 
 	/**
 	 * Instance details provided to your rendering engine
