@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ public class MorpheusModel {
 	/**
 	 * Internal property used to keep track of a list of dirty fields on the currently extended Model class.
 	 */
+	@JsonIgnore
 	private LinkedHashMap<String,Object> dirtyProperties = new LinkedHashMap<>();
 
 	/**
@@ -82,6 +85,7 @@ public class MorpheusModel {
 	/**
 	 * @return A Map of all properties, similar to Groovy's getProperties()
 	 */
+	@JsonIgnore
 	public HashMap<String, Object> getProperties()  {
 		HashMap<String, Object> map = new HashMap<>();
 

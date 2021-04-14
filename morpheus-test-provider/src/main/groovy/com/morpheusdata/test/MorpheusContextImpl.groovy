@@ -5,6 +5,7 @@ import com.morpheusdata.core.cloud.MorpheusCloudContext
 import com.morpheusdata.core.MorpheusComputeServerContext
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusReportContext
+import com.morpheusdata.core.integration.MorpheusIntegrationContext
 import com.morpheusdata.core.network.MorpheusNetworkContext
 import com.morpheusdata.core.MorpheusServicePlanContext
 import com.morpheusdata.core.MorpheusTaskContext
@@ -60,6 +61,16 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusTaskContext getTask() {
 		return taskContext
+	}
+
+	/**
+	 * Returns the Integration context used for performing common operations on varioues integration types Morpheus
+	 * has to offer.
+	 * @return An instance of the Integration Context to bused for calls by various integration types
+	 */
+	@Override
+	MorpheusIntegrationContext getIntegration() {
+		return null
 	}
 
 	@Override

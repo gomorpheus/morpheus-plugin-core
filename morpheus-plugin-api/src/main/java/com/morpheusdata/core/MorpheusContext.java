@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.cloud.MorpheusCloudContext;
+import com.morpheusdata.core.integration.MorpheusIntegrationContext;
 import com.morpheusdata.core.network.MorpheusNetworkContext;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
@@ -48,6 +49,13 @@ public interface MorpheusContext {
 	 * @return An Instance of the Task Context to be used for calls by various task providers
 	 */
 	MorpheusTaskContext getTask();
+
+	/**
+	 * Returns the Integration context used for performing common operations on varioues integration types Morpheus
+	 * has to offer.
+	 * @return An instance of the Integration Context to bused for calls by various integration types
+	 */
+	MorpheusIntegrationContext getIntegration();
 
 	/**
 	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
