@@ -370,7 +370,7 @@ class MaasCloudProvider implements CloudProvider {
 							morpheus.virtualImage.save(itemsToSave, cloud).blockingGet()
 						}
 					}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
-						return morpheus.cloud.listReferenceDataById(updateItems.collect { it.existingItem.externalId } as List<Long>)
+						return morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id})
 					}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 						List<VirtualImage> toSave = []
 						for(item in updateItems) {
@@ -415,7 +415,7 @@ class MaasCloudProvider implements CloudProvider {
 					morpheus.cloud.pool.create(itemsToSave).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItems ->
-				return morpheus.cloud.pool.listById(updateItems.collect { it.existingItem.externalId } as List<Long>)
+				return morpheus.cloud.pool.listById(updateItems.collect { it.existingItem.id } as List<Long>)
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
 				List<ComputeZonePool> toSave = []
 				for(item in updateItems) {
@@ -453,7 +453,7 @@ class MaasCloudProvider implements CloudProvider {
 					morpheus.computeServer.create(itemsToSave).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map>> updateItems ->
-				return morpheus.computeServer.listById(updateItems.collect { it.existingItem.externalId } as List<Long>)
+				return morpheus.computeServer.listById(updateItems.collect { it.existingItem.id } as List<Long>)
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
 				List<ComputeServer> toSave = []
 				for(item in updateItems) {

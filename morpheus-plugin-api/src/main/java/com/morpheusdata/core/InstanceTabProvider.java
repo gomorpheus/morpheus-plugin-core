@@ -10,13 +10,7 @@ import com.morpheusdata.views.Renderer;
  *
  * @author Mike Truso
  */
-public interface InstanceTabProvider extends PluginProvider {
-
-	/**
-	 * Default is Handlebars
-	 * @return renderer of specified type
-	 */
-	Renderer<?> getRenderer();
+public interface InstanceTabProvider extends UIExtensionProvider {
 
 	/**
 	 * Instance details provided to your rendering engine
@@ -35,17 +29,4 @@ public interface InstanceTabProvider extends PluginProvider {
 	 */
 	Boolean show(Instance instance, User user, Account account);
 
-	/**
-	 * Add policies for resources loaded from external sources.
-	 *
-	 * @return policy directives for various source types
-	 */
-	ContentSecurityPolicy getContentSecurityPolicy();
-
-	/**
-	 * Define the scope of this UI element (e.g. global, tab, etc.)
-	 *
-	 * @return scope
-	 */
-	UIScope getContentScope();
 }
