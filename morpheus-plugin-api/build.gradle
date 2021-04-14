@@ -40,6 +40,9 @@ dependencies {
 	implementation 'org.glassfish:javax.json:1.1.4'
 	implementation 'javax.json:javax.json-api:1.1.4'
 	implementation 'commons-net:commons-net:3.7.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.5.1'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.5'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.10.5'
 
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 	implementation 'commons-net:commons-net:3.7.2'
