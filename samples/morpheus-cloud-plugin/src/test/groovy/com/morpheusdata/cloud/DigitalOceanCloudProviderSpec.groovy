@@ -132,9 +132,9 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		1 * apiService.makePaginatedApiCall(_, _, _, { map -> !map.private }) >> [[id: 'def567']]
 		1 * virtualImageContext.listById(_) >> listFullObjectsObservable
 		1 * virtualImageContext.listSyncProjections(_) >> listSyncProjections
-		1 * virtualImageContext.create({ list -> list.size() == 1 && list.first().externalId == newImage.externalId }, cloud)
+		1 * virtualImageContext.create({ list -> list.size() == 1 && list.first().externalId == newImage.externalId }, cloud) >> Single.just(true)
 		1 * virtualImageContext.save([updateImage], cloud) >> Single.just([updateImage])
-		1 * virtualImageContext.remove({ list -> list.size() == 1 && list.first().externalId == removeImage.externalId })
+		1 * virtualImageContext.remove({ list -> list.size() == 1 && list.first().externalId == removeImage.externalId }) >> Single.just(true)
 	}
 
 	void "cacheSizes"() {
@@ -187,7 +187,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		]
 		1 * servicePlanContext.listById(_) >> listFullObjectsObservable
 		1 * servicePlanContext.listSyncProjections(_) >> listSyncProjections
-		1 * servicePlanContext.create({ list -> list.size() == 1 && list.first().externalId == createPlan.externalId })
+		1 * servicePlanContext.create({ list -> list.size() == 1 && list.first().externalId == createPlan.externalId }) >> Single.just(true)
 		1 * servicePlanContext.save([updatePlan]) >> Single.just([updatePlan])
 		1 * servicePlanContext.remove({ list -> list.size() == 1 && list.first().externalId == removePlan.externalId })
 	}
