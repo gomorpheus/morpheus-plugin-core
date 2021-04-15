@@ -1,10 +1,23 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Represents a report result. A report result is a particular report run containing all filter information, the user and account who
+ * executed it as well as the status. This is passed often into the {@link com.morpheusdata.core.ReportProvider} methods for both
+ * generating a report as well as displaying a report.
+ *
+ * @author David Estes
+ * @since 0.8.0
+ */
 public class ReportResult extends MorpheusModel {
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected User createdBy;
 	protected String name;
 	protected ReportType type;
 	protected Map configMap;
@@ -76,6 +89,14 @@ public class ReportResult extends MorpheusModel {
 
 	public void setReportJobId(Long reportJobId) {
 		this.reportJobId = reportJobId;
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	public enum Status {
