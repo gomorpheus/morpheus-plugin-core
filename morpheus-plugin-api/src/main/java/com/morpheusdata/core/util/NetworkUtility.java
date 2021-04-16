@@ -221,10 +221,10 @@ public class NetworkUtility {
 		String rtn = null;
 		try {
 			if(subnet != null) {
-				rtn = subnet.netmask;
+				rtn = subnet.getNetmask();
 			}
-			if(rtn == null && subnet != null && subnet.cidr != null) {
-				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(subnet.cidr).getInfo();
+			if(rtn == null && subnet != null && subnet.getCidr() != null) {
+				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(subnet.getCidr()).getInfo();
 				rtn = subnetInfo.getNetmask();
 			}
 			if(rtn == null && network != null && network.getNetmask() != null) {
