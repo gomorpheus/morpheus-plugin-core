@@ -708,96 +708,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	/**
-	 * Target endpoint used to allocate an IP Address during provisioning of Instances
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
-	 */
-	@Override
-	ServiceResponse leasePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts) {
-			def rtn = new ServiceResponse<Map>()
-			def lock
-			try {
-				if(networkPoolServer.serviceMode == 'dhcp') {
-					//this is a dhcp reservation instead of a static - so don't get the ip now - well make a reservation on container provision
-					rtn.data.poolType = 'dhcp'
-					rtn.success = true
-				} else {
-					def currentIp = morpheus.network.getNetworkIp(networkPool, assignedType, assignedId, subAssignedId).blockingGet()
-
-					if(currentIp) {
-						log.info("Ip Reservation Exists, Reusing Reservation for {}...", currentIp.ipAddress)
-						rtn.data.ipAddress = currentIp.ipAddress
-						rtn.data.poolIp = currentIp
-						rtn.data.poolType = 'static'
-						rtn.success = true
-					} else {
-						lock = morpheus.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l]).blockingGet()
-						try {
-							def nextIp = getNextIpAddress(networkPoolServer, networkPool, assignedHostname, opts)
-							if(nextIp.success && nextIp?.results?.ipv4addrs?.size() > 0) {
-								def newIp = nextIp.results.ipv4addrs.first().ipv4addr
-								def networkPoolIp = morpheus.network.loadNetworkPoolIp(networkPool, newIp).blockingGet()
-								networkPoolIp = networkPoolIp ?: new NetworkPoolIp(networkPool:networkPool, ipAddress:newIp, staticIp:false)
-								def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
-								networkPoolIp.networkPoolRange = ipRange
-								networkPoolIp.gatewayAddress = networkPool.gateway ?: network?.gateway
-								networkPoolIp.subnetMask = NetworkUtility.getNetworkSubnetMask(networkPool, network)
-								networkPoolIp.dnsServer = networkPool.dnsServers?.size() > 0 ? networkPool.dnsServers?.join(',') : network?.dnsServers?.join(',')
-								networkPoolIp.interfaceName = network?.interfaceName ?: 'eth0'
-								networkPoolIp.startDate = new Date()
-								networkPoolIp.refType = assignedType
-								networkPoolIp.refId = assignedId
-								networkPoolIp.externalId = nextIp.results['_ref']
-								networkPoolIp.internalId = nextIp.data.aRecordRef
-								networkPoolIp.ptrId = nextIp.data.ptrRecordRef
-								networkPoolIp.fqdn = assignedHostname
-								networkPoolIp.hostname = assignedHostname
-								networkPoolIp.domain = opts.networkDomain
-								if(networkPoolIp.id) {
-									morpheus.network.pool.poolIp.save(networkPoolIp)
-								} else {
-									morpheus.network.pool.poolIp.create(networkPoolIp)
-								}
-
-								rtn.data.ipAddress = newIp
-								rtn.data.poolIp = networkPoolIp
-								rtn.data.poolType = 'static'
-								rtn.success = true
-								log.debug "Getting Infoblox Ip ${rtn}"
-								//have an ip - lets save it
-
-								if(nextIp.data.aRecordRef) {
-									def domainRecord = new NetworkDomainRecord(networkDomain: network.networkDomain, networkPoolIp: networkPoolIp, name: assignedHostname, fqdn: assignedHostname, source: 'user', type: 'A', externalId: nextIp.data.aRecordRef)
-									domainRecord.content = newIp
-									morpheus.network.domain.record.save(domainRecord).blockingGet()
-								}
-								if(nextIp.data.ptrRecordRef) {
-									def ptrDomainRecord = new NetworkDomainRecord(networkDomain: network.networkDomain, networkPoolIp: networkPoolIp, name: nextIp.data.ptrName, fqdn: assignedHostname, source: 'user', type: 'PTR', externalId: nextIp.data.ptrRecordRef)
-									morpheus.network.domain.record.save(ptrDomainRecord).blockingGet()
-								}
-							}
-						} catch(e) {
-							log.error("leasePoolAddress error: ${e}", e)
-						}
-					}
-				}
-			} finally {
-				if(lock) {
-					morpheus.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock]).blockingGet()
-				}
-			}
-			return rtn
-		}
-
-
-	/**
 	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
 	 * @param networkPoolServer
 	 * @param networkPool
@@ -864,37 +774,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		return rtn
 	}
 
-	/**
-	 * Called during instance teardown to release an IP Address reservation.
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param ipAddress
-	 * @param opts
-	 * @return
-	 */
 	@Override
-	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts) {
-		def response = new ServiceResponse()
-		try {
-			def results = ServiceResponse.success()
-			if(ipAddress.externalId) {
-				results = releaseIpAddress(networkPoolServer, ipAddress, opts)
-			}
-			if(results.success) {
-				morpheus.network.removePoolIp(networkPool, ipAddress).blockingGet()
-				response = ServiceResponse.success()
-			}
-		} catch(e) {
-			response = ServiceResponse.error("Infoblox Plugin Error: Error Releasing Ip Address From Pool: ${e.message}")
-			log.error("leasePoolAddress error: ${e}", e)
-		}
-
-		return response
-	}
-
-	@Override
-	ServiceResponse createHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain = null, Boolean createARecord = false, Boolean createPtrRecord = false) {
+	ServiceResponse<NetworkPoolIp> createHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain = null, Boolean createARecord = false, Boolean createPtrRecord = false) {
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'record:host' //networkPool.externalId
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -976,7 +857,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						networkPoolIp.ptrId = prtRecordRef
 					}
 				}
-				morpheus.network.pool.poolIp.save(networkPoolIp).blockingGet()
 			}
 			return ServiceResponse.success(networkPoolIp)
 		} else {
@@ -1526,9 +1406,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	@Override
 	List<OptionType> getIntegrationOptionTypes() {
 		return [
-				new OptionType(code: 'infoblox.serviceUrl', type: OptionType.InputType.TEXT, fieldName: 'serviceUrl', fieldLabel: 'API Url', fieldContext: 'domain', displayOrder: 0),
-				new OptionType(code: 'infoblox.serviceUsername', type: OptionType.InputType.TEXT, fieldName: 'serviceUsername', fieldLabel: 'Username', fieldContext: 'domain', displayOrder: 1),
-				new OptionType(code: 'infoblox.servicePassword', type: OptionType.InputType.PASSWORD, fieldName: 'servicePassword', fieldLabel: 'Password', fieldContext: 'domain', displayOrder: 2)
+				new OptionType(code: 'infoblox.serviceUrl', name: 'Service URL', inputType: OptionType.InputType.TEXT, fieldName: 'serviceUrl', fieldLabel: 'API Url', fieldContext: 'domain', displayOrder: 0),
+				new OptionType(code: 'infoblox.serviceUsername', name: 'Service Username', inputType: OptionType.InputType.TEXT, fieldName: 'serviceUsername', fieldLabel: 'Username', fieldContext: 'domain', displayOrder: 1),
+				new OptionType(code: 'infoblox.servicePassword', name: 'Service Password', inputType: OptionType.InputType.PASSWORD, fieldName: 'servicePassword', fieldLabel: 'Password', fieldContext: 'domain', displayOrder: 2)
 		]
 	}
 

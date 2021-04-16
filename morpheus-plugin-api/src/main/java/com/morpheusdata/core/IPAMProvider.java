@@ -57,18 +57,6 @@ public interface IPAMProvider extends PluginProvider {
 	 */
 	void refresh(NetworkPoolServer poolServer);
 
-	/*
-	 * Target endpoint used to allocate an IP Address during provisioning of Instances
-	 * @param networkPoolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
-	 * @param networkPool the NetworkPool currently being operated on that contains the ip address for reservation
-	 * @param network The Network reference object on the cloud that the ip address is reserved for
-	 * @param assignedType the reference object type this ip address is being assigned to. Typically this relates to a server or container, in the future it could expand to a VIP
-	 * @param assignedId the reference object id based on the object type the ip address is being assigned to
-	 * @param subAssignedId the sub object attached to the reference object this ip address is being reserved for. Typically this is the network interface id on the server
-	 * @param assignedHostname the hostname of the server/interface the ip is being allocated for. Typically this would be assigned on the host record and also used to create a PTR or A record automatically
-	 * @param opts list of additional options that can be passed for reservation. for example, if a user wants a specific ip address. this exists as opts.ipAddress
-	 */
-	ServiceResponse leasePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
 	/*
 	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
@@ -82,16 +70,6 @@ public interface IPAMProvider extends PluginProvider {
 	 * @param opts list of additional options that can be passed for reservation. for example, if a user wants a specific ip address. this exists as opts.ipAddress
 	 */
 	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
-
-	/*
-	 * Called during instance teardown to release an IP Address reservation.
-	 * @param networkPoolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
-	 * @param networkPool the NetworkPool currently being operated on that contains the ip address for release
-	 * @param network The Network reference object on the cloud that the ip address is being released from
-	 * @param ipAddress the IP Addresse entry record that needs to be released
-	 * @param opts additional options that can sometimes be passed. TODO: Fill out available option keys
-	 */
-	ServiceResponse returnPoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, NetworkPoolIp ipAddress, Map opts);
 
 
 	/**

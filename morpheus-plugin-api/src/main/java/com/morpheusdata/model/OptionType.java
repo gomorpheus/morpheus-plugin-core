@@ -21,6 +21,7 @@ public class OptionType extends MorpheusModel {
 	protected String placeHolderText;
 	protected String defaultValue;
 	protected Boolean required = false;
+	protected Boolean editable = true;
 	protected String helpText;
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
@@ -266,6 +267,24 @@ public class OptionType extends MorpheusModel {
 	public void setDependsOn(String dependsOn) {
 		this.dependsOn = dependsOn;
 		markDirty("dependsOn", dependsOn);
+	}
+
+	/**
+	 * Specifies whether this option type is editable on edit. This sometimes is the case where a field can be set on create
+	 * but not changed later
+	 * @return whether or not this option type value is editable
+	 */
+	public Boolean getEditable() {
+		return editable;
+	}
+
+	/**
+	 * Sets whether or not this option type is editable. This sometimes is the case where a field can be set on create
+	 * but not changed later
+ 	 * @param editable whether or not this field is editable upon edit and not just create
+	 */
+	public void setEditable(Boolean editable) {
+		this.editable = editable;
 	}
 
 
