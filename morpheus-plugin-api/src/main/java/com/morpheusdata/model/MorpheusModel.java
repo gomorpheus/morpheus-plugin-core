@@ -67,7 +67,7 @@ public class MorpheusModel {
 	 * This enables the {@link com.morpheusdata.core.MorpheusContext} to reconcile differences and perform differential updates.
 	 * @param propertyName Name of the property that has been changed
 	 * @param value The newly assigned value the property has been given.
-	 * @param value The old value of the property.
+	 * @param persistedValue The old value of the property.
 	 */
 	protected void markDirty(String propertyName, Object value, Object persistedValue) {
 		markDirty(propertyName, value);
