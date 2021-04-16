@@ -13,7 +13,7 @@ import java.util.Map;
  * and is therefore the default section.</p>
  *
  * @see ReportResult
- *
+ * @since 0.8.0
  * @author David Estes
  */
 public class ReportResultRow extends MorpheusModel {
