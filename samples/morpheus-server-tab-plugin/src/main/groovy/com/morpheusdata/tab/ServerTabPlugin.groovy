@@ -6,13 +6,13 @@ import com.morpheusdata.model.Permission
 /**
  * Example Custom Tab Plugin
  */
-class TabPlugin extends Plugin {
+class ServerTabPlugin extends Plugin {
 
 	@Override
 	void initialize() {
-		CustomTabProvider customTabProvider = new CustomTabProvider(this, morpheus)
+		CustomServerTabProvider customTabProvider = new CustomServerTabProvider(this, morpheus)
 		this.pluginProviders.put(customTabProvider.code, customTabProvider)
-		this.setName("Custom Tabs")
+		this.setName("Custom Server Tabs")
 		this.setPermissions([Permission.build('Custom Server Tab','custom-server-tab', [Permission.AccessType.none, Permission.AccessType.full])])
 	}
 

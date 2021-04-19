@@ -14,14 +14,14 @@ import com.morpheusdata.views.ViewModel
 /**
  * Example TabProvider
  */
-class CustomTabProvider extends AbstractServerTabProvider {
+class CustomServerTabProvider extends AbstractServerTabProvider {
 	Plugin plugin
 	MorpheusContext morpheus
 
-	String code = 'custom-tab-1'
-	String name = 'Custom Tab 1'
+	String code = 'custom-tab-2'
+	String name = 'Custom Tab 2'
 
-	CustomTabProvider(Plugin plugin, MorpheusContext context) {
+	CustomServerTabProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheus = context
 	}
@@ -36,6 +36,7 @@ class CustomTabProvider extends AbstractServerTabProvider {
 		ViewModel<String> model = new ViewModel<String>()
 		TaskConfig config = morpheus.buildComputeServerConfig(server, [:], null, [], [:]).blockingGet()
 		model.object = server
+		println 'IM HERE RENDERING LIKE IM SUPPOSED TO'
 		getRenderer().renderTemplate("hbs/serverTab", model)
 	}
 
