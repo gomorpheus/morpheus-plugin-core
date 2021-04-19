@@ -36,7 +36,6 @@ class CustomServerTabProvider extends AbstractServerTabProvider {
 		ViewModel<ComputeServer> model = new ViewModel<>()
 		TaskConfig config = morpheus.buildComputeServerConfig(server, [:], null, [], [:]).blockingGet()
 		model.object = server
-		println "M HERE RENDERING LIKE IM SUPPOSED TO ${server.hostname}"
 		getRenderer().renderTemplate("hbs/serverTab", model)
 	}
 

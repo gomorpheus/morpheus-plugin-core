@@ -7,7 +7,7 @@ import com.morpheusdata.views.Renderer;
 /**
  * Default implementation of {@link ServerTabProvider} with a {@link HandlebarsRenderer} and custom `asset` helper tag
  *
- * @author Mike Truso
+ * @author Luke Davitt
  */
 public abstract class AbstractServerTabProvider implements ServerTabProvider {
 	private HandlebarsRenderer renderer;
