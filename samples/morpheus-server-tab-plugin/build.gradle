@@ -67,7 +67,7 @@ assets {
 jar {
 	manifest {
 		attributes(
-			'Plugin-Class': 'com.morpheusdata.tab.TabPlugin',
+			'Plugin-Class': 'com.morpheusdata.tab.ServerTabPlugin',
 			'Plugin-Version': archiveVersion.get()
 		)
 	}

@@ -6,7 +6,7 @@ import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
 
 /**
- * Provides support for custom UI tabs when viewing Instance details
+ * Provides support for custom UI tabs when viewing ComputeServer details
  *
  * @author Mike Truso
  */
