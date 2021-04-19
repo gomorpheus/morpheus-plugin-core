@@ -13,37 +13,37 @@ import java.util.List;
  */
 public class ComputeServer extends ComputeServerIdentityProjection {
 
-	public Account account;
-	public String uuid;
-	public String displayName;
-	public String uniqueId;
-	public Cloud cloud;
-	public NetworkDomain networkDomain;
-	public ServicePlan plan;
-	public String internalName;
-	public String status = "provisioning";
-	public String hostname;
-	public Long provisionSiteId;
-	public OsType serverOs;
-	public VirtualImage sourceImage;
-	public String osType = "linux"; //linux, windows, unmanaged
-	public String platform;
-	public ComputeZonePool resourcePool;
-	public String serverType;
-	public String consoleHost;
-	public PowerState powerState;
-	public Long maxStorage;
-	public Long maxMemory;
-	public Long maxCores;
-	public Boolean managed;
-	public ComputeServerType computeServerType;
-	public Double hourlyPrice = 0D;
-	public String internalIp;
-	public String externalIp;
-	public String sshHost;
+	protected Account account;
+	protected String uuid;
+	protected String displayName;
+	protected String uniqueId;
+	protected Cloud cloud;
+	protected NetworkDomain networkDomain;
+	protected ServicePlan plan;
+	protected String internalName;
+	protected String status = "provisioning";
+	protected String hostname;
+	protected Long provisionSiteId;
+	protected OsType serverOs;
+	protected VirtualImage sourceImage;
+	protected String osType = "linux"; //linux, windows, unmanaged
+	protected String platform;
+	protected ComputeZonePool resourcePool;
+	protected String serverType;
+	protected String consoleHost;
+	protected PowerState powerState;
+	protected Long maxStorage;
+	protected Long maxMemory;
+	protected Long maxCores;
+	protected Boolean managed;
+	protected ComputeServerType computeServerType;
+	protected Double hourlyPrice = 0D;
+	protected String internalIp;
+	protected String externalIp;
+	protected String sshHost;
 	protected String sshUsername;
 	protected String sshPassword;
-	public List<ComputeServerInterface> interfaces = new ArrayList<>();
+	protected List<ComputeServerInterface> interfaces = new ArrayList<>();
 	protected String externalHostname;
 	protected String externalDomain;
 	protected String externalFqdn;
@@ -143,10 +143,236 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("apiKey", apiKey);
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public NetworkDomain getNetworkDomain() {
+		return networkDomain;
+	}
+
+	public ServicePlan getPlan() {
+		return plan;
+	}
+
+	public String getInternalName() {
+		return internalName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public Long getProvisionSiteId() {
+		return provisionSiteId;
+	}
+
+	public OsType getServerOs() {
+		return serverOs;
+	}
+
+	public VirtualImage getSourceImage() {
+		return sourceImage;
+	}
+
+	public String getOsType() {
+		return osType;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public ComputeZonePool getResourcePool() {
+		return resourcePool;
+	}
+
+	public String getServerType() {
+		return serverType;
+	}
+
+	public String getConsoleHost() {
+		return consoleHost;
+	}
+
+	public PowerState getPowerState() {
+		return powerState;
+	}
+
+	public Long getMaxStorage() {
+		return maxStorage;
+	}
+
+	public Long getMaxMemory() {
+		return maxMemory;
+	}
+
+	public Long getMaxCores() {
+		return maxCores;
+	}
+
+	public Boolean getManaged() {
+		return managed;
+	}
+
+	public ComputeServerType getComputeServerType() {
+		return computeServerType;
+	}
+
+	public Double getHourlyPrice() {
+		return hourlyPrice;
+	}
+
+	public String getInternalIp() {
+		return internalIp;
+	}
+
+	public String getExternalIp() {
+		return externalIp;
+	}
+
+	public String getSshHost() {
+		return sshHost;
+	}
+
+	public List<ComputeServerInterface> getInterfaces() {
+		return interfaces;
+	}
+
 	public enum PowerState {
 		on,
 		off,
 		unknown,
 		paused
 	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+		markDirty("account", account);
+	}
+
+	public void setNetworkDomain(NetworkDomain networkDomain) {
+		this.networkDomain = networkDomain;
+		markDirty("networkDomain", networkDomain);
+	}
+
+	public void setPlan(ServicePlan plan) {
+		this.plan = plan;
+		markDirty("plan", plan);
+	}
+
+	public void setInternalName(String internalName) {
+		this.internalName = internalName;
+		markDirty("internalName", internalName);
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+		markDirty("status", status);
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+		markDirty("hostname", hostname);
+	}
+
+	public void setProvisionSiteId(Long provisionSiteId) {
+		this.provisionSiteId = provisionSiteId;
+		markDirty("provisionSiteId", provisionSiteId);
+	}
+
+	public void setServerOs(OsType serverOs) {
+		this.serverOs = serverOs;
+		markDirty("serverOs", serverOs);
+	}
+
+	public void setSourceImage(VirtualImage sourceImage) {
+		this.sourceImage = sourceImage;
+		markDirty("sourceImage", sourceImage);
+	}
+
+	public void setOsType(String osType) {
+		this.osType = osType;
+		markDirty("osType", osType);
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+		markDirty("platform", platform);
+	}
+
+	public void setResourcePool(ComputeZonePool resourcePool) {
+		this.resourcePool = resourcePool;
+		markDirty("resourcePool", resourcePool);
+	}
+
+	public void setServerType(String serverType) {
+		this.serverType = serverType;
+		markDirty("serverType", serverType);
+	}
+
+	public void setConsoleHost(String consoleHost) {
+		this.consoleHost = consoleHost;
+		markDirty("consoleHost", consoleHost);
+	}
+
+	public void setPowerState(PowerState powerState) {
+		this.powerState = powerState;
+		markDirty("powerState", powerState);
+	}
+
+	public void setMaxStorage(Long maxStorage) {
+		this.maxStorage = maxStorage;
+		markDirty("maxStorage", maxStorage);
+	}
+
+	public void setMaxMemory(Long maxMemory) {
+		this.maxMemory = maxMemory;
+		markDirty("maxMemory", maxMemory);
+	}
+
+	public void setMaxCores(Long maxCores) {
+		this.maxCores = maxCores;
+		markDirty("maxCores", maxCores);
+	}
+
+	public void setManaged(Boolean managed) {
+		this.managed = managed;
+		markDirty("managed", managed);
+	}
+
+	public void setComputeServerType(ComputeServerType computeServerType) {
+		this.computeServerType = computeServerType;
+		markDirty("computeServerType", computeServerType);
+	}
+
+	public void setHourlyPrice(Double hourlyPrice) {
+		this.hourlyPrice = hourlyPrice;
+		markDirty("hourlyPrice", hourlyPrice);
+	}
+
+	public void setInternalIp(String internalIp) {
+		this.internalIp = internalIp;
+		markDirty("internalIp", internalIp);
+	}
+
+	public void setExternalIp(String externalIp) {
+		this.externalIp = externalIp;
+		markDirty("externalIp", externalIp);
+	}
+
+	public void setSshHost(String sshHost) {
+		this.sshHost = sshHost;
+		markDirty("sshHost", sshHost);
+	}
+
+	public void setInterfaces(List<ComputeServerInterface> interfaces) {
+		this.interfaces = interfaces;
+		markDirty("interfaces", interfaces);
+	}
+
 }
