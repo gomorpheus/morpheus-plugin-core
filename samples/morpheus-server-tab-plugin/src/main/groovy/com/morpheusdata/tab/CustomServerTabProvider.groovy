@@ -33,10 +33,10 @@ class CustomServerTabProvider extends AbstractServerTabProvider {
 	 */
 	@Override
 	HTMLResponse renderTemplate(ComputeServer server) {
-		ViewModel<String> model = new ViewModel<String>()
+		ViewModel<ComputeServer> model = new ViewModel<>()
 		TaskConfig config = morpheus.buildComputeServerConfig(server, [:], null, [], [:]).blockingGet()
 		model.object = server
-		println 'IM HERE RENDERING LIKE IM SUPPOSED TO'
+		println "M HERE RENDERING LIKE IM SUPPOSED TO ${server.hostname}"
 		getRenderer().renderTemplate("hbs/serverTab", model)
 	}
 

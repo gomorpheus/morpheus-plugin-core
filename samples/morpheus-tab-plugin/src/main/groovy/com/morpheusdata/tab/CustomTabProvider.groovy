@@ -33,7 +33,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	 */
 	@Override
 	HTMLResponse renderTemplate(Instance instance) {
-		ViewModel<String> model = new ViewModel<String>()
+		ViewModel<Instance> model = new ViewModel<>()
 		TaskConfig config = morpheus.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
 		model.object = instance
 		getRenderer().renderTemplate("hbs/instanceTab", model)

@@ -37,6 +37,6 @@ class MaasComputeUtilitySpec extends Specification {
 		server.externalId == 'server1'
 		server.name == 'mymaas'
 		server.cloud == cloud
-		server.account == cloud.account
+        server.account == cloud.account
 	}
 }
