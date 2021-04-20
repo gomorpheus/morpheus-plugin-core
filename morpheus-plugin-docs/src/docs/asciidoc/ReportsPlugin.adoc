@@ -46,6 +46,20 @@ void process(ReportResult reportResult) {
 
 **NOTE:** Notice that this process method feaures the ability to get a read only database connection to the morpheus MySQL Database. This isnt always the best option but is a good fallbak option for grabbing data you may not otherwise be able to get. Other data query methods are available on the various `MorpheusContext` subService classes. Expect more of these to be filled out as the plugin ecosystem develops.
 
+==== Custom Filters
+
+It is often the case that a user may want to adjust how a filter runs. Perhaps they want to reduce the result set to a filtered set of data or group by certain properties. For this, the `ReportProvider` provides a `getOptionTypes` method that when implemented allows the developer to specify custom form inputs the user has to select when running the report.
+
+[source, groovy]
+----
+@Override
+List<OptionType> getOptionTypes() {
+  [new OptionType(code: 'status-report-search', name: 'Search', fieldName: 'phrase', fieldContext: 'config', fieldLabel: 'Search Phrase', displayOrder: 0)]
+}
+----
+
+It is important to note the `fieldContext` should almost always be set to `config` in this instance.
+
 ==== Rendering
 
 Render is very similar to rendering a tab. The main difference is the payload that is sent for the render is the `ReportResult` representing the particular report run as well as the dataset rows grouped by section.
