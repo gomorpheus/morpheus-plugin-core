@@ -124,22 +124,6 @@ class InfobloxProviderSpec extends Specification {
         3 * infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
     }
 
-    void "returnPoolAddress"() {
-        given:
-        def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        def ipAddress = new NetworkPoolIp(externalId: "123")
-        def networkPool = new NetworkPool()
-        def network = new Network()
-        and: "mock api delete"
-        infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
-
-        when:
-        def result = provider.returnPoolAddress(poolServer, networkPool, network, ipAddress, [:])
-
-        then:
-        result
-    }
-
 	@Ignore("network context is null, TODO Fix")
     void "createHostRecord"() {
         given:
