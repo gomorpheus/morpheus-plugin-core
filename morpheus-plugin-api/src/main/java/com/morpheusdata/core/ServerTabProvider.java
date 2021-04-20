@@ -6,9 +6,10 @@ import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
 
 /**
- * Provides support for custom UI tabs when viewing ComputeServer details
+ * Provides support for custom UI tabs when viewing Server details within the UI.
  *
  * @author Luke Davitt
+ * @since 0.8.0
  */
 public interface ServerTabProvider extends UIExtensionProvider {
 
