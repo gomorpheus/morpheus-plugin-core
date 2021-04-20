@@ -14,7 +14,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusVirtualImageContext {
+public interface MorpheusVirtualImageService {
 	/**
 	 * Get a list of VirtualImage projections based on Cloud id
 	 * @param cloudId Cloud id

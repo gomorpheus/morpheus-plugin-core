@@ -8,11 +8,11 @@ package com.morpheusdata.core.integration;
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusIntegrationContext {
+public interface MorpheusIntegrationService {
 	/**
 	 * Gets the inventory context for interacting with {@link com.morpheusdata.model.AccountInventory} objects.
 	 * This is mostly used for Ansible Tower integrations and is not yet really extensible but could be in the future.
 	 * @return the inventory context
 	 */
-	MorpheusAccountInventoryContext getAccountInventory();
+	MorpheusAccountInventoryService getAccountInventory();
 }

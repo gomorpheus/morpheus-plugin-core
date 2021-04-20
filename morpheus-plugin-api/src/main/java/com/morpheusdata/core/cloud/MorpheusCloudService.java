@@ -18,9 +18,9 @@ import java.util.Map;
  * @author Mike Truso
  * @since 0.8.0
  */
-public interface MorpheusCloudContext {
+public interface MorpheusCloudService {
 
-	MorpheusComputeZonePoolContext getPool();
+	MorpheusComputeZonePoolService getPool();
 
 	/**
 	 * Update the status of a Cloud during setup

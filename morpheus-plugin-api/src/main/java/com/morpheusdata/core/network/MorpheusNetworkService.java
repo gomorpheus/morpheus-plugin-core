@@ -11,19 +11,18 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Morpheus Context as it relates to network related operations. This context contains methods for querying things like network pools
  * network domains, and other network related objects. It also contains methods for applying updates ore creating new objects related to
  * networks. Typically this class is accessed via the primary {@link MorpheusContext}.
  *
- * @see MorpheusNetworkPoolContext
- * @see MorpheusNetworkDomainContext
+ * @see MorpheusNetworkPoolService
+ * @see MorpheusNetworkDomainService
  *
  * @author David Estes, Eric Helgeson
  */
-public interface MorpheusNetworkContext {
+public interface MorpheusNetworkService {
 
 
 	/**
@@ -31,21 +30,21 @@ public interface MorpheusNetworkContext {
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An instance of the Network Pool Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkPoolContext getPool();
+	MorpheusNetworkPoolService getPool();
 
 	/**
 	 * Returns the NetworkDomainContext used for performing updates/queries on {@link NetworkDomain} related assets
 	 * within Morpheus. Most useful when implementing DNS related services.
 	 * @return An instance of the Network Domain Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkDomainContext getDomain();
+	MorpheusNetworkDomainService getDomain();
 
 	/**
 	 * Returns the MorpheusNetworkTypeContext used for performing updates/queries on {@link NetworkType} related assets
 	 * within Morpheus.
 	 * @return An instance of the NetworkTypeContext to be used for calls by various network providers
 	 */
-	MorpheusNetworkTypeContext getType();
+	MorpheusNetworkTypeService getType();
 
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.

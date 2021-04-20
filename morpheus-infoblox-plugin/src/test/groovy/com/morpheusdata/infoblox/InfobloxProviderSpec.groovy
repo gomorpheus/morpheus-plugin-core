@@ -3,8 +3,7 @@ package com.morpheusdata.infoblox
 import com.morpheusdata.test.MorpheusContextImpl
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.network.MorpheusNetworkContext
-import com.morpheusdata.model.Network
+import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
@@ -19,12 +18,12 @@ class InfobloxProviderSpec extends Specification {
     @Shared MorpheusContext context
     @Shared InfobloxPlugin plugin
     @Shared RestApiUtil infobloxAPI
-    @Shared MorpheusNetworkContext networkContext
+    @Shared MorpheusNetworkService networkContext
     @Subject@Shared InfobloxProvider provider
 
     void setup() {
         context = Mock(MorpheusContextImpl)
-        networkContext = Mock(MorpheusNetworkContext)
+        networkContext = Mock(MorpheusNetworkService)
         context.getNetwork() >> networkContext
         plugin = Mock(InfobloxPlugin)
         infobloxAPI = GroovySpy(RestApiUtil, global: true)

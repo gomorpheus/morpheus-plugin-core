@@ -1,10 +1,10 @@
 package com.morpheusdata.maas.plugin
 
-import com.morpheusdata.core.cloud.MorpheusCloudContext
-import com.morpheusdata.core.MorpheusComputeServerContext
+import com.morpheusdata.core.cloud.MorpheusCloudService
+import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.cloud.MorpheusComputeZonePoolContext
-import com.morpheusdata.core.network.MorpheusNetworkContext
+import com.morpheusdata.core.cloud.MorpheusComputeZonePoolService
+import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
@@ -27,18 +27,18 @@ class MaasProvisionProviderSpec extends Specification {
 	MaasProvisionProvider service
 
 	MorpheusContext context
-	MorpheusNetworkContext networkContext
-	MorpheusCloudContext cloudContext
-	MorpheusComputeServerContext computeServerContext
-	MorpheusComputeZonePoolContext poolContext
+	MorpheusNetworkService networkContext
+	MorpheusCloudService cloudContext
+	MorpheusComputeServerService computeServerContext
+	MorpheusComputeZonePoolService poolContext
 	MaasPlugin plugin
 
 	void setup() {
 		context = Mock(MorpheusContext)
-		networkContext = Mock(MorpheusNetworkContext)
-		cloudContext = Mock(MorpheusCloudContext)
-		poolContext = Mock(MorpheusComputeZonePoolContext)
-		computeServerContext = Mock(MorpheusComputeServerContext)
+		networkContext = Mock(MorpheusNetworkService)
+		cloudContext = Mock(MorpheusCloudService)
+		poolContext = Mock(MorpheusComputeZonePoolService)
+		computeServerContext = Mock(MorpheusComputeServerService)
 		context.getNetwork() >> networkContext
 		context.getCloud() >> cloudContext
 		context.getComputeServer() >> computeServerContext

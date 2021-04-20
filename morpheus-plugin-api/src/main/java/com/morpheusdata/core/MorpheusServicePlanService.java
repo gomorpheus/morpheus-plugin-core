@@ -13,7 +13,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusServicePlanContext {
+public interface MorpheusServicePlanService {
 
 	/**
 	 * Get a list of ServicePlan projections based on Cloud id

@@ -1,7 +1,6 @@
 package com.morpheusdata.core.network;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
 import io.reactivex.Observable;
@@ -12,8 +11,8 @@ import java.util.List;
 
 /**
  * This Context deals with interactions related to {@link com.morpheusdata.model.NetworkPoolIp} objects. It can normally
- * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkContext} and
- * finally via the {@link MorpheusNetworkPoolContext} traversal.
+ * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkService} and
+ * finally via the {@link MorpheusNetworkPoolService} traversal.
  * Network Pool Ip Records are Host Records entities within an IPAM Service. These are create/destroyed based on provisioning
  * integrations as well as syncing with Pool Server Integration types.
  *
@@ -22,11 +21,11 @@ import java.util.List;
  * morpheusContext.getNetwork().getPool().getPoolIp()
  * }</pre>
  *
- * @see MorpheusNetworkPoolContext
+ * @see MorpheusNetworkPoolService
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkPoolIpContext {
+public interface MorpheusNetworkPoolIpService {
 
 	/**
 	 * Lists all network pool ip projection objects for a specified network pool within a pool server integration.

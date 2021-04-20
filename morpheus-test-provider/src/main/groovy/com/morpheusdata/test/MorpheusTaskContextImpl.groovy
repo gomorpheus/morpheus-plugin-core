@@ -1,14 +1,11 @@
 package com.morpheusdata.test
 
-import com.morpheusdata.core.MorpheusTaskContext
-import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.Container
-import com.morpheusdata.model.Instance
+import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.model.Task
 import com.morpheusdata.model.TaskConfig
 import io.reactivex.Single
 
-class MorpheusTaskContextImpl implements MorpheusTaskContext {
+class MorpheusTaskContextImpl implements MorpheusTaskService {
 	@Override
 	Single<Void> disableTask(String code) {
 		return null

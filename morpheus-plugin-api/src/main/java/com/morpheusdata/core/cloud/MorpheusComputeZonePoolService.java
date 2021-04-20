@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Mike Truso
  */
-public interface MorpheusComputeZonePoolContext {
+public interface MorpheusComputeZonePoolService {
 
 	/**
 	 * Get a list of {@link ComputeZonePool} projections based on Cloud id
