@@ -1,15 +1,15 @@
-=== Instance Tabs
+=== UI Extensions
 
-Customize the UI for your Instances by providing your own tabs. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-tab-plugin[full example].
+Morpheus UI Extension Plugins provide a way to expand the capabilityies of the Morpheus UI. Render custom content as a tab on an Instance, or even on a Server. Create a global injection component to the main layout footer for support/chat services. The possibilities are growing with each release and new functionality since 0.8.0 brings a lot.  https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-tab-plugin[See a full tabs example].
 
-==== Setup
+==== Setup Instance Tabs
 Create a new class that extends `com.morpheusdata.core.AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method.
 Below is a simple example binding the Instance object to the template model.
 [source, groovy]
 ----
 @Override
 HTMLResponse renderTemplate(Instance instance) {
-  ViewModel<String> model = new ViewModel<String>()
+  ViewModel<Instance> model = new ViewModel<>()
   model.object = instance
   getRenderer().renderTemplate("hbs/instanceTab", model)
 }
@@ -20,6 +20,26 @@ Use `MorpheusContext.buildInstanceConfig` to get more details about your Instanc
 
 https://github.com/jknack/handlebars.java[Handlebars] is the default provided template engine.
 To override this default, implement the `com.morpheusdata.core.InstanceTabProvider` interface and then write
+your own `getRenderer()` method.
+
+==== Setup Server Tabs
+Create a new class that extends `com.morpheusdata.core.AbstractServerTabProvider`. When the Morpheus UI builds the Server Details UI, it calls the `renderTemplate` method.
+Below is a simple example binding the Instance object to the template model.
+[source, groovy]
+----
+@Override
+HTMLResponse renderTemplate(ComputeServer server) {
+  ViewModel<ComputeServer> model = new ViewModel<>()
+  model.object = server
+  getRenderer().renderTemplate("hbs/serverTab", model)
+}
+----
+
+[TIP]
+Use `MorpheusContext.buildComputeServerConfig` to get more details about your Server. See `com.morpheusdata.model.TaskConfig`
+
+https://github.com/jknack/handlebars.java[Handlebars] is the default provided template engine.
+To override this default, implement the `com.morpheusdata.core.ServerTabProvider` interface and then write
 your own `getRenderer()` method.
 
 
@@ -62,3 +82,4 @@ TabContentSecurityPolicy getContentSecurityPolicy() {
   csp
 }
 ----
+=

@@ -1,0 +1,63 @@
+=== Reports Plugin
+
+Create custom report types for users to consume within Morpheus. Customize the behavior of how the report data is assembled and generated as well as the way it is rendered/displayed to the user. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-reports-plugin[full example].
+
+==== Setup
+
+Creating a report is just a matter of registering a new implementation of a `ReportProvider`. If using standard handlebars rendering similar to UI Extensions, simply extend the `com.morpheusdata.core.AbstractReportProvider`. Before creating a report a few concepts should be made known.
+
+There are a few model objects of importance. Firstly, the `ReportProvider` implementation always generates a `ReportType` for reference and display when the user is browsing a report ro run.
+
+After a report is run a `ReportResult` is generated. This represents the information of who created the report as well as any submitted filters / report options related to the report. When creating a process method the results of the run should be stored as `ReportResultRow` objects. These have a `displayOrder` and `section`. This allows one to store header data as well as line item data for rendering and csv export. These rows are generated using rxjava asynchronous flows in the `process` method. Example Here:
+
+[source, groovy]
+----
+void process(ReportResult reportResult) {
+  morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
+  Long displayOrder = 0
+  List<GroovyRowResult> results = []
+  Connection dbConnection
+
+  try {
+    dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
+    if(reportResult.configMap?.phrase) {
+      String phraseMatch = "${reportResult.configMap?.phrase}%"
+      results = new Sql(dbConnection).rows("SELECT id,name,status from instance WHERE name LIKE ${phraseMatch} order by name asc;")
+    } else {
+      results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
+    }
+  } finally {
+    morpheus.report.releaseDatabaseConnection(dbConnection)
+  }
+  Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
+  observable.map{ resultRow ->
+    Map<String,Object> data = [name: resultRow.name, id: resultRow.id, status: resultRow.status]
+    ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
+    return resultRowRecord
+  }.buffer(50).doOnComplete {
+    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
+  }.doOnError { Throwable t ->
+    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
+  }.subscribe {resultRows ->
+    morpheus.report.appendResultRows(reportResult,resultRows).blockingGet()
+  }
+}
+----
+
+**NOTE:** Notice that this process method feaures the ability to get a read only database connection to the morpheus MySQL Database. This isnt always the best option but is a good fallbak option for grabbing data you may not otherwise be able to get. Other data query methods are available on the various `MorpheusContext` subService classes. Expect more of these to be filled out as the plugin ecosystem develops.
+
+==== Rendering
+
+Render is very similar to rendering a tab. The main difference is the payload that is sent for the render is the `ReportResult` representing the particular report run as well as the dataset rows grouped by section.
+[source, groovy]
+----
+@Override
+HTMLResponse renderTemplate(ReportResult reportResult, Map<String, List<ReportResultRow>> reportRowsBySection) {
+    ViewModel<String> model = new ViewModel<String>()
+    model.object = reportRowsBySection
+    getRenderer().renderTemplate("hbs/instanceReport", model)
+}
+----
+
+
+

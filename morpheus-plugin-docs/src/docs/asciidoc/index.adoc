@@ -37,4 +37,6 @@ include::TaskPlugin.adoc[]
 
 include::TabsPlugin.adoc[]
 
+include::ReportsPlugin.adoc[]
+
 include::ApprovalsPlugin.adoc[]
