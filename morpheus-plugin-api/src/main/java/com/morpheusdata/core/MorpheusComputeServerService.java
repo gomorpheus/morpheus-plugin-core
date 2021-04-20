@@ -15,7 +15,7 @@ import java.util.List;
  * @author Mike Truso
  * @since 0.8.0
  */
-public interface MorpheusComputeServerContext {
+public interface MorpheusComputeServerService {
 
 	/**
 	 * Get a {@link ComputeServer} by id.

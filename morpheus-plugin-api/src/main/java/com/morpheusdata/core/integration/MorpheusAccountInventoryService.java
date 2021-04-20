@@ -16,7 +16,7 @@ import java.util.List;
  * @author David Estes
  * @since 5.3.1
  */
-public interface MorpheusAccountInventoryContext {
+public interface MorpheusAccountInventoryService {
 	/**
 	 * Lists all inventory projection objects for a specified integration id.
 	 * The projection is a subset of the properties on a full {@link com.morpheusdata.model.AccountInventory} object for sync matching.

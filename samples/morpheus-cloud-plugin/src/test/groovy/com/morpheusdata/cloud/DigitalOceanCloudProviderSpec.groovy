@@ -1,8 +1,8 @@
 package com.morpheusdata.cloud
 
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.MorpheusServicePlanContext
-import com.morpheusdata.core.MorpheusVirtualImageContext
+import com.morpheusdata.core.MorpheusServicePlanService
+import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ServicePlan
@@ -25,17 +25,17 @@ class DigitalOceanCloudProviderSpec extends Specification {
 	@Shared
 	DigitalOceanApiService apiService
 	@Shared
-	MorpheusVirtualImageContext virtualImageContext
+	MorpheusVirtualImageService virtualImageContext
 	@Shared
-	MorpheusServicePlanContext servicePlanContext
+	MorpheusServicePlanService servicePlanContext
 
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
 		MorpheusContext context = Mock(MorpheusContext)
-		virtualImageContext = Mock(MorpheusVirtualImageContext)
+		virtualImageContext = Mock(MorpheusVirtualImageService)
 		context.getVirtualImage() >> virtualImageContext
-		servicePlanContext = Mock(MorpheusServicePlanContext)
+		servicePlanContext = Mock(MorpheusServicePlanService)
 		context.getServicePlan() >> servicePlanContext
 		provider = new DigitalOceanCloudProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)

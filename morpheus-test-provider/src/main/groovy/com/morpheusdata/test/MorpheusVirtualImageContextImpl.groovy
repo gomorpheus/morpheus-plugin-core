@@ -1,8 +1,8 @@
 package com.morpheusdata.test
 
-import com.morpheusdata.core.MorpheusVirtualImageContext
+import com.morpheusdata.core.MorpheusVirtualImageService
 import groovy.transform.AutoImplement
 
 @AutoImplement
-class MorpheusVirtualImageContextImpl implements MorpheusVirtualImageContext {
+class MorpheusVirtualImageContextImpl implements MorpheusVirtualImageService {
 }

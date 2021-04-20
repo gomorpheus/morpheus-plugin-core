@@ -1,11 +1,12 @@
 package com.morpheusdata.model.projection;
 
+import com.morpheusdata.core.network.MorpheusNetworkPoolIpService;
 import com.morpheusdata.model.MorpheusModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.NetworkPoolIp} object for doing a sync match
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
- * @see com.morpheusdata.core.network.MorpheusNetworkPoolIpContext
+ * @see MorpheusNetworkPoolIpService
  * @author David Estes
  */
 public class NetworkPoolIpIdentityProjection extends MorpheusModel {

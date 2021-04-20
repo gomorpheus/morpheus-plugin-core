@@ -1,7 +1,7 @@
 package com.morpheusdata.test.network;
 
-import com.morpheusdata.core.network.MorpheusNetworkPoolContext;
-import com.morpheusdata.core.network.MorpheusNetworkPoolIpContext;
+import com.morpheusdata.core.network.MorpheusNetworkPoolService;
+import com.morpheusdata.core.network.MorpheusNetworkPoolIpService;
 import com.morpheusdata.model.NetworkPool;
 import com.morpheusdata.model.NetworkPoolServer;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
@@ -11,14 +11,14 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
-public class MorpheusNetworkPoolContextImpl implements MorpheusNetworkPoolContext {
+public class MorpheusNetworkPoolServiceImpl implements MorpheusNetworkPoolService {
 	/**
 	 * Returns the Pool IP Context for dealing with managing IP Allocations regarding Host Records within a {@link NetworkPool}
 	 *
 	 * @return the Pool IP Context to use for performing IPAM operations within Morpheus.
 	 */
 	@Override
-	public MorpheusNetworkPoolIpContext getPoolIp() {
+	public MorpheusNetworkPoolIpService getPoolIp() {
 		return null;
 	}
 

@@ -1,15 +1,15 @@
 package com.morpheusdata.test
 
 
-import com.morpheusdata.core.cloud.MorpheusCloudContext
-import com.morpheusdata.core.MorpheusComputeServerContext
+import com.morpheusdata.core.cloud.MorpheusCloudService
+import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.MorpheusReportContext
-import com.morpheusdata.core.integration.MorpheusIntegrationContext
-import com.morpheusdata.core.network.MorpheusNetworkContext
-import com.morpheusdata.core.MorpheusServicePlanContext
-import com.morpheusdata.core.MorpheusTaskContext
-import com.morpheusdata.core.MorpheusVirtualImageContext
+import com.morpheusdata.core.MorpheusReportService
+import com.morpheusdata.core.integration.MorpheusIntegrationService
+import com.morpheusdata.core.network.MorpheusNetworkService
+import com.morpheusdata.core.MorpheusServicePlanService
+import com.morpheusdata.core.MorpheusTaskService
+import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -17,7 +17,7 @@ import com.morpheusdata.model.LogLevel
 import com.morpheusdata.model.Task
 import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.TaskResult
-import com.morpheusdata.test.network.MorpheusNetworkContextImpl
+import com.morpheusdata.test.network.MorpheusNetworkServiceImpl
 import io.reactivex.Single
 
 /**
@@ -25,23 +25,23 @@ import io.reactivex.Single
  */
 class MorpheusContextImpl implements MorpheusContext {
 
-    protected MorpheusCloudContext cloudContext
-    protected MorpheusNetworkContext networkContext
-    protected MorpheusTaskContext taskContext
-	protected MorpheusVirtualImageContext virtualImageContext
-	protected MorpheusServicePlanContext servicePlanContext
-	protected MorpheusComputeServerContext computeServerContext
+    protected MorpheusCloudService cloudContext
+    protected MorpheusNetworkService networkContext
+    protected MorpheusTaskService taskContext
+	protected MorpheusVirtualImageService virtualImageContext
+	protected MorpheusServicePlanService servicePlanContext
+	protected MorpheusComputeServerService computeServerContext
 
     MorpheusContextImpl() {
-        cloudContext = new MorpheusCloudContextImpl()
-        networkContext = new MorpheusNetworkContextImpl()
+        cloudContext = new MorpheusCloudServiceImpl()
+        networkContext = new MorpheusNetworkServiceImpl()
 		taskContext = new MorpheusTaskContextImpl()
 		virtualImageContext = new MorpheusVirtualImageContextImpl()
-		servicePlanContext = new MorpheusServicePlanContextImpl()
-		computeServerContext = new MorpheusComputeServerContextImpl()
+		servicePlanContext = new MorpheusServicePlanServiceImpl()
+		computeServerContext = new MorpheusComputeServerServiceImpl()
     }
 
-    MorpheusContextImpl(MorpheusCloudContext cloudContext, MorpheusNetworkContext networkContext, MorpheusTaskContext taskContext, MorpheusVirtualImageContext virtualImageContext) {
+    MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
         this.cloudContext = cloudContext
         this.networkContext = networkContext
 		this.taskContext = taskContext
@@ -49,17 +49,17 @@ class MorpheusContextImpl implements MorpheusContext {
     }
 
     @Override
-    MorpheusCloudContext getCloud() {
+    MorpheusCloudService getCloud() {
         return cloudContext
     }
 
     @Override
-    MorpheusNetworkContext getNetwork() {
+    MorpheusNetworkService getNetwork() {
         return networkContext
     }
 
 	@Override
-	MorpheusTaskContext getTask() {
+	MorpheusTaskService getTask() {
 		return taskContext
 	}
 
@@ -69,22 +69,22 @@ class MorpheusContextImpl implements MorpheusContext {
 	 * @return An instance of the Integration Context to bused for calls by various integration types
 	 */
 	@Override
-	MorpheusIntegrationContext getIntegration() {
+	MorpheusIntegrationService getIntegration() {
 		return null
 	}
 
 	@Override
-	MorpheusVirtualImageContext getVirtualImage() {
+	MorpheusVirtualImageService getVirtualImage() {
 		return virtualImageContext
 	}
 
 	@Override
-	MorpheusServicePlanContext getServicePlan() {
+	MorpheusServicePlanService getServicePlan() {
 		return servicePlanContext
 	}
 
 	@Override
-	MorpheusComputeServerContext getComputeServer() {
+	MorpheusComputeServerService getComputeServer() {
 		return computeServerContext
 	}
 
@@ -95,7 +95,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	 * @return an instance of the Report Context
 	 */
 	@Override
-	MorpheusReportContext getReport() {
+	MorpheusReportService getReport() {
 		return null
 	}
 

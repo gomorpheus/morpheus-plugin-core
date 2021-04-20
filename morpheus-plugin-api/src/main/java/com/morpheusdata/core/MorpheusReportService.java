@@ -20,7 +20,7 @@ import java.util.Collection;
  * @author David Estes
  *
  */
-public interface MorpheusReportContext {
+public interface MorpheusReportService {
 
 	/**
 	 * Saves new result rows against a {@link ReportResult}. These can be chunked or done in batches to improve report

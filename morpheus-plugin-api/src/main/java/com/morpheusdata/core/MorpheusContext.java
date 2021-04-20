@@ -1,8 +1,8 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.core.cloud.MorpheusCloudContext;
-import com.morpheusdata.core.integration.MorpheusIntegrationContext;
-import com.morpheusdata.core.network.MorpheusNetworkContext;
+import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -19,11 +19,11 @@ import java.util.Map;
  *
  * (i.e. a Connector app could implement the MorpheusContext and relay communication back to the Morpheus Application itself)
  *
- * @see MorpheusCloudContext
- * @see MorpheusNetworkContext
- * @see MorpheusTaskContext
- * @see MorpheusVirtualImageContext
- * @see MorpheusServicePlanContext
+ * @see MorpheusCloudService
+ * @see MorpheusNetworkService
+ * @see MorpheusTaskService
+ * @see MorpheusVirtualImageService
+ * @see MorpheusServicePlanService
  *
  * @author David Estes
  */
@@ -33,7 +33,7 @@ public interface MorpheusContext {
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
 	 * @return An Instance of the Compute Context to be used typically by {@link CloudProvider} implementations.
 	 */
-	MorpheusCloudContext getCloud();
+	MorpheusCloudService getCloud();
 
 
 	/**
@@ -41,42 +41,42 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An Instance of the Network Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkContext getNetwork();
+	MorpheusNetworkService getNetwork();
 
 	/**
 	 * Returns the Task context used for automation tasks on assets within Morpheus.
 	 * Typically this would be called by a {@link TaskProvider}.
 	 * @return An Instance of the Task Context to be used for calls by various task providers
 	 */
-	MorpheusTaskContext getTask();
+	MorpheusTaskService getTask();
 
 	/**
 	 * Returns the Integration context used for performing common operations on varioues integration types Morpheus
 	 * has to offer.
 	 * @return An instance of the Integration Context to bused for calls by various integration types
 	 */
-	MorpheusIntegrationContext getIntegration();
+	MorpheusIntegrationService getIntegration();
 
 	/**
 	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Virtual Image Context to be used for calls by various providers
 	 */
-	MorpheusVirtualImageContext getVirtualImage();
+	MorpheusVirtualImageService getVirtualImage();
 
 	/**
 	 * Returns the Service Plan context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Service Plan Context to be used for calls by various providers
 	 */
-	MorpheusServicePlanContext getServicePlan();
+	MorpheusServicePlanService getServicePlan();
 
 	/**
 	 * Returns the Service Plan context used for syncing machines within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Compute Server Context to be used for calls by various providers
 	 */
-	MorpheusComputeServerContext getComputeServer();
+	MorpheusComputeServerService getComputeServer();
 
 	/**
 	 * Returns the Custom Report Types Context used for generating custom reports.
@@ -84,7 +84,7 @@ public interface MorpheusContext {
 	 *
 	 * @return an instance of the Report Context
 	 */
-	MorpheusReportContext getReport();
+	MorpheusReportService getReport();
 
 
 	//Common methods used across various contexts

@@ -1,6 +1,5 @@
 package com.morpheusdata.core.network;
 
-import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.NetworkDomain;
 import com.morpheusdata.model.NetworkDomainRecord;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
@@ -13,8 +12,8 @@ import java.util.List;
 
 /**
  * This Context deals with interactions related to {@link com.morpheusdata.model.NetworkDomainRecord} objects. It can normally
- * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkContext} and
- * finally via the {@link MorpheusNetworkDomainContext} traversal.
+ * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkService} and
+ * finally via the {@link MorpheusNetworkDomainService} traversal.
  * Network Domain Records are Zone Records entities within a DNS Zone. These are create/destroyed based on provisioning
  * integrations as well as syncing with DNS Integration types.
  *
@@ -23,11 +22,11 @@ import java.util.List;
  * morpheusContext.getNetwork().getDomain().getRecord()
  * }</pre>
  *
- * @see MorpheusNetworkDomainContext
+ * @see MorpheusNetworkDomainService
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkDomainRecordContext {
+public interface MorpheusNetworkDomainRecordService {
 	/**
 	 * Lists all network domain record projection objects for a specified integration id.
 	 * The projection is a subset of the properties on a full {@link NetworkDomainRecord} object for sync matching.

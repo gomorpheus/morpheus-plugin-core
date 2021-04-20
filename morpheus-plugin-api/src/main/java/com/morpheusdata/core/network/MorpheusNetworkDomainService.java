@@ -9,11 +9,10 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This Context deals with interactions related to {@link com.morpheusdata.model.NetworkDomain} objects. It can normally
- * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkContext}
+ * be accessed via the primary {@link com.morpheusdata.core.MorpheusContext} via the {@link MorpheusNetworkService}
  * Network Domains are Domain entities as it relates to DNS and Windows Domain Join Behavior. It contains information
  * regarding FQDN as well as Domain join rules and even credentials when necessary.
  *
@@ -22,17 +21,17 @@ import java.util.Map;
  * morpheusContext.getNetwork().getDomain()
  * }</pre>
  *
- * @see MorpheusNetworkContext
+ * @see MorpheusNetworkService
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkDomainContext {
+public interface MorpheusNetworkDomainService {
 
 	/**
 	 * Returns the context for interacting with {@link NetworkDomainRecord} objects
 	 * @return the domain record context for DNS Sync and management
 	 */
-	MorpheusNetworkDomainRecordContext getRecord();
+	MorpheusNetworkDomainRecordService getRecord();
 
 	/**
 	 * Lists all network domain projection objects for a specified integration id.
