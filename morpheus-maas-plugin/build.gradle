@@ -17,7 +17,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
-version = '1.0.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()
@@ -121,6 +120,19 @@ publishing {
 			from components.java
 		}
 	}
+	repositories {
+        maven {
+            if( !isReleaseVersion ) {
+                url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+                if(project.hasProperty('labsNexusUser')) {
+                    credentials {
+                        username = labsNexusUser
+                        password = labsNexusPassword
+                    }
+                }
+            }
+        }
+    }
 }
 
 test {

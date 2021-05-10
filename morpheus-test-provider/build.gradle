@@ -95,6 +95,19 @@ publishing {
             from components.java
         }
     }
+	repositories {
+		maven {
+			if( !isReleaseVersion ) {
+				url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+				if(project.hasProperty('labsNexusUser')) {
+					credentials {
+						username = labsNexusUser
+						password = labsNexusPassword
+					}
+				}
+			}
+		}
+	}
 }
 
 test {

@@ -157,13 +157,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService);
 	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService,  Map opts);
 
-	// Custom Attributes?
-	Map buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes);
-	Map buildCustomAttributes(Container container, Map runConfig, Collection deployAttributes, Map opts);
-	Map buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes);
-	Map buildCustomAttributes(ComputeServer server, Map runConfig, Collection deployAttributes, Map opts);
-	Map buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes);
-	Map buildCustomAttributes(Map optionMap, Map runConfig, Collection deployAttributes, Map opts);
+
 
 	HostType getHostType();
 
