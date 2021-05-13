@@ -166,6 +166,11 @@ class MaasCloudProvider implements CloudProvider {
 		return 'Metal as a Service'
 	}
 
+	@Override
+	String getDescription() {
+		return 'Metal as a Service Description'
+	}
+
 	List<Map<String, Object>> maasResourcePools(def cloud) {
 		log.info("maasResourcePools")
 		String serviceUrl = cloud?.serviceUrl ?: cloud?.configMap?.serviceUrl
