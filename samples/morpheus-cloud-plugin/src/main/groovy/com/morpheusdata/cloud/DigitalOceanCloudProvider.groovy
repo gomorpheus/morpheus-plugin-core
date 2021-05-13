@@ -75,7 +75,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				name: 'Datacenter',
 				code: 'do-datacenter',
 				fieldName: 'datacenter',
-				optionSource: 'loadDatacenters',
+				optionSource: 'datacenters',
 				displayOrder: 2,
 				fieldLabel: 'Datacenter',
 				required: true,
