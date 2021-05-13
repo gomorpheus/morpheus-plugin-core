@@ -43,14 +43,14 @@ class DigitalOceanOptionSourceProvider implements OptionSourceProvider {
 	}
 
 	def datacenters(args) {
-		return [[id:'nyc1', name:'New York 1', available:true],
-		[id:'sfo1', name:'San Francisco 1', available:true],
-		[id:'nyc2', name:'New York 2', available:true],
-		[id:'ams2', name:'Amsterdam 2', available:true],
-		[id:'sgp1', name:'Singapore 1', available:true],
-		[id:'lon1', name:'London 1', available:true],
-		[id:'nyc3', name:'New York 3', available:true],
-		[id:'ams3', name:'Amsterdam 3', available:true],
-		[id:'fra1', name:'Frankfurt 1', available:true]]
+		return [[value:'nyc1', name:'New York 1', available:true],
+		[value:'sfo1', name:'San Francisco 1', available:true],
+		[value:'nyc2', name:'New York 2', available:true],
+		[value:'ams2', name:'Amsterdam 2', available:true],
+		[value:'sgp1', name:'Singapore 1', available:true],
+		[value:'lon1', name:'London 1', available:true],
+		[value:'nyc3', name:'New York 3', available:true],
+		[value:'ams3', name:'Amsterdam 3', available:true],
+		[value:'fra1', name:'Frankfurt 1', available:true]]
 	}
 }
