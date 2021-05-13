@@ -50,6 +50,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	String getDescription() {
+		return 'Digital Ocean Plugin Description'
+	}
+
+	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Username',
@@ -74,6 +79,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		OptionType ot3 = new OptionType(
 				name: 'Datacenter',
 				code: 'do-datacenter',
+				fieldGroup: 'SomeFieldGroup',
 				fieldName: 'datacenter',
 				optionSource: 'datacenters',
 				displayOrder: 2,

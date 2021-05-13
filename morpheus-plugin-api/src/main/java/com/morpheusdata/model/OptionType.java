@@ -16,6 +16,7 @@ public class OptionType extends MorpheusModel {
 	protected String fieldLabel;
 	protected String fieldName;
 	protected String fieldContext;
+	protected String fieldGroup;
 	protected InputType inputType = InputType.TEXT;
 	protected Integer displayOrder;
 	protected String placeHolderText;
@@ -113,6 +114,25 @@ public class OptionType extends MorpheusModel {
 	public void setFieldContext(String fieldContext) {
 		this.fieldContext = fieldContext;
 		markDirty("fieldContext", fieldContext);
+	}
+
+	/**
+	 * Gets the field group which is the name that is used to group fields together in the user interface.
+	 * To have all fields at the same level, do not specify a field group.
+	 * @return the field group to be used for grouping fields together
+	 */
+	public String getFieldGroup() {
+		return fieldGroup;
+	}
+
+	/**
+	 * Sets the field group which is the name that is used to group fields together in the user interface.
+	 * To have all fields at the same level, do not specify a field group.
+	 * @param fieldGroup the field group to be used for grouping fields together
+	 */
+	public void setFieldGroup(String fieldGroup) {
+		this.fieldGroup = fieldGroup;
+		markDirty("fieldGroup", fieldGroup);
 	}
 
 	/**
