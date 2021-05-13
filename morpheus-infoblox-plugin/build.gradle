@@ -128,9 +128,3 @@ test {
 		showStandardStreams = true
 	}
 }
-
-tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
-	destinationDirectory = file("$rootDir/plugins")
-}
-
-tasks.assemble.dependsOn tasks.shadowJar
