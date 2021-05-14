@@ -17,6 +17,7 @@ public class Workload extends WorkloadIdentityProjection {
 	protected String uuid;
 	protected ComputeServer server;
 	protected ServicePlan plan;
+	protected ComputeZonePool computeZonePool;
 	protected Boolean privateNetworking;
 	protected String userData;
 
@@ -112,6 +113,14 @@ public class Workload extends WorkloadIdentityProjection {
 
 	public void setPlan(ServicePlan plan) {
 		this.plan = plan;
+	}
+
+	public ComputeZonePool getComputeZonePool() {
+		return computeZonePool;
+	}
+
+	public void setComputeZonePool(ComputeZonePool computeZonePool) {
+		this.computeZonePool = computeZonePool;
 	}
 
 	public Boolean getPrivateNetworking() {
