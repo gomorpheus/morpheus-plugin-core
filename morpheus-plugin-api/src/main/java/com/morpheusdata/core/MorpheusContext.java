@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.core.cloud.MorpheusCloudService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
+import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -31,9 +32,15 @@ public interface MorpheusContext {
 
 	/**
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
-	 * @return An Instance of the Compute Context to be used typically by {@link CloudProvider} implementations.
+	 * @return An Instance of the Cloud Service to be used typically by {@link CloudProvider} implementations.
 	 */
 	MorpheusCloudService getCloud();
+
+	/**
+	 * Returns the Provision Service used for performing provisioning related updates to objects.
+	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 */
+	MorpheusProvisionService getProvision();
 
 
 	/**

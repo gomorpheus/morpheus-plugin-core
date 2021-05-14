@@ -183,12 +183,12 @@ class MaasProvisionProvider implements ProvisioningProvider {
 				rtn.success = true
 			} else {
 				//error - image not found
-				setProvisionFailed(server, container, 'server config error', null, opts.callbackService, opts)
+				morpheus.provision.setProvisionFailed(server, container, 'server config error', opts)
 			}
 		} catch(e) {
 			log.error("runContainer error:${e}", e)
 			rtn.error = e.message
-			setProvisionFailed(server, container, 'failed to create server: ' + e.message, e, opts.callbackService, opts)
+			morpheus.provision.setProvisionFailed(server, container, 'failed to create server: ' + e.message, opts)
 		}
 		rtn.inProgress = false
 		return rtn
@@ -200,7 +200,7 @@ class MaasProvisionProvider implements ProvisioningProvider {
 			//for provisioning hosts
 		} catch(e) {
 			log.error("runContainer error:${e}", e)
-			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
+			morpheus.provision.setProvisionFailed(server,null,"Failed to create server: ${e.message}", opts)
 		}
 		rtn
 	}
@@ -221,14 +221,14 @@ class MaasProvisionProvider implements ProvisioningProvider {
 					if(finalizeResult.success) {
 						rtn.success = true
 					} else {
-						setProvisionFailed(server, container, finalizeResult.msg ?: 'failed to finalize server', null, opts.callbackService, opts)
+						morpheus.provision.setProvisionFailed(server, container, finalizeResult.msg ?: 'failed to finalize server',opts)
 					}
 				} else {
-					setProvisionFailed(server, container, insertResult.msg ?: 'failed to insert server', null, opts.callbackService, opts)
+					morpheus.provision.setProvisionFailed(server, container, insertResult.msg ?: 'failed to insert server', opts)
 				}
 		} catch(e) {
 			log.error("runBareMetal error:${e}", e)
-			setProvisionFailed(server, null, "Failed to create server: ${e.message}", e, opts.callbackService, opts)
+			morpheus.provision.setProvisionFailed(server, null, "Failed to create server: ${e.message}", opts)
 			rtn.error = e.message
 		}
 		rtn.data.inProgress = false
@@ -360,16 +360,16 @@ class MaasProvisionProvider implements ProvisioningProvider {
 //					}
 				rtn.success = saveSuccess
 				if (!saveSuccess) {
-					setProvisionFailed(server, container, 'could not save finalized server', null, opts.callbackService, opts)
+					morpheus.provision.setProvisionFailed(server, container, 'could not save finalized server', opts)
 				}
 			} else {
 				//opts.server.statusMessage = 'Failed to run server'
-				setProvisionFailed(server, container, runResults.msg, null, opts.callbackService, opts)
+				morpheus.provision.setProvisionFailed(server, container, runResults.msg,  opts)
 			}
 
 		} catch (e) {
 			log.error("run task error: {}", e)
-			setProvisionFailed(server, container, "run task error: ${e.message}", e, opts.callbackService, opts)
+			morpheus.provision.setProvisionFailed(server,container,"run task error: ${e.message}", opts)
 			rtn.error = e.message
 		}
 		rtn

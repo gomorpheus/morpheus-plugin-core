@@ -109,18 +109,11 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
-	Map createContainerResources(Container container, Map opts);
-//	Map validateContainer(Map opts);
+	Map createContainerResources(Workload workload, Map opts);
 	Map getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);
-//	ServiceResponse runContainer(Container container, Map opts);
 	ServiceResponse runServer(ComputeServer server, Map opts);
-//	ServiceResponse stopContainer(Container container);
-//	ServiceResponse stopContainer(Container container, Boolean updateStatus);
-//	ServiceResponse startContainer(Container container);
-//	ServiceResponse startContainer(Container container, Boolean updateStatus);
 	ServiceResponse stopServer(ComputeServer computeServer);
 	ServiceResponse startServer(ComputeServer computeServer);
-//	ServiceResponse removeContainer(Container container, Map opts);
 	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
 
 	User getInstanceCreateUser(Instance instance);
@@ -130,7 +123,6 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse releaseServer(ComputeServer server, Map opts);
 	Map releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts);
 	Map updateReleasePool(ComputeServer server, Map authConfig);
-	ServiceResponse runBareMetal(Map runConfig, Map opts);
 	ComputeServer cleanServer(ComputeServer server);
 	ServiceResponse insertBareMetal(Map runConfig, Map opts);
 	ServiceResponse finalizeBareMetal(Map runConfig, ServiceResponse runResults, Map opts);
@@ -138,24 +130,11 @@ public interface ProvisioningProvider extends PluginProvider {
 	void setAgentInstallConfig(Map opts);
 	void setAgentInstallConfig(Map opts, VirtualImage virtualImage);
 
-	ServiceResponse getBondNetworks(Map bootNic, Collection nicList);
 
-	// Billing
-	ServiceResponse provisionStarted(Account account, Container container);
-
-	ServiceResponse provisionComplete(Account account, Container container);
-
-	ServiceResponse deProvisionStarted(Account account, Container container);
-
-	ServiceResponse deProvisionComplete(Account account, Container container);
 
 	void setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
 
-	void setProvisionFailed(ComputeServer server, Workload workload);
-	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage);
-	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error);
-	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService);
-	void setProvisionFailed(ComputeServer server, Workload workload, String errorMessage, Exception error, Object callbackService,  Map opts);
+
 
 
 
