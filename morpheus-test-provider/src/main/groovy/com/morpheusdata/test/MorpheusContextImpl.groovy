@@ -10,6 +10,7 @@ import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
+import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -53,7 +54,16 @@ class MorpheusContextImpl implements MorpheusContext {
         return cloudContext
     }
 
-    @Override
+	/**
+	 * Returns the Provision Service used for performing provisioning related updates to objects.
+	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 */
+	@Override
+	MorpheusProvisionService getProvision() {
+		return null
+	}
+
+	@Override
     MorpheusNetworkService getNetwork() {
         return networkContext
     }
