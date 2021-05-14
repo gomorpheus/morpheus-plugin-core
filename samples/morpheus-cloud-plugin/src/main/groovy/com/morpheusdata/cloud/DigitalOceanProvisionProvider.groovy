@@ -82,17 +82,17 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
-		log.debug "DO Provision Provider: runWorkload"
+		log.debug "DO Provision Provider: runWorkload ${workload.configMap}"
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'No API Key provided')
 		}
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		def body = [
-				'name'              : workload.name,
-				'region'            : workload.configMap.datacenter,
+				'name'              : workload.server.getExternalHostname(),
+				'region'            : workload.server.cloud.configMap.datacenter,
 				'size'              : workload.plan.externalId,
-				'image'             : workload.configMap.imageId,
+				'image'             : opts.imageRef,
 				'backups'           : "${opts.doBackups}",
 				'ipv6'              : opts.ipv6,
 				'user_data'         : opts.userData,
@@ -241,11 +241,4 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		def body = ['type': 'power_off']
 		apiService.performDropletAction(dropletId, body, apiKey)
 	}
-
-	def pluginImage(Cloud cloud) {
-		List options = []
-		morpheus.virtualImage.listSyncProjections(cloud.id).subscribe{options << [name: it.name, value: it.id]}
-		options
-	}
-
 }

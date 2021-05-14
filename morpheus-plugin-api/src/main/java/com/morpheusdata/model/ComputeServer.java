@@ -48,6 +48,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String externalDomain;
 	protected String externalFqdn;
 	protected String apiKey;
+	protected List<StorageVolume> volumes = new ArrayList<>();
 
 	public String getUuid() {
 		return uuid;
@@ -243,6 +244,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return interfaces;
 	}
 
+	public List<StorageVolume> getVolumes() {
+		return volumes;
+	}
+
 	public enum PowerState {
 		on,
 		off,
@@ -373,6 +378,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setInterfaces(List<ComputeServerInterface> interfaces) {
 		this.interfaces = interfaces;
 		markDirty("interfaces", interfaces);
+	}
+
+	public void setVolumes(List<StorageVolume> volumes) {
+		this.volumes = volumes;
+		markDirty("volumes", volumes);
 	}
 
 }
