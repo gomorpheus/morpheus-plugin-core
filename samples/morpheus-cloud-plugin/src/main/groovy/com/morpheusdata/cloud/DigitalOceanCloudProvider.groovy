@@ -50,6 +50,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	String getDescription() {
+		return 'Digital Ocean Plugin Description'
+	}
+
+	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Username',
@@ -74,8 +79,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		OptionType ot3 = new OptionType(
 				name: 'Datacenter',
 				code: 'do-datacenter',
+				fieldGroup: 'SomeFieldGroup',
 				fieldName: 'datacenter',
-				optionSource: 'loadDatacenters',
+				optionSource: 'datacenters',
 				displayOrder: 2,
 				fieldLabel: 'Datacenter',
 				required: true,
@@ -167,6 +173,13 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (!zoneInfo.configMap.doApiKey) {
 			return new ServiceResponse(success: false, msg: 'Enter your api key')
 		}
+
+		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
+		def respMap = apiService.makeApiCall(http, zoneInfo.configMap.doApiKey)
+		if(respMap.resp.statusLine.statusCode != 200) {
+			return new ServiceResponse(success: false, msg: 'Invalid credentials')
+		}
+
 		return new ServiceResponse(success: true)
 	}
 
@@ -183,7 +196,6 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-			loadDatacenters(cloud)
 			cacheSizes(cloud, apiKey)
 			cacheImages(cloud)
 
@@ -205,7 +217,6 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	void refresh(Cloud cloudInfo) {
 		log.debug "cloud refresh has run for ${cloudInfo.code}"
 		cacheSizes(cloudInfo, cloudInfo.configMap.doApiKey)
-		loadDatacenters(cloudInfo)
 		cacheImages(cloudInfo)
 	}
 
@@ -217,18 +228,6 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse deleteCloud(Cloud cloudInfo) {
 		return new ServiceResponse(success: true)
-	}
-
-	List<Map> loadDatacenters(def cloudInfo) {
-		List datacenters = []
-		log.debug "load datacenters for ${cloudInfo.code}"
-		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-		def respMap = apiService.makeApiCall(http, cloudInfo.configMap.doApiKey)
-		respMap?.json?.regions?.each {
-			datacenters << [value: it.slug, name: it.name, available: it.available]
-		}
-		// TODO cache these?
-		datacenters
 	}
 
 	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
