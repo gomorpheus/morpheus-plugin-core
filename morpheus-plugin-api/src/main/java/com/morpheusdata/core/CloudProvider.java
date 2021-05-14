@@ -18,6 +18,11 @@ import java.util.Collection;
  */
 public interface CloudProvider extends PluginProvider {
 
+	/**
+	 * Grabs the description for the CloudProvider
+	 * @return String
+	 */
+	String getDescription();
 
 	/**
 	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration
