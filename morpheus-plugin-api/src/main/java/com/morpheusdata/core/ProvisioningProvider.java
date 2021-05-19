@@ -109,7 +109,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
-	Map createContainerResources(Workload workload, Map opts);
+	Map createWorkloadResources(Workload workload, Map opts);
 	Map getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);
 	ServiceResponse runServer(ComputeServer server, Map opts);
 	ServiceResponse stopServer(ComputeServer computeServer);
