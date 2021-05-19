@@ -308,7 +308,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			def name = getNameForSize(it)
 			def servicePlan = new ServicePlan(
 					code: "doplugin.size.${it.slug}",
-					provisionTypeCode: getCode(),
+					provisionTypeCode: 'do-provider',
 					description: name,
 					name: name,
 					editable: false,

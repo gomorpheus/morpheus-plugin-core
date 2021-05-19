@@ -23,6 +23,13 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Collection<OptionType> getOptionTypes();
 
 	/**
+	 * Provides a Collection of OptionType inputs for configuring node types
+	 * @since 0.9.0
+	 * @return Collection of OptionTypes
+	 */
+	public Collection<OptionType> getNodeOptionTypes();
+
+	/**
 	 * Determines if this provision type has datastores that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has datastores
 	 */
