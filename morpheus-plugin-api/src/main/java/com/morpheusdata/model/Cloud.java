@@ -2,12 +2,14 @@ package com.morpheusdata.model;
 
 import java.util.Date;
 import java.util.UUID;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  *	Integrations or connections to public, private, hybrid clouds, or bare metal servers
  */
 public class Cloud extends MorpheusModel {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 
 	protected String name;
@@ -15,6 +17,8 @@ public class Cloud extends MorpheusModel {
 	protected String code;
 
 	protected String description;
+
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;
 	protected String visibility = "private"; //['public', 'private']
 	protected String location;

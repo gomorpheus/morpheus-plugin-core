@@ -70,6 +70,7 @@ public class MorpheusModel {
 	 * used setters.
 	 * @return A List of dirty fields by name
 	 */
+	@JsonIgnore
 	public Set<String> getDirtyProperties() {
 		return dirtyProperties.keySet();
 	}
@@ -78,6 +79,7 @@ public class MorpheusModel {
 	 * Gets a Map containing all dirty properties as well as their newly assigned values.
 	 * @return A Map containing all model changes on properties from the original object.
 	 */
+	@JsonIgnore
 	public LinkedHashMap<String,Object> getDirtyPropertyValues() {
 		return dirtyProperties;
 	}

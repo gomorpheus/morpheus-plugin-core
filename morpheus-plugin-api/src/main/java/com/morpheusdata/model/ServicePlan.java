@@ -4,12 +4,15 @@ import com.morpheusdata.model.projection.ServicePlanIdentityProjection;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Provides a means to set predefined tiers on memory, storage, cores, and cpu.
  */
 public class ServicePlan extends ServicePlanIdentityProjection {
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account account;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account owner;
 	public String category;
 	public String description;
