@@ -4,6 +4,7 @@ import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Representation of a Morpheus ComputeServer database object within the Morpheus platform. Not all data is provided
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class ComputeServer extends ComputeServerIdentityProjection {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String uuid;
 	protected String displayName;
@@ -49,6 +51,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String externalFqdn;
 	protected String apiKey;
 	protected List<StorageVolume> volumes = new ArrayList<>();
+	protected String osDevice;
+	protected String dataDevice;
+	protected Boolean lvmEnabled;
 
 	public String getUuid() {
 		return uuid;
@@ -383,6 +388,33 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setVolumes(List<StorageVolume> volumes) {
 		this.volumes = volumes;
 		markDirty("volumes", volumes);
+	}
+
+	public String getOsDevice() {
+		return osDevice;
+	}
+
+	public void setOsDevice(String osDevice) {
+		this.osDevice = osDevice;
+		markDirty("osDevice",osDevice);
+	}
+
+	public String getDataDevice() {
+		return dataDevice;
+	}
+
+	public void setDataDevice(String dataDevice) {
+		this.dataDevice = dataDevice;
+		markDirty("dataDevice",dataDevice);
+	}
+
+	public Boolean getLvmEnabled() {
+		return lvmEnabled;
+	}
+
+	public void setLvmEnabled(Boolean lvmEnabled) {
+		this.lvmEnabled = lvmEnabled;
+		markDirty("lvmEnabled",lvmEnabled);
 	}
 
 }

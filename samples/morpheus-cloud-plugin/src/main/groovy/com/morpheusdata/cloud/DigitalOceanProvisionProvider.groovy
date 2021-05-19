@@ -6,8 +6,11 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Instance
+import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.ServicePlan
+import com.morpheusdata.model.UsersConfiguration
+import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
@@ -82,21 +85,65 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
-		log.debug "DO Provision Provider: runWorkload ${workload.configMap}"
+		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
+		def containerConfig = new groovy.json.JsonSlurper().parseText(workload.configs ?: '{}')
 		String apiKey = workload.server.cloud.configMap.doApiKey
 		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'No API Key provided')
 		}
+
+		Map callbackOpts = [:]
+		ComputeServer server = workload.server
+		VirtualImage virtualImage = workload.server.sourceImage
+
+		// Grab the user configuration data (then update the server)
+		UsersConfiguration usersConfiguration = morpheus.provision.getUserConfig(workload, virtualImage, opts).blockingGet()
+		log.debug "usersConfiguration ${usersConfiguration}"
+		server.sshUsername = usersConfiguration.sshUsername
+		server.sshPassword = usersConfiguration.sshPassword
+		morpheus.computeServer.save([server]).blockingGet()
+
+		// Not really used in DO provisioning (example only)
+		NetworkConfiguration networkConfiguration = morpheus.provision.getNetworkConfig(workload, virtualImage, opts).blockingGet()
+		log.debug "networkConfiguration ${networkConfiguration}"
+
+		def userData
+		if(virtualImage?.isCloudInit) {
+			// Utilize the morpheus build cloud-init methods
+			Map cloudConfigOptions = morpheus.provision.buildCloudConfigOptions(workload.server.cloud, server, opts.installAgent,
+					opts + [doPing: true, hostName: server.getExternalHostname(), hosts: server.getExternalHostname(), nativeProvider: true, timezone: containerConfig.timezone]).blockingGet()
+			log.debug "cloudConfigOptions ${cloudConfigOptions}"
+
+			// Inform Morpheus to install the agent (or not) after the server is created
+			callbackOpts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true)
+
+			def cloudConfigUser = morpheus.provision.buildCloudUserData(com.morpheusdata.model.PlatformType.valueOf(server.osType), usersConfiguration, cloudConfigOptions).blockingGet()
+			log.debug "cloudConfigUser: ${cloudConfigUser}"
+			userData = cloudConfigUser
+
+			// Not really used in DO provisioning (example only)
+			String metadata = morpheus.provision.buildCloudMetaData(com.morpheusdata.model.PlatformType.valueOf(server.osType), workload.instance?.id, 'somehostname', cloudConfigOptions).blockingGet()
+			log.debug "metadata: ${metadata}"
+
+			// Not really used in DO provisioning (example only)
+			String networkData = morpheus.provision.buildCloudNetworkData(com.morpheusdata.model.PlatformType.valueOf(server.osType), cloudConfigOptions).blockingGet()
+			log.debug "networkData: ${networkData}"
+		} else {
+			// These users will be created by Morpheus after provisioning
+			callbackOpts.createUsers = usersConfiguration.createUsers
+		}
+
+		// Now.. ready to create it in DO
 		HttpPost http = new HttpPost("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets")
 		def body = [
-				'name'              : workload.server.getExternalHostname(),
-				'region'            : workload.server.cloud.configMap.datacenter,
-				'size'              : workload.plan.externalId,
-				'image'             : opts.imageRef,
-				'backups'           : "${opts.doBackups}",
-				'ipv6'              : opts.ipv6,
-				'user_data'         : opts.userData,
-				'private_networking': workload.privateNetworking
+			'name'              : workload.server.getExternalHostname(),
+			'region'            : workload.server.cloud.configMap.datacenter,
+			'size'              : workload.plan.externalId,
+			'image'             : opts.imageRef,
+			'backups'           : "${opts.doBackups}",
+			'ipv6'              : false,
+			'user_data'         : userData,
+			'private_networking': workload.privateNetworking
 		]
 		body.keys = morpheus.cloud.findOrGenerateKeyPair(workload.account).blockingGet().id
 		log.debug "post body: $body"
@@ -105,9 +152,18 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		def respMap = apiService.makeApiCall(http, apiKey)
 
 		if (respMap.resp.statusLine.statusCode == 202) {
-			log.debug "Droplet Created"
+			log.debug "Droplet Created ${respMap.json}"
+
+			// Need to store the link between the Morpheus ComputeServer reference and the Digital Ocean object
 			def droplet = respMap.json.droplet
-			return new ServiceResponse<WorkloadResponse>(success: true, data: new WorkloadResponse(externalId: droplet.id))
+			def externalId = droplet.id
+			server.externalId = externalId
+			server.osDevice = '/dev/vda'
+			server.dataDevice = '/dev/vda'
+			server.lvmEnabled = false
+			morpheus.computeServer.save([server]).blockingGet()
+
+			return new ServiceResponse<WorkloadResponse>(success: true, data: new WorkloadResponse(externalId: externalId, installAgent: callbackOpts.installAgent, createUsers: callbackOpts.createUsers))
 		} else {
 			log.debug "Failed to create droplet: $respMap.resp"
 			return new ServiceResponse(success: false, msg: respMap?.resp?.statusLine?.statusCode, content: respMap.resp, error: respMap.resp)

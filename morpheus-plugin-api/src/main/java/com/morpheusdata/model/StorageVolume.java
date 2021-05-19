@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Representation of a Morpheus StorageVolume database object within the Morpheus platform. Not all data is provided
@@ -10,11 +11,13 @@ import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
  */
 public class StorageVolume extends StorageVolumeIdentityProjection {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String deviceName;
 	protected Long maxStorage;
-	protected StorageVolumeType storageVolumeType;
+	protected StorageVolumeType type;
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
 		return account;
 	}
@@ -37,12 +40,12 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 		return maxStorage;
 	}
 
-	public void setStorageVolumeType(StorageVolumeType storageVolumeType) {
-		this.storageVolumeType = storageVolumeType;
-		markDirty("storageVolumeType",storageVolumeType);
+	public void setType(StorageVolumeType type) {
+		this.type = type;
+		markDirty("type",type);
 	}
 
-	public StorageVolumeType getStorageVolumeType() {
-		return storageVolumeType;
+	public StorageVolumeType getType() {
+		return type;
 	}
 }

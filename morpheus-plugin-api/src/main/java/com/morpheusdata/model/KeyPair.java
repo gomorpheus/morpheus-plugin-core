@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Key pairs are commonly used by Morpheus for accessing instances via SSH. Morpheus stores key pairs to simplify administration and access across both private and public clouds.
  */
@@ -73,6 +76,22 @@ public class KeyPair extends MorpheusModel {
 	public void setPublicFingerprint(String publicFingerprint) {
 		this.publicFingerprint = publicFingerprint;
 		markDirty("publicFingerprint", publicFingerprint);
+	}
+
+	/**
+	 *
+	 * @return hash map of the KeyPair properties and values
+	 */
+	public Map toMap() {
+		Map<String, Object> keyPairMap = new HashMap<>();
+		keyPairMap.put("name", this.name);
+		keyPairMap.put("code", this.code);
+		keyPairMap.put("publicKey", this.publicKey);
+		keyPairMap.put("privateKey", this.privateKey);
+		keyPairMap.put("passphrase", this.passphrase);
+		keyPairMap.put("externalId", this.externalId);
+		keyPairMap.put("publicFingerprint", this.publicFingerprint);
+		return keyPairMap;
 	}
 
 }

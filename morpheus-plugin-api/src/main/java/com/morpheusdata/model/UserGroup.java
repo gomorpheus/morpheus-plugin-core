@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.HashMap;
 
 public class UserGroup extends MorpheusModel {
 
@@ -174,5 +175,31 @@ public class UserGroup extends MorpheusModel {
 	public void setConfs(Map confs) {
 		this.confs = confs;
 		markDirty("confs", confs);
+	}
+
+	/**
+	 *
+	 * @return hash map of UserGroup properties and values
+	 */
+	public Map toMap() {
+		Map<String, Object> userGroupMap = new HashMap<>();
+		userGroupMap.put("filterType", this.filterType);
+		userGroupMap.put("filterId", this.filterId);
+		userGroupMap.put("referenceType", this.referenceType);
+		userGroupMap.put("referenceId", this.referenceId);
+		userGroupMap.put("name", this.name);
+		userGroupMap.put("description", this.description);
+		userGroupMap.put("category", this.category);
+		userGroupMap.put("dateCreated", this.dateCreated);
+		userGroupMap.put("lastUpdated", this.lastUpdated);
+		userGroupMap.put("sudoUser", this.sudoUser);
+		userGroupMap.put("sharedUser", this.sharedUser);
+		userGroupMap.put("serverGroup", this.serverGroup);
+		userGroupMap.put("sharedUsername", this.sharedUsername);
+		userGroupMap.put("sharedPassword", this.sharedPassword);
+		userGroupMap.put("sharedKeyPairId", this.sharedKeyPairId);
+		userGroupMap.put("enabled", this.enabled);
+		userGroupMap.put("confs", this.confs);
+		return userGroupMap;
 	}
 }

@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  * existing images between your cloud provider and Morpheus.
  */
 public class VirtualImage extends VirtualImageIdentityProjection {
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String code;
 	protected String description;
@@ -22,6 +24,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected OsType osType;
 	protected String refId;
 	protected String refType;
+	protected Boolean isCloudInit;
 
 	public Account getAccount() {
 		return account;
@@ -138,5 +141,14 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setRefType(String refType) {
 		this.refType = refType;
 		markDirty("refType", refType);
+	}
+
+	public Boolean isCloudInit() {
+		return isCloudInit;
+	}
+
+	public void setRefType(Boolean isCloudInit) {
+		this.isCloudInit = isCloudInit;
+		markDirty("isCloudInit", isCloudInit);
 	}
 }
