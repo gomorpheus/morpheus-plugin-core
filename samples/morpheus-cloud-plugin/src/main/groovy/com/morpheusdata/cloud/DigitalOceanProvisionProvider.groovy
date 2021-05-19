@@ -95,7 +95,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		Map callbackOpts = [:]
 		ComputeServer server = workload.server
 		VirtualImage virtualImage = workload.server.sourceImage
-
+		
 		// Grab the user configuration data (then update the server)
 		UsersConfiguration usersConfiguration = morpheus.provision.getUserConfig(workload, virtualImage, opts).blockingGet()
 		log.debug "usersConfiguration ${usersConfiguration}"
@@ -115,7 +115,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			log.debug "cloudConfigOptions ${cloudConfigOptions}"
 
 			// Inform Morpheus to install the agent (or not) after the server is created
-			callbackOpts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true)
+			callbackOpts.installAgent = opts.installAgent && (cloudConfigOptions.installAgent != true)
 
 			def cloudConfigUser = morpheus.provision.buildCloudUserData(com.morpheusdata.model.PlatformType.valueOf(server.osType), usersConfiguration, cloudConfigOptions).blockingGet()
 			log.debug "cloudConfigUser: ${cloudConfigUser}"

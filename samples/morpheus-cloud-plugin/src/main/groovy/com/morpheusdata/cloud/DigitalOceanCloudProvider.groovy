@@ -96,7 +96,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	Collection<ComputeServerType> getComputeServerTypes() {
 		//digital ocean
 		def serverTypes = [
-				new ComputeServerType(code: 'digitalOceanWindows2', name: 'DigitalOcean Windows Node', description: '', platform: PlatformType.windows, agentType: ComputeServerType.AgentType.guest,
+				new ComputeServerType(code: 'digitalOceanWindows2', name: 'DigitalOcean Windows Node', description: '', platform: PlatformType.windows, agentType: ComputeServerType.AgentType.host,
 						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
 						displayOrder: 17, hasAutomation: true, reconfigureSupported: true,
 						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, guestVm: true,
