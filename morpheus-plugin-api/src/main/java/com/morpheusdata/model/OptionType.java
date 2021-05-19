@@ -252,7 +252,7 @@ public class OptionType extends MorpheusModel {
 	/**
 	 * Gets the option source api method endpoint to hit when using the {@link InputType#SELECT} option. This allows a remote
 	 * data source query to be queried for loading dynamic data. It also can take a POST request with the values of previously entered
-	 * inputs to use as a way to filter the available options.
+	 * inputs to use as a way to filter the available options. This should be globally unique.
 	 * @return option source api method for loading dynamic options
 	 */
 	public String getOptionSource() {
@@ -262,7 +262,7 @@ public class OptionType extends MorpheusModel {
 	/**
 	 * Sets the option source api method endpoint to hit when using the {@link InputType#SELECT} option. This allows a remote
 	 * data source query to be queried for loading dynamic data. It also can take a POST request with the values of previously entered
-	 * inputs to use as a way to filter the available options.
+	 * inputs to use as a way to filter the available options. This should be globally unique.
 	 * @param optionSource option source api method for loading dynamic options
 	 */
 	public void setOptionSource(String optionSource) {

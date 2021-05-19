@@ -39,10 +39,11 @@ class DigitalOceanOptionSourceProvider implements OptionSourceProvider {
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['datacenters'])
+		return new ArrayList<String>(['datacenters', 'pluginImage'])
 	}
 
 	def datacenters(args) {
+		log.debug "datacenters: ${args}"
 		return [[value:'nyc1', name:'New York 1', available:true],
 		[value:'sfo1', name:'San Francisco 1', available:true],
 		[value:'nyc2', name:'New York 2', available:true],
@@ -52,5 +53,13 @@ class DigitalOceanOptionSourceProvider implements OptionSourceProvider {
 		[value:'nyc3', name:'New York 3', available:true],
 		[value:'ams3', name:'Amsterdam 3', available:true],
 		[value:'fra1', name:'Frankfurt 1', available:true]]
+	}
+
+	def pluginImage(args) {
+		log.debug "pluginImage: ${args}"
+		def zoneId = args?.size() > 0 ? args.getAt(0).zoneId.toLong() : null
+		List options = []
+		morpheus.virtualImage.listSyncProjections(zoneId).blockingSubscribe{options << [name: it.name, value: it.id]}
+		options
 	}
 }
