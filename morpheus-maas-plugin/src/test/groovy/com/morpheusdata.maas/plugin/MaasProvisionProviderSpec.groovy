@@ -5,12 +5,14 @@ import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.cloud.MorpheusComputeZonePoolService
 import com.morpheusdata.core.network.MorpheusNetworkService
+import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Network
+import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Observable
@@ -31,6 +33,7 @@ class MaasProvisionProviderSpec extends Specification {
 	MorpheusCloudService cloudContext
 	MorpheusComputeServerService computeServerContext
 	MorpheusComputeZonePoolService poolContext
+	MorpheusProvisionService provisionService
 	MaasPlugin plugin
 
 	void setup() {
@@ -38,10 +41,13 @@ class MaasProvisionProviderSpec extends Specification {
 		networkContext = Mock(MorpheusNetworkService)
 		cloudContext = Mock(MorpheusCloudService)
 		poolContext = Mock(MorpheusComputeZonePoolService)
+		provisionService = Mock(MorpheusProvisionService)
+
 		computeServerContext = Mock(MorpheusComputeServerService)
 		context.getNetwork() >> networkContext
 		context.getCloud() >> cloudContext
 		context.getComputeServer() >> computeServerContext
+		context.getProvision() >> provisionService
 		cloudContext.getPool() >> poolContext
 		plugin = Mock(MaasPlugin)
 
@@ -50,8 +56,8 @@ class MaasProvisionProviderSpec extends Specification {
 
 	void "Validate defaults are set correctly"() {
 		expect:
-		service.getCode() == 'maas'
-		service.getName() == 'MaaS'
+		service.getCode() == 'maas-provision-provider-plugin'
+		service.getName() == 'MaaS Plugin'
 	}
 
 	void "getAuthConfig"() {
@@ -222,13 +228,6 @@ class MaasProvisionProviderSpec extends Specification {
 		0 * computeServerContext.updatePowerState(333, ComputeServer.PowerState.off)
 	}
 
-	void "runServer"() {
-		expect: "always false"
-		def resp = service.runServer(new ComputeServer(), [:])
-		!resp.success
-		resp.error == 'error'
-	}
-
 	void "runWorkload"() {
 		given:
 		GroovySpy(MaasComputeUtility, global: true)
@@ -239,20 +238,6 @@ class MaasProvisionProviderSpec extends Specification {
 		Instance instance = new Instance(id: 777)
 		Workload workload = new Workload(server: server, account: containerAccount, instance: instance)
 		Map runConfig = [:]
-		Observable listFullObjectsObservable = Observable.create(new ObservableOnSubscribe<ComputeServer>() {
-			@Override
-			void subscribe(@NonNull ObservableEmitter<ComputeServer> emitter) throws Exception {
-				try {
-					List<ComputeServer> images = [server]
-					for (image in images) {
-						emitter.onNext(image)
-					}
-					emitter.onComplete()
-				} catch (Exception e) {
-					emitter.onError(e)
-				}
-			}
-		})
 
 		when:
 		def resp = service.runWorkload(workload, runConfig)
@@ -260,13 +245,15 @@ class MaasProvisionProviderSpec extends Specification {
 		then:
 		resp.success
 		3 * computeServerContext.save({List<ComputeServer> servers -> servers[0].account == containerAccount}) >> Single.just(true)
-		1 * cloudContext.buildContainerUserGroups(*_) >> Single.just([:])
+		0 * cloudContext.buildContainerUserGroups(*_) >> Single.just([:])
 
 		and: "other method mocks"
-		1 * computeServerContext.listById(_) >> listFullObjectsObservable
-		1 * cloudContext.buildUserData(_, _, _) >> Single.just([:])
+		1 * computeServerContext.get(_) >> Single.just(server)
+		1 * provisionService.getUserConfig(_,_,_) >> Single.just(new UsersConfiguration())
+		1 * provisionService.buildCloudConfigOptions(*_) >> Single.just(new HashMap<String,Object>())
+		1 * provisionService.buildCloudUserData(*_) >> Single.just(new ArrayList<String>())
 		1 * MaasComputeUtility.deployMachine(_, _, _, _) >> [success: true]
-		1 * MaasComputeUtility.waitForMachine(_, _, _) >> [success: true, data: [ip_addresses: ['a.b.c.d', 'e.f.g.h']]]
+		1 * MaasComputeUtility.waitForMachine(*_) >> [success: true, data: [ip_addresses: ['a.b.c.d', 'e.f.g.h']]]
 	}
 
 	void "finalizeBareMetal"() {

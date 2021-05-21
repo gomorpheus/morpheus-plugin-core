@@ -176,7 +176,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 			//set the storage layout ?
 			def runConfig = [account:opts.account, server:opts.server, zone:opts.zone,
-							 platform:opts.server.osType, enableVnc:zoneConfig.enableVnc, usersConfiguration:opts.usersConfiguration,
+							 platform:opts.server.osType, enableVnc:zoneConfig.enableVnc, usersConfiguration:usersConfiguration,
 							 timezone:(containerConfig.timezone ?: opts.zone.timezone), containerConfig:containerConfig,
 							 workload:workload, virtualImage: virtualImage]
 			//naming
@@ -196,7 +196,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			//TODO - port, path, service
 			if (runBareMetalResults.success) {
 				rtn.success = true
-				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
+				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
 			} else {
 				//error - image not found
 				morpheusContext.provision.setProvisionFailed(server, workload, 'server config error', opts)
@@ -217,18 +217,18 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		def rtn = new ServiceResponse<Map>()
 		try {
 			rtn.data = [inProgress: true]
-				ServiceResponse<Map> insertResult = insertBareMetal(runConfig, opts)
-				log.info("insertBareMetal results: {}", insertResult)
-				if(insertResult.success) {
-					ServiceResponse<Map> finalizeResult = finalizeBareMetal(runConfig, insertResult, opts)
-					if(finalizeResult.success) {
-						rtn.success = true
-					} else {
-						morpheusContext.provision.setProvisionFailed(server, workload, finalizeResult.msg ?: 'failed to finalize server',opts)
-					}
+			ServiceResponse<Map> insertResult = insertBareMetal(runConfig, opts)
+			log.info("insertBareMetal results: {}", insertResult)
+			if(insertResult.success) {
+				ServiceResponse<Map> finalizeResult = finalizeBareMetal(runConfig, insertResult, opts)
+				if(finalizeResult.success) {
+					rtn.success = true
 				} else {
-					morpheusContext.provision.setProvisionFailed(server, workload, insertResult.msg ?: 'failed to insert server', opts)
+					morpheusContext.provision.setProvisionFailed(server, workload, finalizeResult.msg ?: 'failed to finalize server',opts)
 				}
+			} else {
+				morpheusContext.provision.setProvisionFailed(server, workload, insertResult.msg ?: 'failed to insert server', opts)
+			}
 		} catch(e) {
 			log.error("runBareMetal error:${e}", e)
 			morpheusContext.provision.setProvisionFailed(server, workload, "Failed to create server: ${e.message}", opts)
@@ -250,7 +250,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			}
 			//build cloud init data
 			def cloudConfigOpts = morpheusContext.provision.buildCloudConfigOptions(server.cloud, server, !opts.noAgent, [hostname:runConfig.hostname, hosts:runConfig.hosts,
-																							nativeProvider:true, timezone:runConfig.timezone])
+																							nativeProvider:true, timezone:runConfig.timezone]).blockingGet()
 			opts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
 			log.debug("install agent: ${opts.installAgent}")
 			//save server
