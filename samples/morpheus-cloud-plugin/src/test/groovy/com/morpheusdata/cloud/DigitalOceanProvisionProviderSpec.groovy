@@ -1,14 +1,18 @@
 package com.morpheusdata.cloud
 
 import com.morpheusdata.core.cloud.MorpheusCloudService
+import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusVirtualImageService
+import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.KeyPair
+import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.ServicePlan
+import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse
@@ -37,14 +41,20 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	MorpheusCloudService cloudContext
 	@Shared
 	MorpheusVirtualImageService virtualImageContext
+	MorpheusProvisionService provisionService
+	MorpheusComputeServerService computeServerContext
 
 	def setup() {
 		Plugin plugin = Mock(Plugin)
 		context = Mock(MorpheusContext)
 		cloudContext = Mock(MorpheusCloudService)
 		virtualImageContext = Mock(MorpheusVirtualImageService)
+		provisionService = Mock(MorpheusProvisionService)
+		computeServerContext = Mock(MorpheusComputeServerService)
+		context.getComputeServer() >> computeServerContext
 		context.getCloud() >> cloudContext
 		context.getVirtualImage() >> virtualImageContext
+		context.getProvision() >> provisionService
 		provider = new DigitalOceanProvisionProvider(plugin, context)
 		apiService = Mock(DigitalOceanApiService)
 		provider.apiService = apiService
@@ -214,8 +224,12 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.runWorkload(workload, serverOpts)
 
 		then:
+		2 * computeServerContext.save(*_) >> Single.just(true)
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 202]], json: createServerJson]
 		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
+		1 * provisionService.getUserConfig(_,_,_) >> Single.just(new UsersConfiguration())
+		1 * provisionService.getNetworkConfig(*_) >> Single.just(new NetworkConfiguration())
+
 		resp.success == true
 		resp.data.externalId == "3164494"
 	}
@@ -237,6 +251,9 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def resp = provider.runWorkload(workload, serverOpts)
 
 		then:
+		1 * computeServerContext.save(*_) >> Single.just(true)
+		1 * provisionService.getNetworkConfig(*_) >> Single.just(new NetworkConfiguration())
+		1 * provisionService.getUserConfig(_,_,_) >> Single.just(new UsersConfiguration())
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: createServerJson]
 		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
 		resp.success == false
@@ -301,32 +318,6 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		then:
 		options.size() == 1
 		options.first().optionSource == 'pluginImage'
-	}
-
-	void "pluginImage"() {
-		given:
-		Cloud cloud = new Cloud(id: 123)
-		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<VirtualImageIdentityProjection>() {
-			@Override
-			void subscribe(@NonNull ObservableEmitter<VirtualImageIdentityProjection> emitter) throws Exception {
-				try {
-					List<VirtualImageIdentityProjection> images = [new VirtualImageIdentityProjection(id: 1, name: 'ubuntu'), new VirtualImageIdentityProjection(id: 2, name: 'fedora')]
-					for (image in images) {
-						emitter.onNext(image)
-					}
-					emitter.onComplete()
-				} catch (Exception e) {
-					emitter.onError(e)
-				}
-			}
-		})
-
-		when:
-		def imageOptions = provider.pluginImage(cloud)
-
-		then:
-		imageOptions == [[name: 'ubuntu', value: 1], [name: 'fedora', value: 2]]
-		1 * virtualImageContext.listSyncProjections(cloud.id) >> listSyncProjections
 	}
 
 }
