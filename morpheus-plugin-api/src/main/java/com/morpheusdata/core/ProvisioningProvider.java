@@ -82,6 +82,20 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse startWorkload(Workload workload);
 
 	/**
+	 * Stop the server
+	 * @param computeServer to stop
+	 * @return Response from API
+	 */
+	ServiceResponse stopServer(ComputeServer computeServer);
+
+	/**
+	 * Start the server
+	 * @param computeServer to start
+	 * @return Response from API
+	 */
+	ServiceResponse startServer(ComputeServer computeServer);
+
+	/**
 	 * Issues the remote calls to restart a workload element. In some cases this is just a simple alias call to do a stop/start,
 	 * however, in some cases cloud providers provide a direct restart call which may be preferred for speed.
 	 * @param workload the Workload we want to restart.
@@ -116,37 +130,17 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
 
-	Map createWorkloadResources(Workload workload, Map opts);
-	Map getInstanceServers(Instance instance, ProvisionType provisionType, Map opts);
-	ServiceResponse runServer(ComputeServer server, Map opts);
-	ServiceResponse stopServer(ComputeServer computeServer);
-	ServiceResponse startServer(ComputeServer computeServer);
-	Map updateServer(ComputeServer server, Map authConfig, Map updateConfig);
+	/**
+	 * Method called before runWorkload to allow implementers to create resources required before runWorkload is called
+	 * @param workload that will be provisioned
+	 * @param opts additional options
+	 * @return Response from API
+	 */
+	ServiceResponse createWorkloadResources(Workload workload, Map opts);
 
-	User getInstanceCreateUser(Instance instance);
-	Map buildCloudConfigOpts(Cloud cloud, ComputeServer server, Boolean installAgent, Map opts);
-
-	// MaaS
-	ServiceResponse releaseServer(ComputeServer server, Map opts);
-	Map releaseMachine(ComputeServer server, Map authConfig, Map releaseOpts);
-	Map updateReleasePool(ComputeServer server, Map authConfig);
-	ComputeServer cleanServer(ComputeServer server);
-	ServiceResponse insertBareMetal(Map runConfig, Map opts);
-	ServiceResponse finalizeBareMetal(Map runConfig, ServiceResponse runResults, Map opts);
-
-	void setAgentInstallConfig(Map opts);
-	void setAgentInstallConfig(Map opts, VirtualImage virtualImage);
-
-
-
-	void setComputeServerExternalUpdates(ComputeServer server, String externalId, Map updates);
-
-
-
-
-
+	/**
+	 * Returns the host type that is to be provisioned
+	 * @return
+	 */
 	HostType getHostType();
-
-	void stopServerUsage(ComputeServer server);
-	void stopServerUsage(ComputeServer server, Boolean queue);
 }
