@@ -171,36 +171,6 @@ class MaasCloudProvider implements CloudProvider {
 		return 'Metal as a Service Description'
 	}
 
-	List<Map<String, Object>> maasResourcePools(def cloud) {
-		log.info("maasResourcePools")
-		String serviceUrl = cloud?.serviceUrl ?: cloud?.configMap?.serviceUrl
-		List poolOptions = []
-		if (serviceUrl) {
-			def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
-			String category = "maas.resourcepool.${cloud.id}"
-			morpheusContext.cloud.pool.listSyncProjections(cloud.id, category).subscribe {
-				poolOptions << [name: it.name, value: it.externalId]
-			}
-			if (!poolOptions) {
-				log.info("no cached pools found")
-				def apiResponse = MaasComputeUtility.listResourcePools(authConfig, [:])
-				if (apiResponse.success) {
-					// TODO cache resource pools
-					return apiResponse.data.collect { [name: it.name, value: it.id] }
-				}
-			}
-		}
-		poolOptions
-	}
-
-	List maasReleaseModes(Cloud cloud) {
-		[
-				[name: 'Release', value: 'release'],
-				[name: 'Quick Delete', value: 'quick-delete'],
-				[name: 'Delete', value: 'delete']
-		]
-	}
-
 	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)

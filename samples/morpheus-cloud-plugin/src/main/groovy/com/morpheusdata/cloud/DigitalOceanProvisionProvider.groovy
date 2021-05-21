@@ -5,6 +5,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.OptionType
@@ -24,7 +25,6 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
 @Slf4j
-@AutoImplement // Temp while we work out contexts
 class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
@@ -35,6 +35,31 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		this.plugin = plugin
 		this.context = context
 		apiService = new DigitalOceanApiService()
+	}
+
+	@Override
+	ServiceResponse createWorkloadResources(Workload workload, Map opts) {
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse startServer(ComputeServer computeServer) {
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse stopServer(ComputeServer computeServer) {
+		return ServiceResponse.success()
+	}
+
+	@Override
+	HostType getHostType() {
+		HostType.vm
+	}
+
+	@Override
+	public Collection<OptionType> getNodeOptionTypes() {
+		return new ArrayList<OptionType>()
 	}
 
 	@Override
