@@ -52,9 +52,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String externalFqdn;
 	protected String apiKey;
 	protected List<StorageVolume> volumes = new ArrayList<>();
-	protected String osDevice;
-	protected String dataDevice;
-	protected Boolean lvmEnabled;
+	protected String osDevice = "/dev/sda";
+	protected String dataDevice = "/dev/sda";
+	protected Boolean lvmEnabled = true;
 	protected String internalId;
 	protected String serverVendor;
 	protected String serverModel;
@@ -62,8 +62,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String statusMessage;
 	protected String rootVolumeId;
 	protected String tags;
-	protected Boolean enabled;
-	protected Boolean provision;
+	protected Boolean enabled = true;
+	protected Boolean provision = true;
 	protected String macAddress;
 	protected ComputeCapacityInfo capacityInfo;
 	protected Boolean agentInstalled;

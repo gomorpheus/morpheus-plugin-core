@@ -187,7 +187,6 @@ public class SyncTask<Projection, ApiItem, Model> {
 	public void start() {
 		//do all the subscribe crapola;
 		//delete missing
-
 		domainRecords.filter((Projection domainMatch) -> {
 			return !matchesExisting(domainMatch);
 		}).buffer(bufferSize).subscribe((List<Projection> itemsToDelete) -> {

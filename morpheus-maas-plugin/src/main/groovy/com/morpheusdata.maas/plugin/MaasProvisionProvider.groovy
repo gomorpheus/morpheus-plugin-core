@@ -557,7 +557,25 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		0
 	}
 
+	static getAuthConfig(Map options) {
+		log.debug "getAuthConfig: ${options}"
+		String serviceUrl = options.serviceUrl
+		def rtn = [
+				apiUrl:getApiUrl(serviceUrl),
+				apiVersion:getApiVersion(options.serviceVersion)
+		]
+		def apiKeyList = options.serviceToken?.tokenize(':')
+		rtn.oauth = new RestApiUtil.RestOptions.OauthOptions(version:'1',
+				consumerKey:apiKeyList[0],
+				consumerSecret:'',
+				apiKey:apiKeyList[1],
+				apiSecret:apiKeyList[2])
+		rtn.basePath = '/MAAS/api/' + rtn.apiVersion
+		return rtn
+	}
+
 	static getAuthConfig(Cloud zone) {
+		log.debug "getAuthConfig: ${zone}"
 		String serviceUrl = zone.serviceUrl ?: zone.configMap.serviceUrl
 		def rtn = [
 				apiUrl:getApiUrl(serviceUrl),
@@ -572,7 +590,6 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 				consumerSecret:'',
 				apiKey:apiKeyList[1],
 				apiSecret:apiKeyList[2])
-
 		//base path
 		rtn.basePath = '/MAAS/api/' + rtn.apiVersion
 		//done

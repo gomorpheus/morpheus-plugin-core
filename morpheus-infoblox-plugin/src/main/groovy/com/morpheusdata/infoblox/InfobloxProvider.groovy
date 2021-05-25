@@ -493,7 +493,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}.onAdd { itemsToAdd ->
 				addMissingDomainRecords(domain, recordType, itemsToAdd)
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainRecordIdentityProjection,Map>> updateItems ->
-				return morpheus.network.domain.record.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+
+				Map<Long, SyncTask.UpdateItemDto<NetworkDomainRecordIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+				return morpheus.network.domain.record.listById(updateItems.collect{it.existingItem.id} as Collection<Long>).map { NetworkDomainRecord networkDomainRecord ->
+					SyncTask.UpdateItemDto<NetworkDomainRecordIdentityProjection, Map> matchItem = updateItemMap[networkDomainRecord.id]
+					return new SyncTask.UpdateItem<NetworkDomainRecord,Map>(existingItem:networkDomainRecord, masterItem:matchItem.masterItem)
+				}
+
+
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkPool,Map>> updateItems ->
 				updateMatchedDomainRecords(recordType, updateItems)
 			}
@@ -639,7 +646,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}.onAdd { itemsToAdd ->
 				addMissingPools(poolServer, itemsToAdd)
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolIdentityProjection,Map>> updateItems ->
-				return morpheus.network.pool.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+
+				Map<Long, SyncTask.UpdateItemDto<NetworkPoolIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+				return morpheus.network.pool.listById(updateItems.collect{it.existingItem.id} as Collection<Long>).map { NetworkPool pool ->
+					SyncTask.UpdateItemDto<NetworkPoolIdentityProjection, Map> matchItem = updateItemMap[pool.id]
+					return new SyncTask.UpdateItem<NetworkPool,Map>(existingItem:pool, masterItem:matchItem.masterItem)
+				}
+
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkPool,Map>> updateItems ->
 				updateMatchedPools(poolServer, updateItems)
 			}.start()
@@ -1261,7 +1274,13 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}.onAdd { itemsToAdd ->
 					addMissingIps(pool, itemsToAdd)
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolIpIdentityProjection,Map>> updateItems ->
-					return morpheus.network.pool.poolIp.listById(updateItems.collect{it.existingItem.id} as Collection<Long>)
+
+					Map<Long, SyncTask.UpdateItemDto<NetworkPoolIpIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+					return morpheus.network.pool.poolIp.listById(updateItems.collect{it.existingItem.id} as Collection<Long>).map { NetworkPoolIp poolIp ->
+						SyncTask.UpdateItemDto<NetworkPoolIpIdentityProjection, Map> matchItem = updateItemMap[poolIp.id]
+						return new SyncTask.UpdateItem<NetworkPoolIp,Map>(existingItem:poolIp, masterItem:matchItem.masterItem)
+					}
+
 				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
 					updateMatchedIps(updateItems)
 				}.observe()

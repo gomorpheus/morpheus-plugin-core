@@ -63,7 +63,7 @@ class MaasCloudProvider implements CloudProvider {
 				name: 'Available Pool',
 				code: 'maas-resource-pool',
 				fieldName: 'resourcePoolId',
-				optionSource: 'maasResourcePools',
+				optionSource: 'maasPluginResourcePools',
 				displayOrder: 2,
 				fieldLabel: 'Available Pool',
 				required: false,
@@ -88,7 +88,7 @@ class MaasCloudProvider implements CloudProvider {
 				name: 'Release Pool',
 				code: 'maas-release-pool',
 				fieldName: 'releasePoolName',
-				optionSource: 'maasResourcePools',
+				optionSource: 'maasPluginResourcePools',
 				displayOrder: 4,
 				fieldLabel: 'Release Pool',
 				required: false,
@@ -143,7 +143,7 @@ class MaasCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse deleteCloud(Cloud cloudInfo) {
-		return null
+		return new ServiceResponse(success: true)
 	}
 
 	@Override
@@ -228,32 +228,39 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	protected def cacheReferenceData(Cloud cloud, String category, List<Map> apiItems) {
+		log.debug "cacheReferenceData: ${cloud} ${category} ${apiItems}"
 		try {
 			Observable<ReferenceDataSyncProjection> domainRecords = morpheusContext.cloud.listReferenceDataByCategory(cloud, category)
 			SyncTask<ReferenceDataSyncProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, apiItems)
 			syncTask.addMatchFunction { ReferenceDataSyncProjection domainObject, Map apiItem ->
-				domainObject.externalId == apiItem.system_id
-			}.addMatchFunction { ReferenceDataSyncProjection domainObject, Map apiItem ->
-				domainObject.name == apiItem.hostname
+				domainObject.externalId == apiItem.system_id && domainObject.name == apiItem.hostname
 			}.onDelete { removeItems ->
+				log.debug "onDelete ${removeItems}"
 				morpheus.cloud.remove(removeItems).blockingGet()
 			}.onAdd { itemsToAdd ->
+				log.debug "onAdd ${itemsToAdd}"
 				while (itemsToAdd?.size() > 0) {
 					List chunkedAddList = itemsToAdd.take(50)
 					itemsToAdd = itemsToAdd.drop(50)
 					addMissingReferenceData(category, cloud, chunkedAddList)
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map>> updateItems ->
-				return morpheus.cloud.listReferenceDataById(updateItems.collect { it.existingItem.id } as List<Long>)
+				Map<Long, SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+				morpheus.cloud.listReferenceDataById(updateItems.collect { it.existingItem.id } as List<Long>).map {ReferenceDataSyncProjection referenceData ->
+					SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map> matchItem = updateItemMap[referenceData.id]
+					return new SyncTask.UpdateItem<ReferenceDataSyncProjection,Map>(existingItem:referenceData, masterItem:matchItem.masterItem)
+				}
 			}.onUpdate { List<SyncTask.UpdateItem<ReferenceData, Map>> updateItems ->
-				updateMatchedReferenceData(updateItems, cloud, category)
+				updateMatchedReferenceData(category, cloud, updateItems)
 			}.start()
+
 		} catch(e) {
 			log.error("cacheRegionControllers error: ${e}", e)
 		}
 	}
 
 	def cacheRegionControllers(Cloud cloud, Map opts) {
+		log.debug "cacheRegionControllers: ${cloud}"
 		def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 		String category = "maas.regioncontroller.${cloud.id}"
 		def apiResponse = MaasComputeUtility.listRegionControllers(authConfig, opts)
@@ -264,15 +271,16 @@ class MaasCloudProvider implements CloudProvider {
 		}
 	}
 
-	void updateMatchedReferenceData(List<SyncTask.UpdateItem<ReferenceData, Map>> updateItems, Cloud cloud, String category) {
+	void updateMatchedReferenceData(String category, Cloud cloud, List<SyncTask.UpdateItem<ReferenceData, Map>> updateItems) {
+		log.debug "updateMatchedReferenceData: ${updateItems} ${cloud} ${category}"
 		List<ReferenceData> itemsToSave = []
 		for(item in updateItems) {
 			def existingItem = item.existingItem
-			def name = item.masterItem.name
-			def code = item.masterItem.code
-			def keyValue = item.masterItem.keyValue
-			def value = item.masterItem.value
-			def externalId = item.masterItem.externalId
+			def name = item.masterItem.hostname
+			def code = "$category.${item.masterItem.system_id}"
+			def keyValue = item.masterItem.system_id
+			def value = item.masterItem.fqdn
+			def externalId = item.masterItem.system_id
 			if(existingItem.name != name || existingItem.code != code || existingItem.keyValue != keyValue
 					|| existingItem.value != value|| existingItem.externalId != externalId) {
 				item.existingItem.name = item.masterItem.name
@@ -289,13 +297,13 @@ class MaasCloudProvider implements CloudProvider {
 
 	void addMissingReferenceData(String category, Cloud cloud, List<Map> list) {
 		List<ReferenceData> records = []
-		for(regionController in list) {
+		for(item in list) {
 			ReferenceData referenceData = new ReferenceData(
-					name: regionController.hostname,
-					code: "$category.${regionController.system_id}",
-					keyValue: regionController.system_id,
-					value: regionController.fqdn,
-					externalId: regionController.system_id,
+					name: item.hostname,
+					code: "$category.${item.system_id}",
+					keyValue: item.system_id,
+					value: item.fqdn,
+					externalId: item.system_id,
 					type: 'string'
 			)
 			records.add(referenceData)
@@ -342,10 +350,16 @@ class MaasCloudProvider implements CloudProvider {
 							for(cloudImage in chunkedAddList) {
 								itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage))
 							}
-							morpheus.virtualImage.save(itemsToSave, cloud).blockingGet()
+							morpheus.virtualImage.create(itemsToSave, cloud).blockingGet()
 						}
 					}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
-						return morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id})
+
+						Map<Long, SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+						morpheus.virtualImage.listById(updateItems?.collect{ it.existingItem.id}).map {VirtualImage virtualImage ->
+							SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map> matchItem = updateItemMap[virtualImage.id]
+							return new SyncTask.UpdateItem<VirtualImage,Map>(existingItem:virtualImage, masterItem:matchItem.masterItem)
+						}
+
 					}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 						List<VirtualImage> toSave = []
 						for(item in updateItems) {
@@ -390,7 +404,13 @@ class MaasCloudProvider implements CloudProvider {
 					morpheus.cloud.pool.create(itemsToSave).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItems ->
-				return morpheus.cloud.pool.listById(updateItems.collect { it.existingItem.id } as List<Long>)
+
+				Map<Long, SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+				morpheus.cloud.pool.listById(updateItems?.collect{ it.existingItem.id}).map {ComputeZonePool pool ->
+					SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map> matchItem = updateItemMap[pool.id]
+					return new SyncTask.UpdateItem<ComputeZonePool,Map>(existingItem:pool, masterItem:matchItem.masterItem)
+				}
+
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
 				List<ComputeZonePool> toSave = []
 				for(item in updateItems) {
@@ -414,7 +434,7 @@ class MaasCloudProvider implements CloudProvider {
 			Observable<ComputeServerIdentityProjection> domainRecords = morpheus.computeServer.listSyncProjections(cloud.id)
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, apiItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map apiItem ->
-				domainObject.externalId == apiItem.externalId
+				domainObject.externalId == apiItem.system_id
 			}.onDelete { removeItems ->
 				morpheus.computeServer.remove(removeItems).blockingGet()
 			}.onAdd { itemsToAdd ->
@@ -428,7 +448,11 @@ class MaasCloudProvider implements CloudProvider {
 					morpheus.computeServer.create(itemsToSave).blockingGet()
 				}
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map>> updateItems ->
-				return morpheus.computeServer.listById(updateItems.collect { it.existingItem.id } as List<Long>)
+				Map<Long, SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+				morpheus.computeServer.listById(updateItems?.collect{ it.existingItem.id}).map {ComputeServer server ->
+					SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map> matchItem = updateItemMap[server.id]
+					return new SyncTask.UpdateItem<ComputeServer,Map>(existingItem:server, masterItem:matchItem.masterItem)
+				}
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
 				List<ComputeServer> toSave = []
 				for(item in updateItems) {
@@ -444,6 +468,7 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	def cacheSubnets(Cloud cloud, Map opts) {
+		log.debug "cacheSubnets ${cloud}"
 		try {
 			def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 			def listResults = MaasComputeUtility.listSubnets(authConfig, opts)
@@ -461,11 +486,11 @@ class MaasCloudProvider implements CloudProvider {
 						SyncTask.UpdateItemDto<NetworkIdentityProjection, Map> matchItem = updateItemMap[network.id]
 						return new SyncTask.UpdateItem<Network,Map>(existingItem:network, masterItem:matchItem.masterItem)
 					}
-				}.onAdd { Collection<Map> addItems ->
+				}.onAdd { addItems ->
 					addMissingNetworks(cloud, addItems)
-				}.onUpdate{updateItems ->
+				}.onUpdate{ updateItems ->
 					updateMatchedNetworks(cloud,updateItems)
-				}.onDelete {NetworkIdentityProjection removeItems ->
+				}.onDelete { removeItems ->
 					morpheus.network.remove(removeItems).blockingGet()
 				}.start()
 			} else {
