@@ -18,6 +18,7 @@ public class ReferenceDataSyncProjection extends MorpheusModel {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+		markDirty("externalId", externalId);
 	}
 
 	public String getName() {
@@ -26,5 +27,6 @@ public class ReferenceDataSyncProjection extends MorpheusModel {
 
 	public void setName(String name) {
 		this.name = name;
+		markDirty("name", name);
 	}
 }
