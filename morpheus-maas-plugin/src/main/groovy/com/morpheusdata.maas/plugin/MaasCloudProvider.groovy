@@ -456,7 +456,11 @@ class MaasCloudProvider implements CloudProvider {
 				syncTask.addMatchFunction { NetworkIdentityProjection networkIdentity, Map cloudItem ->
 					networkIdentity?.externalId == "${cloudItem.id}"
 				}.withLoadObjectDetails { updateItems ->
-					morpheus.network.listById(updateItems?.collect{ it.existingItem.id})
+					Map<Long, SyncTask.UpdateItemDto<NetworkIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+					morpheus.network.listById(updateItems?.collect{ it.existingItem.id}).map {Network network ->
+						SyncTask.UpdateItemDto<NetworkIdentityProjection, Map> matchItem = updateItemMap[network.id]
+						return new SyncTask.UpdateItem<Network,Map>(existingItem:network, masterItem:matchItem.existingItem)
+					}
 				}.onAdd { Collection<Map> addItems ->
 					addMissingNetworks(cloud, addItems)
 				}.onUpdate{updateItems ->

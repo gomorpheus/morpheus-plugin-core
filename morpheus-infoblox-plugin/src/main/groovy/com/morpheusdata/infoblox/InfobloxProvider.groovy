@@ -393,6 +393,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}.onAdd { itemsToAdd ->
 					addMissingZones(poolServer, itemsToAdd)
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainIdentityProjection,Map>> updateItems ->
+					morpheus.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 					return morpheus.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
 				}.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
 					updateMatchedZones(poolServer, updateItems)
