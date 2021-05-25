@@ -52,46 +52,6 @@ class MaasCloudProviderSpec extends Specification {
 		optionTypes.size() == 5
 	}
 
-	void "maasReleaseModes"() {
-		when:
-		def releaseModes = service.maasReleaseModes()
-
-		then: "contains the correct values"
-		releaseModes.collect {it.value} == ['release', 'quick-delete', 'delete']
-
-		and: "is used as an option source"
-		1 == service.optionTypes.findAll {it.optionSource == 'maasReleaseModes'}.size()
-	}
-
-	void "maasResourcePools"() {
-		given:
-		Cloud cloud = new Cloud(serviceUrl: 'localhost', serviceToken: 'token')
-		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ComputeZonePoolIdentityProjection>() {
-			@Override
-			void subscribe(@NonNull ObservableEmitter<ComputeZonePoolIdentityProjection> emitter) throws Exception {
-				try {
-					List<ComputeZonePoolIdentityProjection> projections = [new ComputeZonePoolIdentityProjection(id: 1, name: 'Pool1', externalId: 'pool-1'),]
-					for (projection in projections) {
-						emitter.onNext(projection)
-					}
-					emitter.onComplete()
-				} catch (Exception e) {
-					emitter.onError(e)
-				}
-			}
-		})
-
-		when:
-		def pools = service.maasResourcePools(cloud)
-
-		then: "contains the correct values"
-		1 * poolContext.listSyncProjections(_, _) >> listSyncProjections
-		pools == [[name: 'Pool1', value: 'pool-1']]
-
-		and: "is used as an option source"
-		2 == service.optionTypes.findAll {it.optionSource == 'maasResourcePools'}.size()
-	}
-
 	void "cacheRackControllers"() {
 		given:
 		Cloud cloud = new Cloud(id: 1, serviceUrl: 'http://localhost', serviceToken: 'api_key')
