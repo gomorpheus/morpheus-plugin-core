@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -65,6 +66,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Boolean provision;
 	protected String macAddress;
 	protected ComputeCapacityInfo capacityInfo;
+	protected Boolean agentInstalled;
+	protected Date lastAgentUpdate;
+	protected String agentVersion;
 
 	public String getUuid() {
 		return uuid;
@@ -525,5 +529,32 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setComputeCapacityInfo(ComputeCapacityInfo capacityInfo) {
 		this.capacityInfo = capacityInfo;
 		markDirty("capacityInfo",capacityInfo);
+	}
+
+	public Boolean getAgentInstalled() {
+		return agentInstalled;
+	}
+
+	public void setAgentInstalled(Boolean agentInstalled) {
+		this.agentInstalled = agentInstalled;
+		markDirty("agentInstalled",agentInstalled);
+	}
+
+	public Date getLastAgentUpdate() {
+		return lastAgentUpdate;
+	}
+
+	public void setLastAgentUpdate(Date lastAgentUpdate) {
+		this.lastAgentUpdate = lastAgentUpdate;
+		markDirty("lastAgentUpdate",lastAgentUpdate);
+	}
+
+	public String getAgentVersion() {
+		return agentVersion;
+	}
+
+	public void setAgentVersion(String agentVersion) {
+		this.agentVersion = agentVersion;
+		markDirty("agentVersion",agentVersion);
 	}
 }

@@ -62,6 +62,7 @@ class DigitalOceanCloudProviderSpec extends Specification {
 		def res = provider.validate(cloud)
 
 		then:
+		1 * apiService.makeApiCall(*_) >> [resp: [statusLine: [statusCode: 200]], json: [:]]
 		res.success
 	}
 
