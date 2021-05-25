@@ -88,7 +88,7 @@ public interface MorpheusNetworkService {
 	 * @param ids list of ids to grab {@link Network} objects from.
 	 * @return an RxJava Observable stream of {@link Network} to be subscribed to.
 	 */
-	Observable<NetworkIdentityProjection> listById(Collection<Long> ids);
+	Observable<Network> listById(Collection<Long> ids);
 
 	/**
 	 * Removes Missing Networks on the Morpheus side. This accepts the Projection Object instead of the main Object.
