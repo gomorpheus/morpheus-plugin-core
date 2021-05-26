@@ -7,6 +7,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.core.util.RestApiUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -45,7 +46,7 @@ class MaasOptionSourceProviderSpec extends Specification {
 		Cloud cloud = new Cloud()
 
 		when:
-		def releaseModes = service.maasReleaseModes(cloud)
+		def releaseModes = service.maasPluginReleaseModes(cloud)
 
 		then: "contains the correct values"
 		releaseModes.collect {it.value} == ['release', 'quick-delete', 'delete']
@@ -54,32 +55,19 @@ class MaasOptionSourceProviderSpec extends Specification {
 		1 == maasCloudProvider.optionTypes.findAll {it.optionSource == 'maasReleaseModes'}.size()
 	}
 
-	void "maasResourcePools"() {
+	void "maasPluginResourcePools"() {
 		given:
-		Cloud cloud = new Cloud(serviceUrl: 'localhost', serviceToken: 'token')
-		Observable listSyncProjections = Observable.create(new ObservableOnSubscribe<ComputeZonePoolIdentityProjection>() {
-			@Override
-			void subscribe(@NonNull ObservableEmitter<ComputeZonePoolIdentityProjection> emitter) throws Exception {
-				try {
-					List<ComputeZonePoolIdentityProjection> projections = [new ComputeZonePoolIdentityProjection(id: 1, name: 'Pool1', externalId: 'pool-1'),]
-					for (projection in projections) {
-						emitter.onNext(projection)
-					}
-					emitter.onComplete()
-				} catch (Exception e) {
-					emitter.onError(e)
-				}
-			}
-		})
+		def args = [[zoneId: 10]]
 
 		when:
-		def pools = service.maasResourcePools(cloud)
+		def pools = service.maasPluginResourcePools(args)
 
 		then: "contains the correct values"
-		1 * poolContext.listSyncProjections(_, _) >> listSyncProjections
+		1 * cloudContext.getCloudById(10) >> Single.just(new Cloud(id: 10, serviceUrl: 'http://someurel', serviceToken: 'sometoken'))
+		1 * MaasComputeUtility.listResourcePools(*_) >> new ServiceResponse(success: true, data: [[name: 'Pool1', id: 'pool-1']])
 		pools == [[name: 'Pool1', value: 'pool-1']]
 
 		and: "is used as an option source"
-		2 == maasCloudProvider.optionTypes.findAll {it.optionSource == 'maasResourcePools'}.size()
+		2 == maasCloudProvider.optionTypes.findAll {it.optionSource == 'maasPluginResourcePools'}.size()
 	}
 }
