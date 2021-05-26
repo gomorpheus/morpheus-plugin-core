@@ -68,7 +68,7 @@ class MaasCloudProvider implements CloudProvider {
 				fieldLabel: 'Available Pool',
 				required: false,
 				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'maas-service-url',
+				dependsOn: 'maas-service-url,maas-service-token',
 				fieldContext: 'config'
 		)
 
@@ -93,7 +93,7 @@ class MaasCloudProvider implements CloudProvider {
 				fieldLabel: 'Release Pool',
 				required: false,
 				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'maas-service-url',
+				dependsOn: 'maas-service-url,maas-service-token',
 				fieldContext: 'config'
 		)
 		[serviceUrl, serviceToken, availablePool, releasePoolName, releaseMode]
