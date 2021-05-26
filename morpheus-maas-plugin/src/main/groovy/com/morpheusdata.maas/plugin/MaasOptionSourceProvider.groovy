@@ -48,20 +48,22 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 		List poolOptions = []
 		if(cloudArgs) {
 			def authConfig
-			def zoneId = cloudArgs?.zoneId?.toLong()
-			if (zoneId) {
-				log.debug "using zoneId: ${zoneId}"
-				Cloud cloud = morpheusContext.cloud.getCloudById(zoneId).blockingGet()
-				String serviceUrl = cloud?.serviceUrl ?: cloud?.configMap?.serviceUrl
-				if (serviceUrl) {
-					authConfig = MaasProvisionProvider.getAuthConfig(cloud)
+			Map options = [:]
+			if(cloudArgs.zone) {
+				options.serviceUrl = cloudArgs.zone.serviceUrl
+				options.serviceToken = cloudArgs.zone.serviceToken
+				if (options.serviceUrl && options.serviceToken) {
+					authConfig = MaasProvisionProvider.getAuthConfig(options)
 				}
 			} else {
-				Map options = [:]
-				options.serviceUrl = cloudArgs['maas-service-url']
-				options.serviceToken = cloudArgs['maas-service-token']
-				if(options.serviceUrl && options.serviceToken) {
-					authConfig = MaasProvisionProvider.getAuthConfig(options)
+				def zoneId = cloudArgs?.zoneId?.toLong()
+				if (zoneId) {
+					log.debug "using zoneId: ${zoneId}"
+					Cloud cloud = morpheusContext.cloud.getCloudById(zoneId).blockingGet()
+					String serviceUrl = cloud?.serviceUrl ?: cloud?.configMap?.serviceUrl
+					if (serviceUrl) {
+						authConfig = MaasProvisionProvider.getAuthConfig(cloud)
+					}
 				}
 			}
 			if(authConfig) {
