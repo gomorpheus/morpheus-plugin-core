@@ -58,8 +58,8 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 				}
 			} else {
 				Map options = [:]
-				options.serviceUrl = cloudArgs.serviceUrl
-				options.serviceToken = cloudArgs.serviceToken
+				options.serviceUrl = cloudArgs['maas-service-url']
+				options.serviceToken = cloudArgs['maas-service-token']
 				if(options.serviceUrl && options.serviceToken) {
 					authConfig = MaasProvisionProvider.getAuthConfig(options)
 				}
