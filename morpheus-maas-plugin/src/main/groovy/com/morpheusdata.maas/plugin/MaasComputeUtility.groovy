@@ -771,6 +771,7 @@ class MaasComputeUtility {
 	}
 
 	static ComputeServer machineToComputeServer(Map machine, Cloud cloud) {
+		log.debug "machineToComputeServer: ${groovy.json.JsonOutput.prettyPrint(machine.encodeAsJson().toString())} ${cloud}"
 		ComputeZonePool pool = new ComputeZonePool(externalId: machine.pool.id)
 
 		def addConfig = [name:machine.hostname, //account:zone.owner, category:objCategory, zone:zone,
@@ -779,32 +780,36 @@ class MaasComputeUtility {
 						 // serverModel:machine.hardware_info?.system_product, serialNumber:machine.hardware_info?.system_serial,
 						 serverType:'metal', //statusMessage:machine.status_message
 		]
-		addConfig.consoleHost = machine?.ip_addresses?.first() // host console address
+		addConfig.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
 		addConfig.internalName = addConfig.name
-//		addConfig.osDevice = machine.boot_disk?.id_path ?: '/dev/sda'
-//		addConfig.rootVolumeId = machine.boot_disk?.resource_uri
+		addConfig.lvmEnabled = false
+		addConfig.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
+		addConfig.dataDevice = addConfig.osDevice
 		addConfig.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
-//		addConfig.tags = machine.tag_names?.join(',')
 		addConfig.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
 		addConfig.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
 		addConfig.maxCores = (machine.cpu_count ?: 1)
-//		addConfig.status = getServerStatus(machine.status)
-//		addConfig.enabled = enabledStatusList.contains(machine.status)
 		addConfig.resourcePool = pool
-//		addConfig.provision = canProvision(zone, addConfig.tags, machine.status)
-//		addConfig.plan = findServicePlanMatch(plan, addConfig.tags)
+		addConfig.provision = false
 		addConfig.cloud = cloud
 		addConfig.account = cloud.account
-		log.info("addConfig: {}", addConfig)
+		log.debug("machineToComputeServer: {}", addConfig)
 		ComputeServer server = new ComputeServer(addConfig)
 		server
 	}
 
 	static VirtualImage bootImageToVirtualImage(Cloud cloud, Map bootImage) {
+		log.debug "bootImageToVirtualImage ${cloud} ${bootImage}"
 		String objCategory = "maas.image.${cloud.id}"
-		def addConfig = [category:objCategory, code:objCategory + ".${bootImage.name}",
-						 name:bootImage.name, imageType:'pxe', externalId:bootImage.name, //remotePath:bootImage.name, refType:'ComputeZone'
-						 ]
+		def addConfig = [
+				category:objCategory,
+				code:objCategory + ".${bootImage.name}",
+				account: cloud.account,
+				name:bootImage.name,
+				imageType:'pxe',
+				externalId:bootImage.name, //remotePath:bootImage.name, refType:'ComputeZone'
+		]
+
 		//add extra stuff?
 		//parse the os stuff
 //		addConfig.osType = findOsTypeMatch(osTypes, cloudItem.name, (cloudItem.architecture == 'amd64' ? 64 : 32))
