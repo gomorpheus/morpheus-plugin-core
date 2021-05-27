@@ -17,7 +17,7 @@ plugins {
 
 apply plugin: "asset-pipeline"
 
-version "0.1"
+version "0.8.0"
 group "com.morpheusdata"
 
 repositories {
