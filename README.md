@@ -12,15 +12,24 @@ Also, be sure your plugin source and target compatibility is set for Java 8 (`1.
 
 ### Setup a new Gradle project
 
-The plugin API is [published to Bintray](https://bintray.com/bertramlabs/gomorpheus/morpheus-plugin-api), include it in your gradle project:
+The plugin API is published to Maven Central, include it in your gradle project:
 
 ```gradle
 dependencies {
-	implementation 'com.morpheusdata:morpheus-plugin-api:0.6.0'
+	compileOnly 'com.morpheusdata:morpheus-plugin-api:0.8.0'
 }
 ```
 
-**NOTE:** The plugin API has significant changes for 0.8.0 as we move to add cloud plugin support and enhance ease of development. This will be the required target for Morpheus 5.3.1 when it is released
+**NOTE:** The plugin API has significant changes for 0.8.0 as we move to add cloud plugin support and enhance ease of development. This will be the required target for Morpheus 5.3.1
+
+
+### Documentation
+
+Please refer to the [official documentation](https://developer.morpheusdata.com/docs) for more up to date guides on how to create a plugin.
+
+### Samples
+
+Samples exist in the project underneath the `samples` directory. Please be sure to test these from the appropriate tagged version for release until `1.0`. For example, use branch `v0.8.x` to generate and test samples for Morpheus `5.3.1`
 
 ### Implement your plugin
 
