@@ -28,7 +28,7 @@ configurations {
 }
 
 dependencies {
-    provided project(':morpheus-plugin-api')
+    compileOnly 'com.morpheusdata:morpheus-plugin-api:0.8.0'
 }
 ----
 
