@@ -8,7 +8,7 @@ The Structure of a project often starts with a gradle build along with a `Plugin
 
 Create a new project with a `build.gradle` file. We will use the shadowjar plugin to create our "fat jar"
 
-.build.grade
+.build.gradle
 [source,groovy]
 ----
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -17,6 +17,10 @@ apply plugin: 'maven-publish'
 
 group = 'com.example'
 version = '1.0.0'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 configurations {
@@ -30,7 +34,7 @@ dependencies {
 
 To let the Morpheus plugin manager know what class to load you must specify the class in jar's manifest:
 
-.build.grade
+.build.gradle
 [source,groovy]
 ----
 jar {

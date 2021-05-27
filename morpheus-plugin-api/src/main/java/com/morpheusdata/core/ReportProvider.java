@@ -63,6 +63,50 @@ public interface ReportProvider extends UIExtensionProvider {
 
 	ServiceResponse validateOptions(Map opts);
 
+	/**
+	 * The primary entrypoint for generating a report. This method can be a long running process that queries data in the database
+	 * or from another external source and generates {@link ReportResultRow} objects that can be pushed into the database
+	 *
+	 * <p><strong>Example:</strong></p>
+	 * <pre>{@code
+	 * void process(ReportResult reportResult) {
+	 *      morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
+	 *      Long displayOrder = 0
+	 *      List<GroovyRowResult> results = []
+	 *      Connection dbConnection
+	 *
+	 *      try {
+	 *          dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
+	 *          if(reportResult.configMap?.phrase) {
+	 *              String phraseMatch = "${reportResult.configMap?.phrase}%"
+	 *              results = new Sql(dbConnection).rows("SELECT id,name,status from instance WHERE name LIKE ${phraseMatch} order by name asc;")
+	 *          } else {
+	 *              results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
+	 *          }
+	 *      } finally {
+	 *          morpheus.report.releaseDatabaseConnection(dbConnection)
+	 *      }
+	 *      log.info("Results: ${results}")
+	 *      Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
+	 *      observable.map{ resultRow ->
+	 *          log.info("Mapping resultRow ${resultRow}")
+	 *          Map<String,Object> data = [name: resultRow.name, id: resultRow.id, status: resultRow.status]
+	 *          ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
+	 *          log.info("resultRowRecord: ${resultRowRecord.dump()}")
+	 *          return resultRowRecord
+	 *      }.buffer(50).doOnComplete {
+	 *          morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
+	 *      }.doOnError { Throwable t ->
+	 *          morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
+	 *      }.subscribe {resultRows ->
+	 *          morpheus.report.appendResultRows(reportResult,resultRows).blockingGet()
+	 *      }
+	 *  }
+	 * }</pre>
+	 *
+	 * @param reportResult the Report result the data is being attached to. Status of the run is updated here, also this object contains filter parameters
+	 *                     that may have been applied based on the {@link ReportProvider#getOptionTypes()}
+	 */
 	void process(ReportResult reportResult);
 
 	/**
