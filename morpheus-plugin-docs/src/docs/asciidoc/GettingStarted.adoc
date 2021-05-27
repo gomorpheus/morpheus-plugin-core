@@ -17,6 +17,10 @@ apply plugin: 'maven-publish'
 
 group = 'com.example'
 version = '1.0.0'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 configurations {
@@ -24,7 +28,7 @@ configurations {
 }
 
 dependencies {
-    provided project(':morpheus-plugin-api')
+    compileOnly 'com.morpheusdata:morpheus-plugin-api:0.8.0'
 }
 ----
 
