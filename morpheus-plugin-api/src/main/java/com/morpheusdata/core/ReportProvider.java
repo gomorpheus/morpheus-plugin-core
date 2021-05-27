@@ -145,7 +145,8 @@ public interface ReportProvider extends UIExtensionProvider {
 
 
 	/**
-	 * Instance details provided to your rendering engine
+	 * Presents the HTML Rendered output of a report. This can use different {@link Renderer} implementations.
+	 * The preferred is to use server side handlebars rendering with {@link com.morpheusdata.views.HandlebarsRenderer}
 	 * @param reportResult the results of a report
 	 * @param reportRowsBySection the individual row results by section (i.e. header, vs. data)
 	 * @return result of rendering an template
