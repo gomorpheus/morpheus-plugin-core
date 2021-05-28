@@ -163,6 +163,14 @@ public class PluginManager {
 		return null;
 	}
 
+	public Collection<PluginProvider> getProvidersByType(Class clazz) {
+		Collection<PluginProvider> providers = new ArrayList<>();
+		for(Plugin plugin: this.plugins) {
+			providers.addAll(plugin.getProvidersByType(clazz));
+		}
+		return providers;
+	}
+
 	public Renderer<?> getRenderer() {
 		return this.renderer;
 	}
