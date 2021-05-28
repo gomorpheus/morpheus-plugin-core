@@ -1,8 +1,8 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.Workload;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.response.WorkloadResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,6 +11,7 @@ import java.util.Map;
  * Provides methods for interacting with the provisioning engine of Morpheus. This is akin to dealing with requests made
  * from "Add Instance" or from Application Blueprints
  *
+ * @since 0.8.0
  * @author David Estes
  */
 public interface ProvisioningProvider extends PluginProvider {
@@ -22,17 +23,11 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Collection<OptionType> getOptionTypes();
 
 	/**
-	 * Provides a unique code for the implemented provisioning provider  (i.e. vmware, azure,ecs,etc.)
-	 * @return unique String code
+	 * Provides a Collection of OptionType inputs for configuring node types
+	 * @since 0.9.0
+	 * @return Collection of OptionTypes
 	 */
-	public String getProvisionTypeCode();
-
-	/**
-	 * Returns the Name of the Provisioning Provider
-	 * @return Name
-	 */
-	public String getName();
-
+	public Collection<OptionType> getNodeOptionTypes();
 
 	/**
 	 * Determines if this provision type has datastores that can be selected or not.
@@ -70,7 +65,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse runWorkload(Workload workload, Map opts);
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.
@@ -87,6 +82,20 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse startWorkload(Workload workload);
 
 	/**
+	 * Stop the server
+	 * @param computeServer to stop
+	 * @return Response from API
+	 */
+	ServiceResponse stopServer(ComputeServer computeServer);
+
+	/**
+	 * Start the server
+	 * @param computeServer to start
+	 * @return Response from API
+	 */
+	ServiceResponse startServer(ComputeServer computeServer);
+
+	/**
 	 * Issues the remote calls to restart a workload element. In some cases this is just a simple alias call to do a stop/start,
 	 * however, in some cases cloud providers provide a direct restart call which may be preferred for speed.
 	 * @param workload the Workload we want to restart.
@@ -101,5 +110,37 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts map of options
 	 * @return Response from API
 	 */
-	ServiceResponse removeWorkload(Workload workload,Map opts);
+	ServiceResponse removeWorkload(Workload workload, Map opts);
+
+	/**
+	 * Method called at different phases to get the current status of a ComputeServer.
+	 *
+	 * @param server to check status
+	 * @return Response from API
+	 */
+	ServiceResponse getServerDetails(ComputeServer server);
+
+	/**
+	 * Issues the remote calls to scale a workload element.
+	 * @param instance to resize
+	 * @param workload to resize
+	 * @param plan containing the new size
+	 * @param opts additional options
+	 * @return Response from API
+	 */
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
+
+	/**
+	 * Method called before runWorkload to allow implementers to create resources required before runWorkload is called
+	 * @param workload that will be provisioned
+	 * @param opts additional options
+	 * @return Response from API
+	 */
+	ServiceResponse createWorkloadResources(Workload workload, Map opts);
+
+	/**
+	 * Returns the host type that is to be provisioned
+	 * @return
+	 */
+	HostType getHostType();
 }

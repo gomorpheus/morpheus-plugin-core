@@ -1,5 +1,6 @@
 build/
-plugins/
+/plugins/
+testplugins/
 .asscache
 .gradle/
 .idea
@@ -9,3 +10,4 @@ plugins/
 .idea/
 .DS_Store
 out/
+.assetcache

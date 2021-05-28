@@ -1,7 +1,10 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.core.IPAMProvider;
+import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,11 +16,11 @@ import java.util.List;
  *
  * @author David Estes
  */
-public class NetworkPool extends MorpheusModel {
+public class NetworkPool extends NetworkPoolIdentityProjection {
 
 	/**
 	 * Gets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
+	 *
 	 * @return the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public String getTypeCode() {
@@ -26,7 +29,7 @@ public class NetworkPool extends MorpheusModel {
 
 	/**
 	 * Sets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 * An {@link com.morpheusdata.core.IPAMProvider} provides a lost of pull types that are usable via the {@link IPAMProvider#getProvidedPoolServerTypes()} method.
+	 *
 	 * @param typeCode the code correlating to the {@link NetworkPoolType} this record belongs to.
 	 */
 	public void setTypeCode(String typeCode) {
@@ -105,7 +108,7 @@ public class NetworkPool extends MorpheusModel {
 	/**
 	 * Sets the external unique identifer as it relates to the integration provider. Whenever syncing something like a Pool record, the unique identifier provided by the third party vendor
 	 * should be stored here for cross referencing during sync.
-	 * @param externalId the external unique identifier representation of this zone from the external integration.
+	 * @param externalId the external unique identifier representation of this cloud from the external integration.
 	 */
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
@@ -411,9 +414,13 @@ public class NetworkPool extends MorpheusModel {
 	protected String refId;
 	protected String configuration;
 	protected String cidr;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public NetworkPoolServer poolServer;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account account;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account owner;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public NetworkPoolType type;
 	public String parentType;
 	public String parentId;
@@ -421,17 +428,28 @@ public class NetworkPool extends MorpheusModel {
 
 	public List<NetworkPoolRange> ipRanges;
 
+	public void addToIpRanges(NetworkPoolRange range) {
+		if(ipRanges == null) {
+			ipRanges = new ArrayList<>();
+		}
+		ipRanges.add(range);
+		markDirty("ipRanges",ipRanges);
+	}
+
 	public void setPoolServerId(Long id) {
 		this.poolServer = new NetworkPoolServer();
 		this.poolServer.id = id;
+		markDirty("poolServer",this.poolServer);
 	}
 	public void setAccountId(Long id) {
 		this.account = new Account();
 		this.account.id = id;
+		markDirty("account",this.account);
 	}
 
 	public void setOwnerId(Long id) {
 		this.owner = new Account();
 		this.owner.id = id;
+		markDirty("ownerId",id);
 	}
 }

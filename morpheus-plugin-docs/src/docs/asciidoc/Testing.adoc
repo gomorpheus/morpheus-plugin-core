@@ -1,0 +1,43 @@
+== Testing
+
+We recommend http://spockframework.org/[Spock] for easily testing your plugin. The interfaces can easily be mocked and stubbed to allow you to test your integrations without a running Morpheus instance.
+
+=== Example
+
+[source,groovy]
+----
+class InfobloxProviderSpec extends Specification {
+    @Shared MorpheusContext context
+    @Shared InfobloxPlugin plugin
+    @Shared InfobloxAPI infobloxAPI
+    @Shared MorpheusNetworkContext networkContext
+    @Subject @Shared InfobloxProvider provider
+
+    void setup() {
+        // Create a Mocks of the Morepohus contexts you will use
+        context = Mock(MorpheusContextImpl)
+        networkContext = Mock(MorpheusNetworkContext)
+        context.getNetwork() >> networkContext
+        plugin = Mock(InfobloxPlugin)
+        infobloxAPI = Mock(InfobloxAPI)
+
+        // Create the actual provider to unit test
+        provider = new InfobloxProvider(plugin, context, infobloxAPI)
+    }
+
+    void "listNetworks"() {
+        given: "A pool server"
+        def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
+        // Here we are stubbing the actual API call to infoblox, but we could create a integration test by actually providing the real infoblox API class instead of a mock.
+        infobloxAPI.callApi(_, _, _, _, _, _) >> new ServiceResponse(success: true, errors: null , content:'{"foo": 1}')
+
+        when: "We list the networks"
+        def response = provider.listNetworks(poolServer, [doPaging: false])
+
+        then: "We get a response"
+        response.size() == 1
+    }
+}
+----
+
+As you can see, implementing unit and integration testing for your plugins can be done easily with Spock. Of course any other JVM unit testing framework should work as well.

@@ -1,16 +1,15 @@
 package com.morpheusdata.infoblox
 
-import com.morpheusdata.MorpheusContextImpl
+import com.morpheusdata.test.MorpheusContextImpl
+import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.MorpheusNetworkContext
-import com.morpheusdata.model.Network
+import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp
 import com.morpheusdata.model.NetworkPoolServer
 import com.morpheusdata.response.ServiceResponse
 import spock.lang.Ignore
-import spock.lang.Narrative
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -18,17 +17,17 @@ import spock.lang.Subject
 class InfobloxProviderSpec extends Specification {
     @Shared MorpheusContext context
     @Shared InfobloxPlugin plugin
-    @Shared InfobloxAPI infobloxAPI
-    @Shared MorpheusNetworkContext networkContext
+    @Shared RestApiUtil infobloxAPI
+    @Shared MorpheusNetworkService networkContext
     @Subject@Shared InfobloxProvider provider
 
     void setup() {
         context = Mock(MorpheusContextImpl)
-        networkContext = Mock(MorpheusNetworkContext)
+        networkContext = Mock(MorpheusNetworkService)
         context.getNetwork() >> networkContext
         plugin = Mock(InfobloxPlugin)
-        infobloxAPI = Mock(InfobloxAPI)
-        provider = new InfobloxProvider(plugin, context, infobloxAPI)
+        infobloxAPI = GroovySpy(RestApiUtil, global: true)
+		provider = new InfobloxProvider(plugin, context, infobloxAPI)
     }
 
     void "Provider valid"() {
@@ -111,47 +110,6 @@ class InfobloxProviderSpec extends Specification {
         response.success
     }
 
-    void "getProvidedPoolTypes"() {
-        when:
-        def types = provider.providedPoolServerTypes
-
-        then:
-        types.size() == 1
-
-        when:
-        def type = types.first()
-
-        then:
-        type.code == 'infoblox'
-        type.name == 'Infoblox'
-        type.description == 'Infoblox IPAM'
-    }
-
-	void "getProvidedAccountIntegrationTypes"() {
-		when:
-		def types = provider.providedAccountIntegrationTypes
-
-		then:
-		types.size() == 1
-
-		when:
-		def type = types.first()
-
-		then:
-		type.category == 'ipam'
-		type.code == 'infoblox'
-		!type.enabled
-		type.viewSet == 'ipam'
-		type.optionTypes == []
-		type.name == 'Infoblox'
-		!type.description
-		!type.hasCMDB
-		!type.hasCM
-		type.hasDNS
-		!type.hasApprovals
-		type.integrationService == 'networkPoolService'
-	}
-
     void "releaseIpAddress"() {
         given:
         def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
@@ -163,22 +121,6 @@ class InfobloxProviderSpec extends Specification {
         then:
         result.success
         3 * infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
-    }
-
-    void "returnPoolAddress"() {
-        given:
-        def poolServer = new NetworkPoolServer(apiPort: 8080, serviceUrl: "http://localhost")
-        def ipAddress = new NetworkPoolIp(externalId: "123")
-        def networkPool = new NetworkPool()
-        def network = new Network()
-        and: "mock api delete"
-        infobloxAPI.callApi(_, _, _, _, _, 'DELETE') >> new ServiceResponse(success: true, errors: null , content:'{"result": ["1"]}')
-
-        when:
-        def result = provider.returnPoolAddress(poolServer, networkPool, network, ipAddress, [:])
-
-        then:
-        result
     }
 
 	@Ignore("network context is null, TODO Fix")

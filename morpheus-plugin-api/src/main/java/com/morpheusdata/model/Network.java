@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.NetworkIdentityProjection;
+
 /**
  * Represents a Network that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
  * used during provisioning of compute or services. They also can be used to allow the user to specify network specific information
@@ -10,18 +12,15 @@ package com.morpheusdata.model;
  *
  * @author David Estes
  */
-public class Network extends MorpheusModel {
-//	protected Long zoneId;
-	public Zone zone;
+public class Network extends NetworkIdentityProjection {
+	public Cloud cloud;
 	protected Long zonePoolId;
 	protected NetworkType type;
-	protected String name;
 	protected String displayName;
 	protected String interfaceName;
 	protected String bridgeName;
 	protected String bridgeInterface;
 	protected String description;
-	protected String externalId;
 	protected String internalId;
 	protected String uniqueId;
 	protected String providerId;
@@ -58,11 +57,17 @@ public class Network extends MorpheusModel {
 	protected Boolean active = true;
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
+	public NetworkServer networkServer;
+	public Account owner;
+	public String category;
+	public String code;
+	public Integer cidrMask;
 
-	public void setZoneId(Long id) {
-		this.zone = new Zone();
-		this.zone.id = id;
-		markDirty("zone", id);
+
+	public void setCloudId(Long id) {
+		this.cloud = new Cloud();
+		this.cloud.id = id;
+		markDirty("cloud", id);
 	}
 
 	public void setZonePoolId(Long zonePoolId) {
@@ -79,14 +84,6 @@ public class Network extends MorpheusModel {
 		markDirty("type", type);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
-	}
 
 	public String getDisplayName() {
 		return displayName;
@@ -133,14 +130,6 @@ public class Network extends MorpheusModel {
 		markDirty("description", description);
 	}
 
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
-	}
 
 	public String getInternalId() {
 		return internalId;

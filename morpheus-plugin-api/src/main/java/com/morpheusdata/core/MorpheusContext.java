@@ -1,5 +1,9 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.network.MorpheusNetworkService;
+import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -16,9 +20,11 @@ import java.util.Map;
  *
  * (i.e. a Connector app could implement the MorpheusContext and relay communication back to the Morpheus Application itself)
  *
- * @see MorpheusComputeContext
- * @see MorpheusNetworkContext
- * @see MorpheusTaskContext
+ * @see MorpheusCloudService
+ * @see MorpheusNetworkService
+ * @see MorpheusTaskService
+ * @see MorpheusVirtualImageService
+ * @see MorpheusServicePlanService
  *
  * @author David Estes
  */
@@ -26,9 +32,15 @@ public interface MorpheusContext {
 
 	/**
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
-	 * @return An Instance of the Compute Context to be used typically by {@link CloudProvider} implementations.
+	 * @return An Instance of the Cloud Service to be used typically by {@link CloudProvider} implementations.
 	 */
-	MorpheusComputeContext getCompute();
+	MorpheusCloudService getCloud();
+
+	/**
+	 * Returns the Provision Service used for performing provisioning related updates to objects.
+	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 */
+	MorpheusProvisionService getProvision();
 
 
 	/**
@@ -36,15 +48,50 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An Instance of the Network Context to be used for calls by various network providers
 	 */
-	MorpheusNetworkContext getNetwork();
+	MorpheusNetworkService getNetwork();
 
 	/**
 	 * Returns the Task context used for automation tasks on assets within Morpheus.
 	 * Typically this would be called by a {@link TaskProvider}.
 	 * @return An Instance of the Task Context to be used for calls by various task providers
 	 */
-	MorpheusTaskContext getTask();
+	MorpheusTaskService getTask();
 
+	/**
+	 * Returns the Integration context used for performing common operations on varioues integration types Morpheus
+	 * has to offer.
+	 * @return An instance of the Integration Context to bused for calls by various integration types
+	 */
+	MorpheusIntegrationService getIntegration();
+
+	/**
+	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Virtual Image Context to be used for calls by various providers
+	 */
+	MorpheusVirtualImageService getVirtualImage();
+
+	/**
+	 * Returns the Service Plan context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Service Plan Context to be used for calls by various providers
+	 */
+	MorpheusServicePlanService getServicePlan();
+
+	/**
+	 * Returns the Service Plan context used for syncing machines within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the Compute Server Context to be used for calls by various providers
+	 */
+	MorpheusComputeServerService getComputeServer();
+
+	/**
+	 * Returns the Custom Report Types Context used for generating custom reports.
+	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
+	 *
+	 * @return an instance of the Report Context
+	 */
+	MorpheusReportService getReport();
 
 
 	//Common methods used across various contexts
@@ -139,6 +186,34 @@ public interface MorpheusContext {
 	Single<TaskConfig> buildContainerConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildComputeServerConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts);
 
-	//TODO: Add Locking Provider RPC Calls to acquire distributed locks when necessary
+	/**
+	 * Acquires a distributed lock by key and some additional lock options can be provided
+	 * @param name the key name of the lock to acquire
+	 * @param opts the acquire wait timeout option via key [timeout:ms] as well as the locks ttl via [ttl:ms] property.
+	 * @return a unique lock key id to control concurrent release attempts. send this to releaseLocks opts.lock key
+	 *
+	 * <p><strong>Example:</strong> </p>
+	 * <pre>{@code
+	 * String lockId
+	 * try {
+	 *     lockId = morpheusContext.acquireLock('mylock.key',[ttl:600000L,timeout:600000L]);
+	 *     //do stuff
+	 * } finally {
+	 *     if(lockId) {
+	 *         morpheusContext.releaseLock('mylock.key',[lock: lockId]);
+	 *     }
+	 * }
+	 * }</pre>
+	 */
+	Single<String> acquireLock(String name, Map<String,Object> opts);
+
+	/**
+	 * Releases a lock key for other threads or nodes to be able to use it.
+	 * It takes an optional set of opts that can be used to scope the lock release to a key hash for concurrency safety
+	 * @param name the key name of the lock to release
+	 * @param opts the opts map of wait timeouts or [lock:lockId] where the lockId is the return of {@link MorpheusContext#acquireLock(String, Map)}
+	 * @return the success state of the release lock attempt
+	 */
+	Single<Boolean> releaseLock(String name, Map<String,Object> opts);
 
 }

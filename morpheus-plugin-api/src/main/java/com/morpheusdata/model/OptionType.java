@@ -16,14 +16,25 @@ public class OptionType extends MorpheusModel {
 	protected String fieldLabel;
 	protected String fieldName;
 	protected String fieldContext;
+	protected String fieldGroup;
 	protected InputType inputType = InputType.TEXT;
 	protected Integer displayOrder;
 	protected String placeHolderText;
 	protected String defaultValue;
 	protected Boolean required = false;
+	protected Boolean editable = true;
 	protected String helpText;
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
 
 	/**
 	 * Gets the Unique code representation of the option type. This is used for tracking changes and should be globally unique. It also
@@ -103,6 +114,25 @@ public class OptionType extends MorpheusModel {
 	public void setFieldContext(String fieldContext) {
 		this.fieldContext = fieldContext;
 		markDirty("fieldContext", fieldContext);
+	}
+
+	/**
+	 * Gets the field group which is the name that is used to group fields together in the user interface.
+	 * To have all fields at the same level, do not specify a field group.
+	 * @return the field group to be used for grouping fields together
+	 */
+	public String getFieldGroup() {
+		return fieldGroup;
+	}
+
+	/**
+	 * Sets the field group which is the name that is used to group fields together in the user interface.
+	 * To have all fields at the same level, do not specify a field group.
+	 * @param fieldGroup the field group to be used for grouping fields together
+	 */
+	public void setFieldGroup(String fieldGroup) {
+		this.fieldGroup = fieldGroup;
+		markDirty("fieldGroup", fieldGroup);
 	}
 
 	/**
@@ -222,7 +252,7 @@ public class OptionType extends MorpheusModel {
 	/**
 	 * Gets the option source api method endpoint to hit when using the {@link InputType#SELECT} option. This allows a remote
 	 * data source query to be queried for loading dynamic data. It also can take a POST request with the values of previously entered
-	 * inputs to use as a way to filter the available options.
+	 * inputs to use as a way to filter the available options. This should be globally unique.
 	 * @return option source api method for loading dynamic options
 	 */
 	public String getOptionSource() {
@@ -232,7 +262,7 @@ public class OptionType extends MorpheusModel {
 	/**
 	 * Sets the option source api method endpoint to hit when using the {@link InputType#SELECT} option. This allows a remote
 	 * data source query to be queried for loading dynamic data. It also can take a POST request with the values of previously entered
-	 * inputs to use as a way to filter the available options.
+	 * inputs to use as a way to filter the available options. This should be globally unique.
 	 * @param optionSource option source api method for loading dynamic options
 	 */
 	public void setOptionSource(String optionSource) {
@@ -259,9 +289,28 @@ public class OptionType extends MorpheusModel {
 		markDirty("dependsOn", dependsOn);
 	}
 
+	/**
+	 * Specifies whether this option type is editable on edit. This sometimes is the case where a field can be set on create
+	 * but not changed later
+	 * @return whether or not this option type value is editable
+	 */
+	public Boolean getEditable() {
+		return editable;
+	}
+
+	/**
+	 * Sets whether or not this option type is editable. This sometimes is the case where a field can be set on create
+	 * but not changed later
+ 	 * @param editable whether or not this field is editable upon edit and not just create
+	 */
+	public void setEditable(Boolean editable) {
+		this.editable = editable;
+	}
+
 
 	public enum InputType {
 		TEXT("text"),
+		PASSWORD("password"),
 		NUMBER("number"),
 		TEXTAREA("textarea"),
 		SELECT("select"),

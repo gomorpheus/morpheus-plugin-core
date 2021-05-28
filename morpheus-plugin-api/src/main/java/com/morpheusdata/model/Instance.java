@@ -1,11 +1,13 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.InstanceIdentityProjection;
+
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-public class Instance extends MorpheusModel {
+public class Instance extends InstanceIdentityProjection {
 	private String uuid;
-	private String name;
 	private String description;
 	public String instanceTypeName;
 	public String instanceTypeCode;
@@ -15,10 +17,10 @@ public class Instance extends MorpheusModel {
 	public String layoutName;
 	public String instanceVersion;
 
-	public String plan;
+	public ServicePlan plan;
 	public String displayName;
 	public String environmentPrefix;
-	public String hostname;
+	public String hostName;
 	//	public String domainName;
 //	public String assignedDomainName;
 	public Boolean firewallEnabled;
@@ -42,9 +44,24 @@ public class Instance extends MorpheusModel {
 	//	public String ports;
 	public String serviceUsername;
 	public String servicePassword;
+	public Long provisionZoneId;
+	public ComputeZonePool resourcePool;
+	public InstanceTypeLayout layout;
+	public Collection<Workload> containers;
+	public NetworkDomain networkDomain;
+	public ComputeSite site;
+	public UserGroup userGroup;
+	protected User createdBy;
+	public List<UserGroup> userGroups;
 
+	public User getCreatedBy() {
+		return createdBy;
+	}
 
-	private Collection<Workload> containers;
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy", createdBy);
+	}
 
 	public String getUuid() {
 		return uuid;
@@ -53,15 +70,6 @@ public class Instance extends MorpheusModel {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
 	}
 
 	public String getDescription() {
@@ -138,14 +146,6 @@ public class Instance extends MorpheusModel {
 		this.instanceVersion = instanceVersion;
 	}
 
-	public String getPlan() {
-		return plan;
-	}
-
-	public void setPlan(String plan) {
-		this.plan = plan;
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -160,14 +160,6 @@ public class Instance extends MorpheusModel {
 
 	public void setEnvironmentPrefix(String environmentPrefix) {
 		this.environmentPrefix = environmentPrefix;
-	}
-
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
 	}
 
 	public Boolean getFirewallEnabled() {
@@ -328,5 +320,27 @@ public class Instance extends MorpheusModel {
 
 	public void setServicePassword(String servicePassword) {
 		this.servicePassword = servicePassword;
+	}
+
+	public enum Status {
+		pending,
+		denied,
+		cancelled,
+		provisioning,
+		finishing, //Used if there are instance post processing tasks
+		failed,
+		resizing,
+		running,
+		warning,
+		stopped,
+		suspended,
+		removing,
+		restarting,
+		cloning,
+		restoring,
+		stopping,
+		starting,
+		suspending,
+		pendingRemoval
 	}
 }

@@ -1,11 +1,27 @@
 package com.morpheusdata.model;
 
-import java.util.Map;
 
 public class Policy extends MorpheusModel {
 
-	public String name;
-	public String description;
-	public String config;
-	public Map configMap;
+	protected String name;
+	protected String description;
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+		markDirty("description", description);
+	}
+
 }

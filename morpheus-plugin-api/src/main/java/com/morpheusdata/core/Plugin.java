@@ -17,7 +17,7 @@ public abstract class Plugin implements PluginInterface {
 	protected Map<String, PluginProvider> pluginProviders = new LinkedHashMap<>();
 
 	private PluginManager pluginManager;
-	protected MorpheusContext morpheusContext;
+	protected MorpheusContext morpheus;
 	private ClassLoader classLoader;
 	protected Renderer<?> renderer;
 	protected List<PluginController> controllers = new ArrayList<>();
@@ -26,6 +26,11 @@ public abstract class Plugin implements PluginInterface {
 	protected String name;
 	protected String fileName;
 	protected String version;
+	protected String author;
+	protected String description;
+	protected String websiteUrl;
+	protected String sourceCodeLocationUrl;
+	protected String issueTrackerUrl;
 
 	public void setControllers(List<PluginController> controllers) {
 		this.controllers = controllers;
@@ -71,9 +76,9 @@ public abstract class Plugin implements PluginInterface {
 
 	/**
 	 * Sets the Morpheus Context for use during plugin initialization
-	 * @param morpheusContext
+	 * @param morpheus
 	 */
-	void setMorpheusContext(MorpheusContext morpheusContext) { this.morpheusContext = morpheusContext; }
+	void setMorpheus(MorpheusContext morpheus) { this.morpheus = morpheus; }
 
 	/**
 	 * All plugins reside in a Plugin Manager responsible for loading all plugins. This allows the PluginManager to be accessed
@@ -151,6 +156,56 @@ public abstract class Plugin implements PluginInterface {
 	@Override
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	@Override
+	public String getDescription() {
+		return this.description;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String getAuthor() {
+		return this.author;
+	}
+
+	@Override
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	@Override
+	public String getWebsiteUrl() {
+		return this.websiteUrl;
+	}
+
+	@Override
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
+
+	@Override
+	public String getSourceCodeLocationUrl() {
+		return this.sourceCodeLocationUrl;
+	}
+
+	@Override
+	public void setSourceCodeLocationUrl(String sourceCodeLocationUrl) {
+		this.sourceCodeLocationUrl = sourceCodeLocationUrl;
+	}
+
+	@Override
+	public String getIssueTrackerUrl() {
+		return this.issueTrackerUrl;
+	}
+
+	@Override
+	public void setIssueTrackerUrl(String issueTrackerUrl) {
+		this.issueTrackerUrl = issueTrackerUrl;
 	}
 
 	public void setClassLoader(ClassLoader classLoader) {

@@ -4,6 +4,9 @@ import com.morpheusdata.model.RequestReference;
 
 import java.util.List;
 
+/**
+ * Communicate back to Morpheus the response from your ITSM solution
+ */
 public class RequestResponse {
 	private Boolean success;
 	private String msg;

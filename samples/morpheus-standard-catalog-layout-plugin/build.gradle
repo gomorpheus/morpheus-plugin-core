@@ -1,0 +1,138 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		jcenter()
+	}
+	dependencies {
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+	}
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'asset-pipeline'
+
+group = 'com.morpheusdata'
+version = '1.0.0'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+repositories {
+	mavenLocal()
+	jcenter()
+	mavenCentral()
+}
+
+configurations {
+	provided
+}
+
+dependencies {
+	provided project(':morpheus-plugin-api')
+	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation "org.slf4j:slf4j-api:$slf4jVersion"
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	// Include morpheus-core and it's dependencies
+	testImplementation project(':morpheus-plugin-api')
+	testImplementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation project(':morpheus-test-provider')
+	testImplementation 'net.bytebuddy:byte-buddy:1.9.3'
+	testImplementation 'org.objenesis:objenesis:2.6'
+	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation 'cglib:cglib-nodep:3.2.12'
+}
+// https://brokenco.de/2015/07/15/gradle-goodness-excluding-depends-from-shadow.html
+configurations {
+	/* We don't want the morpheus-core dependency in our shadowJar */
+//	runtime.exclude module: 'morpheus-core'
+}
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+	}
+}
+
+assets {
+	packagePlugin = false //set to true if this is a library
+}
+
+
+jar {
+	manifest {
+		attributes(
+			'Plugin-Class': 'com.morpheusdata.cataloglayout.CatalogItemStandardLayoutPlugin',
+			'Plugin-Version': archiveVersion.get()
+		)
+	}
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+	source = sourceSets.main.allJava
+	title = "Morpheus Core Docs"
+}
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+	main = 'groovy.ui.Console'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId 'morpheus-standard-catalog-layout-plugin'
+			pom.withXml {
+				asNode().children().last() + {
+					resolveStrategy = Closure.DELEGATE_FIRST
+					name 'morpheus-server-tab-plugin'
+					description 'Morpheus Core provides the core framework for implementing extension plugins for the morpheus platform'
+					url 'https://github.com/bertramdev/morpheus-standard-catalog-layout-plugin'
+					scm {
+						url 'https://github.com/bertramdev/morpheus-core'
+						connection 'scm:https://bertramdev@github.com/gomorpheus/morpheus-core.git'
+						developerConnection 'scm:git://github.com/gomorpheus/morpheus-core.git'
+					}
+					licenses {
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/license/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
+					}
+					developers {
+						developer {
+							id 'davydotcom'
+							name 'David Estes'
+							email 'davydotcom@gmail.com'
+						}
+					}
+				}
+			}
+			from components.java
+		}
+	}
+}
+
+test {
+	testLogging {
+		exceptionFormat = 'full'
+		showStandardStreams = true
+	}
+}
+
+tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+	destinationDirectory = file("$rootDir/plugins")
+}
+
+tasks.assemble.dependsOn tasks.shadowJar

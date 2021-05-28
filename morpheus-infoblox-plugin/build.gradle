@@ -7,13 +7,12 @@ buildscript {
 	}
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'com.morpheusdata'
 version = '1.0.0'
@@ -90,7 +89,7 @@ task(console, dependsOn: 'classes', type: JavaExec) {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			artifactId 'morpheus-test-provider'
+			artifactId 'morpheus-infoblox-plugin'
 			pom.withXml {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
@@ -129,6 +128,3 @@ test {
 		showStandardStreams = true
 	}
 }
-
-tasks.assemble.dependsOn tasks.shadowJar
-bintrayUpload.dependsOn build

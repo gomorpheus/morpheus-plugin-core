@@ -1,9 +1,7 @@
 package com.morpheusdata.core;
 
 
-import com.morpheusdata.model.Account;
-import com.morpheusdata.model.Instance;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.*;
 import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
 
@@ -12,13 +10,7 @@ import com.morpheusdata.views.Renderer;
  *
  * @author Mike Truso
  */
-public interface InstanceTabProvider extends PluginProvider {
-
-	/**
-	 * Default is Handlebars
-	 * @return renderer of specified type
-	 */
-	Renderer<?> getRenderer();
+public interface InstanceTabProvider extends UIExtensionProvider {
 
 	/**
 	 * Instance details provided to your rendering engine
@@ -36,4 +28,5 @@ public interface InstanceTabProvider extends PluginProvider {
 	 * @return whether the tab should be displayed
 	 */
 	Boolean show(Instance instance, User user, Account account);
+
 }

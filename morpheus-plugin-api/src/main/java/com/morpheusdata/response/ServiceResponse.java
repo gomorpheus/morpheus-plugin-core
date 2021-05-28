@@ -4,9 +4,22 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
-// generic
+/**
+ * ServiceResponse is a generic that allows you to strongly type models.
+ *
+ * Some scenarios are:
+ * 	Respond with text/html of content.
+ * 	Respond with data that will be serialized as json.
+ * 	Respond with data that will be used in a template model.
+ *
+ * Response headers and cookies can also be set if required.
+ *
+ * @param <T> The class that holds the data - must be serializable. Usually a Map or List.
+ */
 public class ServiceResponse<T> {
+	/**
+	 * The Key of key in the errors map that holds the errors.
+	 */
 	private static final String DEFAULT_ERROR_KEY = "error";
 	private Boolean success = false;
 	private String msg = null;
@@ -19,8 +32,10 @@ public class ServiceResponse<T> {
 	// TODO: Add jackson or a java json lib.
 	private Object results;
 	private Map<String, String> cookies;
+	public Boolean inProgress = false;
 
 	public ServiceResponse() { }
+
 
 	public ServiceResponse(Boolean success, String msg, Map<String,String> errors, T data) {
 		this.success = success;
@@ -31,42 +46,87 @@ public class ServiceResponse<T> {
 		this.data = data;
 	}
 
+	/**
+	 * Helper to return a generic error response.
+	 * @return A generic error scenario.
+	 */
 	public static ServiceResponse error() {
 		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
 		serviceResponse.setError("error");
 		return serviceResponse;
 	}
 
+	/**
+	 * Helper to return a error message
+	 * @param msg Message to send to the user.
+	 * @return a ServiceResponse
+	 */
 	public static ServiceResponse error(String msg) {
 		ServiceResponse serviceResponse = new ServiceResponse(false, null, null, null);
 		serviceResponse.setError(msg);
 		return serviceResponse;
 	}
 
+	/**
+	 * Detailed error message with a list of errors.
+	 * @param msg Message to send to the user.
+	 * @param errors Detailed list of errors
+	 * @return a ServiceResponse
+	 */
 	public static ServiceResponse error(String msg, Map<String,String> errors) {
 		return new ServiceResponse(false, msg, errors, null);
 	}
-
+	/**
+	 * Detailed error message with a list of errors.
+	 * @param msg Message to send to the user.
+	 * @param errors Detailed list of errors
+	 * @param data Any additional data needed for the view.
+	 * @return a ServiceResponse
+	 */
 	public static ServiceResponse error(String msg, Map<String,String> errors, Object data) {
 		return new ServiceResponse(false, msg, errors, data);
 	}
 
+	/**
+	 * Helper to return a success object with a message.
+	 * @param data object to pass back in success
+	 * @param msg success message
+	 * @return a ServiceResponse
+	 */
 	static ServiceResponse success(Object data, String msg) {
 		return new ServiceResponse(true, msg, null, data);
 	}
 
+	/**
+	 * Helper to return a success message.
+	 * @param data object to pass back in success
+	 * @return a ServiceResponse
+	 */
 	public static ServiceResponse success(Object data) {
 		return new ServiceResponse(true, null, null, data);
 	}
 
+	/**
+	 * Create a generic success response
+	 * @return success response
+	 */
 	public static ServiceResponse success() {
 		return new ServiceResponse(true, null, null, null);
 	}
 
+	/**
+	 * Build a Map from this object with keys success, msg, errors, data
+	 * @return response Map
+	 */
 	public Map<String,Object> toMap() {
 		return toMap(null);
 	}
 
+	/**
+	 * Serializes the ServiceResponse to a map.
+	 * @param dataKeyName the name to assign the data keys key in the map
+	 * @return A Map
+	 */
 	public Map<String,Object> toMap(String dataKeyName) {
 		Map<String,Object> returnMap = new LinkedHashMap<>();
 		returnMap.put("success",success);
@@ -76,17 +136,30 @@ public class ServiceResponse<T> {
 		return returnMap;
 	}
 
+	/**
+	 * Return if the ServiceResponse has any errors set
+	 * @param key Check a specific key
+	 * @return boolean
+	 */
 	public boolean hasError(String key) {
 		if(errors == null) return false;
 		return errors.containsKey(key);
 	}
 
+	/**
+	 * Return if the ServiceResponse has any errors set
+	 * @return boolean
+	 */
 	public boolean hasErrors() {
 		if(errors == null) return false;
 		if(!success) return true;
 		return errors.size() > 0;
 	}
 
+	/**
+	 * String representation of the toMap() method
+	 * @return the response as a String
+	 */
 	public String toString() {
 		return toMap().toString();
 	}
@@ -153,6 +226,11 @@ public class ServiceResponse<T> {
 		this.errors.remove(key);
 	}
 
+	/**
+	 * Returns the specific error message for a given key.
+	 * @param key that contains the error
+	 * @return The error value
+	 */
 	public String getError(String key) {
 		return this.errors.getOrDefault(key, null);
 	}
@@ -220,12 +298,22 @@ public class ServiceResponse<T> {
 		this.cookies = cookies;
 	}
 
+	/**
+	 * Add a Cookie to the response
+	 * @param key cookie name
+	 * @param value cookie value
+	 */
 	public void addCookie(String key, Object value) {
 		if(this.cookies == null)
 			this.cookies = new HashMap<>();
 		this.cookies.put(key, value.toString());
 	}
 
+	/**
+	 * Find a cookie
+	 * @param key cookie name
+	 * @return the cookie value
+	 */
 	public String getCookie(String key) {
 		if(this.cookies == null)
 			return null;
