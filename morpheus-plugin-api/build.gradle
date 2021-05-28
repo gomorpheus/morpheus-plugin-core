@@ -109,6 +109,11 @@ publishing {
     }
 }
 
+javadoc {
+    title = 'Morpheus Plugin API'
+    options.addBooleanOption('html5', true)
+}
+
 task(console, dependsOn: 'classes', type: JavaExec) {
   main = 'groovy.ui.Console'
   classpath = sourceSets.main.runtimeClasspath
