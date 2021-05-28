@@ -18,4 +18,14 @@ public interface PluginInterface {
 	void setFileName(String fileName);
 	String getVersion();
 	void setVersion(String version);
+	String getDescription();
+	void setDescription(String description);
+	String getAuthor();
+	void setAuthor(String author);
+	String getWebsiteUrl();
+	void setWebsiteUrl(String websiteUrl);
+	String getSourceCodeLocationUrl();
+	void setSourceCodeLocationUrl(String sourceCodeLocationUrl);
+	String getIssueTrackerUrl();
+	void setIssueTrackerUrl(String issueTrackerUrl);
 }

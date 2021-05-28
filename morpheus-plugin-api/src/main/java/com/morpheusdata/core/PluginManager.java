@@ -1,6 +1,5 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.views.HandlebarsPluginTemplateLoader;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.views.ViewModel;
@@ -27,7 +26,7 @@ import java.util.jar.Manifest;
 public class PluginManager {
 
 	private ArrayList<Plugin> plugins = new ArrayList<>();
-	private MorpheusContext morpheusContext;
+	private MorpheusContext morpheus;
 	private Dispatcher dispatcher;
 	private Renderer<?> renderer = new HandlebarsRenderer();
 	private final ClassLoader mainLoader = PluginManager.class.getClassLoader();
@@ -35,10 +34,10 @@ public class PluginManager {
 	private final ClassLoader pluginManagerClassLoader = new ClassLoader(mainLoader){};
 
 	PluginManager(MorpheusContext context, Collection<Class<Plugin>> plugins) throws InstantiationException, IllegalAccessException {
-		this.morpheusContext = context;
+		this.morpheus = context;
 		this.dispatcher = new Dispatcher(this);
 
-		if(this.morpheusContext == null) {
+		if(this.morpheus == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
 //		for(Class<Plugin> plugin : plugins) {
@@ -47,10 +46,10 @@ public class PluginManager {
 	}
 
 	public PluginManager(MorpheusContext context) {
-		this.morpheusContext = context;
+		this.morpheus = context;
 		this.dispatcher = new Dispatcher(this);
 
-		if(this.morpheusContext == null) {
+		if(this.morpheus == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
 	}
@@ -64,26 +63,28 @@ public class PluginManager {
 	 * initializing provider classes.
 	 * @return the reference to the main Morpheus Context object used by all providers utilizing this Plugin manager.
 	 */
-	MorpheusContext getMorpheusContext() {
-		return this.morpheusContext;
+	MorpheusContext getMorpheus() {
+		return this.morpheus;
 	}
 
 
 	/**
 	 * This pluginManager endpoint allows for registration and instantiation of a Morpheus Plugin.
-	 * TODO: Plugin manager needs to grab metadata info for registering the right information in Morpheus as far as what the plugin provides.
+	 * The resulting Plugin instance is returned for reference and any post initialization operations the developer
+	 * may want to perform
 	 *
 	 * @param pluginClass
+	 * @return Plugin the instanced Plugin class loaded from the jar
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	void registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
+	Plugin registerPlugin(Class<Plugin> pluginClass, File jarFile, String version) throws IllegalAccessException, InstantiationException, MalformedURLException {
 		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
 		ClassLoader pluginClassLoader =  new ChildFirstClassLoader(new URL[]{jarUrl}, pluginManagerClassLoader);
 
 		Plugin plugin = pluginClass.newInstance();
 		plugin.setPluginManager(this);
-		plugin.setMorpheusContext(this.morpheusContext);
+		plugin.setMorpheus(this.morpheus);
 		plugin.setName(pluginClass.toString());
 		plugin.setFileName(jarFile.getAbsolutePath());
 		plugin.setVersion(version);
@@ -93,14 +94,16 @@ public class PluginManager {
 			this.renderer.addTemplateLoader(pluginClassLoader);
 		}
 		plugins.add(plugin);
+		return plugin;
 	}
 
 	/**
 	 * Given a path to a plugin pathToJar file - create a child classloader, extract the Plugin Manifest and registers.
 	 * @param pathToJar Path to jar file
 	 * @throws Exception if file does not exist
+	 * @return Plugin the instanced Plugin class loaded from the jar
 	 */
-	public void registerPlugin(String pathToJar) throws Exception {
+	public Plugin registerPlugin(String pathToJar) throws Exception {
 		File jarFile = new File(pathToJar);
 		URL jarUrl = new URL("file", null, jarFile.getAbsolutePath());
 
@@ -116,10 +119,11 @@ public class PluginManager {
 			Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
 			System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
-			registerPlugin(pluginClass, jarFile, pluginVersion);
+			return registerPlugin(pluginClass, jarFile, pluginVersion);
 		} catch (Exception e) {
 			System.out.println("Unable to load plugin class from " + pathToJar);
 			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -157,6 +161,14 @@ public class PluginManager {
 			}
 		}
 		return null;
+	}
+
+	public Collection<PluginProvider> getProvidersByType(Class clazz) {
+		Collection<PluginProvider> providers = new ArrayList<>();
+		for(Plugin plugin: this.plugins) {
+			providers.addAll(plugin.getProvidersByType(clazz));
+		}
+		return providers;
 	}
 
 	public Renderer<?> getRenderer() {

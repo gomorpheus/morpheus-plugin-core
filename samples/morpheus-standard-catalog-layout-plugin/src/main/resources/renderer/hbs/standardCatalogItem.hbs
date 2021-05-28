@@ -1,0 +1,26 @@
+<script src="{{asset "/service-catalog.js"}}" ></script>
+<div class="page-content">
+	<div class="catalog-item-details">
+		<div class="item-type-header">
+			<div class="item-type-image">
+				<img class="item-header-img" src="{{catalogTypeImage}}" title="{{name}}" onError="loadImage(this);"/>
+			</div>
+			<h1 class="ellipsize" title="{{name}}">{{name}}</h1>
+			<div class="desc">{{description}}</div>
+		</div>
+		<div class="catalog-item-body break-container-sm">
+			{{#hasWiki}}
+				<div class="catalog-item-content wiki-content">
+					{{wiki}}
+				</div>
+			{{/hasWiki}}
+			<div class="catalog-item-configuration {{#hasWiki}}with-item-content{{/hasWiki}}">
+				{{#orderForm}}
+					<div class="actions text-right">
+
+					</div>
+				{{/orderForm}}
+			</div>
+		</div>
+	</div>
+</div>

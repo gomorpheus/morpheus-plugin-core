@@ -14,36 +14,36 @@ public interface Renderer<T> {
 	 * @param model ViewModel to be passed in with the template
 	 * @return TemplateResponse
 	 */
-	public HTMLResponse render(String template, ViewModel<?> model);
+	HTMLResponse render(String template, ViewModel<?> model);
 	/**
 	 * Given a template location and a model, returns a TemplateResponse
 	 * @param location Location where the engine can find the template.
 	 * @param model ViewModel to be passed in with the template
 	 * @return TemplateResponse
 	 */
-	public HTMLResponse renderTemplate(String location, ViewModel<?> model);
+	HTMLResponse renderTemplate(String location, ViewModel<?> model);
 
 	/**
 	 * List of all template loaders available for this Renderer
 	 * @return List of TemplateLoaders
 	 */
-	public Iterable<TemplateLoader> getTemplateLoaders();
+	Iterable<TemplateLoader> getTemplateLoaders();
 
 	/**
 	 * Provide a class path for this renderer to lookup templates.
 	 * @param loader classloader for use in template lookup
 	 */
-	public void addTemplateLoader(ClassLoader loader);
+	void addTemplateLoader(ClassLoader loader);
 
 	/**
 	 * Remove a template loader based on classpath
 	 * @param loader classloader to remove from template lookup.
 	 */
-	public void removeTemplateLoader(ClassLoader loader);
+	void removeTemplateLoader(ClassLoader loader);
 
 	/**
 	 * The implementation of the actual engine to be used in this renderer
 	 * @return engine
 	 */
-	public T getEngine();
+	T getEngine();
 }

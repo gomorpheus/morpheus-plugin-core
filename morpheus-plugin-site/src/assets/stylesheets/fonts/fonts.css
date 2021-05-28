@@ -1,0 +1,72 @@
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNova-Regular.woff2') format('woff2'),
+        url('/fonts/ProximaNova-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNova-Extrabld.woff2') format('woff2'),
+        url('/fonts/ProximaNova-Extrabld.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNovaT-Thin.woff2') format('woff2'),
+        url('/fonts/ProximaNovaT-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNova-Bold.woff2') format('woff2'),
+        url('/fonts/ProximaNova-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNovaA-Thin.woff2') format('woff2'),
+        url('/fonts/ProximaNovaA-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNova-Black.woff2') format('woff2'),
+        url('/fonts/ProximaNova-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNovaA-Bold.woff2') format('woff2'),
+        url('/fonts/ProximaNovaA-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/fonts/ProximaNovaA-Light.woff2') format('woff2'),
+        url('/fonts/ProximaNovaA-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+

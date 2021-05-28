@@ -1,0 +1,9 @@
+== Models
+
+When interacting with Morpheus you must use the models provided in `com.morpheusdata.model.*`. This allows for the context to be strongly typed. These Models have a few conventions that you might like to know about. Firstly, models that are often synced from a cloud provider or integration of any kind often inherit from their base class known as an `IdentityProjection` which also inherits from `MorpheusModel`.
+
+**For Example:** the `NetworkDomain` model inherits `NetworkDomainIdentityProjection` which in turn inherits `MorpheusModel`.
+
+The `IdentityProjection` contains a subset of properties that are typically used to match the object with its equivalent on the other side of an Api implementation. This is typically persisted in the `externalId` property of the object. Some objects also leverage `uniqueId` as well.
+
+It is also recommended to use the getter and setter methods on the Models (which should be strictly required in the near future) so as to ensure the dirtyProperties map is updated appropriately. This will be used in future distributed worker installations to reduce bandwidth in transmission of data updates back to Morpheus.

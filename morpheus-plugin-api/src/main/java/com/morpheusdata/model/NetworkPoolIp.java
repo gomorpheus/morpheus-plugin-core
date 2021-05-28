@@ -1,35 +1,41 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
+
 import java.util.Date;
 
-public class NetworkPoolIp extends MorpheusModel {
+/**
+ * An IP Address / Host Record within a {@link NetworkPool} typically used with IPAM Services.
+ * Host records control allocations/reservations of both DHCP and Static IPs to associated workloads
+ * @see com.morpheusdata.core.IPAMProvider
+ * @author David Estes
+ */
+public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
-	public NetworkPool networkPool;
-	private NetworkPoolRange networkPoolRange;
-	private String ipType = "assigned"; //assigned, reserved
-	private String ipAddress;
-	private String gatewayAddress;
-	private String subnetMask;
-	private String dnsServer;
-	private String interfaceName;
-	private String description;
-	private Boolean active = true;
-	private Boolean staticIp = true;
-	private String fqdn;
-	private String domainName;
-	private String hostname;
-	private String internalId;
-	private String externalId;
-	private String ptrId;
-	private Date dateCreated;
-	private Date lastUpdated;
-	private Date startDate;
-	private Date endDate;
-	private String refType;
-	private Long refId;
-	private Long subRefId; //for multiple nics on same host
-	private NetworkDomain domain;
-	public User createdBy;
+	protected NetworkPool networkPool;
+	protected NetworkPoolRange networkPoolRange;
+	protected String ipType = "assigned"; //assigned, reserved
+	protected String gatewayAddress;
+	protected String subnetMask;
+	protected String dnsServer;
+	protected String interfaceName;
+	protected String description;
+	protected Boolean active = true;
+	protected Boolean staticIp = true;
+	protected String fqdn;
+	protected String domainName;
+	protected String hostname;
+	protected String internalId;
+	protected String ptrId;
+	protected Date dateCreated;
+	protected Date lastUpdated;
+	protected Date startDate;
+	protected Date endDate;
+	protected String refType;
+	protected Long refId;
+	protected Long subRefId; //for multiple nics on same host
+	protected NetworkDomain domain;
+	protected User createdBy;
 
 	public NetworkPoolRange getNetworkPoolRange() {
 		return networkPoolRange;
@@ -47,15 +53,6 @@ public class NetworkPoolIp extends MorpheusModel {
 	public void setIpType(String ipType) {
 		this.ipType = ipType;
 		markDirty("ipType", ipType);
-	}
-
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-		markDirty("ipAddress", ipAddress);
 	}
 
 	public String getGatewayAddress() {
@@ -148,15 +145,6 @@ public class NetworkPoolIp extends MorpheusModel {
 		markDirty("hostname", hostname);
 	}
 
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
-	}
-
 	public String getInternalId() {
 		return internalId;
 	}
@@ -245,5 +233,23 @@ public class NetworkPoolIp extends MorpheusModel {
 	public void setDomain(NetworkDomain domain) {
 		this.domain = domain;
 		markDirty("domain", domain);
+	}
+
+	public NetworkPool getNetworkPool() {
+		return networkPool;
+	}
+
+	public void setNetworkPool(NetworkPool networkPool) {
+		this.networkPool = networkPool;
+		markDirty("networkPool",networkPool);
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy",createdBy);
 	}
 }

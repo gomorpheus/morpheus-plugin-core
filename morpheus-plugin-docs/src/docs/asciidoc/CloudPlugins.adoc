@@ -1,0 +1,15 @@
+=== Cloud Provider Plugins
+
+The Cloud provider plugin interfaces are among the more complicated plugin types to implement within Morpheus, but when implemented successfully it provides a very powerful method for creating custom clouds or even updating existing cloud functionality. There are two primary concepts that must first be discussed when developing a cloud plugin.
+
+A Cloud plugin typically defines a cloud type (you may see this as `zoneType` in api for legacy compatibility.) as well as at least one `ProvisionProvider`. A Provision Provider (also seen in api as `provisionType`) defines how a resource is provisioned within a cloud. A cloud could offer many provisioning types. For example, Amazon offers both `EC2` as well as `RDS`.
+
+There are several other provider implementations that are needed on more advanced cloud implementations and some are not yet built out. This includes `NetworkProvider` and `BackupProvider` implementations as well as a few more.
+
+==== Setup
+
+Before Getting Started, It is recommended to look at the digital ocean sample plugin just to get some bearings. To get started you firstly will create a new class that implements `com.morpheusdata.core.CloudProvider`. The `CloudProvider` requires implementation of several methods including the code required to sync existing workloads from the cloud. All sync related code normally lives in here. 
+
+On a cloud implementation there are 2 scheduled jobs for refreshing. There is firstly a 5 minute sync job (typically) that syncs state changes on a periodic basis. Then secondly a daily job that runs at Midnight UTC to do larger syncs like price data or things that may change less frequently. Refer to implementations of the `refresh()` method as well as the `refreshDaily()` methods.
+
+Finally one must also provide the option types inputs for configuring the add cloud wizard as well as the `ComputeServerType` objects available to this zone type. There should be multiple based often on platform and management state.

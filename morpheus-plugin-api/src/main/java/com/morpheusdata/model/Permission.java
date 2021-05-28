@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public class Permission extends MorpheusModel {
 
-	public String name;
-	public String code;
-	public List<AccessType> availableAccessTypes;
+	protected String name;
+	protected String code;
+	protected List<AccessType> availableAccessTypes;
 
 
 	public Permission(String name, String code, List<AccessType> availableAccessTypes) {
@@ -65,9 +65,36 @@ public class Permission extends MorpheusModel {
 		return list;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public List<AccessType> getAvailableAccessTypes() {
+		return availableAccessTypes;
+	}
+
 	public enum AccessType {
 		none,
 		read,
 		full
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+		markDirty("code", code);
+	}
+
+	public void setAvailableAccessTypes(List<AccessType> availableAccessTypes) {
+		this.availableAccessTypes = availableAccessTypes;
+		markDirty("availableAccessTypes", availableAccessTypes);
 	}
 }

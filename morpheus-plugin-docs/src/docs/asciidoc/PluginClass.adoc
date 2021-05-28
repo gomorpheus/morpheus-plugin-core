@@ -1,0 +1,29 @@
+=== Plugin Class
+
+Following the example above, create your plugin class under `src/main/java/com/example/MyPlugin.java`
+
+Your plugin must extend the `com.morpheus.core.Plugin` class:
+
+.MyPlugin.java
+[source,java]
+----
+import com.Morpheus.core.Plugin;
+
+class MyPlugin extends Plugin {
+
+	@Override
+	void initialize() {
+		this.setName("My Custom Tabs Plugin");
+		CustomTabProvider tabProvider = new CustomTabProvider(this, morpheusContext);
+		this.pluginProviders.put(tabProvider.providerCode, tabProvider);
+	}
+}
+----
+
+Here we see a basic plugin that initializes some metadata (the Plugin Name) and registers a custom tab provider.
+
+=== Registering Providers
+
+A plugin may contain any number of Plugin Providers. A Plugin Provider contains the functionality of your plugin such as a Custom Tab, IPAM, Backup Provider, etc.
+
+There are provided classes such as `TaskProvider`, `ProvisioningProvider`, `ApprovalProvider` and others to get you started building your provider. For example the `InstanceTabProvider` provides a renderer, show method, and security checking method to make it easy to build your own custom tab on the instance page.

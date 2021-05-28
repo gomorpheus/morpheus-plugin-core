@@ -1,0 +1,29 @@
+[#views]
+== Views
+
+Plugins may render html sections such as adding a tab to different areas of Morpheus which you can populate with your own content. By default a Handlebars template provider is provided by the Plugin Manager. If you wish to use your own template engine you may implement `com.morpheusdata.views.Renderer` interface.
+
+=== Rendering a view
+
+Views are stored in your plugin at `src/main/resources/renderer/<plugin scope>/<your view>.hbs`. Many plugin providers provide a convention to store views that will be rendered.
+
+If you wish to render and return html manually you can call the renderer directly:
+
+[source,java]
+----
+getRenderer().renderTemplate("prefix/someview", model);
+----
+
+Do not provide the suffix (.hbs) - you may also pass a `com.morpheusdata.views.ViewModel` into the view to use when rendering the html.
+
+
+=== Asset helper
+
+The template engine can also process static assets such as images, css, and javascript for you. Place your assets under `src/assets/{plugin-code}`.
+To include them in the plugin template you can use the `{{ asset }}` handlebars helper as so:
+
+[source,html]
+----
+<script src="{{asset "/instance-tab.js"}}"></script>
+<img src="{{asset "/some/image.png"}}" />
+----

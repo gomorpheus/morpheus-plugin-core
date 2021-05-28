@@ -11,7 +11,7 @@ import java.util.Map;
  * These builder methods can be called from the various {@link ExecutableTaskInterface} execute methods to obtain the
  * necessary resource details for task execution.
  *
- * @see MorpheusTaskContext
+ * @see MorpheusTaskService
  *
  * @author Mike Truso
  */
@@ -27,7 +27,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildLocalTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildLocalTaskConfig(baseConfig, task, excludes, opts);
+		return getMorpheus().getTask().buildLocalTaskConfig(baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -41,7 +41,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildInstanceTaskConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().buildInstanceConfig(instance, baseConfig, task, excludes, opts);
+		return getMorpheus().buildInstanceConfig(instance, baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildRemoteTaskConfig(Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().getTask().buildRemoteTaskConfig(baseConfig, task, excludes, opts);
+		return getMorpheus().getTask().buildRemoteTaskConfig(baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildContainerTaskConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().buildContainerConfig(container, baseConfig, task, excludes, opts);
+		return getMorpheus().buildContainerConfig(container, baseConfig, task, excludes, opts);
 	}
 
 	/**
@@ -82,6 +82,6 @@ public abstract class AbstractTaskService implements ExecutableTaskInterface {
 	 * @return {@link TaskConfig}
 	 */
 	public Single<TaskConfig> buildComputeServerTaskConfig(ComputeServer server, Map baseConfig, Task task, Collection excludes, Map opts) {
-		return getContext().buildComputeServerConfig(server, baseConfig, task, excludes, opts);
+		return getMorpheus().buildComputeServerConfig(server, baseConfig, task, excludes, opts);
 	}
 }
