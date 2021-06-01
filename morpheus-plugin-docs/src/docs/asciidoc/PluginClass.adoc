@@ -7,7 +7,7 @@ Your plugin must extend the `com.morpheus.core.Plugin` class:
 .MyPlugin.java
 [source,java]
 ----
-import com.Morpheus.core.Plugin;
+import com.morpheus.core.Plugin;
 
 class MyPlugin extends Plugin {
 
