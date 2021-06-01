@@ -8,7 +8,7 @@ The plugin pipeline leverages https://gradle.org[Gradle] as the build tooling. G
 
 **NOTE:** Groovy 2.5.x does not run/compile correctly in the latest java versions. This will change as we move to Groovy 3 in the near term future.
 
-The `morpheus-plugin-core` git repository is structured such that sample plugins exist underneath the `samples` directory. They are part of a multi-project gradle project as can be defined in the root directories `settings.gradle`. This adds a bit of complexity and should be ignored when developing ones own plugin. Simply start with a blank project folder and a simple `build.gradle` as demonstrated below.
+The https://github.com/gomorpheus/morpheus-plugin-core[morpheus-plugin-core] git repository is structured such that sample plugins exist underneath the `samples` directory. They are part of a multi-project gradle project as can be defined in the root directories `settings.gradle`. This adds a bit of complexity and should be ignored when developing ones own plugin. Simply start with a blank project folder and a simple `build.gradle` as demonstrated below.
 
 The structure of a Plugin is a typical "fat jar" (aka shadowJar). The plugin will include `morpheus-plugin-api` along with all the dependencies required to run. Though not required, it is often conventional to use the groovy programming language when developing plugins as can be seen in the samples. Morpheus is based on the groovy runtime and therefore allows full use of groovy 2.5.x.
 
