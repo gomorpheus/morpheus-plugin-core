@@ -21,20 +21,14 @@ Create a new project with a `build.gradle` file. We will use the shadowjar plugi
 .build.gradle
 [source,groovy]
 ----
-buildscript {
-    repositories {
-        mavenLocal()
-    }
-    dependencies {
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.3.2"
-    }
+plugins {
+    id "com.bertramlabs.asset-pipeline" version "3.3.2"
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
-apply plugin: 'asset-pipeline'
 
 group = 'com.example'
 version = '1.0.0'
