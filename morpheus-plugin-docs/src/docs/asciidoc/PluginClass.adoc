@@ -14,8 +14,8 @@ class MyPlugin extends Plugin {
 	@Override
 	void initialize() {
 		this.setName("My Custom Tabs Plugin");
-		CustomTabProvider tabProvider = new CustomTabProvider(this, morpheusContext);
-		this.pluginProviders.put(tabProvider.providerCode, tabProvider);
+		CustomTabProvider tabProvider = new CustomTabProvider(this, morpheus);
+		this.registerProvider(tabProvider);
 	}
 }
 ----
