@@ -23,9 +23,9 @@ Create a new project with a `build.gradle` file. We will use the shadowjar plugi
 ----
 plugins {
     id "com.bertramlabs.asset-pipeline" version "3.3.2"
+    id "com.github.johnrengelman.plugin-shadow" version "2.0.3"
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
@@ -38,9 +38,23 @@ targetCompatibility = '1.8'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compileOnly 'com.morpheusdata:morpheus-plugin-api:0.8.0'
     compileOnly 'org.codehaus.groovy:groovy-all:2.5.6'
+    compileOnly 'io.reactivex.rxjava2:rxjava:2.2.0'
+    compileOnly "org.slf4j:slf4j-api:1.7.26"
+    compileOnly "org.slf4j:slf4j-parent:1.7.26"
+
+    /*
+     When using custom libraries, use the gradle `implementation` directive
+     instead of `compileOnly`.
+     This will allow shadowJar to package the library into the resulting plugin and keep it
+     isolated within the same classloader.
+     */
 }
 
 tasks.assemble.dependsOn tasks.shadowJar
@@ -88,7 +102,9 @@ Building a project is as simple as calling
 ./gradlew shadowJar
 ----
 
-The resulting jar ending in `-all.jar` will exist, by default, in the `build/lib` directory of the project.
+**NOTE:** If the gradle wrapper does not yet exist, simply run `gradle wrapper` within the root of the project to generate the wrapper.
+
+The resulting jar will exist, by default, in the `build/libs` directory of the project.
 
 
 
