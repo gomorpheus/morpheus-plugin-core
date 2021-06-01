@@ -172,8 +172,8 @@ class MaasComputeUtility {
 		def apiPath = authConfig.basePath + '/machines/' + machineId + '/'
 		def headers = buildHeaders(['Accept':'application/json'])
 		def query = opts.query ?: [:]
-		def requestOpts = [headers:headers, query:query]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -194,8 +194,8 @@ class MaasComputeUtility {
 		def body = [:]
 		if(machineConfig.pool)
 			body.pool = machineConfig.pool
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType:'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'PUT')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -215,8 +215,8 @@ class MaasComputeUtility {
 		def query = opts.query ?: [:]
 		query.op = 'power_off'
 		def body = [:]
-		def requestOpts = [headers:headers, query:query, body:body]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -236,8 +236,8 @@ class MaasComputeUtility {
 		def query = opts.query ?: [:]
 		query.op = 'power_on'
 		def body = [:]
-		def requestOpts = [headers:headers, query:query, body:body]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -256,8 +256,8 @@ class MaasComputeUtility {
 		def headers = buildHeaders(['Accept':'application/json'])
 		def query = opts.query ?: [:]
 		query.op = 'query_power_state'
-		def requestOpts = [headers:headers, query:query]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'GET')
 		if(results.success) {
 			rtn.data = results.data
@@ -283,8 +283,8 @@ class MaasComputeUtility {
 			body.system_id = machineConfig.externalId
 		if(machineConfig.arch)
 			body.arch = machineConfig.arch
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -308,8 +308,8 @@ class MaasComputeUtility {
 		body.quick_erase = (opts.quick_erase != null) ? opts.quick_erase : true
 		if(opts.comment)
 			body.comment = opts.comment
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -337,8 +337,8 @@ class MaasComputeUtility {
 		if(machineConfig.osVersion)
 			body.distro_series = machineConfig.osVersion
 		//hwe_kernel, agent_name, bridge_all, bridge_stp, bridge_fd, comment, install_rackd, install_kvm, ephemeral_deploy, vcenter_registration
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -468,8 +468,8 @@ class MaasComputeUtility {
 		body.parents = bondConfig.parents
 		if(bondConfig.vlanId)
 			body.vlan = bondConfig.vlanId
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -494,8 +494,8 @@ class MaasComputeUtility {
 			body.name = interfaceConfig.name
 		if(interfaceConfig.macAddress)
 			body.mac_address = interfaceConfig.macAddress
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'PUT')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -519,8 +519,8 @@ class MaasComputeUtility {
 			body.tags = vlanConfig.tags
 		if(vlanConfig.mtu)
 			body.mtu = vlanConfig.mtu
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -547,8 +547,8 @@ class MaasComputeUtility {
 		if(vlanConfig.space)
 			body.space = vlanConfig.space
 		//body.vlan
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -576,8 +576,8 @@ class MaasComputeUtility {
 		body.allow_dns = 0
 		body.managed = 0
 		//body.vlan
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -603,8 +603,8 @@ class MaasComputeUtility {
 			body.ip_address = subnetConfig.ipAddress
 		if(subnetConfig.gateway)
 			body.default_gateway = subnetConfig.gateway
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -626,8 +626,8 @@ class MaasComputeUtility {
 		def body = [:]
 		if(linkConfig.linkId)
 			body.id = linkConfig.linkId
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -647,8 +647,8 @@ class MaasComputeUtility {
 		def query = opts.query ?: [:]
 		query.op = 'set_default_gateway'
 		def body = [link_id:linkId]
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -669,8 +669,8 @@ class MaasComputeUtility {
 		query.op = 'set_storage_layout'
 		def body = [:]
 		body.storage_layout = storageConfig.layout ?: 'flat'
-		def requestOpts = [headers:headers, query:query, body:body, bodyType:'multi-part-form']
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -688,8 +688,8 @@ class MaasComputeUtility {
 		def rtn = [success:false, error:false, data:null]
 		def apiPath = authConfig.basePath + '/nodes/' + machineId + '/interfaces/' + interfaceId + '/'
 		def headers = buildHeaders(['Accept':'application/json', 'Content-Type':'multipart/form-data'])
-		def requestOpts = [headers:headers]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -706,8 +706,8 @@ class MaasComputeUtility {
 		def rtn = [success:false, error:false, data:null]
 		def apiPath = authConfig.basePath + '/subnets/' + subnetId + '/'
 		def headers = buildHeaders(['Accept':'application/json', 'Content-Type':'multipart/form-data'])
-		def requestOpts = [headers:headers]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 		if(results.success == true) {
 			rtn.data = results.data
@@ -724,8 +724,8 @@ class MaasComputeUtility {
 		def rtn = [success:false, error:false, data:null]
 		def apiPath = authConfig.basePath + '/fabrics/' + fabricId + '/vlans/' + vlanId + '/'
 		def headers = buildHeaders(['Accept':'application/json', 'Content-Type':'multipart/form-data'])
-		def requestOpts = [headers:headers]
-		requestOpts.oauth = authConfig.oauth
+		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers)
+		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'DELETE')
 		if(results.success == true) {
 			rtn.data = results.data
