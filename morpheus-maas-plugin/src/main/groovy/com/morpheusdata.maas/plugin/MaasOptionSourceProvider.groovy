@@ -39,7 +39,7 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['maasPluginResourcePools', 'maasPluginReleaseModes'])
+		return new ArrayList<String>(['maasPluginResourcePools', 'maasPluginReleaseModes', 'massPluginImage', 'massZonePool'])
 	}
 
 	List<Map<String, Object>> maasPluginResourcePools(args) {
@@ -82,5 +82,22 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 				[name: 'Quick Delete', value: 'quick-delete'],
 				[name: 'Delete', value: 'delete']
 		]
+	}
+
+	def massPluginImage(args) {
+		log.debug "massPluginImage: ${args}"
+		def zoneId = args?.size() > 0 ? args.getAt(0)?.zoneId?.toLong() : null
+		List options = []
+		morpheus.virtualImage.listSyncProjections(zoneId).blockingSubscribe{options << [name: it.name, value: it.id]}
+		options
+	}
+
+	def massZonePool(args) {
+		log.debug "massZonePool: ${args}"
+		def zoneId = args?.size() > 0 ? args.getAt(0)?.zoneId?.toLong() : null
+		List options = []
+		String category = "maas.resourcepool.${zoneId}"
+		morpheus.cloud.pool.listSyncProjections(zoneId, category).blockingSubscribe{options << [name: it.name, value: it.id]}
+		options
 	}
 }

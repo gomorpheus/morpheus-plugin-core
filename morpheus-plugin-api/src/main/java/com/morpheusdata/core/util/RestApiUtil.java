@@ -21,6 +21,7 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -28,6 +29,8 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.DefaultHttpResponseParser;
 import org.apache.http.impl.conn.DefaultHttpResponseParserFactory;
 import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.io.DefaultHttpRequestWriterFactory;
 import org.apache.http.io.HttpMessageParser;
 import org.apache.http.io.HttpMessageParserFactory;
@@ -54,6 +57,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.Map;
 
 /**
  * Utility methods for calling external APIs in a standardized way.
@@ -80,7 +84,6 @@ public class RestApiUtil {
 		rtn.setData(data);
 
 		try {
-
 			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
@@ -137,10 +140,46 @@ public class RestApiUtil {
 				}
 			}
 
-
 			if (opts.body != null) {
-				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase)request;
-				postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase) request;
+				if(opts.contentType == "multi-part-form") {
+					MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+					String rowBoundary = "--" + java.util.UUID.randomUUID().toString() + "--";
+					Map<String, Object> bodyMap = (Map<String, Object>)opts.body;
+					for(String key : bodyMap.keySet()) {
+						Object v = bodyMap.get(key);
+						//if multiples..
+						if(v instanceof Collection) {
+							for(String rowValue : (Collection<String>)v) {
+								StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+								entityBuilder.addPart(key, rowBody);
+							}
+						} else {
+							Object rowValue;
+							//convert it
+							if(v instanceof CharSequence) {
+								rowValue = v;
+							} else {
+								rowValue = v.toString();
+							}
+							StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+							entityBuilder.addPart(key, rowBody);
+						}
+					}
+					entityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
+					entityBuilder.setBoundary(rowBoundary);
+					postRequest.setEntity(entityBuilder.build());
+					//replace the header
+					if(request.containsHeader("Content-Type")) {
+						//append the boundary
+						Header currentType = request.getFirstHeader("Content-Type");
+						String newValue = currentType.getValue();
+						newValue = newValue + "; boundary=" +  rowBoundary;
+						request.setHeader("Content-Type", newValue);
+					}
+				} else {
+					postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+				}
 			}
 
 			withClient(opts,(HttpClient client) -> {

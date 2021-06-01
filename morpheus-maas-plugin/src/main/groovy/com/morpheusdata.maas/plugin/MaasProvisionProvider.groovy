@@ -48,7 +48,29 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 	@Override
 	public Collection<OptionType> getOptionTypes(){
-		return new ArrayList<OptionType>()
+		OptionType imageOption = new OptionType()
+		imageOption.name = 'image'
+		imageOption.code = 'maas-image-plugin'
+		imageOption.fieldName = 'virtualImage'
+		imageOption.fieldContext = 'domain'
+		imageOption.fieldLabel = 'Image'
+		imageOption.inputType = OptionType.InputType.SELECT
+		imageOption.displayOrder = 100
+		imageOption.required = true
+		imageOption.optionSource = 'massPluginImage'
+
+		OptionType poolOption = new OptionType()
+		poolOption.name = 'resourcePoolId'
+		poolOption.code = 'maas-zone-pool'
+		poolOption.fieldName = 'resourcePoolId'
+		poolOption.fieldContext = 'config'
+		poolOption.fieldLabel = 'ResourcePool'
+		poolOption.inputType = OptionType.InputType.SELECT
+		poolOption.displayOrder = 200
+		poolOption.required = true
+		poolOption.optionSource = 'massZonePool'
+
+		[imageOption, poolOption]
 	}
 
 	@Override
@@ -96,19 +118,29 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 				}
 			}
 			lockId = "maas.provision.${cloud.id}".toString()
-			lock = morpheusContext.acquireLock(lockId, [timeout:maasTimeout])
+			lock = morpheusContext.acquireLock(lockId, [timeout:maasTimeout]).blockingGet()
 
 			String objCategory = "maas.server.${cloud.id}"
 			// Allocate a server
 			def authConfig = getAuthConfig(cloud)
-			def machineConfig = [body: [pool: instance.resourcePool.name, tags: [instance.plan.tagMatch, opts.tagMatch]]]
+			def machineConfig = [body: [pool: instance.resourcePool.name]]
+
+			if (instance.plan?.tagMatch && instance.plan?.tagMatch != 'null') {
+				machineConfig.body.tags = [instance.plan.tagMatch]
+			}
+			if (opts.tagMatch && opts.tagMatch != 'null') {
+				machineConfig.body.tags = machineConfig.body.tags ?: []
+				machineConfig.body.tags << opts.tagMatch
+			}
+
 			log.info("machineConfig: {}", machineConfig)
 			def allocateResults = MaasComputeUtility.allocateMachine(authConfig, machineConfig, opts)
 			log.info("allocateResults: {}", allocateResults)
 			if(allocateResults.success == true) {
 				log.info("Looking for server based on allocation results where externId == ${allocateResults.data.system_id}")
-				def server
-				morpheusContext.computeServer.listById([allocateResults.data.system_id]).subscribe{server = it}
+				def computeServers
+				morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { computeServers = it }
+				def server = computeServers.find { it.externalId == allocateResults.data.system_id }
 				if(!server) {
 					log.info("Syncing server allocated in MaaS but not found in Morpheus")
 					def addedMachine = MaasComputeUtility.loadMachine(authConfig, allocateResults.data.system_id, [:])
@@ -117,11 +149,15 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 					if(!server) {
 						throw new RuntimeException('no servers are available for provisioning')
 					}
+				} else {
+					// Fetch the 'real' server
+					server = morpheusContext.computeServer.get(server.id).blockingGet()
 				}
 				log.info("using server: {}", server)
 				server.status = 'reserved'
 				//layout
-				def containerImage = opts.containerImage
+				def containerImage
+				morpheus.virtualImage.listById([opts.instance.virtualImage.toLong()]).blockingSubscribe{ containerImage = it }
 				def containerOs = containerImage?.osType
 				server.hostname = instance.hostName
 				server.networkDomain = instance.networkDomain
@@ -138,11 +174,12 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			}
 		} catch(e) {
 			//throw it and let it fail things
-			log.error("error getting instance servers: ${e}")
+			log.error "error getting instance servers: ${e}", e
 			throw e
 		} finally {
-			if(lock && lockId)
-				morpheusContext.releaseLock(lockId, [lock:lock])
+			if(lock && lockId) {
+				morpheusContext.releaseLock(lockId, [lock: lock])
+			}
 		}
 		return rtn
 	}
