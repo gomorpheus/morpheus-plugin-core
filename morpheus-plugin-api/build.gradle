@@ -10,12 +10,17 @@ buildscript {
 
 
 apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 // apply plugin: "io.github.gradle-nexus.publish-plugin"
 
 group = 'com.morpheusdata'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 
 repositories {
     mavenLocal()
@@ -29,11 +34,12 @@ configurations {
 }
 
 dependencies {
-	implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
-	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
-	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
-	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
-	implementation 'com.github.jknack:handlebars:4.2.0'
+	api 'io.reactivex.rxjava2:rxjava:2.2.0'
+	api 'org.apache.httpcomponents:httpclient:4.5.3'
+	api 'org.apache.httpcomponents:httpcore:4.4.5'
+	api "org.slf4j:slf4j-parent:$slf4jVersion"
+	api 'com.github.jknack:handlebars:4.2.0'
+    api "org.slf4j:slf4j-api:1.7.26"
 	implementation 'javax.servlet:javax.servlet-api:3.0.1'
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	compileOnly('com.morpheusdata:cypher-core:0.5.1')
