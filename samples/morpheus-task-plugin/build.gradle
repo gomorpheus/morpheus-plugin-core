@@ -1,27 +1,18 @@
-buildscript {
-	repositories {
-		mavenLocal()
-		jcenter()
-	}
-	dependencies {
-		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
-	}
+plugins {
+	id "com.bertramlabs.asset-pipeline" version "3.3.2"
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
-
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
 version = '1.0.1'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()
-	jcenter()
 	mavenCentral()
 }
 

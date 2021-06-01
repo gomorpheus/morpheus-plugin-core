@@ -1,6 +1,6 @@
-== Contexts
+== Contexts / Services
 
-The Morpheus context allows you to interact with, query and save data with Morpheus. It is organized into several subContexts ( or Service Classes) to perform operations that may involve database calls or calling common methods within the Morpheus core that are not available directly. Some calls may be as simple as `listById` or `save`. But they can also be as complex as `executeSshCommand` or `executeWinrmCommand`. All calls within a Morpheus Context implement RxJava2 conventions. For details on how to program in Reactive syntax and RxJava concepts please see the documentation site http://reactivex.io/.
+The Morpheus context allows you to interact with, query and save data with Morpheus. It is organized into several sub service classes to perform operations that may involve database calls or calling common methods within the Morpheus core that are not available directly. Some calls may be as simple as `listById` or `save`. But they can also be as complex as `executeSshCommand` or `executeWinrmCommand`. All calls within a Morpheus Context implement RxJava2 conventions. For details on how to program in Reactive syntax and RxJava concepts please see the documentation site http://reactivex.io/.
 
 When interacting with various subcontexts it is helpful to know there is a common guideline on method names involving database calls. These common method names include:
 
@@ -13,16 +13,4 @@ When interacting with various subcontexts it is helpful to know there is a commo
 * `create`
 * `save`
 
-There are, of course, exceptions and non ORM related methods that also may exist in certain contexts that provide common helper methods.
-
-=== Network Context
-
-Network Context provides the ability to query and update network services such as IPAM, DNS, etc.
-
-=== Compute Context
-
-Compute context allows you to interact with compute resources such as servers
-
-=== Task Context
-
-Task Context allows you to disable tasks and access configuration about the context in which a task is executing.
+There are, of course, exceptions and non ORM related methods that also may exist in certain services that provide common helper methods. For a full listing of the various service classes please check the API Docs and look at the https://developer.morpheusdata.com/api/com/morpheusdata/core/MorpheusContext.html[MorpheusContext] class. There are several in line with general ORM calls as well as some related to certain actions.
