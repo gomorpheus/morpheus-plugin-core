@@ -51,6 +51,10 @@ public abstract class Plugin implements PluginInterface {
 	 * The list of custom controllers registered into the plugin
 	 */
 	protected List<PluginController> controllers = new ArrayList<>();
+
+	/**
+	 * The list of permissions this plugin provides that may affect display of other {@link UIExtensionProvider} based providers.
+	 */
 	protected List<Permission> permissions = new ArrayList<>();
 
 	/**
@@ -221,11 +225,20 @@ public abstract class Plugin implements PluginInterface {
 		this.name = name;
 	}
 
+	/**
+	 * Returns the file name of the jar the plugin is coming from. This can be useful for custom class loaders or determining
+	 * if a plugin should be reloaded
+	 * @return the file name of the jar the plugin resides in.
+	 */
 	@Override
 	public String getFileName() {
 		return this.fileName;
 	}
 
+	/**
+	 * Sets the file name of the jar the plugin was instantiated from for reference.
+	 * @param fileName the file name of the jar the plugin was loaded from
+	 */
 	@Override
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
