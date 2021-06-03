@@ -4,6 +4,8 @@ This library provides a common framework for extending the Morpheus Ops Orchestr
 
 The plugin architecture requires Morpheus 5 or later.
 
+**NOTE:** As of 0.9.x This repository should be compiled using Java 11.. But please ensure targetCompatibility in your build.gradle files is set to 1.8 as Morpheus runs in Java 8. This allows for html5 based javadoc to be generated.
+
 ## Creating a Plugin
 
 Ensure you are using a version of the plugin that is compatible with your version of Morpheus. See the releases tab for more info.
