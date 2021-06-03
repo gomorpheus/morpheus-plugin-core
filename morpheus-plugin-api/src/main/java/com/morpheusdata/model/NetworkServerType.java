@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-public class NetworkServerType {
+public class NetworkServerType extends MorpheusModel {
 	public String code;
 	public String name;
 	public String description;
