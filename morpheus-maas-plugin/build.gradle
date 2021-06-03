@@ -32,13 +32,11 @@ configurations {
 }
 
 dependencies {
-	provided project(':morpheus-plugin-api')
-	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
-	implementation "org.slf4j:slf4j-api:$slf4jVersion"
-	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
+	compileOnly project(':morpheus-plugin-api')
+	compileOnly "org.codehaus.groovy:groovy-all:$groovyVersion"
+	
 	implementation 'commons-net:commons-net:3.6'
-	implementation files('./lib/icmp4j.jar')
-	implementation "org.codehaus.gpars:gpars:1.2.1"
+	compileOnly "org.codehaus.gpars:gpars:1.2.1"
 	implementation project(':morpheus-apiutil-compat')
 
 	// Include morpheus-core and it's dependencies
