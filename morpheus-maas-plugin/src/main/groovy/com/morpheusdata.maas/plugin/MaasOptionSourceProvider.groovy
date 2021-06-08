@@ -149,9 +149,13 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 			if(networkServer?.zoneId) {
 				def zoneId = networkServer.zoneId
 				String category = "maas.vlans.${zoneId}"
-				morpheus.cloud.listReferenceDataById([fabricId.toLong()]).blockingSubscribe {
+				def refIds = []
+				morpheus.cloud.listReferenceDataByCategory(new Cloud(id: zoneId), category).blockingSubscribe { refIds << it.id }
+				morpheus.cloud.listReferenceDataById([fabricId.toLong()] as List<Long>).blockingSubscribe {
 					println "BOBW : MaasOptionSourceProvider.groovy:154 : rawdata ${it} ${it.value} ${fabricId}"
-					options << [name: it.name, value: it.id]
+					if (it.value?.toString() == fabricId?.toString()) { // we store the fabric_id as the 'value' in ref data
+						options << [name: it.name, value: it.value]
+					}
 				}
 			}
 		}
