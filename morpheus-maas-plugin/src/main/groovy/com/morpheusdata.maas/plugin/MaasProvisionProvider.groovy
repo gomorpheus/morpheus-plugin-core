@@ -90,7 +90,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 	@Override
 	String getName() {
-		return 'MaaS Plugin'
+		return 'MAAS Plugin'
 	}
 
 	@Override

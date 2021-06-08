@@ -40,7 +40,7 @@ class MaasCloudProvider implements CloudProvider {
 	Collection<OptionType> getOptionTypes() {
 		//MaaS
 		OptionType serviceUrl = new OptionType(
-				name: 'MaaS Api Url',
+				name: 'MAAS Api Url',
 				code: 'maas-service-url',
 				fieldName: 'serviceUrl',
 				displayOrder: 0,
@@ -102,7 +102,7 @@ class MaasCloudProvider implements CloudProvider {
 	@Override
 	Collection<ComputeServerType> getComputeServerTypes() {
 		ComputeServerType maasType = new ComputeServerType()
-		maasType.name = 'Plugin Maas Server'
+		maasType.name = 'Plugin MAAS Server'
 		maasType.code = 'maas-metal'
 		maasType.description = 'maas server'
 		maasType.platform = PlatformType.none
@@ -127,7 +127,7 @@ class MaasCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse validate(Cloud cloudInfo) {
-		log.info("MaaS validate")
+		log.info("MAAS validate")
 		return new ServiceResponse(success: true)
 	}
 
@@ -195,19 +195,21 @@ class MaasCloudProvider implements CloudProvider {
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 					//cache stuff
 					def cacheOpts = [:]
-//					//region controllers
+					//region controllers
 					cacheRegionControllers(cloud, cacheOpts)
-//					//rack controllers
+					//rack controllers
 					cacheRackControllers(cloud, cacheOpts)
-//					//resource pools
+					//resource pools
 					cacheResourcePools(cloud, cacheOpts)
-//					//machines
+					//machines
 					cacheMachines(cloud, cacheOpts)
-//					//images
+					//images
 					cacheImages(cloud, cacheOpts)
-//					//fabrocs
-//					cacheFabrics(zone, cacheOpts)
-//					//subnets
+					//fabrics
+					cacheFabrics(cloud, cacheOpts)
+					//spaces
+					cacheSpaces(cloud, cacheOpts)
+					//subnets
 					cacheSubnets(cloud, cacheOpts)
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				} else {
@@ -227,13 +229,15 @@ class MaasCloudProvider implements CloudProvider {
 		return rtn
 	}
 
+
+
 	protected def cacheReferenceData(Cloud cloud, String category, List<Map> apiItems) {
 		log.debug "cacheReferenceData: ${cloud} ${category} ${apiItems}"
 		try {
 			Observable<ReferenceDataSyncProjection> domainRecords = morpheusContext.cloud.listReferenceDataByCategory(cloud, category)
 			SyncTask<ReferenceDataSyncProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, apiItems)
 			syncTask.addMatchFunction { ReferenceDataSyncProjection domainObject, Map apiItem ->
-				domainObject.externalId == apiItem.system_id && domainObject.name == apiItem.hostname
+				domainObject.externalId == apiItem.externalId
 			}.onDelete { removeItems ->
 				log.debug "onDelete ${removeItems}"
 				morpheus.cloud.remove(removeItems).blockingGet()
@@ -267,7 +271,8 @@ class MaasCloudProvider implements CloudProvider {
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
 			log.info("region controllers to cache: $apiItems")
-			cacheReferenceData(cloud, category, apiItems)
+			def masterRefData = apiItems?.collect { [name: it.hostname, code: "$category.${it.system_id}", keyValue: it.system_id, value: it.fqdn, externalId: it.system_id] }
+			cacheReferenceData(cloud, category, masterRefData)
 		}
 	}
 
@@ -276,18 +281,20 @@ class MaasCloudProvider implements CloudProvider {
 		List<ReferenceData> itemsToSave = []
 		for(item in updateItems) {
 			def existingItem = item.existingItem
-			def name = item.masterItem.hostname
-			def code = "$category.${item.masterItem.system_id}"
-			def keyValue = item.masterItem.system_id
-			def value = item.masterItem.fqdn
-			def externalId = item.masterItem.system_id
+			def name = item.masterItem.name
+			def code = item.masterItem.code
+			def keyValue = item.masterItem.keyValue
+			def value = item.masterItem.value
+			def externalId = item.masterItem.externalId
+			def rawData = item.masterItem.rawData
 			if(existingItem.name != name || existingItem.code != code || existingItem.keyValue != keyValue
-					|| existingItem.value != value|| existingItem.externalId != externalId) {
-				item.existingItem.name = item.masterItem.name
-				item.existingItem.code = item.masterItem.code
-				item.existingItem.keyValue = item.masterItem.keyValue
-				item.existingItem.value = item.masterItem.value
-				item.existingItem.externalId = item.masterItem.externalId
+					|| existingItem.value != value || existingItem.externalId != externalId || existingItem.rawData != rawData) {
+				item.existingItem.name = name
+				item.existingItem.code = code
+				item.existingItem.keyValue = keyValue
+				item.existingItem.value = value
+				item.existingItem.externalId = externalId
+				item.existingItem.rawData = rawData
 				itemsToSave.add(item.existingItem)
 			}
 		}
@@ -299,12 +306,12 @@ class MaasCloudProvider implements CloudProvider {
 		List<ReferenceData> records = []
 		for(item in list) {
 			ReferenceData referenceData = new ReferenceData(
-					name: item.hostname,
-					code: "$category.${item.system_id}",
-					keyValue: item.system_id,
-					value: item.fqdn,
-					externalId: item.system_id,
-					type: 'string'
+					name: item.name,
+					code: item.code,
+					keyValue: item.keyValue,
+					value: item.value,
+					externalId: item.externalId,
+					type: item.type ?: 'string'
 			)
 			records.add(referenceData)
 		}
@@ -318,7 +325,8 @@ class MaasCloudProvider implements CloudProvider {
 		def apiResponse = MaasComputeUtility.listRackControllers(authConfig, opts)
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
-			cacheReferenceData(cloud, category, apiItems)
+			def masterRefData = apiItems?.collect { [name: it.hostname, code: "$category.${it.system_id}", keyValue: it.system_id, value: it.fqdn, externalId: it.system_id] }
+			cacheReferenceData(cloud, category, masterRefData)
 		}
 	}
 
@@ -467,6 +475,49 @@ class MaasCloudProvider implements CloudProvider {
 		}
 	}
 
+	def cacheFabrics(Cloud cloud, Map opts) {
+		log.debug "cacheFabrics ${cloud}"
+		try {
+			def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
+			def apiResponse = MaasComputeUtility.listFabrics(authConfig, opts)
+			if (apiResponse.success) {
+				List apiItems = apiResponse.data as List<Map>
+				String category = "maas.fabrics.${cloud.id}"
+				def masterRefData = apiItems?.collect { [name: it.name, code: "$category.${it.id}", keyValue: it.id, value: it.id, externalId: it.resource_uri, rawData: it.encodeAsJson().toString()] }
+				cacheReferenceData(cloud, category, masterRefData)
+
+				// Also.. handle all the VLANs
+				// Each VLAN is associated to a fabric.. collect them all up
+				def masterVlanData = []
+				category = "maas.vlans.${cloud.id}"
+				apiItems.each { fabricData ->
+					fabricData.vlans?.each { it ->
+						masterVlanData << [name: it.name, code: "$category.${it.id}", keyValue: it.id, value: it.fabric_id, externalId: it.resource_uri, rawData: it.encodeAsJson().toString()]
+					}
+				}
+				cacheReferenceData(cloud, category, masterVlanData)
+			}
+		} catch(e) {
+			log.error("cacheFabrics error: ${e}", e)
+		}
+	}
+
+	def cacheSpaces(Cloud cloud, Map opts) {
+		log.debug "cacheSpaces ${cloud}"
+		try {
+			def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
+			String category = "maas.spaces.${cloud.id}"
+			def apiResponse = MaasComputeUtility.listSpaces(authConfig, opts)
+			if (apiResponse.success) {
+				List apiItems = apiResponse.data as List<Map>
+				def masterRefData = apiItems?.collect { [name: it.name, code: "$category.${it.id}", keyValue: it.id, value: it.id, externalId: it.resource_uri] }
+				cacheReferenceData(cloud, category, masterRefData)
+			}
+		} catch(e) {
+			log.error("cacheSpaces error: ${e}", e)
+		}
+	}
+
 	def cacheSubnets(Cloud cloud, Map opts) {
 		log.debug "cacheSubnets ${cloud}"
 		try {
@@ -487,9 +538,9 @@ class MaasCloudProvider implements CloudProvider {
 						return new SyncTask.UpdateItem<Network,Map>(existingItem:network, masterItem:matchItem.masterItem)
 					}
 				}.onAdd { addItems ->
-					addMissingNetworks(cloud, addItems)
+					addMissingSubnets(cloud, addItems)
 				}.onUpdate{ updateItems ->
-					updateMatchedNetworks(cloud,updateItems)
+					updateMatchedSubnets(cloud,updateItems)
 				}.onDelete { removeItems ->
 					morpheus.network.remove(removeItems).blockingGet()
 				}.start()
@@ -499,12 +550,11 @@ class MaasCloudProvider implements CloudProvider {
 		} catch(e) {
 			log.error("cacheSubnets error: ${e}", e)
 		}
-
 	}
 
-	protected void addMissingNetworks(Cloud cloud, Collection<Map> addItems) {
+	protected void addMissingSubnets(Cloud cloud, Collection<Map> addItems) {
 		String objCategory = "maas.subnet.${cloud.id}"
-		NetworkType networkType = new NetworkType(code: "maasSubnet")
+		NetworkType networkType = new NetworkType(code: "plugin-maas-subnet-network")
 		Collection<Network> networksToAdd = addItems.collect {Map cloudItem ->
 			Network add = new Network(owner:cloud.owner, code:objCategory + ".${cloudItem.id}", category:objCategory,
 					externalId:"${cloudItem.id}", name:cloudItem.name, dhcpServer:(cloudItem.vlan?.dhcp_on),
@@ -519,16 +569,16 @@ class MaasCloudProvider implements CloudProvider {
 		}
 	}
 
-	protected void updateMatchedNetworks(Cloud cloud, List<SyncTask.UpdateItem<Network,Map>> updateItems) {
+	protected void updateMatchedSubnets(Cloud cloud, List<SyncTask.UpdateItem<Network,Map>> updateItems) {
 		List<Network> itemsToUpdate = []
 		for(updateMap in updateItems) {
 			def doUpdate = false
-			//set raw data
-//			def rawData = updateMap.masterItem.encodeAsJson().toString()
-//			if(updateMap.existingItem.rawData != rawData) {
-//				updateMap.existingItem.rawData = rawData
-//				doUpdate = true
-//			}
+			NetworkType networkType = new NetworkType(code: "plugin-maas-subnet-network")
+
+			if(updateMap.existingItem.type?.code != networkType.code) {
+				doUpdate = true
+				updateMap.existingItem.type = networkType
+			}
 			//save it
 			if(doUpdate) {
 				itemsToUpdate << updateMap.existingItem

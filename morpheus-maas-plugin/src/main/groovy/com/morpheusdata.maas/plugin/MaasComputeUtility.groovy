@@ -562,20 +562,21 @@ class MaasComputeUtility {
 	}
 
 	static createSubnet(Map authConfig, Map subnetConfig, Map opts) {
+		log.debug "createSubnet: ${subnetConfig} ${opts}"
 		def rtn = [success:false, error:false, data:null]
 		def apiPath = authConfig.basePath + '/subnets/'
 		def headers = buildHeaders(['Accept':'application/json', 'Content-Type':'multipart/form-data'])
 		def query = opts.query ?: [:]
-		def body = [name:subnetConfig.name]
+		def body = [name:subnetConfig.name, description: subnetConfig.description]
 		body.cidr = subnetConfig.cidr
-		body.vlan = subnetConfig.vlanId
-		if(subnetConfig.fabric)
-			body.fabric = subnetConfig.fabric
-		if(subnetConfig.gateway)
-			body.gateway_ip = subnetConfig.gateway
+		if(subnetConfig.fabricId)
+			body.fabric = subnetConfig.fabricId
+		if(subnetConfig.vlanId)
+			body.vlan = subnetConfig.vlanId
+		if(subnetConfig.gatewayIp)
+			body.gateway_ip = subnetConfig.gatewayIp
 		body.allow_dns = 0
 		body.managed = 0
-		//body.vlan
 		RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, queryParams: query as Map<String,String>, body:body, contentType: 'multi-part-form')
 		requestOpts.oauth = authConfig.oauth as RestApiUtil.RestOptions.OauthOptions
 		def results = RestApiUtil.callJsonApi(authConfig.apiUrl, apiPath, null, null, requestOpts, 'POST')

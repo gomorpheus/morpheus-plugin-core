@@ -139,4 +139,6 @@ public interface MorpheusNetworkService {
 
 	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
 
+	Single<NetworkServer> getNetworkServerById(Long id);
+
 }

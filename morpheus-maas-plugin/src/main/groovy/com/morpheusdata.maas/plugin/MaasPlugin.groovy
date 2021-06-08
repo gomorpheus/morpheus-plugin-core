@@ -13,10 +13,12 @@ class MaasPlugin extends Plugin {
 		def maasProvision = new MaasProvisionProvider(this, this.morpheus)
 		def maasCloud = new MaasCloudProvider(this, this.morpheus)
 		def maasOptionSourceProvider = new MaasOptionSourceProvider(this, morpheus)
+		def maasNetworkProvider = new MaasNetworkProvider(this, morpheus)
 
 		this.pluginProviders.put(maasProvision.code, maasProvision)
 		this.pluginProviders.put(maasCloud.code, maasCloud)
 		this.pluginProviders.put(maasOptionSourceProvider.code, maasOptionSourceProvider)
+		this.pluginProviders.put(maasNetworkProvider.code, maasNetworkProvider)
 	}
 
 	@Override

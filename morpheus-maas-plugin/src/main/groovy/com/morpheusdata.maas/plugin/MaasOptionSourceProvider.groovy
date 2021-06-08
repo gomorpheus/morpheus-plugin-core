@@ -34,12 +34,12 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 
 	@Override
 	String getName() {
-		return 'Maas Option Source Plugin'
+		return 'MAAS Option Source Plugin'
 	}
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['maasPluginResourcePools', 'maasPluginReleaseModes', 'massPluginImage', 'massZonePool'])
+		return new ArrayList<String>(['maasPluginResourcePools', 'maasPluginReleaseModes', 'massPluginImage', 'massZonePool', 'maasPluginFabrics', 'maasPluginSpaces', 'maasPluginVLANs'])
 	}
 
 	List<Map<String, Object>> maasPluginResourcePools(args) {
@@ -100,4 +100,75 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 		morpheus.cloud.pool.listSyncProjections(zoneId, category).blockingSubscribe{options << [name: it.name, value: it.id]}
 		options
 	}
+
+	def maasPluginFabrics(args) {
+		log.debug "maasPluginFabrics: ${args}"
+		List options = []
+		NetworkServer networkServer = getNetworkServerFromArgs(args)
+		if(networkServer?.zoneId) {
+			String category = "maas.fabrics.${networkServer.zoneId}"
+			def refIds = []
+			morpheus.cloud.listReferenceDataByCategory(new Cloud(id: networkServer.zoneId), category).blockingSubscribe {
+				refIds << it.id
+			}
+			morpheus.cloud.listReferenceDataById(refIds as List<Long>).blockingSubscribe {
+				options << [name: it.name, value: it.id]
+			}
+		}
+
+		options
+	}
+
+	def maasPluginSpaces(args) {
+		log.debug "maasPluginSpaces: ${args}"
+		List options = []
+		NetworkServer networkServer = getNetworkServerFromArgs(args)
+		if(networkServer?.zoneId) {
+			String category = "maas.spaces.${networkServer.zoneId}"
+			def refIds = []
+			morpheus.cloud.listReferenceDataByCategory(new Cloud(id: networkServer.zoneId), category).blockingSubscribe {
+				refIds << it.id
+			}
+			morpheus.cloud.listReferenceDataById(refIds as List<Long>).blockingSubscribe {
+				options << [name: it.name, value: it.id]
+			}
+		}
+		options
+	}
+
+	def maasPluginVLANs(args) {
+		log.debug "maasPluginVLANs: ${args}"
+		List options = []
+		def fabricId
+		if(args?.size() > 0) {
+			def opts = args.getAt(0)
+			fabricId = opts?.config?.fabric
+		}
+		if(fabricId) {
+			NetworkServer networkServer = getNetworkServerFromArgs(args)
+			if(networkServer?.zoneId) {
+				def zoneId = networkServer.zoneId
+				String category = "maas.vlans.${zoneId}"
+				morpheus.cloud.listReferenceDataById([fabricId.toLong()]).blockingSubscribe {
+					println "BOBW : MaasOptionSourceProvider.groovy:154 : rawdata ${it} ${it.value} ${fabricId}"
+					options << [name: it.name, value: it.id]
+				}
+			}
+		}
+		options
+	}
+
+	private getNetworkServerFromArgs(args) {
+		def networkServerId
+		if(args?.size() > 0) {
+			def opts = args.getAt(0)
+			networkServerId = opts?.network?.networkServer?.id
+		}
+		NetworkServer networkServer
+		if(networkServerId) {
+			networkServer = morpheus.network.getNetworkServerById(networkServerId.toLong()).blockingGet()
+		}
+		networkServer
+	}
+
 }
