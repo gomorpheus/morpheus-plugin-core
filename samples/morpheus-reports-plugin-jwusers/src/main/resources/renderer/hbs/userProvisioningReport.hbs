@@ -25,7 +25,7 @@
 			<tr>
 				<td><img style="border-radius:50%; margin: 10px auto;" src="{{dataMap.avatar}}"  border=3 border-radius=50 height=50 width=50></img></td>
 				<td>{{dataMap.name}}</td>
-				<td><div style="width:calc({{dataMap.count}}px * 3);height:auto;padding:auto;text-align: right;padding:10px;animation-duration: 2s;border-radius:2px; animation-name: grow; color:white;background-color:#248DC1;   animation-iteration-count:1;">{{dataMap.count}}</td>
+				<td><div style="width:calc({{dataMap.count}}px);max-width:1000px;min-width:10px;height:auto;padding:auto;text-align: right;padding:10px;animation-duration: 2s;border-radius:2px; animation-name: grow; color:white;background-color:#248DC1;   animation-iteration-count:1;">{{dataMap.count}}</td>
 			</tr>
 		{{/each}}
 	</tbody>

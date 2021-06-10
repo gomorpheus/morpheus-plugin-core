@@ -15,7 +15,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import io.reactivex.Observable;
-
 import java.sql.Connection
 
 /**
@@ -43,12 +42,12 @@ class CustomReportProvider extends AbstractReportProvider {
 
 	@Override
 	String getCode() {
-		'custom-report-user-provisioning'
+		'custom-report-costing-dashboard'
 	}
 
 	@Override
 	String getName() {
-		'User Provisioning Report'
+		'Costing Dashboard'
 	}
 
 	 ServiceResponse validateOptions(Map opts) {
@@ -64,23 +63,8 @@ class CustomReportProvider extends AbstractReportProvider {
 	HTMLResponse renderTemplate(ReportResult reportResult, Map<String, List<ReportResultRow>> reportRowsBySection) {
 		ViewModel<String> model = new ViewModel<String>()
 		model.object = reportRowsBySection
-		getRenderer().renderTemplate("hbs/userProvisioningReport", model)
+		getRenderer().renderTemplate("hbs/costingDashboard", model)
 	}
-
-	/**
-	 * Allows various sources used in the template to be loaded
-	 * @return
-	 */
-	@Override
-	ContentSecurityPolicy getContentSecurityPolicy() {
-		def csp = new ContentSecurityPolicy()
-		csp.scriptSrc = '*.jsdelivr.net'
-		csp.frameSrc = '*.digitalocean.com'
-		csp.imgSrc = '*.wikimedia.org'
-		csp.styleSrc = 'https: *.bootstrapcdn.com'
-		csp
-	}
-
 
 	void process(ReportResult reportResult) {
 		morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
@@ -90,25 +74,15 @@ class CustomReportProvider extends AbstractReportProvider {
 		
 		try {
 			dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
-			if(reportResult.configMap?.phrase) {
-				String phraseMatch = "${reportResult.configMap?.phrase}%"
-				results = new Sql(dbConnection).rows("select avatar_file_name as Avatar,CONCAT(first_name, ' ', last_name) AS User, user.id AS UserId, count(*) as Count from audit_log INNER JOIN user ON COALESCE (audit_log.actual_user_id, audit_log.user_id) = user.id where description LIKE '%save|instance Created%' and description like ${phraseMatch} and user_id is not null and audit_log.date_created BETWEEN NOW() - INTERVAL 90 DAY AND NOW() GROUP BY userid ORDER BY count(*) DESC LIMIT 0,10;")
-			} else {
-				results = new Sql(dbConnection).rows("select avatar_file_name as Avatar,CONCAT(first_name, ' ', last_name) AS User, user.id AS UserId, count(*) as Count from audit_log INNER JOIN user ON COALESCE (audit_log.actual_user_id, audit_log.user_id) = user.id where description LIKE '%save|instance Created%' and user_id is not null and audit_log.date_created BETWEEN NOW() - INTERVAL 90 DAY AND NOW() GROUP BY userid ORDER BY count(*) DESC LIMIT 0,10;")
-			}
+				results = new Sql(dbConnection).rows("select id as InvoiceId, account_name as AccountName, account_id as AccountId, total_cost as TotalCost, total_price as TotalPrice from account_invoice where total_cost != 0 and ref_type = 'Account' and period = '202104' ORDER BY total_cost DESC LIMIT 0,10;")
 		} finally {
 			morpheus.report.releaseDatabaseConnection(dbConnection)
 		}
 		log.info("Results: ${results}")
 		Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
 		observable.map{ resultRow ->
-      def String logo
-      if (resultRow.Avatar)
-        logo = "/storage/logos/uploads/User/${resultRow.UserId}/avatar/${resultRow.Avatar.tokenize(".").first()}_2x.${resultRow.Avatar.tokenize(".").last()}"
-      else
-        logo = "/assets/defaultUserImage.png"
-			log.info("Mapping resultRow ${resultRow}")
-			Map<String,Object> data = [avatar: logo, id: resultRow.UserId, count: resultRow.Count, name: resultRow.User]
+      log.info("Mapping resultRow ${resultRow}")
+			Map<String,Object> data = [invoice_id: resultRow.InvoiceId, account_name: resultRow.AccountName, account_id: resultRow.AccountId, account_total_cost: resultRow.TotalCost, account_total_price: resultRow.TotalPrice]
 			ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
 			log.info("resultRowRecord: ${resultRowRecord.dump()}")
 			return resultRowRecord
@@ -123,12 +97,12 @@ class CustomReportProvider extends AbstractReportProvider {
 
 	 @Override
 	 String getDescription() {
-		 return "Provides a Sample Report that lists Instances provisioned per user over past 90 days. This Report is not tenant scoped."
+		 return "Provides a Sample Costing Dashboard Report."
 	 }
 
 	 @Override
 	 String getCategory() {
-		 return 'inventory'
+		 return 'costing'
 	 }
 
 	 @Override
@@ -145,9 +119,25 @@ class CustomReportProvider extends AbstractReportProvider {
 	 Boolean getSupportsAllZoneTypes() {
 		 return true
 	 }
-
-	 @Override
+   
+   @Override
 	 List<OptionType> getOptionTypes() {
 		 [new OptionType(code: 'status-report-search', name: 'Search', fieldName: 'phrase', fieldContext: 'config', fieldLabel: 'Search Phrase', displayOrder: 0)]
 	 }
+   
+   /**
+    * Allows various sources used in the template to be loaded
+    *.cloudflare.com *.chartjs.org *.jsdelivr.net
+    * @return
+    */
+   @Override
+   ContentSecurityPolicy getContentSecurityPolicy() {
+     def csp = new ContentSecurityPolicy()
+     csp.scriptSrc = 'unsafe-eval'
+     csp.frameSrc = '*.digitalocean.com'
+     csp.imgSrc = '*.wikimedia.org'
+     csp.styleSrc = '*.bootstrapcdn.com'
+     csp
+   }
+   
  }
