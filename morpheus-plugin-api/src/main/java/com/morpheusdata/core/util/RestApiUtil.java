@@ -1,4 +1,5 @@
 package com.morpheusdata.core.util;
+
 import com.morpheusdata.response.ServiceResponse;
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
@@ -70,6 +71,7 @@ import org.xml.sax.SAXParseException;
  * @since 0.8.0
  */
 public class RestApiUtil {
+
 	static Logger log = LoggerFactory.getLogger(RestApiUtil.class);
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
@@ -452,7 +454,6 @@ public class RestApiUtil {
 			};
 		}
 
-
 		HttpMessageParserFactory<HttpResponse> responseParserFactory = new DefaultHttpResponseParserFactory() {
 			@Override
 			public HttpMessageParser<HttpResponse> create(SessionInputBuffer ibuffer, MessageConstraints constraints) {
@@ -510,6 +511,7 @@ public class RestApiUtil {
 	}
 
 	public static class RestOptions {
+	
 		Object body;
 		String contentType; //bodyType originally
 		Map<String,String> headers;
@@ -530,4 +532,5 @@ public class RestApiUtil {
 			String apiSecret;
 		}
 	}
+
 }
