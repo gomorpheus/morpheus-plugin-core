@@ -3,23 +3,30 @@ buildscript {
         mavenLocal()
         jcenter()
     }
+    
 }
 
 
 
+
 apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
+// apply plugin: "io.github.gradle-nexus.publish-plugin"
 
 group = 'com.morpheusdata'
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 
 repositories {
     mavenLocal()
     maven { url "https://dl.bintray.com/bertramlabs/gomorpheus/" }
     jcenter()
-	mavenCentral()
+    mavenCentral()
 }
 
 configurations {
@@ -27,19 +34,29 @@ configurations {
 }
 
 dependencies {
-	implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
-	implementation 'org.apache.httpcomponents:httpclient:4.5.3'
-	implementation 'org.apache.httpcomponents:httpcore:4.4.5'
-	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
-	implementation 'com.github.jknack:handlebars:4.2.0'
-	implementation 'javax.servlet:javax.servlet-api:3.0.1'
-	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+    api 'io.reactivex.rxjava2:rxjava:2.2.0'
+    api 'org.apache.httpcomponents:httpclient:4.5.3'
+    api 'org.apache.httpcomponents:httpcore:4.4.5'
+    api "org.slf4j:slf4j-parent:$slf4jVersion"
+    api 'com.github.jknack:handlebars:4.2.0'
+    api "org.slf4j:slf4j-api:1.7.26"
+    implementation 'javax.servlet:javax.servlet-api:3.0.1'
+    implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
     compileOnly('com.morpheusdata:cypher-core:0.5.1')
+    implementation 'org.glassfish:javax.json:1.1.4'
+    implementation 'javax.json:javax.json-api:1.1.4'
+    implementation 'commons-net:commons-net:3.7.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.5.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.5'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.10.5'
 
-	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
-	testImplementation "org.spockframework:spock-core:$spockVersion"
-	testImplementation 'cglib:cglib-nodep:3.3.0'
-	testImplementation 'org.objenesis:objenesis:3.1'
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+    implementation 'commons-net:commons-net:3.7.2'
+
+    testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+    testImplementation "org.spockframework:spock-core:$spockVersion"
+    testImplementation 'cglib:cglib-nodep:3.3.0'
+    testImplementation 'org.objenesis:objenesis:3.1'
 }
 
 sourceSets {
@@ -48,25 +65,11 @@ sourceSets {
     }
 }
 
-//Define bintrayUser and bintrayKey in ~/.gradle/gradle.properties
-bintray {
-    if(project.hasProperty('bintrayUser')) {
-        user = bintrayUser
-        key = bintrayKey
-    }
-    publications = ['maven']
-    pkg {
-        repo = 'gomorpheus'
-        userOrg = 'bertramlabs'
-        name = 'morpheus-plugin-api'
-        vcsUrl = 'https://github.com/gomorpheus/morpheus-core.git'
-        licenses = ['Apache-2.0']
-    }
-}
+
 
 java {
-	withSourcesJar()
-	withJavadocJar()
+    withSourcesJar()
+    withJavadocJar()
 }
 
 task morpheusJavaDoc(type: Javadoc) {
@@ -108,7 +111,28 @@ publishing {
             from components.java
         }
     }
+
+    repositories {
+        maven {
+            if( !isReleaseVersion ) {
+                url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+                if(project.hasProperty('labsNexusUser')) {
+                    credentials {
+                        username = labsNexusUser
+                        password = labsNexusPassword
+                    }
+                }
+            }
+        }
+    }
 }
+
+
+// signing {
+//     required { isReleaseVersion }
+//     sign publishing.publications.maven
+//     sign configurations.archives
+// }
 
 task(console, dependsOn: 'classes', type: JavaExec) {
   main = 'groovy.ui.Console'
@@ -121,5 +145,3 @@ test {
         showStandardStreams = true
     }
 }
-
-bintrayUpload.dependsOn build
