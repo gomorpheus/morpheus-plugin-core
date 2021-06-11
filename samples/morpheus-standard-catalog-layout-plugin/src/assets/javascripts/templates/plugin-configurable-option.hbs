@@ -1,0 +1,143 @@
+{{#if hidden}}
+<div class="form-group {{formGroupClass}} {{#if visibleOnCode}} visible-on-wrapper{{/if}} {{#if requiredOnCode}} require-on-wrapper{{/if}}" style="display:none;">
+{{else}}
+<div class="form-group {{formGroupClass}} {{#if visibleOnCode}} visible-on-wrapper{{/if}} {{#if requiredOnCode}} require-on-wrapper{{/if}}">
+{{/if}}
+	{{#unless isCheckbox}}
+	<label class="control-label col-sm-3" for="{{code}}">{{i18n label undefined defaultLabel}}</label>
+	{{/unless}}
+		<div class="col-sm-9 {{#unless hideLock}}lockable{{/unless}} {{blockClass}} {{#if isCheckbox}}checkbox-container col-sm-offset-3{{/if}}">
+		{{#if required}}
+			<span class="required-bar"></span>
+		{{/if}}
+		{{#unless isHidden}}
+		{{#unless hideLock}}
+			<label class="hide-toggle" {{#unless canHide}}style="display:none;"{{/unless}}>
+				<input type="checkbox" class="hide" name="hide.{{name}}" data-for-hidden="{{lockName}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			</label>
+			<label class="lock" {{#unless canLock}}style="display:none;"{{/unless}}>
+				<input type="checkbox" class="lock" name="lock.{{name}}" data-for="{{name}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			</label>
+		{{/unless}}
+		{{/unless}}
+		{{#if isHidden}}
+			<input type="hidden" id="{{code}}" class="form-control input-sm {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" value="{{value}}" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+		{{/if}}
+		{{#if isText}}
+			{{#if addOn}}
+				<div class="input-group input-group-sm {{inputGroupClass}}">
+			{{/if}}
+			<input type="text" id="{{code}}" class="form-control input-sm {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" value="{{value}}" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" autocomplete="new-username" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{#if addOn}}
+					<span class="input-group-addon">{{addOnLabel}}</span>
+				</div>
+			{{/if}}
+		{{/if}}
+		{{#if isNumber}}
+			{{#if addOn}}
+				<div class="input-group input-group-sm {{inputGroupClass}}">
+			{{/if}}
+			<input type="number" min="{{minValue}}" id="{{code}}" class="form-control input-sm {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" value="{{value}}" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{#if addOn}}
+					<span class="input-group-addon">{{addOnLabel}}</span>
+				</div>
+			{{/if}}
+		{{/if}}
+		{{#if isPassword}}
+			<input type="password" id="{{code}}" class="form-control input-sm {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" value="{{value}}" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" autocomplete="new-password" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>
+		{{/if}}
+		{{#if isMultiTypeahead}}
+			<m-typeahead class="custom-form-element {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" config="{{configStr}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" autocomplete="new-password" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}></m-typeahead>
+		{{/if}}
+		{{#if isRadio}}
+			<m-radio-group class="custom-form-element {{fieldClass}}" placeholder="{{placeHolder}}" name="{{name}}" config="{{configStr}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" autocomplete="new-password" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>
+			</m-radio-group>
+		{{/if}}
+		{{#if isCheckbox}}
+			<label class="">
+			{{#if isChecked}}
+				<input type="checkbox" id="{{code}}" class="form-control {{fieldClass}}" name="{{hiddenName}}" checked="true" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{else}}
+				<input type="checkbox" id="{{code}}" class="form-control {{fieldClass}}" name="{{hiddenName}}" data-option-type-id="{{id}}" data-code="{{code}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{/if}}
+			<span class="custom"></span>
+			<input type="hidden" name="{{name}}" value={{checkedValue}} {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			<span class="control-label">{{i18n label undefined defaultLabel}}</span></label>
+		{{/if}}
+		{{#if isSelect}}
+			{{#if optionSource}}
+				<m-multi-select class="custom-form-element {{fieldClass}}" name="{{name}}" config="{{configStr}}" data-editable="{{editable}}" data-visible-on="{{visibleOnCode}}" data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}></m-multi-select>
+			{{else}}
+				<select id="{{code}}" class="form-control input-sm {{fieldClass}}" name="{{name}}" data-value="{{value}}" data-no-blank="{{noBlank}}" data-option-type-id="{{id}}" data-code="{{code}}" data-default-value="{{defaultValue}}" data-visible-on="{{visibleOnCode}}" data-depends-on-code="{{dependsOnCode}}" data-required-on="{{requiredOnCode}}" data-depends-on-value="{{dependsOnValue}}" {{#if noOptions}}disabled="disabled"{{/if}} {{#if excludeFromSearch}}exclude-search="true"{{/if}}>
+					{{#unless noBlank}}
+						<option value="">{{i18n "gomorpheus.label.select"}}</option>
+					{{/unless}}
+					{{#each options}}
+						{{#if this.isSelected}}
+							<option value="{{this.value}}" selected>{{this.name}}</option>
+						{{else}}
+							<option value="{{this.value}}">{{this.name}}</option>
+						{{/if}}
+					{{/each}}
+				</select>
+			{{/if}}
+		{{/if}}
+{{!-- 		{{#if isTileSelect}}
+			  </div>
+			</div>
+			<div class="form-group option-tile-form-group {{formGroupClass}} {{#if visibleOnCode}} visible-on-wrapper{{/if}} {{#if requiredOnCode}} require-on-wrapper{{/if}}">
+				<div class="col-sm-12">
+			{{#if optionSource}}
+				<div class="option-tile-container {{fieldClass}}" data-name="{{name}}" data-value="{{value}}" data-no-blank="{{noBlank}}" data-option-type-id="{{id}}" 
+					data-code="{{code}}" data-default-value="{{defaultValue}}" data-visible-on="{{visibleOnCode}}" data-depends-on-code="{{dependsOnCode}}" 
+					data-option-source="{{optionSource}}" data-option-source-type="{{optionSourceType}}" config="{{configStr}}"
+					data-required-on="{{requiredOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-required="{{required}}"
+					{{#if noOptions}}disabled="disabled"{{/if}} {{#if excludeFromSearch}}exclude-search="true"{{/if}}>
+				</div>
+			{{else}}
+
+			{{/if}}
+		{{/if}} --}}
+		{{#if isCodeEditor }}
+			<textarea data-format="{{codeFormat}}" id="{{code}}" class="form-control input-sm spud-formatted-editor" name="{{name}}" placeholder="{{placeHolder}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>{{value}}</textarea>
+		{{/if}}
+		{{#if isTextarea }}
+			<textarea id="{{code}}" class="form-control input-sm {{fieldClass}}" name="{{name}}" placeholder="{{placeHolder}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>{{value}}</textarea>
+		{{/if}}
+		{{#if isTypeahead}}
+			<input type="text" class="typeahead form-control input-sm {{fieldClass}}" name="{{name}}" placeholder="{{placeHolder}}" value={{value}} data-depends-on-code="{{dependsOnCode}}" data-depends-on-value="{{dependsOnValue}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+		{{/if}}
+		{{#if isInstanceWiz}}
+			<button class="configure-instance">{{i18n "gomorpheus.label.configure"}}</button>
+			{{#if configEditable}}
+				<textarea data-format="{{codeFormat}}" id="{{code}}" class="form-control input-sm spud-formatted-editor" name="{{name}}" placeholder="{{placeHolder}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>{{value}}</textarea>
+			{{else}}
+				<input type="hidden" name="{{name}}" value="{{value}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{/if}}
+		{{/if}}
+		{{#if isAppWiz}}
+			<button class="configure-app">{{i18n "gomorpheus.label.configure"}}</button>
+			{{#if configEditable}}
+			<textarea data-format="{{codeFormat}}" id="{{code}}" class="form-control input-sm spud-formatted-editor" name="{{name}}" placeholder="{{placeHolder}}" data-visible-on="{{visibleOnCode}}" data-required-on="{{requiredOnCode}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}>{{value}}</textarea>
+			{{else}}
+				<input type="hidden" name="{{name}}" value="{{value}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			{{/if}}
+		{{/if}}
+		{{#if isLogo}}
+			<div class="icon-picker" data-name={{name}} data-context="{{context}}" data-icon-path="{{value}}" {{#if excludeFromSearch}}exclude-search="true"{{/if}}></div>
+			<label class="file-label catalog-logo" uploadtxt="{{i18n 'gomorpheus.action.uploadPhoto'}}" style="display:none;">
+			<input type="file" class="form-control icon-picker-file" name="{{name}}" data-preview disabled="disabled" {{#if excludeFromSearch}}exclude-search="true"{{/if}}/>
+			<span class="file-name" style="display:none;"></span>
+			</label>
+		{{/if}}
+		{{#if isCustomElement}}
+			<div>
+		{{{customElement}}}
+		</div>
+		{{/if}}
+		{{#if helpBlock}}
+		<div class="help-block" block-text="">{{{helpBlock}}}</div>
+		{{/if}}
+		<div class="help-block error-block" error-for="{{errorName}}"></div>
+	</div>
+</div>

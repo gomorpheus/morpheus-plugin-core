@@ -5,6 +5,7 @@ buildscript {
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+		classpath "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
 	}
 }
 
@@ -61,6 +62,18 @@ sourceSets {
 
 assets {
 	packagePlugin = false //set to true if this is a library
+	configOptions = [
+		handlebars: [
+			templateRoot: 'templates',
+			templatePathSeperator: '/',
+			wrapTemplate: '''
+	  	 (function(){
+			var template = HandlebarsCustom.template, templates = HandlebarsCustom.templates = HandlebarsCustom.templates || {};
+				templates['$templateName'] = template($compiledTemplate);
+		}());
+	  	'''
+		]
+	]
 }
 
 
