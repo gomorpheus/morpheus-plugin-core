@@ -37,7 +37,6 @@ dependencies {
 	
 	implementation 'commons-net:commons-net:3.6'
 	compileOnly "org.codehaus.gpars:gpars:1.2.1"
-	implementation project(':morpheus-apiutil-compat')
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')

@@ -1,6 +1,9 @@
 package com.morpheusdata.core.util
 
 import spock.lang.Specification
+import groovy.xml.*
+import java.io.StringWriter
+import com.morpheusdata.response.*
 
 class RestApiUtilSpec extends Specification {
 
@@ -59,6 +62,7 @@ class RestApiUtilSpec extends Specification {
 		resp.errors == [:]
 		resp.errorCode == "404"
 	}
+
 
 //	void "callApi - post multipart/form-data MAAS"() {
 //		given:
