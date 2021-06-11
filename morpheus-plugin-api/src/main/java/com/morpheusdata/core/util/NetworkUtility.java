@@ -321,7 +321,7 @@ public class NetworkUtility {
 					break;
 			}
 		}
-		return InetAddress.getByAddress(newAddress).toString();
+		return InetAddress.getByAddress(newAddress).getHostAddress();
 	}
 
 
