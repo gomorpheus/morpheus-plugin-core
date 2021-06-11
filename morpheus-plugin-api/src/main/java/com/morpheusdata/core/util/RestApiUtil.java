@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.config.MessageConstraints;
@@ -20,6 +21,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultHttpResponseFactory;
@@ -37,6 +39,7 @@ import org.apache.http.io.HttpMessageParserFactory;
 import org.apache.http.io.HttpMessageWriterFactory;
 import org.apache.http.io.SessionInputBuffer;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.LineParser;
 import org.apache.http.protocol.HttpContext;
@@ -58,6 +61,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map;
+import org.xml.sax.SAXParseException;
 
 /**
  * Utility methods for calling external APIs in a standardized way.
@@ -142,43 +146,63 @@ public class RestApiUtil {
 
 			if (opts.body != null) {
 				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase) request;
-				if(opts.contentType == "multi-part-form") {
-					MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-					String rowBoundary = "--" + java.util.UUID.randomUUID().toString() + "--";
-					Map<String, Object> bodyMap = (Map<String, Object>)opts.body;
-					for(String key : bodyMap.keySet()) {
-						Object v = bodyMap.get(key);
-						//if multiples..
-						if(v instanceof Collection) {
-							for(String rowValue : (Collection<String>)v) {
-								StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
-								entityBuilder.addPart(key, rowBody);
-							}
-						} else {
+				if(opts.body instanceof Map) {
+					if (opts.contentType == "form") {
+						List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
+						for (String key : bodyMap.keySet()) {
+							Object v = bodyMap.get(key);
 							Object rowValue;
-							//convert it
-							if(v instanceof CharSequence) {
+							if (v instanceof CharSequence) {
 								rowValue = v;
 							} else {
 								rowValue = v.toString();
 							}
-							StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
-							entityBuilder.addPart(key, rowBody);
+							urlParameters.add(new BasicNameValuePair(key, rowValue.toString()));
 						}
+						postRequest.setEntity(new UrlEncodedFormEntity(urlParameters));
+					} else if (opts.contentType == "multi-part-form") {
+						MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+						String rowBoundary = "--" + java.util.UUID.randomUUID().toString() + "--";
+						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
+						for (String key : bodyMap.keySet()) {
+							Object v = bodyMap.get(key);
+							//if multiples..
+							if (v instanceof Collection) {
+								for (String rowValue : (Collection<String>) v) {
+									StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+									entityBuilder.addPart(key, rowBody);
+								}
+							} else {
+								Object rowValue;
+								//convert it
+								if (v instanceof CharSequence) {
+									rowValue = v;
+								} else {
+									rowValue = v.toString();
+								}
+								StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+								entityBuilder.addPart(key, rowBody);
+							}
+						}
+						entityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
+						entityBuilder.setBoundary(rowBoundary);
+						postRequest.setEntity(entityBuilder.build());
+						//replace the header
+						if (request.containsHeader("Content-Type")) {
+							//append the boundary
+							Header currentType = request.getFirstHeader("Content-Type");
+							String newValue = currentType.getValue();
+							newValue = newValue + "; boundary=" + rowBoundary;
+							request.setHeader("Content-Type", newValue);
+						}
+					} else {
+						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
 					}
-					entityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
-					entityBuilder.setBoundary(rowBoundary);
-					postRequest.setEntity(entityBuilder.build());
-					//replace the header
-					if(request.containsHeader("Content-Type")) {
-						//append the boundary
-						Header currentType = request.getFirstHeader("Content-Type");
-						String newValue = currentType.getValue();
-						newValue = newValue + "; boundary=" +  rowBoundary;
-						request.setHeader("Content-Type", newValue);
-					}
+				} else if(opts.body instanceof byte[]) {
+					postRequest.setEntity(new ByteArrayEntity((byte[])opts.body));
 				} else {
-					postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+					postRequest.setEntity(new StringEntity(opts.body.toString()));
 				}
 			}
 
@@ -283,6 +307,39 @@ public class RestApiUtil {
 				rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
 			} catch(Exception e) {
 				log.debug("Error parsing API response JSON: ${e}", e);
+			}
+		}
+		return rtn;
+	}
+
+	static ServiceResponse callXmlApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
+		return callXmlApi(url, path, null, null, opts, "POST");
+	}
+
+	static ServiceResponse callXmlApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+		//encode the body
+		Object body = opts != null ? (opts.body) : null;
+		String bodyType = opts != null ? opts.contentType : null;
+
+		if(body != null) {
+			if(body instanceof String) {
+				opts.body = body.toString().getBytes("UTF-8");
+			}
+			//add xml content type if not set
+			opts.headers = addRequiredHeader(opts.headers, "Content-Type", "application/xml");
+		}
+		//execute
+		ServiceResponse rtn = callApi(url, path, username, password, opts, method);
+		rtn.setData(new LinkedHashMap());
+		if(rtn.getContent() != null && rtn.getContent().length() > 0) {
+			try {
+				rtn.setData(new groovy.util.XmlSlurper(false,true).parseText(rtn.getContent()));
+			}
+			catch (SAXParseException spe) {
+				log.debug("Response is NOT XML: ${rtn.content}");
+			}
+			catch(Exception e) {
+				log.debug("Error parsing API response XML: " + e.getMessage(), e);
 			}
 		}
 		return rtn;
