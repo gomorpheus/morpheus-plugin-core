@@ -45,6 +45,6 @@ class ContentSecurityPolicySpec extends Specification {
 		}
 
 		then:
-		csp == "default-src 'self' 'unsafe-eval'; script-src 'self' 'unsafe-eval' *.com *.yahoo.com; frame-src 'self' 'unsafe-eval' morpheusdata.com; style-src 'self' 'unsafe-eval' https:; connect-src 'self' 'unsafe-eval' https://example.com"
+		csp == "default-src 'self'; script-src 'unsafe-eval'; script-src 'self' 'unsafe-eval' *.com *.com; frame-src 'self' morpheusdata.com; style-src 'self' 'unsafe-eval' https:; connect-src 'self' https://example.com"
 	}
 }
