@@ -778,6 +778,7 @@ class MaasComputeUtility {
 						 externalId:machine.system_id, //internalId:machine.hardware_uuid, computeServerType:serverType,
 						 hostname:machine.hostname, //sshUsername:'unknown', serverVendor:machine.hardware_info?.system_vendor,
 						 // serverModel:machine.hardware_info?.system_product, serialNumber:machine.hardware_info?.system_serial,
+						status: 'provisioned',
 						 serverType:'metal', //statusMessage:machine.status_message
 		]
 		addConfig.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
