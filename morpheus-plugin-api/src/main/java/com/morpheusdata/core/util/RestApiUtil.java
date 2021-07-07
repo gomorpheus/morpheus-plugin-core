@@ -293,7 +293,7 @@ public class RestApiUtil {
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
 
-		if(body != null && !bodyType.equals("form") && !bodyType.equals("multi-part-form") && !(body instanceof String) ) {
+		if(body != null && (bodyType == null || (!bodyType.equals("form") && !bodyType.equals("multi-part-form"))) && !(body instanceof String)) {
 			opts.body = JsonOutput.toJson(opts.body);
 		}
 
