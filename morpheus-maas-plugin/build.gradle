@@ -63,7 +63,7 @@ sourceSets {
 	}
 }
 
-jar {
+shadowJar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.maas.plugin.MaasPlugin',

@@ -15,7 +15,8 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'asset-pipeline'
-
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 group = 'com.morpheusdata'
 version = '0.1.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -33,6 +34,7 @@ configurations {
 dependencies {
 	provided project(':morpheus-plugin-api')
 	provided('com.morpheusdata:cypher-core:0.5.1')
+	provided("com.bertramlabs.plugins:hcl4j:0.3.4")
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
