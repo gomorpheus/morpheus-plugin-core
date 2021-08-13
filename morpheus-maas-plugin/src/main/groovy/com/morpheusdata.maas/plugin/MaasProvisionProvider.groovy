@@ -139,8 +139,8 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			log.info("allocateResults: {}", allocateResults)
 			if(allocateResults.success == true) {
 				log.info("Looking for server based on allocation results where externId == ${allocateResults.data.system_id}")
-				def computeServers
-				morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { computeServers = it }
+				def computeServers = []
+				morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { computeServers << it }
 				def server = computeServers.find { it.externalId == allocateResults.data.system_id }
 				if(!server) {
 					log.info("Syncing server allocated in MaaS but not found in Morpheus")

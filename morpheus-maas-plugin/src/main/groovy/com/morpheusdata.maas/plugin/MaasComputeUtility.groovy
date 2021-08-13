@@ -4,6 +4,7 @@ import com.morpheusdata.core.util.ComputeUtility
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.response.ServiceResponse
@@ -785,6 +786,7 @@ class MaasComputeUtility {
 		addConfig.internalName = addConfig.name
 		addConfig.lvmEnabled = false
 		addConfig.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
+		addConfig.rootVolumeId = machine.boot_disk?.resource_uri
 		addConfig.dataDevice = addConfig.osDevice
 		addConfig.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
 		addConfig.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
@@ -794,8 +796,13 @@ class MaasComputeUtility {
 		addConfig.provision = false
 		addConfig.cloud = cloud
 		addConfig.account = cloud.account
+		if(machine.interface_set?.size() > 0) {
+			def firstNic = machine.interface_set.first()
+			addConfig.macAddress = firstNic.mac_address
+		}
 		log.debug("machineToComputeServer: {}", addConfig)
 		ComputeServer server = new ComputeServer(addConfig)
+		server.setComputeServerType(new ComputeServerType(code: 'maas-metal'))
 		server
 	}
 
@@ -818,9 +825,16 @@ class MaasComputeUtility {
 		new VirtualImage(addConfig)
 	}
 
-	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category) {
+	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category, poolMatchId, releaseMatchId) {
+		def cloudItemId = "${resourcePool.id}"
+		def poolReadOnly = false
+		if(poolMatchId)
+			poolReadOnly = (cloudItemId != poolMatchId)
+		else if(releaseMatchId)
+			poolReadOnly = (cloudItemId == releaseMatchId)
+
 		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description,
 				externalId: resourcePool.id, cloud:cloud, code: category + ".${resourcePool.id}", category: category,
-				refType:'ComputeZone', refId:cloud.id)
+				refType:'ComputeZone', refId:cloud.id, readOnly: poolReadOnly)
 	}
 }

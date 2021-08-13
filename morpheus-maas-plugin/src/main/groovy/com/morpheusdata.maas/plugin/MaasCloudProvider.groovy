@@ -107,6 +107,7 @@ class MaasCloudProvider implements CloudProvider {
 		maasType.description = 'maas server'
 		maasType.platform = PlatformType.none
 		maasType.bareMetalHost = true
+		maasType.managed = false
 		return [maasType]
 	}
 
@@ -385,10 +386,17 @@ class MaasCloudProvider implements CloudProvider {
 		if (apiResponse.success) {
 			List apiItems = apiResponse.data as List<Map>
 			log.info("resource pools to cache: $apiItems")
+
+			def configMap = cloud.getConfigMap()
+			def poolId = configMap.resourcePoolId
+			def releaseName = configMap.releasePoolName
+			def releaseMatchId = (releaseName != null && releaseName != '') ? "${releaseName}" : null
+			def poolMatchId = (poolId != null && poolId != '') ? "${poolId}" : null //string incase
+
 			Observable<ComputeZonePoolIdentityProjection> domainRecords = morpheus.cloud.pool.listSyncProjections(cloud.id, category)
 			SyncTask<ComputeZonePoolIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, apiItems)
 			syncTask.addMatchFunction { ComputeZonePoolIdentityProjection domainObject, Map apiItem ->
-				domainObject.externalId == apiItem.externalId
+				domainObject.externalId?.toString() == apiItem.id?.toString()
 			}.onDelete { removeItems ->
 				morpheus.cloud.pool.remove(removeItems).blockingGet()
 			}.onAdd { itemsToAdd ->
@@ -397,7 +405,7 @@ class MaasCloudProvider implements CloudProvider {
 					itemsToAdd = itemsToAdd.drop(50)
 					List<ComputeZonePool> itemsToSave = []
 					for(resourcePool in chunkedAddList) {
-						itemsToSave.add(MaasComputeUtility.resourcePoolToComputeZonePool(resourcePool, cloud, category))
+						itemsToSave.add(MaasComputeUtility.resourcePoolToComputeZonePool(resourcePool, cloud, category, poolMatchId, releaseMatchId))
 					}
 					morpheus.cloud.pool.create(itemsToSave).blockingGet()
 				}
@@ -412,9 +420,11 @@ class MaasCloudProvider implements CloudProvider {
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
 				List<ComputeZonePool> toSave = []
 				for(item in updateItems) {
-					ComputeZonePool computeZonePool = MaasComputeUtility.resourcePoolToComputeZonePool(item.masterItem, cloud)
+					ComputeZonePool computeZonePool = MaasComputeUtility.resourcePoolToComputeZonePool(item.masterItem, cloud, category, poolMatchId, releaseMatchId)
 					def existing = item.existingItem
 					if(computeZonePool.name != existing.name) {
+						toSave.add(computeZonePool)
+					} else if(computeZonePool.readOnly != existing.readOnly) {
 						toSave.add(computeZonePool)
 					}
 				}
@@ -427,8 +437,35 @@ class MaasCloudProvider implements CloudProvider {
 		def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 		def apiResponse = MaasComputeUtility.listMachines(authConfig, opts)
 		if (apiResponse.success) {
-			List apiItems = apiResponse.data as List<Map>
-			log.info("machines to cache: $apiItems")
+			List tmpApiItems = apiResponse.data as List<Map>
+
+			def configMap = cloud.getConfigMap()
+			def releaseName = configMap.releasePoolName
+			def releaseMatchId = (releaseName != null && releaseName != '') ? "${releaseName}" : null
+
+			// Fetch the pools
+			def poolListProjections = []
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe { poolListProjections << it }
+			def poolList = []
+			morpheusContext.cloud.pool.listById(poolListProjections.collect { it.id }).blockingSubscribe { poolList << it }
+
+			def apiItems = []
+			for(Map apiItem in tmpApiItems) {
+				// Filter machines based on the pool configured in the cloud settings
+				def poolMatch = apiItem?.pool?.id != null ? poolList?.find {
+					it.externalId == "${apiItem.pool.id}"
+				} : null
+				def syncMachine = false
+				if (poolMatch && poolMatch.readOnly == false)
+					syncMachine = true
+				else if (releaseMatchId && poolMatch && poolMatch.externalId == releaseMatchId)
+					syncMachine = true
+				if (syncMachine) {
+					apiItems << apiItem
+				}
+			}
+
+			log.info("machines to cache: ${apiItems.size()}")
 			Observable<ComputeServerIdentityProjection> domainRecords = morpheus.computeServer.listSyncProjections(cloud.id)
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, apiItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map apiItem ->

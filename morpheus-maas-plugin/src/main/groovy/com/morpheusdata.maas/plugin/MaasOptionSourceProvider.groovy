@@ -50,8 +50,8 @@ class MaasOptionSourceProvider implements OptionSourceProvider {
 			def authConfig
 			Map options = [:]
 			if(cloudArgs.zone) {
-				options.serviceUrl = cloudArgs.zone.serviceUrl
-				options.serviceToken = cloudArgs.zone.serviceToken
+				options.serviceUrl = URLDecoder.decode(cloudArgs.zone.serviceUrl)
+				options.serviceToken = URLDecoder.decode(cloudArgs.zone.serviceToken)
 				if (options.serviceUrl && options.serviceToken) {
 					authConfig = MaasProvisionProvider.getAuthConfig(options)
 				}
