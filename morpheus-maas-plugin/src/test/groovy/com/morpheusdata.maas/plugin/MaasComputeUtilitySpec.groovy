@@ -31,7 +31,7 @@ class MaasComputeUtilitySpec extends Specification {
 		Cloud cloud = new Cloud(id: 1, account: new Account(id: 2))
 
 		when:
-		ComputeServer server = MaasComputeUtility.machineToComputeServer(machine, cloud)
+		ComputeServer server = MaasComputeUtility.machineToComputeServer(machine, cloud, null, null, null)
 
 		then:
 		server.externalId == 'server1'
