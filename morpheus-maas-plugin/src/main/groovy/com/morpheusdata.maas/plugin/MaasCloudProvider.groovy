@@ -449,6 +449,16 @@ class MaasCloudProvider implements CloudProvider {
 			def poolList = []
 			morpheusContext.cloud.pool.listById(poolListProjections.collect { it.id }).blockingSubscribe { poolList << it }
 
+			// Fetch the plans
+			def servicePlanProjections = []
+			morpheusContext.servicePlan.listSyncProjections(cloud.id).blockingSubscribe { servicePlanProjections << it }
+			def typePlans = []
+			morpheusContext.servicePlan.listById(servicePlanProjections.collect { it.id }).blockingSubscribe {
+				if(it.tagMatch != null) {
+					typePlans << it
+				}
+			}
+
 			def apiItems = []
 			for(Map apiItem in tmpApiItems) {
 				// Filter machines based on the pool configured in the cloud settings
@@ -478,7 +488,8 @@ class MaasCloudProvider implements CloudProvider {
 					itemsToAdd = itemsToAdd.drop(50)
 					List<ComputeServer> itemsToSave = []
 					for(maasMachine in chunkedAddList) {
-						itemsToSave.add(MaasComputeUtility.machineToComputeServer(maasMachine, cloud))
+						def poolMatch = maasMachine?.pool?.id != null ? poolList?.find{ it.externalId == "${maasMachine.pool.id}" } : null
+						itemsToSave.add(MaasComputeUtility.machineToComputeServer(maasMachine, cloud, poolMatch, typePlans))
 					}
 					morpheus.computeServer.create(itemsToSave).blockingGet()
 				}
@@ -491,9 +502,10 @@ class MaasCloudProvider implements CloudProvider {
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
 				List<ComputeServer> toSave = []
 				for(item in updateItems) {
-					ComputeServer machine = MaasComputeUtility.machineToComputeServer(item.masterItem, cloud)
-					def existing = item.existingItem
-					if(machine.name != existing.name) {
+					def poolMatch = item.masterItem.pool?.id != null ? poolList?.find{ it.externalId == "${item.masterItem.pool.id}" } : null
+					ComputeServer machine = MaasComputeUtility.machineToComputeServer(item.masterItem, cloud, poolMatch, typePlans, item.existingItem)
+					machine.id = item.existingItem.id
+					if(hasChanges(item.existingItem, machine)) {
 						toSave.add(machine)
 					}
 				}
@@ -572,5 +584,23 @@ class MaasCloudProvider implements CloudProvider {
 		if(itemsToUpdate.size() > 0) {
 			morpheusContext.network.save(itemsToUpdate).blockingGet()
 		}
+	}
+
+	protected Boolean hasChanges(ComputeServer a, ComputeServer b) {
+		Boolean differ = a.name != b.name ||
+				a.internalName != b.internalName ||
+				a.hostname != b.hostname ||
+				a.consoleHost != b.consoleHost ||
+				a.rootVolumeId != b.rootVolumeId ||
+				a.dataDevice != b.dataDevice ||
+				a.powerState != b.powerState ||
+				a.tags != b.tags ||
+				a.maxStorage != b.maxStorage ||
+				a.maxMemory != b.maxMemory ||
+				a.maxCores != b.maxCores ||
+				a.status != b.status ||
+				(b.resourcePool != null && (a.resourcePool == null || (a.resourcePool.id != b.resourcePool.id))) ||
+				a.provision != b.provision;
+		return differ;
 	}
 }

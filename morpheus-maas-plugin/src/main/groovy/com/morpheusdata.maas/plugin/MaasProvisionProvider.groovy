@@ -592,6 +592,11 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	Boolean hasPlanTagMatch() {
+		true
+	}
+
+	@Override
 	Integer getMaxNetworks() {
 		0
 	}
