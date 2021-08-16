@@ -64,26 +64,28 @@ class FileWatcherProvider implements ApprovalProvider {
 				approvalsDir.mkdir()
 			}
 			File file = new File("$approvalsDirName/${externalRequestId}.txt")
-
-			if(file.createNewFile()) {
-				println "created file $file.absolutePath"
-				resp = new RequestResponse(
-						success: true,
-						externalRequestId: externalRequestId,
-						externalRequestName: 'AO Request 123',
-						references: []
-				)
-				instances.each {
-					resp.references << new RequestReference(refId: it.id, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
+			if(!file.exists()) {
+				if(!file.createNewFile()) {
+					println "failed to create file $file.absolutePath"
+					resp = new RequestResponse(success: false)
+					return resp
 				}
-				String fileContents = """requested
+			}
+			println "created file $file.absolutePath"
+			resp = new RequestResponse(
+					success: true,
+					externalRequestId: externalRequestId,
+					externalRequestName: 'AO Request 123',
+					references: []
+			)
+			instances.each {
+				resp.references << new RequestReference(refId: it.id, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
+			}
+			String fileContents = """requested
 ${resp.references*.externalId.join(',')}
 """
-				file.write(fileContents)
-			} else {
-				println "failed to create file $file.absolutePath"
-				resp = new RequestResponse(success: false)
-			}
+			file.write(fileContents)
+
 		} catch(Exception e) {
 			println e.message
 			resp = new RequestResponse(success: false)

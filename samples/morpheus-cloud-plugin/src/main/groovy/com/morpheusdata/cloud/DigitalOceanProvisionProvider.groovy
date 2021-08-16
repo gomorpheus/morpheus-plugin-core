@@ -99,6 +99,11 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
+	Boolean hasPlanTagMatch() {
+		false
+	}
+
+	@Override
 	Integer getMaxNetworks() {
 		return 1
 	}

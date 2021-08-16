@@ -20,6 +20,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 	static maasTimeout = 30l * 1000l // 30 min
 	def enabledStatusList = [0, 1, 4, 5, 10, 21, 6, 9, 11, 12, 13, 14, 15]
+	def provisionStatusList = [4]
 
 	MaasProvisionProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
@@ -138,8 +139,8 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			log.info("allocateResults: {}", allocateResults)
 			if(allocateResults.success == true) {
 				log.info("Looking for server based on allocation results where externId == ${allocateResults.data.system_id}")
-				def computeServers
-				morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { computeServers = it }
+				def computeServers = []
+				morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { computeServers << it }
 				def server = computeServers.find { it.externalId == allocateResults.data.system_id }
 				if(!server) {
 					log.info("Syncing server allocated in MaaS but not found in Morpheus")
@@ -383,6 +384,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 	@Override
 	ServiceResponse stopWorkload(Workload workload) {
+		log.debug "stopWorkload: ${workload}"
 		def rtn = [success:false]
 		try {
 			if(workload.server?.internalId) {
@@ -489,7 +491,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			log.error("removeWorkload error: {}", e)
 			rtn.msg = e.message
 		}
-		return new ServiceResponse(rtn)
+		return new ServiceResponse([success: rtn.success, msg: rtn.msg])
 	}
 
 	def releaseServer(ComputeServer server, Map opts) {
@@ -590,6 +592,11 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	Boolean hasPlanTagMatch() {
+		true
+	}
+
+	@Override
 	Integer getMaxNetworks() {
 		0
 	}
@@ -662,17 +669,17 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		log.debug "addSingleMaaSCloudItem ${cloudItem} ${cloud} ${resourcePool} ${plan} ${objCategory}"
 
 		def serverType = new ComputeServerType(code: 'maas-metal')
-		def addConfig = [account:cloud.owner, category:objCategory, cloud:cloud, name:cloudItem.hostname,
+		def addConfig = [account:cloud.owner, cloud:cloud, name:cloudItem.hostname,
 		                 externalId:cloudItem.system_id, internalId:cloudItem.hardware_uuid, computeServerType:serverType,
 		                 sshUsername:'unknown', serverVendor:cloudItem.hardware_info?.system_vendor, hostname:cloudItem.hostname,
 		                 serverModel:cloudItem.hardware_info?.system_product, serialNumber:cloudItem.hardware_info?.system_serial,
 		                 hostname:cloudItem.hostname, serverType:'metal', statusMessage:cloudItem.status_message
 		]
-		addConfig.consoleHost = cloudItem?.ip_addresses?.first() // host console address
+		addConfig.consoleHost = cloudItem?.ip_addresses?.getAt(0) // host console address
 		addConfig.internalName = addConfig.name
 		addConfig.osDevice = cloudItem.boot_disk?.id_path ?: '/dev/sda'
 		addConfig.rootVolumeId = cloudItem.boot_disk?.resource_uri
-		addConfig.powerState = PowerState.valueOf((cloudItem.power_state == 'on' ? 'on' : (cloudItem.power_state == 'off' ? 'off' : 'unknown')))
+		addConfig.powerState = (cloudItem.power_state == 'on' ? 'on' : (cloudItem.power_state == 'off' ? 'off' : 'unknown'))
 		addConfig.tags = cloudItem.tag_names?.join(',')
 		addConfig.maxStorage = (cloudItem.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
 		addConfig.maxMemory = (cloudItem.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
@@ -680,7 +687,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		addConfig.status = getServerStatus(cloudItem.status)
 		addConfig.enabled = enabledStatusList.contains(cloudItem.status)
 		addConfig.resourcePool = resourcePool
-		addConfig.provision = canProvision(zone, addConfig.tags, cloudItem.status)
+		addConfig.provision = canProvision(cloud, addConfig.tags, cloudItem.status)
 		addConfig.plan = plan
 		log.info("addConfig: {}", addConfig)
 
@@ -704,7 +711,8 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		}
 
 		// Refetch the server that was just created
-		def serverIdentities = morpheusContext.computeServer.listSyncProjections(cloud.id).blockingGet()
+		def serverIdentities
+		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { serverIdentities = it }
 		def serverId = serverIdentities.find { it.externalId == addConfig.externalId }.id.toLong()
 		return morpheusContext.computeServer.get(serverId).blockingGet()
 	}
@@ -754,6 +762,13 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			default:
 				rtn = 'unknown'
 		}
+		return rtn
+	}
+
+	private canProvision(Cloud cloud, String tags, Integer status) {
+		log.debug "canProvision: ${cloud} ${tags} ${status}"
+		def rtn = provisionStatusList.contains(status)
+		// Might add Available Filter check here.. provided in the built-in MAAS cloud from morpheus
 		return rtn
 	}
 }

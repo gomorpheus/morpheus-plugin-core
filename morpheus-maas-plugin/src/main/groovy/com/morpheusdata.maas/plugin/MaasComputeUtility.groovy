@@ -4,7 +4,9 @@ import com.morpheusdata.core.util.ComputeUtility
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
+import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
@@ -17,7 +19,9 @@ class MaasComputeUtility {
 	static maxReleaseWaitAttempts = 200
 	static maxDeployWaitAttempts = 400
 
+	static assignedStatusList = [10, 5, 6, 9, 11, 12, 13, 14, 15]
 	static errorStatusList = [2, 3, 7, 8, 13, 15, 16, 17, 18, 19, 20, 22]
+	static provisionStatusList = [4]
 
 	static testConnection(Map authConfig, Map opts) {
 		def rtn = [success:false, invalidLogin:false]
@@ -770,7 +774,7 @@ class MaasComputeUtility {
 		return rtn
 	}
 
-	static ComputeServer machineToComputeServer(Map machine, Cloud cloud) {
+	static ComputeServer machineToComputeServer(Map machine, Cloud cloud, ComputeZonePool resourcePool, List<ServicePlan> typePlans, ComputeServer existingServer = null) {
 		log.debug "machineToComputeServer: ${groovy.json.JsonOutput.prettyPrint(machine.encodeAsJson().toString())} ${cloud}"
 		ComputeZonePool pool = new ComputeZonePool(externalId: machine.pool.id)
 
@@ -778,23 +782,44 @@ class MaasComputeUtility {
 						 externalId:machine.system_id, //internalId:machine.hardware_uuid, computeServerType:serverType,
 						 hostname:machine.hostname, //sshUsername:'unknown', serverVendor:machine.hardware_info?.system_vendor,
 						 // serverModel:machine.hardware_info?.system_product, serialNumber:machine.hardware_info?.system_serial,
+						status: 'provisioned',
 						 serverType:'metal', //statusMessage:machine.status_message
 		]
 		addConfig.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
 		addConfig.internalName = addConfig.name
 		addConfig.lvmEnabled = false
 		addConfig.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
+		addConfig.rootVolumeId = machine.boot_disk?.resource_uri
 		addConfig.dataDevice = addConfig.osDevice
 		addConfig.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
+		addConfig.tags = machine.tag_names?.join(',')
 		addConfig.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
 		addConfig.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
 		addConfig.maxCores = (machine.cpu_count ?: 1)
-		addConfig.resourcePool = pool
-		addConfig.provision = false
+		addConfig.resourcePool = resourcePool
+		addConfig.provision = canProvision(machine.status)
 		addConfig.cloud = cloud
 		addConfig.account = cloud.account
+		addConfig.status = getServerStatus(machine.status)
+		addConfig.plan = findServicePlanMatch(typePlans, addConfig.tags)
+
+		if(machine.interface_set?.size() > 0) {
+			def firstNic = machine.interface_set.first()
+			addConfig.macAddress = firstNic.mac_address
+		}
+
+		// Do not modify the hostname and name if provisioning
+		if(assignedStatusList.contains(machine.status) && existingServer) {
+			addConfig.hostname = existingServer.hostname
+			addConfig.name = existingServer.name
+		}
+
 		log.debug("machineToComputeServer: {}", addConfig)
 		ComputeServer server = new ComputeServer(addConfig)
+		server.setComputeServerType(new ComputeServerType(code: 'maas-metal'))
+
+
+
 		server
 	}
 
@@ -817,9 +842,79 @@ class MaasComputeUtility {
 		new VirtualImage(addConfig)
 	}
 
-	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category) {
+	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category, poolMatchId, releaseMatchId) {
+		def cloudItemId = "${resourcePool.id}"
+		def poolReadOnly = false
+		if(poolMatchId)
+			poolReadOnly = (cloudItemId != poolMatchId)
+		else if(releaseMatchId)
+			poolReadOnly = (cloudItemId == releaseMatchId)
+
 		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description,
 				externalId: resourcePool.id, cloud:cloud, code: category + ".${resourcePool.id}", category: category,
-				refType:'ComputeZone', refId:cloud.id)
+				refType:'ComputeZone', refId:cloud.id, readOnly: poolReadOnly)
+	}
+
+	private static getServerStatus(Integer status) {
+		def rtn = 'unknown'
+		switch(status) {
+			case 0: //new
+			case 1: //commissioning
+				rtn = 'discovered'
+				break
+			case 2: //failed commisionig
+			case 3: //missing
+			case 7: //retired
+			case 8: //broken
+			case 13: //failed releasing
+			case 15: //failed disk erase
+			case 16: //rescue
+			case 17: //entering rescue
+			case 18: //rescue failed
+			case 19: //exiting rescue
+			case 20: //failed exiting rescue
+			case 22: //testing failed
+				rtn = 'error'
+				break
+			case 4: //ready
+				rtn = 'available'
+				break
+			case 5: //reserved
+			case 10: //allocated
+			case 21: //testing
+				rtn = 'reserved'
+				break
+			case 6: //deployed
+				rtn = 'provisioned'
+				break
+			case 9: //deploying
+				rtn = 'provisioning'
+				break
+			case 11: //failed
+				rtn = 'failed'
+				break
+			case 12: //releasing
+			case 14: //disk erasing
+				rtn = 'removing'
+				break
+			default:
+				rtn = 'unknown'
+		}
+		return rtn
+	}
+
+	private static findServicePlanMatch(Collection servicePlans, String tags) {
+		def rtn
+		if(servicePlans?.size() > 0) {
+			if(tags) {
+				def tagList = tags.toLowerCase().split(',')
+				rtn = servicePlans.find{ tagList.contains(it.tagMatch.toLowerCase()) }
+			}
+		}
+		return rtn
+	}
+
+	private static canProvision(Integer status) {
+		return provisionStatusList.contains(status)
 	}
 }

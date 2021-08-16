@@ -43,6 +43,12 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean hasNetworks();
 
 	/**
+	 * Determines if this provision type supports service plans that expose the tag match property.
+	 * @return Boolean representation of whether or not service plans expose the tag match property.
+	 */
+	public Boolean hasPlanTagMatch();
+
+	/**
 	 * Returns the maximum number of network interfaces that can be chosen when provisioning with this type
 	 * @return maximum number of networks or 0,null if unlimited.
 	 */
