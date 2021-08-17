@@ -4,6 +4,7 @@ package com.morpheusdata.test
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
 import com.morpheusdata.core.integration.MorpheusIntegrationService
 import com.morpheusdata.core.network.MorpheusNetworkService
@@ -32,6 +33,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusVirtualImageService virtualImageContext
 	protected MorpheusServicePlanService servicePlanContext
 	protected MorpheusComputeServerService computeServerContext
+	protected MorpheusOsTypeService osTypeContext
 
     MorpheusContextImpl() {
         cloudContext = new MorpheusCloudServiceImpl()
@@ -40,6 +42,7 @@ class MorpheusContextImpl implements MorpheusContext {
 		virtualImageContext = new MorpheusVirtualImageContextImpl()
 		servicePlanContext = new MorpheusServicePlanServiceImpl()
 		computeServerContext = new MorpheusComputeServerServiceImpl()
+	    osTypeContext = new MorpheusOsTypeServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -71,6 +74,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusTaskService getTask() {
 		return taskContext
+	}
+
+	@Override
+	MorpheusOsTypeService getOsType() {
+		return osTypeContext
 	}
 
 	/**

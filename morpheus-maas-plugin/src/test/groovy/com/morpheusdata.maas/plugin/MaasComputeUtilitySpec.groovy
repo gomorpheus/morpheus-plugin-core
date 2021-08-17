@@ -15,7 +15,7 @@ class MaasComputeUtilitySpec extends Specification {
 		Cloud cloud = new Cloud(id: 1)
 
 		when:
-		VirtualImage image = MaasComputeUtility.bootImageToVirtualImage(cloud, apiResponse)
+		VirtualImage image = MaasComputeUtility.bootImageToVirtualImage(cloud, apiResponse, null)
 
 		then:
 		image.code == 'maas.image.1.ubuntu/16.04'

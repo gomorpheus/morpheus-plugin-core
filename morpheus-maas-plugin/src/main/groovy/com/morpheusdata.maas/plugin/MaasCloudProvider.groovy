@@ -324,6 +324,9 @@ class MaasCloudProvider implements CloudProvider {
 		morpheusContext.cloud.listReferenceDataByCategory(cloud, category).blockingSubscribe {
 			rackControllers << it
 		}
+		def osTypes = []
+		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
+
 		log.info("cached rackControllers category=$category: $rackControllers")
 		rackControllers.each { rack ->
 			def apiResponse = MaasComputeUtility.listImages(authConfig, rack.externalId, opts)
@@ -342,7 +345,7 @@ class MaasCloudProvider implements CloudProvider {
 							itemsToAdd = itemsToAdd.drop(50)
 							List<VirtualImage> itemsToSave = []
 							for(cloudImage in chunkedAddList) {
-								itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage))
+								itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage, osTypes))
 							}
 							morpheus.virtualImage.create(itemsToSave, cloud).blockingGet()
 						}
@@ -358,12 +361,13 @@ class MaasCloudProvider implements CloudProvider {
 						List<VirtualImage> toSave = []
 						try {
 							for (item in updateItems) {
-								VirtualImage virtualImage = MaasComputeUtility.bootImageToVirtualImage(cloud, item.masterItem)
+								VirtualImage virtualImage = MaasComputeUtility.bootImageToVirtualImage(cloud, item.masterItem, osTypes)
 								virtualImage.id = item.existingItem.id
 								def existing = item.existingItem
 								if (virtualImage.category != existing.category || virtualImage.code != existing.code
 										|| virtualImage.name != existing.name || virtualImage.imageType != existing.imageType
-										|| virtualImage.externalId != existing.externalId) {
+										|| virtualImage.externalId != existing.externalId || virtualImage.osType?.id != existing.osType?.id
+										|| virtualImage.platform != existing.platform) {
 									toSave.add(virtualImage)
 								}
 							}

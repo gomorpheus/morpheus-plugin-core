@@ -6,6 +6,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
+import com.morpheusdata.model.OsType
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.response.ServiceResponse
@@ -823,7 +824,7 @@ class MaasComputeUtility {
 		server
 	}
 
-	static VirtualImage bootImageToVirtualImage(Cloud cloud, Map bootImage) {
+	static VirtualImage bootImageToVirtualImage(Cloud cloud, Map bootImage, List<OsType> osTypes) {
 		log.debug "bootImageToVirtualImage ${cloud} ${bootImage}"
 		String objCategory = "maas.image.${cloud.id}"
 		def addConfig = [
@@ -837,8 +838,8 @@ class MaasComputeUtility {
 
 		//add extra stuff?
 		//parse the os stuff
-//		addConfig.osType = findOsTypeMatch(osTypes, cloudItem.name, (cloudItem.architecture == 'amd64' ? 64 : 32))
-//		addConfig.platform = addConfig.osType?.platform
+		addConfig.osType = findOsTypeMatch(osTypes, bootImage.name, (bootImage.architecture == 'amd64' ? 64 : 32))
+		addConfig.platform = addConfig.osType?.platform
 		new VirtualImage(addConfig)
 	}
 
@@ -916,5 +917,21 @@ class MaasComputeUtility {
 
 	private static canProvision(Integer status) {
 		return provisionStatusList.contains(status)
+	}
+
+	private static findOsTypeMatch(Collection osTypes, String name, Integer bitCount) {
+		def rtn
+		def nameList = name.tokenize('/')
+		//first token should match the osName on an os type
+		def osName = nameList[0]
+		//second should be version to search codename or version
+		def osVersion = nameList[1]
+		//find it?
+		def nameMatches = osTypes?.findAll{ it.osName == osName && bitCount == bitCount }
+		//narrow it down
+		rtn = nameMatches?.find{ it.osVersion == osVersion || it.osCodename == osVersion }
+		if(!rtn)
+			rtn = nameMatches?.find{ osVersion.indexOf(it.osVersion) > -1 }
+		return rtn
 	}
 }

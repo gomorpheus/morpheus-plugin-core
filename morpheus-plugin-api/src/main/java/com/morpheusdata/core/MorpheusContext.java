@@ -93,6 +93,13 @@ public interface MorpheusContext {
 	 */
 	MorpheusReportService getReport();
 
+	/**
+	 * Returns the Os Type Context
+	 *
+	 * @return an instance of the Os Type Context
+	 */
+	MorpheusOsTypeService getOsType();
+
 
 	//Common methods used across various contexts
 
