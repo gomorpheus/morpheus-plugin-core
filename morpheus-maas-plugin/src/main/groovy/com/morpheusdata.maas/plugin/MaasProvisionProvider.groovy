@@ -300,7 +300,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			UsersConfiguration usersConfiguration = runConfig.usersConfiguration
 			opts.createUsers = usersConfiguration.createUsers
 			log.debug("create server: {}", runConfig)
-			runConfig.cloudConfig = morpheusContext.provision.buildCloudUserData(PlatformType.valueOf(runConfig.platform), runConfig.usersConfiguration, cloudConfigOpts).blockingGet()
+			runConfig.cloudConfig = morpheusContext.provision.buildCloudUserData(PlatformType.valueOf(runConfig.platform?.toString()), runConfig.usersConfiguration, cloudConfigOpts).blockingGet()
 
 			//prep the server
 			//POST ../nodes/{system_id}/interfaces/?op=create_bond //Bond the 25Gbps NICs into bond0
