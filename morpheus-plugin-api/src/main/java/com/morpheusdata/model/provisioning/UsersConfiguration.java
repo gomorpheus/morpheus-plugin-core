@@ -26,7 +26,7 @@ public class UsersConfiguration {
 	/**
 	 * UserGroups to be used during provisioning
 	 */
-	public List<UserGroup> createGroups;
+	public List<String> createGroups;
 
 	/**
 	 * the cloud-init users to be created during provisioning
@@ -56,14 +56,7 @@ public class UsersConfiguration {
 		Map<String, Object> usersConfigurationMap = new HashMap<>();
 		usersConfigurationMap.put("sshUsername", this.sshUsername);
 		usersConfigurationMap.put("sshPassword", this.sshPassword);
-
-		ArrayList<Map> createGroups = new ArrayList<>();
-		if(this.createGroups != null){
-			for (UserGroup g : this.createGroups) {
-				createGroups.add(g.toMap());
-			}
-		}
-		usersConfigurationMap.put("createGroups", createGroups);
+		usersConfigurationMap.put("createGroups", this.createGroups);
 
 		ArrayList<Map> cloudInitUsers = new ArrayList<>();
 		if(this.cloudInitUsers != null){
