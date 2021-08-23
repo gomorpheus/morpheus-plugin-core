@@ -493,7 +493,7 @@ class MaasCloudProvider implements CloudProvider {
 					List<ComputeServer> itemsToSave = []
 					for(maasMachine in chunkedAddList) {
 						def poolMatch = maasMachine?.pool?.id != null ? poolList?.find{ it.externalId == "${maasMachine.pool.id}" } : null
-						itemsToSave.add(MaasComputeUtility.machineToComputeServer(maasMachine, cloud, poolMatch, typePlans))
+						itemsToSave.add(MaasComputeUtility.configureComputeServer(maasMachine, null, cloud, poolMatch, typePlans))
 					}
 					morpheus.computeServer.create(itemsToSave).blockingGet()
 				}
@@ -507,7 +507,7 @@ class MaasCloudProvider implements CloudProvider {
 				List<ComputeServer> toSave = []
 				for(item in updateItems) {
 					def poolMatch = item.masterItem.pool?.id != null ? poolList?.find{ it.externalId == "${item.masterItem.pool.id}" } : null
-					ComputeServer machine = MaasComputeUtility.machineToComputeServer(item.masterItem, cloud, poolMatch, typePlans, item.existingItem)
+					ComputeServer machine = MaasComputeUtility.configureComputeServer(item.masterItem, item.existingItem, cloud, poolMatch, typePlans)
 					machine.id = item.existingItem.id
 					if(hasChanges(item.existingItem, machine)) {
 						toSave.add(machine)

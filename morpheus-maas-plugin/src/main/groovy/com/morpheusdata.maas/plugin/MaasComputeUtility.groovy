@@ -775,66 +775,46 @@ class MaasComputeUtility {
 		return rtn
 	}
 
-	static ComputeServer machineToComputeServer(Map machine, Cloud cloud, ComputeZonePool resourcePool, List<ServicePlan> typePlans, ComputeServer existingServer = null) {
-		log.debug "machineToComputeServer: ${groovy.json.JsonOutput.prettyPrint(machine.encodeAsJson().toString())} ${cloud}"
-		ComputeZonePool pool = new ComputeZonePool(externalId: machine.pool.id)
-
-		def addConfig = [name:machine.hostname, //account:zone.owner, category:objCategory, zone:zone,
-						 externalId:machine.system_id, //internalId:machine.hardware_uuid, computeServerType:serverType,
-						 hostname:machine.hostname, //sshUsername:'unknown', serverVendor:machine.hardware_info?.system_vendor,
-						 // serverModel:machine.hardware_info?.system_product, serialNumber:machine.hardware_info?.system_serial,
-						status: 'provisioned',
-						 serverType:'metal', //statusMessage:machine.status_message
-		]
-		if(existingServer) {
-			def propsToClone = ['uuid', 'displayName', 'uniqueId', 'provisionSiteId', 'osType', 'platform', 'serverType', 'consoleHost',
-			                     'managed', 'computeServerType', 'hourlyPrice', 'internalIp', 'externalIp', 'sshHost', 'sshUsername', 'sshPassword',
-			                     'externalHostname', 'externalDomain', 'externalFqdn', 'apiKey', 'osDevice', 'dataDevice', 'lvmEnabled',
-			                     'internalId', 'serverVendor', 'serverModel', 'serialNumber', 'statusMessage', 'rootVolumeId', 'tags',
-			                     'enabled', 'provision', 'macAddress', 'agentInstalled', 'lastAgentUpdate', 'agentVersion', 'config']
-			propsToClone.each { p ->
-				addConfig[p] = existingServer[p]
-			}
-		}
-		addConfig.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
-		addConfig.internalName = addConfig.name
-		addConfig.lvmEnabled = false
-		addConfig.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
-		addConfig.rootVolumeId = machine.boot_disk?.resource_uri
-		addConfig.dataDevice = addConfig.osDevice
-		addConfig.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
-		addConfig.tags = machine.tag_names?.join(',')
-		addConfig.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
-		addConfig.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
-		addConfig.maxCores = (machine.cpu_count ?: 1)
-		addConfig.resourcePool = resourcePool
-		addConfig.provision = canProvision(machine.status)
-		addConfig.cloud = cloud
-		addConfig.account = cloud.account
-		addConfig.status = getServerStatus(machine.status)
-		addConfig.plan = findServicePlanMatch(typePlans, addConfig.tags)
+	static ComputeServer configureComputeServer(Map machine, ComputeServer existingServer, Cloud cloud, ComputeZonePool resourcePool, List<ServicePlan> typePlans) {
+		log.debug "configureComputeServer: ${groovy.json.JsonOutput.prettyPrint(machine.encodeAsJson().toString())}, existingServer: ${existingServer} ${cloud}"
+		
+		ComputeServer server = existingServer ?: new ComputeServer()
+		
+		server.name = machine.hostname
+		server.externalId = machine.system_id
+		server.hostname = machine.hostname
+		server.status = 'provisioned'
+		server.serverType = 'metal'
+		server.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
+		server.internalName = server.name
+		server.lvmEnabled = false
+		server.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
+		server.rootVolumeId = machine.boot_disk?.resource_uri
+		server.dataDevice = server.osDevice
+		server.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
+		server.tags = machine.tag_names?.join(',')
+		server.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
+		server.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
+		server.maxCores = (machine.cpu_count ?: 1)
+		server.resourcePool = resourcePool
+		server.provision = canProvision(machine.status)
+		server.cloud = cloud
+		server.account = cloud.account
+		server.status = getServerStatus(machine.status)
+		server.plan = findServicePlanMatch(typePlans, server.tags)
 
 		if(machine.interface_set?.size() > 0) {
 			def firstNic = machine.interface_set.first()
-			addConfig.macAddress = firstNic.mac_address
+			server.macAddress = firstNic.mac_address
 		}
 
 		// Do not modify the hostname and name if provisioning
 		if(assignedStatusList.contains(machine.status) && existingServer) {
-			addConfig.hostname = existingServer.hostname
-			addConfig.name = existingServer.name
+			server.hostname = existingServer.hostname
+			server.name = existingServer.name
 		}
 
-		log.debug("machineToComputeServer: {}", addConfig)
-		ComputeServer server = new ComputeServer(addConfig)
-		server.setComputeServerType(new ComputeServerType(code: 'maas-metal'))
-		if(existingServer) {
-			server.interfaces = existingServer.interfaces
-			server.volumes = existingServer.volumes
-			server.capacityInfo = existingServer.capacityInfo
-			server.networkDomain = existingServer.networkDomain
-			server.sourceImage = existingServer.sourceImage
-		}
+		server.setComputeServerType(existingServer?.computeServerType ?: new ComputeServerType(code: 'maas-metal'))
 
 		server
 	}
