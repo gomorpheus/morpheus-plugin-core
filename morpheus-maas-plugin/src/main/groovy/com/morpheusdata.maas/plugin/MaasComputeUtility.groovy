@@ -786,6 +786,16 @@ class MaasComputeUtility {
 						status: 'provisioned',
 						 serverType:'metal', //statusMessage:machine.status_message
 		]
+		if(existingServer) {
+			def propsToClone = ['uuid', 'displayName', 'uniqueId', 'provisionSiteId', 'osType', 'platform', 'serverType', 'consoleHost',
+			                     'managed', 'computeServerType', 'hourlyPrice', 'internalIp', 'externalIp', 'sshHost', 'sshUsername', 'sshPassword',
+			                     'externalHostname', 'externalDomain', 'externalFqdn', 'apiKey', 'osDevice', 'dataDevice', 'lvmEnabled',
+			                     'internalId', 'serverVendor', 'serverModel', 'serialNumber', 'statusMessage', 'rootVolumeId', 'tags',
+			                     'enabled', 'provision', 'macAddress', 'agentInstalled', 'lastAgentUpdate', 'agentVersion', 'config']
+			propsToClone.each { p ->
+				addConfig[p] = existingServer[p]
+			}
+		}
 		addConfig.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
 		addConfig.internalName = addConfig.name
 		addConfig.lvmEnabled = false
@@ -818,8 +828,13 @@ class MaasComputeUtility {
 		log.debug("machineToComputeServer: {}", addConfig)
 		ComputeServer server = new ComputeServer(addConfig)
 		server.setComputeServerType(new ComputeServerType(code: 'maas-metal'))
-
-
+		if(existingServer) {
+			server.interfaces = existingServer.interfaces
+			server.volumes = existingServer.volumes
+			server.capacityInfo = existingServer.capacityInfo
+			server.networkDomain = existingServer.networkDomain
+			server.sourceImage = existingServer.sourceImage
+		}
 
 		server
 	}
