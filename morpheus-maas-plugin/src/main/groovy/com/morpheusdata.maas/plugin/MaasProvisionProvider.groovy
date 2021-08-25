@@ -234,7 +234,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			//TODO - port, path, service
 			if (runBareMetalResults.success) {
 				rtn.success = true
-				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
+				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, opts.noAgent, createUsers: opts.createUsers)
 			} else {
 				//error - image not found
 				morpheusContext.provision.setProvisionFailed(server, workload, 'server config error', opts)
@@ -250,6 +250,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 
 
 	ServiceResponse runBareMetal(Map runConfig, Map opts) {
+		log.debug "runBareMetal ${runConfig} ${opts}"
 		ComputeServer server = runConfig.server
 		Workload workload = runConfig.workload
 		def rtn = new ServiceResponse<Map>()
