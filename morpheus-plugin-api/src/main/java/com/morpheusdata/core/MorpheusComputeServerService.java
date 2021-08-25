@@ -4,6 +4,7 @@ import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
 import com.morpheusdata.model.NetworkDomain;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
+import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -67,5 +68,11 @@ public interface MorpheusComputeServerService {
 	 * @return void
 	 */
 	Single<Void> updatePowerState(Long computeServerId, ComputeServer.PowerState state);
+
+	/**
+	 * Returns the ComputeServerInterfaceContext used for performing updates or queries on {@link ComputeServerInterface} related assets within Morpheus.
+	 * @return An instance of the ComputeServerInterface Context
+	 */
+	MorpheusComputeServerInterfaceService getComputeServerInterface();
 
 }
