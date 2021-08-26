@@ -197,7 +197,6 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			opts.server = server
 			opts.zone = server.cloud
 			opts.account = opts.server.account
-			opts.noAgent = containerConfig.noAgent
 			def zoneConfig = opts.zone.getConfigMap()
 			//auth config
 			def authConfig = getAuthConfig(opts.zone)
@@ -234,7 +233,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 			//TODO - port, path, service
 			if (runBareMetalResults.success) {
 				rtn.success = true
-				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, opts.noAgent, createUsers: opts.createUsers)
+				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
 			} else {
 				//error - image not found
 				morpheusContext.provision.setProvisionFailed(server, workload, 'server config error', opts)
