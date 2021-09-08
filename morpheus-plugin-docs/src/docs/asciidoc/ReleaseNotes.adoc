@@ -1,10 +1,12 @@
 === Release Notes
 
-**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.2.x series, however anything using plugin core 0.8.0 and above needs to use Morpheus 5.3.1 minimum.
+**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.2.x series, however anything using plugin core 0.10.0 and above needs to use Morpheus 5.3.3 minimum.
 
+
+* **0.10.0** - Cloud Provider Plugin Enhancements, Network Provider Plugin beginnings, Cypher Context accessor Services, Various other bug fixes.
+* **0.9.0** - Progression on Cloud Provider Plugin Service Contexts and Provider Classes, Custom Layouts for Service Catalog Items.
 * **0.8.0** - Overhauled DNS/IPAM Integrations, Reorganized contexts and standardized formats. Added utility classes for easier sync logic. Custom reports, Cloud Providers, Server Tabs, and more. Only compatible with Morpheus version `5.3.1` forward.
-
 * **0.7.0** - Please note due to jcenter() EOL Don't use 0.7.0
 * **0.6.0** - Primary Plugin target base version for 5.2.x Morpheus Releases
 
-**NOTE:** You will have to rebuild any plugins previously against `morpheus-plugin-api:0.8.0`
+**NOTE:** You will have to rebuild any plugins previously against `morpheus-plugin-api:0.10.0`
