@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
@@ -99,6 +100,13 @@ public interface MorpheusContext {
 	 * @return an instance of the Os Type Context
 	 */
 	MorpheusOsTypeService getOsType();
+
+	/**
+	 * Returns the Cypher Context
+	 *
+	 * @return an instance of the Cypher Context
+	 */
+	MorpheusCypherService getCypher();
 
 
 	//Common methods used across various contexts

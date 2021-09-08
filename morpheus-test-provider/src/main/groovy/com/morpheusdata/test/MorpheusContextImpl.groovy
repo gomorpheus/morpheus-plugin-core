@@ -3,6 +3,7 @@ package com.morpheusdata.test
 
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
+import com.morpheusdata.core.cypher.MorpheusCypherService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
@@ -114,6 +115,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	 */
 	@Override
 	MorpheusReportService getReport() {
+		return null
+	}
+
+	@Override
+	MorpheusCypherService getCypher() {
 		return null
 	}
 
