@@ -76,7 +76,7 @@ class MaasCloudProvider implements CloudProvider {
 				name: 'Release Mode',
 				code: 'maas-release-mode',
 				fieldName: 'releaseMode',
-				optionSource: 'maasReleaseModes',
+				optionSource: 'maasPluginReleaseModes',
 				displayOrder: 3,
 				fieldLabel: 'Release Mode',
 				required: true,
