@@ -55,6 +55,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean getHasComputeZonePools() {
+		return false
+	}
+
+	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Username',

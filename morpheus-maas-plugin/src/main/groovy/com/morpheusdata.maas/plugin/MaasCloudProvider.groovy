@@ -173,6 +173,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean getHasComputeZonePools() {
+		return true
+	}
+
+	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
 		log.info "Initializing Cloud: ${cloud.code}"
@@ -509,7 +514,7 @@ class MaasCloudProvider implements CloudProvider {
 					def poolMatch = item.masterItem.pool?.id != null ? poolList?.find{ it.externalId == "${item.masterItem.pool.id}" } : null
 					ComputeServer machine = MaasComputeUtility.configureComputeServer(item.masterItem, item.existingItem, cloud, poolMatch, typePlans)
 					machine.id = item.existingItem.id
-					if(hasChanges(item.existingItem, machine)) {
+					if(machine.getDirtyProperties()) {
 						toSave.add(machine)
 					}
 				}
@@ -588,23 +593,5 @@ class MaasCloudProvider implements CloudProvider {
 		if(itemsToUpdate.size() > 0) {
 			morpheusContext.network.save(itemsToUpdate).blockingGet()
 		}
-	}
-
-	protected Boolean hasChanges(ComputeServer a, ComputeServer b) {
-		Boolean differ = a.name != b.name ||
-				a.internalName != b.internalName ||
-				a.hostname != b.hostname ||
-				a.consoleHost != b.consoleHost ||
-				a.rootVolumeId != b.rootVolumeId ||
-				a.dataDevice != b.dataDevice ||
-				a.powerState != b.powerState ||
-				a.tags != b.tags ||
-				a.maxStorage != b.maxStorage ||
-				a.maxMemory != b.maxMemory ||
-				a.maxCores != b.maxCores ||
-				a.status != b.status ||
-				(b.resourcePool != null && (a.resourcePool == null || (a.resourcePool.id != b.resourcePool.id))) ||
-				a.provision != b.provision;
-		return differ;
 	}
 }

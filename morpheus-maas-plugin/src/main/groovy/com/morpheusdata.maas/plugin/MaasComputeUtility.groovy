@@ -777,44 +777,122 @@ class MaasComputeUtility {
 
 	static ComputeServer configureComputeServer(Map machine, ComputeServer existingServer, Cloud cloud, ComputeZonePool resourcePool, List<ServicePlan> typePlans) {
 		log.debug "configureComputeServer: ${groovy.json.JsonOutput.prettyPrint(machine.encodeAsJson().toString())}, existingServer: ${existingServer} ${cloud}"
-		
+
+		if(existingServer) {
+			existingServer.markClean()
+		}
+
 		ComputeServer server = existingServer ?: new ComputeServer()
-		
-		server.name = machine.hostname
-		server.externalId = machine.system_id
-		server.hostname = machine.hostname
-		server.status = 'provisioned'
-		server.serverType = 'metal'
-		server.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
-		server.internalName = server.name
-		server.lvmEnabled = false
-		server.osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
-		server.rootVolumeId = machine.boot_disk?.resource_uri
-		server.dataDevice = server.osDevice
-		server.powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
-		server.tags = machine.tag_names?.join(',')
-		server.maxStorage = (machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE
-		server.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
-		server.maxCores = (machine.cpu_count ?: 1)
-		server.resourcePool = resourcePool
-		server.provision = canProvision(machine.status)
-		server.cloud = cloud
-		server.account = cloud.account
-		server.status = getServerStatus(machine.status)
-		server.plan = findServicePlanMatch(typePlans, server.tags)
+
+		if(server.name != machine.hostname) {
+			server.name = machine.hostname
+		}
+		if(server.externalId != machine.system_id) {
+			server.externalId = machine.system_id
+		}
+
+		if(server.hostname != machine.hostname){
+			server.hostname = machine.hostname
+		}
+
+		if(server.serverType != 'metal') {
+			server.serverType = 'metal'
+		}
+
+		if(server.consoleHost != machine?.ip_addresses?.getAt(0)) {
+			server.consoleHost = machine?.ip_addresses?.getAt(0) // host console address
+		}
+
+		if(server.internalName != server.name) {
+			server.internalName = server.name
+		}
+
+		if(server.lvmEnabled != false) {
+			server.lvmEnabled = false
+		}
+
+		def osDevice = machine.boot_disk?.path?.endsWith('sda') ? '/dev/sda' : '/dev/vda'
+		if(server.osDevice != osDevice) {
+			server.osDevice = osDevice
+		}
+
+		if(server.rootVolumeId != machine.boot_disk?.resource_uri) {
+			server.rootVolumeId = machine.boot_disk?.resource_uri
+		}
+
+		if(server.dataDevice != server.osDevice) {
+			server.dataDevice = server.osDevice
+		}
+
+		def powerState = (machine.power_state == 'on' ? 'on' : (machine.power_state == 'off' ? 'off' : 'unknown'))
+		if(server.powerState?.toString() != powerState) {
+			server.powerState = powerState
+		}
+
+		def tags = machine.tag_names?.join(',')
+		if(server.tags != tags) {
+			server.tags = tags
+		}
+
+		def maxStorage = Math.round((machine.storage ?: 0) * ComputeUtility.ONE_MEGABYTE)
+		if(server.maxStorage != maxStorage) {
+			server.maxStorage = maxStorage
+		}
+
+		if(server.maxMemory != (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE) {
+			server.maxMemory = (machine.memory ?: 0) * ComputeUtility.ONE_MEGABYTE
+		}
+
+		if(server.maxCores != (machine.cpu_count ?: 1)) {
+			server.maxCores = (machine.cpu_count ?: 1)
+		}
+
+		if(server.resourcePool?.id != resourcePool?.id) {
+			server.resourcePool = resourcePool
+		}
+
+		if(server.provision != canProvision(machine.status)) {
+			server.provision = canProvision(machine.status)
+		}
+
+		if(server.cloud?.id != cloud?.id) {
+			server.cloud = cloud
+		}
+
+		if(server.account?.id != cloud.account?.id) {
+			server.account = cloud.account
+		}
+
+		if(server.status != getServerStatus(machine.status)) {
+			server.status = getServerStatus(machine.status)
+		}
+
+		def plan = findServicePlanMatch(typePlans, server.tags)
+		if(server.plan?.id != plan?.id) {
+			server.plan = plan
+		}
 
 		if(machine.interface_set?.size() > 0) {
 			def firstNic = machine.interface_set.first()
-			server.macAddress = firstNic.mac_address
+			if(server.macAddress != firstNic.mac_address) {
+				server.macAddress = firstNic.mac_address
+			}
 		}
 
 		// Do not modify the hostname and name if provisioning
 		if(assignedStatusList.contains(machine.status) && existingServer) {
-			server.hostname = existingServer.hostname
-			server.name = existingServer.name
+			if(server.hostname != existingServer.hostname) {
+				server.hostname = existingServer.hostname
+			}
+			if(server.name != existingServer.name) {
+				server.name = existingServer.name
+			}
 		}
 
-		server.setComputeServerType(existingServer?.computeServerType ?: new ComputeServerType(code: 'maas-metal'))
+		def serverType = existingServer?.computeServerType ?: new ComputeServerType(code: 'maas-metal')
+		if(server.computeServerType?.code != serverType?.code) {
+			server.computeServerType = serverType
+		}
 
 		server
 	}
@@ -846,7 +924,7 @@ class MaasComputeUtility {
 		else if(releaseMatchId)
 			poolReadOnly = (cloudItemId == releaseMatchId)
 
-		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description,
+		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description, owner: cloud.owner,
 				externalId: resourcePool.id, cloud:cloud, code: category + ".${resourcePool.id}", category: category,
 				refType:'ComputeZone', refId:cloud.id, readOnly: poolReadOnly)
 	}

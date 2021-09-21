@@ -4,6 +4,7 @@ import com.morpheusdata.model.ComputeServerType;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.model.ComputeZonePool;
 
 import java.util.Collection;
 
@@ -98,4 +99,10 @@ public interface CloudProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse deleteCloud(Cloud cloudInfo);
+
+	/**
+	 * Returns whether the cloud supports {@link ComputeZonePool}
+	 * @return Boolean
+	 */
+	Boolean getHasComputeZonePools();
 }

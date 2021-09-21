@@ -41,7 +41,7 @@ class MaasOptionSourceProviderSpec extends Specification {
 		service = new MaasOptionSourceProvider(plugin, context)
 	}
 
-	void "maasReleaseModes"() {
+	void "maasPluginReleaseModes"() {
 		given:
 		Cloud cloud = new Cloud()
 
@@ -52,7 +52,7 @@ class MaasOptionSourceProviderSpec extends Specification {
 		releaseModes.collect {it.value} == ['release', 'quick-delete', 'delete']
 
 		and: "is used as an option source"
-		1 == maasCloudProvider.optionTypes.findAll {it.optionSource == 'maasReleaseModes'}.size()
+		1 == maasCloudProvider.optionTypes.findAll {it.optionSource == 'maasPluginReleaseModes'}.size()
 	}
 
 	void "maasPluginResourcePools"() {
