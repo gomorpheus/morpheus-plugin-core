@@ -23,6 +23,14 @@ public interface MorpheusVirtualImageService {
 	Observable<VirtualImageIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
+	 * Get a list of VirtualImage projections based on Provision Type Code
+	 * @since 0.11.0
+	 * @param provisionTypeCode Provision Type Code
+	 * @return Observable stream of sync projection
+	 */
+	Observable<VirtualImageIdentityProjection> listSyncProjections(String provisionTypeCode);
+
+	/**
 	 * Get a list of VirtualImage objects from a list of projection ids
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of VirtualImages
