@@ -324,68 +324,62 @@ class MaasCloudProvider implements CloudProvider {
 	def cacheImages(Cloud cloud, Map opts) {
 		log.info('cacheImages')
 		def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
-		String category = "maas.rackcontroller.${cloud.id}"
-		List<ReferenceDataSyncProjection> rackControllers = []
-		morpheusContext.cloud.listReferenceDataByCategory(cloud, category).blockingSubscribe {
-			rackControllers << it
-		}
+
 		def osTypes = []
 		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
 
-		log.info("cached rackControllers category=$category: $rackControllers")
-		rackControllers.each { rack ->
-			def apiResponse = MaasComputeUtility.listImages(authConfig, rack.externalId, opts)
-			if(apiResponse.success) {
-				try {
-					List apiItems = apiResponse?.data?.images as List<Map>
-					Observable<VirtualImageIdentityProjection> domainRecords = morpheus.virtualImage.listSyncProjections(cloud.id)
-					SyncTask<VirtualImageIdentityProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, apiItems)
-					syncTask.addMatchFunction { VirtualImageIdentityProjection domainObject, Map apiItem ->
-						domainObject.externalId == apiItem.name
-					}.onDelete { removeItems ->
-						morpheus.virtualImage.remove(removeItems).blockingGet()
-					}.onAdd { itemsToAdd ->
-						while (itemsToAdd?.size() > 0) {
-							List<Map> chunkedAddList = itemsToAdd.take(50)
-							itemsToAdd = itemsToAdd.drop(50)
-							List<VirtualImage> itemsToSave = []
-							for(cloudImage in chunkedAddList) {
-								itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage, osTypes))
-							}
-							morpheus.virtualImage.create(itemsToSave, cloud).blockingGet()
+		def apiResponse = MaasComputeUtility.listImages(authConfig, opts)
+		if(apiResponse.success) {
+			try {
+				List apiItems = apiResponse?.data as List<Map>
+				Observable<VirtualImageIdentityProjection> domainRecords = morpheus.virtualImage.listSyncProjections(cloud.id)
+				SyncTask<VirtualImageIdentityProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, apiItems)
+				syncTask.addMatchFunction { VirtualImageIdentityProjection domainObject, Map apiItem ->
+					domainObject.externalId?.toString() == "${apiItem.name}/${apiItem.id}"
+				}.onDelete { removeItems ->
+					morpheus.virtualImage.remove(removeItems).blockingGet()
+				}.onAdd { itemsToAdd ->
+					while (itemsToAdd?.size() > 0) {
+						List<Map> chunkedAddList = itemsToAdd.take(50)
+						itemsToAdd = itemsToAdd.drop(50)
+						List<VirtualImage> itemsToSave = []
+						for(cloudImage in chunkedAddList) {
+							itemsToSave.add(MaasComputeUtility.bootImageToVirtualImage(cloud, cloudImage, osTypes))
 						}
-					}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
+						morpheus.virtualImage.create(itemsToSave, cloud).blockingGet()
+					}
+				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
 
-						Map<Long, SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
-						morpheus.virtualImage.listById(updateItems?.collect{ it.existingItem.id}).map {VirtualImage virtualImage ->
-							SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map> matchItem = updateItemMap[virtualImage.id]
-							return new SyncTask.UpdateItem<VirtualImage,Map>(existingItem:virtualImage, masterItem:matchItem.masterItem)
-						}
+					Map<Long, SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
+					morpheus.virtualImage.listById(updateItems?.collect{ it.existingItem.id}).map {VirtualImage virtualImage ->
+						SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map> matchItem = updateItemMap[virtualImage.id]
+						return new SyncTask.UpdateItem<VirtualImage,Map>(existingItem:virtualImage, masterItem:matchItem.masterItem)
+					}
 
-					}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
-						List<VirtualImage> toSave = []
-						try {
-							for (item in updateItems) {
-								VirtualImage virtualImage = MaasComputeUtility.bootImageToVirtualImage(cloud, item.masterItem, osTypes)
-								virtualImage.id = item.existingItem.id
-								def existing = item.existingItem
-								if (virtualImage.category != existing.category || virtualImage.code != existing.code
-										|| virtualImage.name != existing.name || virtualImage.imageType != existing.imageType
-										|| virtualImage.externalId != existing.externalId || virtualImage.osType?.id != existing.osType?.id
-										|| virtualImage.platform != existing.platform) {
-									toSave.add(virtualImage)
-								}
+				}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
+					List<VirtualImage> toSave = []
+					try {
+						for (item in updateItems) {
+							VirtualImage virtualImage = MaasComputeUtility.bootImageToVirtualImage(cloud, item.masterItem, osTypes)
+							virtualImage.id = item.existingItem.id
+							def existing = item.existingItem
+							if (virtualImage.category != existing.category || virtualImage.code != existing.code
+									|| virtualImage.name != existing.name || virtualImage.imageType != existing.imageType
+									|| virtualImage.externalId != existing.externalId || virtualImage.osType?.id != existing.osType?.id
+									|| virtualImage.platform != existing.platform) {
+								toSave.add(virtualImage)
 							}
-							morpheus.virtualImage.save(toSave, cloud).blockingGet()
-						} catch(e) {
-							log.error "Error on update virtualImage: ${e}", e
 						}
-					}.start()
-				} catch(e) {
-					log.error("cacheImages error: ${e}", e)
-				}
+						morpheus.virtualImage.save(toSave, cloud).blockingGet()
+					} catch(e) {
+						log.error "Error on update virtualImage: ${e}", e
+					}
+				}.start()
+			} catch(e) {
+				log.error("cacheImages error: ${e}", e)
 			}
 		}
+
 	}
 
 	def cacheResourcePools(Cloud cloud, Map opts) {

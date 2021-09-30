@@ -65,8 +65,8 @@ class MaasComputeUtility {
 		return listResources(authConfig, 'nodes', opts)
 	}
 
-	static listImages(Map authConfig, String rackControllerId, Map opts) {
-		return listResources(authConfig, 'rackcontrollers/' + rackControllerId, opts + [query:[op:'list_boot_images']])
+	static listImages(Map authConfig, Map opts) {
+		return listResources(authConfig, 'boot-resources', opts)
 	}
 
 	static listSubnets(Map authConfig, Map opts) {
@@ -904,9 +904,9 @@ class MaasComputeUtility {
 				category:objCategory,
 				code:objCategory + ".${bootImage.name}",
 				account: cloud.account,
-				name:bootImage.name,
+				name:"${bootImage.name} - ${bootImage.architecture}",
 				imageType:'pxe',
-				externalId:bootImage.name, //remotePath:bootImage.name, refType:'ComputeZone'
+				externalId:"${bootImage.name}/${bootImage.id}", //remotePath:bootImage.name, refType:'ComputeZone'
 		]
 
 		//add extra stuff?
