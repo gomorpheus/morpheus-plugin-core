@@ -18,7 +18,7 @@ class MaasComputeUtilitySpec extends Specification {
 
 	void "bootImageToVirtualImage"() {
 		given:
-		Map apiResponse = [name: 'ubuntu/16.04', architecture: 'amd64']
+		Map apiResponse = [name: 'ubuntu/16.04', architecture: 'amd64', id: 5]
 		Cloud cloud = new Cloud(id: 1)
 
 		when:
@@ -26,10 +26,10 @@ class MaasComputeUtilitySpec extends Specification {
 
 		then:
 		image.code == 'maas.image.1.ubuntu/16.04'
-		image.name == 'ubuntu/16.04'
+		image.name == 'ubuntu/16.04 - amd64'
 		image.imageType == ImageType.pxe
 		image.category == 'maas.image.1'
-		image.externalId == 'ubuntu/16.04'
+		image.externalId == 'ubuntu/16.04/5'
 	}
 
 	void "configureComputeServer with no existing"() {
