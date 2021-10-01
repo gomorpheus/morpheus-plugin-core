@@ -391,7 +391,7 @@ class MaasCloudProvider implements CloudProvider {
 			log.info("resource pools to cache: $apiItems")
 
 			def configMap = cloud.getConfigMap()
-			def poolId = configMap.resourcePoolId
+			def poolId = configMap.resourcePoolId != null ? configMap.resourcePoolId as Integer : configMap.resourcePoolId
 			def releaseName = configMap.releasePoolName
 			def releaseMatchId = (releaseName != null && releaseName != '') ? "${releaseName}" : null
 			def poolMatchId = (poolId != null && poolId != '') ? "${poolId}" : null //string incase
@@ -425,13 +425,16 @@ class MaasCloudProvider implements CloudProvider {
 				for(item in updateItems) {
 					ComputeZonePool computeZonePool = MaasComputeUtility.resourcePoolToComputeZonePool(item.masterItem, cloud, category, poolMatchId, releaseMatchId)
 					def existing = item.existingItem
+					computeZonePool.id = item.existingItem.id
 					if(computeZonePool.name != existing.name) {
 						toSave.add(computeZonePool)
 					} else if(computeZonePool.readOnly != existing.readOnly) {
 						toSave.add(computeZonePool)
 					}
 				}
-				morpheus.cloud.pool.save(toSave).blockingGet()
+				if(toSave) {
+					morpheus.cloud.pool.save(toSave).blockingGet()
+				}
 			}.start()
 		}
 	}

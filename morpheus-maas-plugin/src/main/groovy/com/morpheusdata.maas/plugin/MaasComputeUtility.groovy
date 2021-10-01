@@ -919,10 +919,12 @@ class MaasComputeUtility {
 	static ComputeZonePool resourcePoolToComputeZonePool(Map resourcePool, Cloud cloud, String category, poolMatchId, releaseMatchId) {
 		def cloudItemId = "${resourcePool.id}"
 		def poolReadOnly = false
-		if(poolMatchId)
-			poolReadOnly = (cloudItemId != poolMatchId)
-		else if(releaseMatchId)
-			poolReadOnly = (cloudItemId == releaseMatchId)
+		if(poolMatchId != null) {
+			poolReadOnly = (cloudItemId?.toString() != poolMatchId?.toString())
+		}
+		else if(releaseMatchId != null) {
+			poolReadOnly = (cloudItemId?.toString() == releaseMatchId?.toString())
+		}
 
 		return new ComputeZonePool(name:resourcePool.name, description:resourcePool.description, owner: cloud.owner,
 				externalId: resourcePool.id, cloud:cloud, code: category + ".${resourcePool.id}", category: category,
