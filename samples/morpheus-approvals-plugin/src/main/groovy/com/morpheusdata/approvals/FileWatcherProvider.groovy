@@ -81,13 +81,28 @@ class FileWatcherProvider implements ApprovalProvider {
 			instances.each {
 				resp.references << new RequestReference(refId: it.id, externalId: "AO_INST_$it.id", externalName: "AO Instance $it.name")
 			}
+			def details = ""
+			request.refs?.each { ref ->
+				def detail = "Reference: refId: ${ref.refId}, refType: ${ref.refType}, name: ${ref.name}, price per month: ${ref.pricePerMonth}, currency: ${ref.currency}"
+				if(ref.details) {
+					detail += ", details ["
+					ref.details.each { d ->
+						detail += "(${d.category} ${d.type} ${d.name} ${d.fromValue} ${d.toValue})"
+					}
+					detail += "]"
+				}
+				details += detail
+
+			}
 			String fileContents = """requested
 ${resp.references*.externalId.join(',')}
+${details}
 """
 			file.write(fileContents)
 
 		} catch(Exception e) {
 			println e.message
+			println e.printStackTrace()
 			resp = new RequestResponse(success: false)
 		}
 		resp

@@ -14,7 +14,7 @@ import java.util.Map;
 public interface ApprovalProvider extends PluginProvider {
 	/**
 	 *
-	 * @param instances List of {@link Instance} or {@link App}
+	 * @param instances List of {@link Instance} or {@link App} or {@link ComputeServer}
 	 * @param request the Morpheus provision Request
 	 * @param accountIntegration the integration details. OptionType values are keyed under configMap.cm.plugin
 	 * @param policy the approval policy containing a Map config with values from provided optionTypes
