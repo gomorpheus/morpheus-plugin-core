@@ -25,6 +25,7 @@ public class NetworkType extends MorpheusModel {
 	private Boolean vlanIdEditable = false;
 	private Boolean canAssignPool = false;
 	private Boolean deletable = false;
+	private Boolean hasCidr = true;
 
 	public String getName() {
 		return name;
@@ -159,5 +160,14 @@ public class NetworkType extends MorpheusModel {
 	public void setDeletable(Boolean deletable) {
 		this.deletable = deletable;
 		markDirty("deletable", deletable);
+	}
+
+	public Boolean getHasCidr() {
+		return hasCidr;
+	}
+
+	public void setHasCidr(Boolean hasCidr) {
+		this.hasCidr = hasCidr;
+		markDirty("hasCidr", hasCidr);
 	}
 }

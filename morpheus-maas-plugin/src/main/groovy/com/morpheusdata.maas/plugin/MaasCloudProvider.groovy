@@ -112,6 +112,15 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkType> getNetworkTypes() {
+		NetworkType networkType = new NetworkType()
+		networkType.code = 'maas-plugin-network'
+		networkType.hasCidr = true
+		networkType.name = 'MaaS Plugin Subnet'
+		return [networkType]
+	}
+
+	@Override
 	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
 		return plugin.getProvidersByType(ProvisioningProvider) as Collection<ProvisioningProvider>
 	}
@@ -557,7 +566,7 @@ class MaasCloudProvider implements CloudProvider {
 
 	protected void addMissingNetworks(Cloud cloud, Collection<Map> addItems) {
 		String objCategory = "maas.subnet.${cloud.id}"
-		NetworkType networkType = new NetworkType(code: "maasSubnet")
+		NetworkType networkType = new NetworkType(code: "maas-plugin-network")
 		Collection<Network> networksToAdd = addItems.collect {Map cloudItem ->
 			Network add = new Network(owner:cloud.owner, code:objCategory + ".${cloudItem.id}", category:objCategory,
 					externalId:"${cloudItem.id}", name:cloudItem.name, dhcpServer:(cloudItem.vlan?.dhcp_on),

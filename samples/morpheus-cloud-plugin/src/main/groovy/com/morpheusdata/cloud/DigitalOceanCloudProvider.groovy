@@ -35,6 +35,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkType> getNetworkTypes() {
+		return null
+	}
+
+	@Override
 	Plugin getPlugin() {
 		return this.plugin
 	}

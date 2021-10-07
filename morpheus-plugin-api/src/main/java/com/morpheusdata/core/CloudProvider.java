@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.ComputeServerType;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.NetworkType;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.ComputeZonePool;
 
@@ -30,6 +31,13 @@ public interface CloudProvider extends PluginProvider {
 	 * @return Collection of OptionType
 	 */
 	Collection<OptionType> getOptionTypes();
+
+	/**
+	 * Provides a Collection of NetworkTypes that are supported by this cloud
+	 * @since 0.11.0
+	 * @return Collection of NetworkType
+	 */
+	Collection<NetworkType> getNetworkTypes();
 
 	/**
 	 * Grabs all {@link ComputeServerType} objects that this CloudProvider can represent during a sync or during a provision.
