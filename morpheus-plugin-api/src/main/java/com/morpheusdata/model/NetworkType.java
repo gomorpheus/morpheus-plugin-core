@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.*;
+
 /**
  * There are several different types of networks that can be created across various cloud providers. These range from VxLAN based
  * networks to LAN based or even typed specifically to a target CloudProvider depending on its behavior. These types typically
@@ -26,6 +28,8 @@ public class NetworkType extends MorpheusModel {
 	private Boolean canAssignPool = false;
 	private Boolean deletable = false;
 	private Boolean hasCidr = true;
+	private List<NetworkSubnetType> subnetTypes = new ArrayList<>();
+	private List<OptionType> optionTypes = new ArrayList<>();
 
 	public String getName() {
 		return name;
@@ -169,5 +173,23 @@ public class NetworkType extends MorpheusModel {
 	public void setHasCidr(Boolean hasCidr) {
 		this.hasCidr = hasCidr;
 		markDirty("hasCidr", hasCidr);
+	}
+
+	public List<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(List<OptionType> optionTypes) {
+		this.optionTypes = optionTypes;
+		markDirty("optionTypes", optionTypes);
+	}
+
+	public List<NetworkSubnetType> getNetworkSubnetTypes() {
+		return subnetTypes;
+	}
+
+	public void setNetworkSubnetTypes(List<NetworkSubnetType> subnetTypes) {
+		this.subnetTypes = subnetTypes;
+		markDirty("subnetTypes", subnetTypes);
 	}
 }

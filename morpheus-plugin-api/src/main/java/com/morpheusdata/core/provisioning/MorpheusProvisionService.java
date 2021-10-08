@@ -84,8 +84,8 @@ public interface MorpheusProvisionService {
 	/**
 	 * Builds the cloud metadata
 	 * @param platform the platform being provisioned
-	 * @param instanceId
-	 * @param hostname
+	 * @param instanceId the ID of the Instance
+	 * @param hostname the hostname
 	 * @param cloudConfigOptions typically the return of buildCloudConfigOptions or buildCloudNetworkConfig
 	 * @return String cloud metadata
 	 */
