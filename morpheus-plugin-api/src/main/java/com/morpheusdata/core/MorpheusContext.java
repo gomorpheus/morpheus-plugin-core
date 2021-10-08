@@ -5,6 +5,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
+import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -108,6 +109,13 @@ public interface MorpheusContext {
 	 */
 	MorpheusCypherService getCypher();
 
+
+	/**
+	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
+	 *
+	 * @return an instance of the web request service
+	 */
+	MorpheusWebRequestService getWebRequest();
 
 	//Common methods used across various contexts
 

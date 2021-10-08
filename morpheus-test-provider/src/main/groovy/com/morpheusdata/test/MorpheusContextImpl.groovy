@@ -13,6 +13,7 @@ import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
+import com.morpheusdata.core.web.MorpheusWebRequestService
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -35,6 +36,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusServicePlanService servicePlanContext
 	protected MorpheusComputeServerService computeServerContext
 	protected MorpheusOsTypeService osTypeContext
+
 
     MorpheusContextImpl() {
         cloudContext = new MorpheusCloudServiceImpl()
@@ -120,6 +122,16 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusCypherService getCypher() {
+		return null
+	}
+
+	/**
+	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
+	 *
+	 * @return an instance of the web request service
+	 */
+	@Override
+	MorpheusWebRequestService getWebRequest() {
 		return null
 	}
 
