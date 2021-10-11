@@ -47,7 +47,11 @@ public class CustomLocale {
    * Imitates java.util.Locale getDisplayName()
    */
   public String getDisplayName() {
-    return String.format("%s (%s)", this.name, this.description);
+    String displayName = this.name;
+    if (this.description != null) {
+      displayName = String.format("%s (%s)", displayName, this.description);
+    }
+    return displayName;
   }
   
   /**
