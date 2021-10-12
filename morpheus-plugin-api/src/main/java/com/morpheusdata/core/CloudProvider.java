@@ -33,13 +33,6 @@ public interface CloudProvider extends PluginProvider {
 	Collection<OptionType> getOptionTypes();
 
 	/**
-	 * Provides a Collection of NetworkTypes that are supported by this cloud
-	 * @since 0.11.0
-	 * @return Collection of NetworkType
-	 */
-	Collection<NetworkType> getNetworkTypes();
-
-	/**
 	 * Grabs all {@link ComputeServerType} objects that this CloudProvider can represent during a sync or during a provision.
 	 * @return collection of ComputeServerType
 	 */

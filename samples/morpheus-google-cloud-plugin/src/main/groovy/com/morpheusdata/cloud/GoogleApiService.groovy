@@ -9,7 +9,9 @@ import com.google.api.services.cloudresourcemanager.CloudResourceManager
 import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse
 import com.google.api.services.compute.*
 import com.google.api.services.compute.model.*
+import com.google.auth.oauth2.ServiceAccountCredentials
 import groovy.util.logging.Slf4j
+import com.morpheusdata.core.util.RestApiUtil
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.*
 import org.apache.http.client.HttpClient
@@ -72,7 +74,75 @@ class GoogleApiService {
 		return rtn
 	}
 
-	private static Compute getGoogleComputeClient(apiConfig) {
+	static createNetwork(Map apiConfig, body) {
+		def rtn = [success:false]
+		try {
+			log.debug "createNetwork: ${body}"
+			def headers = getAuthHeaders(apiConfig)
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, body:body, contentType: 'application/json')
+			def apiPath = "/compute/v1/projects/${apiConfig.projectId}/global/networks"
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'POST')
+			if(results.success) {
+				rtn.targetLink = results.data.targetLink
+				rtn.targetId = results.data.targetId
+				Compute computeClient = getGoogleComputeClient(apiConfig)
+				def blockResults = blockUntilOperationComplete(apiConfig, computeClient, results.data.name)
+				if (!blockResults.success) {
+					rtn.msg = blockResults.msg ?: "Creation of network never completed successfully: ${results}"
+					log.error rtn
+				}
+				rtn.success = !rtn.msg
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("createNetwork error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static patchNetwork(Map apiConfig, uri, body) {
+		def rtn = [success:false]
+		try {
+			log.debug "updateNetwork: ${uri} ${body}"
+			def headers = getAuthHeaders(apiConfig)
+			def networkName = uri.substring(uri.lastIndexOf('/') + 1)
+			def apiPath = "compute/v1/projects/${apiConfig.projectId}/global/networks/${networkName}"
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, body:body, contentType: 'application/json')
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'PATCH')
+			if(results.success) {
+				rtn.success = true
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("updateNetwork error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static deleteNetwork(Map apiConfig, uri) {
+		def rtn = [success:false]
+		try {
+			log.debug "deleteNetwork: ${uri}"
+			def headers = getAuthHeaders(apiConfig)
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, contentType: 'application/json')
+			def networkName = uri.substring(uri.lastIndexOf('/') + 1)
+			def apiPath = "/compute/v1/projects/${apiConfig.projectId}/global/networks/${networkName}"
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'DELETE')
+			if(results.success) {
+				rtn.success = true
+				rtn.data = results.data
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("deleteNetwork error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static Compute getGoogleComputeClient(apiConfig) {
 		GoogleCredential credential = getGoogleCredentials(apiConfig, Collections.singleton(ComputeScopes.COMPUTE))
 		def clientConfig = [:]
 		HttpClient httpClient = createHttpClient(clientConfig)
@@ -102,9 +172,69 @@ class GoogleApiService {
 		return client
 	}
 
+	static getAuthHeaders(apiConfig, scopes=null) {
+		[Authorization: getApiToken(apiConfig, scopes)]
+	}
+
+	static getApiToken(apiConfig, scopes=null) {
+		if(!scopes) {
+			scopes = Collections.singleton(com.google.api.services.cloudresourcemanager.CloudResourceManagerScopes.CLOUD_PLATFORM)
+		}
+		def credentials = getServiceAccountCredentials(apiConfig, scopes)
+		def uri = new java.net.URI("https://storage.googleapis.com")
+		def credentialHeaders = credentials.getRequestMetadata(uri)
+		credentialHeaders['Authorization'].getAt(0)
+	}
+
+	static blockUntilOperationComplete(authConfig, Compute computeClient, operationName) {
+		def rtn = [success: false, msg: null]
+
+		def projectId = authConfig.projectId
+
+		def complete = false
+		def msg
+		def POLL_WAIT_MS = 3000l
+		def retries = 0
+
+		def checkStatus = {
+			log.debug "checking status of operation: ${operationName}"
+
+			Compute.GlobalOperations.Get getOperation = computeClient.globalOperations().get(projectId, operationName)
+			Operation operation = getOperation.execute()
+
+			complete = (operation.getStatus() == 'DONE')
+
+			if(complete && operation.getError() && operation.getError().getErrors().size()) {
+				msg = operation.getError().getErrors().collect { it.getMessage() }?.join(', ')
+			}
+		}
+
+		while(!complete && retries < 300) {
+			sleep(POLL_WAIT_MS)
+			retries++
+			try {
+				checkStatus()
+			} catch(e){}
+		}
+
+		if(!complete) {
+			log.error "Operation ${operationName} never completed ${msg}"
+		}
+
+		rtn.success = complete && !msg
+		rtn.msg = msg
+
+		return rtn
+	}
+
 	private static GoogleCredential getGoogleCredentials(apiConfig, scopes) {
 		InputStream is = getJsonCredInputStream(apiConfig)
 		GoogleCredential.fromStream(is).createScoped(scopes)
+	}
+
+	private static ServiceAccountCredentials getServiceAccountCredentials(apiConfig, scopes) {
+		InputStream is = getJsonCredInputStream(apiConfig)
+		ServiceAccountCredentials.fromStream(is).createScoped(scopes)
 	}
 
 	private static getJsonCredInputStream(apiConfig) {
@@ -127,6 +257,27 @@ class GoogleApiService {
 }
 """
 		InputStream is = new ByteArrayInputStream( credentialsString.getBytes())
+	}
+
+	private static parseRestError(jsonResults) {
+		log.debug "parseRestError ${jsonResults}"
+		def err = [msg: null]
+		if(jsonResults.content) {
+			try {
+				def content = new groovy.json.JsonSlurper().parseText(jsonResults.content)
+				err.msg = content?.error?.message ?: ''
+				err.errorCode = content?.error?.code
+				err.status = content?.error?.status
+				if(content?.error?.details?.violations) {
+					content?.error?.details?.violations?.each {
+						err.msg += it.description
+					}
+				}
+			} catch(e) {
+			}
+		}
+		err.msg = err.msg ?: "Error calling Google"
+		return err
 	}
 
 	static createHttpClient(config = [:]) {

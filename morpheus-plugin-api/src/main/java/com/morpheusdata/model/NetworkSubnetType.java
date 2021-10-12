@@ -20,7 +20,7 @@ public class NetworkSubnetType extends MorpheusModel {
 	private Boolean vlanIdEditable = false;
 	private Boolean cidrEditable = false;
 	private Boolean cidrRequired = false;
-	private List<OptionType> optionTypes;
+	private List<OptionType> optionTypes = new ArrayList<>();
 
 	public String getName() {
 		return name;

@@ -12,8 +12,11 @@ class GooglePlugin extends Plugin {
 		this.name = 'Google Plugin'
 		GoogleCloudProvider cloudProvider = new GoogleCloudProvider(this, morpheus)
 		GoogleOptionSourceProvider optionSourceProvider = new GoogleOptionSourceProvider(this, morpheus)
+		GoogleNetworkProvider networkProvider = new GoogleNetworkProvider(this, morpheus)
+
 		pluginProviders.put(cloudProvider.code, cloudProvider)
 		pluginProviders.put(optionSourceProvider.code, optionSourceProvider)
+		pluginProviders.put(networkProvider.code, networkProvider)
 	}
 
 	@Override

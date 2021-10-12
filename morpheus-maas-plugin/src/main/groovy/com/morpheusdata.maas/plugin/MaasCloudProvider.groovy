@@ -112,15 +112,6 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<NetworkType> getNetworkTypes() {
-		NetworkType networkType = new NetworkType()
-		networkType.code = 'maas-plugin-network'
-		networkType.hasCidr = true
-		networkType.name = 'MaaS Plugin Subnet'
-		return [networkType]
-	}
-
-	@Override
 	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
 		return plugin.getProvidersByType(ProvisioningProvider) as Collection<ProvisioningProvider>
 	}
