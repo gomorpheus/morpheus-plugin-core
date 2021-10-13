@@ -3,9 +3,11 @@ package com.morpheusdata.model;
 import com.morpheusdata.core.BackupProvider;
 
 import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ComputeSite extends MorpheusModel {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String visibility = "private"; //['public', 'private'];
 	protected String code;
