@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Boolean privateNetworking;
 	protected String userData;
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected Instance instance;
 	protected String internalName;

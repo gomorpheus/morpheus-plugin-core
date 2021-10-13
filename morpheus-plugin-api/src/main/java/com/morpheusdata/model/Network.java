@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents a Network that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
@@ -58,6 +59,7 @@ public class Network extends NetworkIdentityProjection {
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
 	public NetworkServer networkServer;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account owner;
 	public String category;
 	public String code;

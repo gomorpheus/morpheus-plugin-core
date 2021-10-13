@@ -3,9 +3,11 @@ package com.morpheusdata.model;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class Task extends MorpheusModel {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String name;
 	protected String code;
