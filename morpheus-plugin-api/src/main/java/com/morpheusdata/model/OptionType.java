@@ -26,6 +26,7 @@ public class OptionType extends MorpheusModel {
 	protected String helpText;
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
+	protected Boolean showOnEdit = true;
 
 	public String getName() {
 		return name;
@@ -301,10 +302,28 @@ public class OptionType extends MorpheusModel {
 	/**
 	 * Sets whether or not this option type is editable. This sometimes is the case where a field can be set on create
 	 * but not changed later
- 	 * @param editable whether or not this field is editable upon edit and not just create
+	 * @param editable whether or not this field is editable upon edit and not just create
 	 */
 	public void setEditable(Boolean editable) {
 		this.editable = editable;
+	}
+
+	/**
+	 * Specifies whether this option type is visible on edit forms. This sometimes is the case where a field can be set on create
+	 * but not changed later nor does it make sense to display it after create.
+	 * @return whether or not this option type is visible upon edit
+	 */
+	public Boolean getShowOnEdit() {
+		return showOnEdit;
+	}
+
+	/**
+	 * Sets whether or not this option type is visible on edit forms. This sometimes is the case where a field can be set on create
+	 * but not changed later, nor does it make sense to display it after create.
+	 * @param showOnEdit whether or not this option type is visible upon edit
+	 */
+	public void setShowOnEdit(Boolean showOnEdit) {
+		this.showOnEdit = showOnEdit;
 	}
 
 

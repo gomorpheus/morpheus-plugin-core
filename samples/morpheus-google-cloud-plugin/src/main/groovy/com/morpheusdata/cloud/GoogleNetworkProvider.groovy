@@ -79,6 +79,7 @@ class GoogleNetworkProvider implements NetworkProvider {
 				displayOrder: 1,
 				fieldLabel: 'Auto Create Subnets',
 				required: true,
+				showOnEdit: false,
 				defaultValue: 'on',
 				inputType: OptionType.InputType.CHECKBOX,
 				dependsOn: 'network.zone.id',
@@ -145,25 +146,28 @@ class GoogleNetworkProvider implements NetworkProvider {
 					description          : network.description,
 					mtu                  : network.getConfigProperty('mtu')
 			]
-			network.code = "google.plugin.network.${network.cloud.id}.${network.zonePoolId}.${network.name}"
+			network.code = "google.plugin.network.${network.cloud.id}.${network.name}"
 			network.displayName = network.name
 
 			morpheusContext.network.save([network]).blockingGet()
 
 			Map authConfig = getAuthConfig(network.cloud)
-			rtn += GoogleApiService.createNetwork(authConfig, body)
-			if(rtn.success) {
+			def createNetworkResults = GoogleApiService.createNetwork(authConfig, body)
+			if(createNetworkResults.success) {
 				def fetchedNetwork
 				morpheusContext.network.listById([network.id]).blockingSubscribe { fetchedNetwork = it }
 				fetchedNetwork.status = 'available'
-				fetchedNetwork.externalId = rtn.targetId
-				fetchedNetwork.category = "google.plugin.network.${network.cloud.id}.${network.zonePoolId}"
-				fetchedNetwork.internalId = rtn.targetLink
-				fetchedNetwork.providerId = rtn.targetLink
-				fetchedNetwork.externalId = rtn.targetId
+				fetchedNetwork.externalId = createNetworkResults.targetId
+				fetchedNetwork.category = "google.plugin.network.${network.cloud.id}"
+				fetchedNetwork.internalId = createNetworkResults.targetLink
+				fetchedNetwork.providerId = createNetworkResults.targetLink
+				fetchedNetwork.externalId = createNetworkResults.targetId
 				fetchedNetwork.refType = 'ComputeZone'
 				fetchedNetwork.refId = network.cloud.id
 				morpheusContext.network.save(fetchedNetwork).blockingGet()
+			} else {
+				rtn.msg = createNetworkResults.msg
+				rtn.success = false
 			}
 		} catch(e) {
 			log.error("createNetwork error: ${e}", e)
@@ -203,6 +207,8 @@ class GoogleNetworkProvider implements NetworkProvider {
 				if (!blockResults.success) {
 					rtn.msg = blockResults.msg ?: "Deletion of network failed"
 					log.error "failed to delete network: ${blockResults}"
+				} else {
+					rtn.success = true
 				}
 			} else if(deleteResults.errorCode == 404) {
 				//not found - success... already deleted
