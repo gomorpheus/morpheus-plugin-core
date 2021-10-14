@@ -78,4 +78,26 @@ class MaasNetworkProvider implements NetworkProvider {
 		log.debug "deleteNetwork: ${network}"
 		ServiceResponse.success()
 	}
+
+	@Override
+	ServiceResponse validateSubnet(NetworkSubnet subnet, Map opts){
+		ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse createSubnet(NetworkSubnet subnet, Map opts){
+		ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse updateSubnet(NetworkSubnet subnet, Map opts){
+		ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse deleteSubnet(NetworkSubnet subnet){
+		ServiceResponse.success()
+	}
+
+
 }

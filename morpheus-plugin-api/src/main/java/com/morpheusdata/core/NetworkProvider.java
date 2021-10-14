@@ -69,4 +69,38 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse deleteNetwork(Network network);
+
+	/**
+	 * Validates the submitted subnet information.
+	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * bubbled up to the user.
+	 * @param subnet NetworkSubnet information
+	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
+	 * creation
+	 * @return ServiceResponse
+	 */
+	ServiceResponse validateSubnet(NetworkSubnet subnet, Map opts);
+
+	/**
+	 * Creates the NetworkSubnet submitted
+	 * @param subnet Network information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	ServiceResponse createSubnet(NetworkSubnet subnet, Map opts);
+
+	/**
+	 * Updates the NetworkSubnet submitted
+	 * @param subnet NetworkSubnet information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	ServiceResponse updateSubnet(NetworkSubnet subnet, Map opts);
+
+	/**
+	 * Deletes the NetworkSubnet submitted
+	 * @param subnet NetworkSubnet information
+	 * @return ServiceResponse
+	 */
+	ServiceResponse deleteSubnet(NetworkSubnet subnet);
 }

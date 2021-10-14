@@ -223,6 +223,149 @@ class GoogleNetworkProvider implements NetworkProvider {
 		return new ServiceResponse(rtn)
 	}
 
+	@Override
+	ServiceResponse validateSubnet(NetworkSubnet subnet, Map opts) {
+		log.debug "validateSubnet: ${subnet} ${opts}"
+		def rtn = [success:false, errors: [:]]
+		try {
+			Network network = opts.network
+
+			// Validate the subnetCidr
+			def cidr = subnet.cidr
+			def isValidCIDR = (cidr =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/).matches()
+			if (!isValidCIDR) {
+				rtn.errors['cidr'] = 'Invalid CIDR'
+			}
+
+			if(opts.mode != 'update') {
+				if (!subnet.name || subnet.name?.length() > 63 || !((subnet.name =~ /^[a-z]([-a-z0-9]*[a-z0-9])?/).matches())) {
+					rtn.errors['name'] = "Name must be between 1-63 characters and match [a-z]([-a-z0-9]*[a-z0-9])"
+				} else if (network.subnets.find { it.name.toLowerCase() == subnet.name }) {
+					rtn.errors['name'] = 'Name already exists'
+				}
+			}
+			rtn.success = !rtn.errors
+		} catch(e) {
+			log.error "Unexpected error in validate template: ${e}", e
+			rtn.msg = "Unexpected error in validate subnet"
+		}
+		return new ServiceResponse(rtn)
+	}
+
+	@Override
+	ServiceResponse createSubnet(NetworkSubnet subnet, Map opts = [:]) {
+		def rtn = [success:true]
+		log.debug("provisionSubnet: {} - {}", subnet, opts)
+		try {
+			Network network = opts.network
+			if(network?.networkServer) {
+				def projectId = network.zonePool.externalId
+				subnet.providerId = "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${subnet.regionCode}/subnetworks/${subnet.name}"
+				subnet.save(flush: true) // gotta save early so sync doesn't add a duplicate
+
+				def zoneId = network.zone.id
+
+				def body = [
+						name                 : subnet.name,
+						description          : subnet.description,
+						network              : network.providerId,
+						ipCidrRange          : subnet.cidr,
+						region               : "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${subnet.regionCode}"
+				]
+
+				rtn += GoogleComputeUtility.createSubnet([zone: network.zone, projectId: projectId, body: body, regionCode: subnet.regionCode])
+				if(rtn.success) {
+					subnet.externalId = rtn.targetId
+					subnet.providerId = rtn.targetLink
+					def networkCidr = NetworkUtility.getNetworkCidrConfig(subnet.cidr)
+					subnet.category = "google.subnet.${zoneId}"
+					subnet.name = "${subnet.name} (${subnet.cidr})"
+					subnet.netmask = networkCidr.config?.netmask
+					subnet.dhcpStart = (networkCidr.ranges ? networkCidr.ranges[0].startAddress : null)
+					subnet.dhcpEnd = (networkCidr.ranges ? networkCidr.ranges[0].endAddress : null)
+					subnet.subnetAddress = subnet.cidr
+					subnet.refType = 'ComputeZone'
+					subnet.refId = zoneId
+					subnet.save(flush: true)
+
+					def subnetId = subnet.id
+					def operationName = rtn.operationName
+
+					Promises.task {
+						Network.withNewSession {
+							def zone = ComputeZone.get(zoneId)
+							def computeClient = GoogleComputeUtility.getGoogleComputeClient(zone)
+							def blockResults = GoogleComputeUtility.blockUntilOperationComplete([projectId: projectId, computeClient: computeClient, regionId: subnet.regionCode, name: operationName])
+							def tmpSubnet = NetworkSubnet.get(subnetId)
+							if (!blockResults.success) {
+								tmpSubnet.status = NetworkSubnet.Status.ERROR
+								tmpSubnet.statusMessage = "Creation of subnetwork never completed successfully ${blockResults.msg}"
+								log.error "${tmpSubnet.statusMessage}, ${rtn}"
+							} else {
+								tmpSubnet.status = NetworkSubnet.Status.AVAILABLE
+							}
+							tmpSubnet.save(flush: true)
+						}
+					}
+				}
+			}
+		} catch(e) {
+			log.error("provisionSubnet error: ${e}", e)
+		}
+
+		return new ServiceResponse(rtn)
+	}
+
+	@Override
+	ServiceResponse updateSubnet(NetworkSubnet subnet, Map opts = [:]) {
+		def rtn = [success:true, errors: [:]]
+		log.debug("updateSubnet: {} - {}", subnet, opts)
+		try {
+			def network = subnet.network
+			if(network?.networkServer) {
+
+				def cidr = subnet.cidr
+				def isValidCIDR = (cidr =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/).matches()
+				if (!isValidCIDR) {
+					rtn.errors['cidr'] = 'Invalid CIDR'
+					rtn.success = false
+					return rtn
+				}
+
+				def projectId = network.zonePool.externalId
+				rtn += GoogleComputeUtility.expandIpCidrRange([zone: network.zone, projectId: projectId, regionCode: subnet.regionCode, uri: subnet.providerId, ipCidrRange: subnet.cidr])
+			}
+		} catch(e) {
+			log.error("updateSubnet error: ${e}", e)
+			rtn.success = false
+		}
+
+		return new ServiceResponse(rtn)
+	}
+
+	@Override
+	ServiceResponse deleteSubnet(NetworkSubnet subnet, Map opts = [:]) {
+		log.debug("delete subnet: {}", subnet.externalId)
+		def rtn = [success:false]
+		//remove the network
+		if(subnet.providerId) {
+			def projectId = subnet.network.zonePool.externalId
+			def deleteResults = GoogleComputeUtility.deleteSubnet([zone: subnet.network.zone, projectId: projectId, regionCode: subnet.regionCode, uri: subnet.providerId])
+			if(deleteResults.success == true) {
+				rtn.success = true
+			} else if(deleteResults.errorCode == 404) {
+				//not found - success
+				log.warn("not found")
+				rtn.success = true
+			} else {
+				rtn.msg = deleteResults.msg
+			}
+		} else {
+			rtn.success = true
+		}
+		return ServiceResponse.create(rtn)
+	}
+
 	private getAuthConfig(Cloud cloud) {
 		Map authConfig = [:]
 

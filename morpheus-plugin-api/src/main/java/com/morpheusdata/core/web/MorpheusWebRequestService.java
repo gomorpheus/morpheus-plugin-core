@@ -11,7 +11,7 @@ package com.morpheusdata.core.web;
 public interface MorpheusWebRequestService {
 	/**
 	 * Gets the current request Nonce Token Attribute for use in injecting javascript/stylesheets
-	 * @return
+	 * @return the nonce token
 	 */
 	public String getNonceToken();
 	//TODO: Add more
