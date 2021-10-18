@@ -12,6 +12,7 @@ import com.google.api.services.compute.model.*
 import com.google.auth.oauth2.ServiceAccountCredentials
 import groovy.util.logging.Slf4j
 import com.morpheusdata.core.util.RestApiUtil
+import com.morpheusdata.core.util.RestApiUtil.*
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.*
 import org.apache.http.client.HttpClient
@@ -83,6 +84,7 @@ class GoogleApiService {
 			def apiPath = "/compute/v1/projects/${apiConfig.projectId}/global/networks"
 			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'POST')
 			if(results.success) {
+				log.debug "createNetwork: ${groovy.json.JsonOutput.prettyPrint(results.data.encodeAsJson().toString())}"
 				rtn.targetLink = results.data.targetLink
 				rtn.targetId = results.data.targetId
 				Compute computeClient = getGoogleComputeClient(apiConfig)
@@ -138,6 +140,68 @@ class GoogleApiService {
 			}
 		} catch(e) {
 			log.error("deleteNetwork error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static createSubnet(Map apiConfig, body) {
+		def rtn = [success:false]
+		try {
+			log.debug "createSubnet: ${body}"
+			def headers = getAuthHeaders(apiConfig)
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, body:body, contentType: 'application/json')
+			def apiPath = "/compute/v1/projects/${apiConfig.projectId}/regions/${apiConfig.regionCode}/subnetworks"
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'POST')
+			if(results.success) {
+				log.debug "createSubnet: ${groovy.json.JsonOutput.prettyPrint(results.data.encodeAsJson().toString())}"
+				rtn.targetLink = results.data.targetLink
+				rtn.targetId = results.data.targetId
+				rtn.operationName = results.data.name
+				rtn.success = !rtn.msg
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("createSubnet error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static expandIpCidrRange(Map apiConfig, String uri, cidr) {
+		def rtn = [success:false]
+		try {
+			log.debug "expandIpCidrRange: ${uri} ${cidr}"
+			def headers = getAuthHeaders(apiConfig)
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, body:[ipCidrRange: cidr], contentType: 'application/json')
+			def apiPath = "${uri.replace('https://www.googleapis.com', '')}/expandIpCidrRange"
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'POST')
+			if(results.success) {
+				rtn.success = true
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("expandIpCidrRange error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static deleteSubnet(Map apiConfig, String uri) {
+		def rtn = [success:false]
+		try {
+			log.debug "deleteSubnet: ${uri}"
+			def headers = getAuthHeaders(apiConfig)
+			RestApiUtil.RestOptions requestOpts = new RestApiUtil.RestOptions(headers:headers, contentType: 'application/json')
+			def apiPath = uri.replace('https://www.googleapis.com', '')
+			def results = RestApiUtil.callJsonApi("https://compute.googleapis.com", apiPath, null, null, requestOpts, 'DELETE')
+			if(results.success) {
+				rtn.success = true
+				rtn.data = results.data
+			} else {
+				rtn += parseRestError(results)
+			}
+		} catch(e) {
+			log.error("deleteSubnet error: ${e}", e)
 		}
 		return rtn
 	}

@@ -224,146 +224,142 @@ class GoogleNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
-	ServiceResponse validateSubnet(NetworkSubnet subnet, Map opts) {
+	ServiceResponse validateSubnet(NetworkSubnet subnet, Network network, Map opts) {
 		log.debug "validateSubnet: ${subnet} ${opts}"
-		def rtn = [success:false, errors: [:]]
+		ServiceResponse rtn = ServiceResponse.error()
 		try {
-			Network network = opts.network
-
 			// Validate the subnetCidr
 			def cidr = subnet.cidr
 			def isValidCIDR = (cidr =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/).matches()
 			if (!isValidCIDR) {
-				rtn.errors['cidr'] = 'Invalid CIDR'
+				rtn.addError('cidr', 'Invalid CIDR')
 			}
 
 			if(opts.mode != 'update') {
+				def subnetProjections = []
+				morpheusContext.networkSubnet.listIdentityProjections(network).blockingSubscribe{ subnetProjections << it }
+
 				if (!subnet.name || subnet.name?.length() > 63 || !((subnet.name =~ /^[a-z]([-a-z0-9]*[a-z0-9])?/).matches())) {
-					rtn.errors['name'] = "Name must be between 1-63 characters and match [a-z]([-a-z0-9]*[a-z0-9])"
-				} else if (network.subnets.find { it.name.toLowerCase() == subnet.name }) {
-					rtn.errors['name'] = 'Name already exists'
+					rtn.addError('name', "Name must be between 1-63 characters and match [a-z]([-a-z0-9]*[a-z0-9])")
+				} else if (subnetProjections?.find { it.name.toLowerCase() == subnet.name }) {
+					rtn.addError('name', 'Name already exists')
 				}
 			}
-			rtn.success = !rtn.errors
+			rtn.setSuccess(!rtn.errors?.size)
 		} catch(e) {
 			log.error "Unexpected error in validate template: ${e}", e
-			rtn.msg = "Unexpected error in validate subnet"
+			rtn.setMsg("Unexpected error in validate subnet")
 		}
-		return new ServiceResponse(rtn)
+		return rtn
 	}
 
 	@Override
-	ServiceResponse createSubnet(NetworkSubnet subnet, Map opts = [:]) {
-		def rtn = [success:true]
-		log.debug("provisionSubnet: {} - {}", subnet, opts)
+	ServiceResponse createSubnet(NetworkSubnet subnet, Network network, Map opts = [:]) {
+		ServiceResponse rtn = ServiceResponse.error()
+		log.debug "createSubnet: ${subnet} ${network} ${opts}"
 		try {
-			Network network = opts.network
 			if(network?.networkServer) {
-				def projectId = network.zonePool.externalId
-				subnet.providerId = "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${subnet.regionCode}/subnetworks/${subnet.name}"
-				subnet.save(flush: true) // gotta save early so sync doesn't add a duplicate
+				Map authConfig = getAuthConfig(network.cloud)
+				def regionCode = authConfig.regionCode
+				def projectId = authConfig.projectId
+				def cloudId = network.cloud.id
 
-				def zoneId = network.zone.id
+				def name = subnet.name
+				subnet.providerId = "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${regionCode}/subnetworks/${subnet.name}"
+				def networkCidr = NetworkUtility.getNetworkCidrConfig(subnet.cidr)
+				subnet.category = "google.subnet.${cloudId}"
+				subnet.name = "${subnet.name} (${subnet.cidr})"
+				subnet.netmask = networkCidr.config?.netmask
+				subnet.dhcpStart = (networkCidr.ranges ? networkCidr.ranges[0].startAddress : null)
+				subnet.dhcpEnd = (networkCidr.ranges ? networkCidr.ranges[0].endAddress : null)
+				subnet.subnetAddress = subnet.cidr
+				subnet.refType = 'ComputeZone'
+				subnet.refId = cloudId
+				morpheusContext.networkSubnet.save(subnet).blockingGet()
 
 				def body = [
-						name                 : subnet.name,
+						name                 : name,
 						description          : subnet.description,
 						network              : network.providerId,
 						ipCidrRange          : subnet.cidr,
-						region               : "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${subnet.regionCode}"
+						region               : "https://www.googleapis.com/compute/v1/projects/${projectId}/regions/${regionCode}"
 				]
 
-				rtn += GoogleComputeUtility.createSubnet([zone: network.zone, projectId: projectId, body: body, regionCode: subnet.regionCode])
-				if(rtn.success) {
-					subnet.externalId = rtn.targetId
-					subnet.providerId = rtn.targetLink
-					def networkCidr = NetworkUtility.getNetworkCidrConfig(subnet.cidr)
-					subnet.category = "google.subnet.${zoneId}"
-					subnet.name = "${subnet.name} (${subnet.cidr})"
-					subnet.netmask = networkCidr.config?.netmask
-					subnet.dhcpStart = (networkCidr.ranges ? networkCidr.ranges[0].startAddress : null)
-					subnet.dhcpEnd = (networkCidr.ranges ? networkCidr.ranges[0].endAddress : null)
-					subnet.subnetAddress = subnet.cidr
-					subnet.refType = 'ComputeZone'
-					subnet.refId = zoneId
-					subnet.save(flush: true)
+				def createResults = GoogleApiService.createSubnet(authConfig, body)
 
-					def subnetId = subnet.id
-					def operationName = rtn.operationName
-
-					Promises.task {
-						Network.withNewSession {
-							def zone = ComputeZone.get(zoneId)
-							def computeClient = GoogleComputeUtility.getGoogleComputeClient(zone)
-							def blockResults = GoogleComputeUtility.blockUntilOperationComplete([projectId: projectId, computeClient: computeClient, regionId: subnet.regionCode, name: operationName])
-							def tmpSubnet = NetworkSubnet.get(subnetId)
-							if (!blockResults.success) {
-								tmpSubnet.status = NetworkSubnet.Status.ERROR
-								tmpSubnet.statusMessage = "Creation of subnetwork never completed successfully ${blockResults.msg}"
-								log.error "${tmpSubnet.statusMessage}, ${rtn}"
-							} else {
-								tmpSubnet.status = NetworkSubnet.Status.AVAILABLE
-							}
-							tmpSubnet.save(flush: true)
-						}
-					}
+				def fetchedSubnet
+				morpheusContext.networkSubnet.listById([subnet.id]).blockingSubscribe { fetchedSubnet = it }
+				if(createResults.success) {
+					rtn.setSuccess(true)
+					fetchedSubnet.externalId = createResults.targetId
+					fetchedSubnet.providerId = createResults.targetLink
+					fetchedSubnet.status = NetworkSubnet.Status.AVAILABLE
+				} else {
+					fetchedSubnet.status = NetworkSubnet.Status.ERROR
+					fetchedSubnet.statusMessage = "Creation of subnetwork failed ${createResults.msg}"
+					log.error "Error creating subnet ${fetchedSubnet.statusMessage}"
+					rtn.setMsg(fetchedSubnet.statusMessage)
 				}
+				morpheusContext.networkSubnet.save(fetchedSubnet).blockingGet()
 			}
 		} catch(e) {
-			log.error("provisionSubnet error: ${e}", e)
+			log.error("createSubnet error: ${e}", e)
 		}
 
-		return new ServiceResponse(rtn)
+		return rtn
 	}
 
 	@Override
-	ServiceResponse updateSubnet(NetworkSubnet subnet, Map opts = [:]) {
-		def rtn = [success:true, errors: [:]]
+	ServiceResponse updateSubnet(NetworkSubnet subnet, Network network, Map opts = [:]) {
+		log.debug "updateSubnet: ${subnet} ${opts}"
+		ServiceResponse rtn = ServiceResponse.error()
 		log.debug("updateSubnet: {} - {}", subnet, opts)
 		try {
-			def network = subnet.network
 			if(network?.networkServer) {
-
 				def cidr = subnet.cidr
 				def isValidCIDR = (cidr =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/).matches()
 				if (!isValidCIDR) {
-					rtn.errors['cidr'] = 'Invalid CIDR'
-					rtn.success = false
+					rtn.addError('cidr', 'Invalid CIDR')
 					return rtn
 				}
 
-				def projectId = network.zonePool.externalId
-				rtn += GoogleComputeUtility.expandIpCidrRange([zone: network.zone, projectId: projectId, regionCode: subnet.regionCode, uri: subnet.providerId, ipCidrRange: subnet.cidr])
+				Map authConfig = getAuthConfig(network.cloud)
+				def expandResults = GoogleApiService.expandIpCidrRange(authConfig, subnet.providerId, subnet.cidr)
+				if(expandResults.success) {
+					rtn.setSuccess(true)
+				} else {
+					rtn.setMsg(expandResults.msg)
+				}
 			}
 		} catch(e) {
 			log.error("updateSubnet error: ${e}", e)
-			rtn.success = false
+			rtn.setMsg("Error updating subnet: ${e}")
 		}
 
-		return new ServiceResponse(rtn)
+		return rtn
 	}
 
 	@Override
-	ServiceResponse deleteSubnet(NetworkSubnet subnet, Map opts = [:]) {
-		log.debug("delete subnet: {}", subnet.externalId)
-		def rtn = [success:false]
+	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network, Map opts = [:]) {
+		log.debug "deleteSubnet: ${subnet} ${network}"
+		ServiceResponse rtn = ServiceResponse.error()
 		//remove the network
 		if(subnet.providerId) {
-			def projectId = subnet.network.zonePool.externalId
-			def deleteResults = GoogleComputeUtility.deleteSubnet([zone: subnet.network.zone, projectId: projectId, regionCode: subnet.regionCode, uri: subnet.providerId])
+			Map authConfig = getAuthConfig(network.cloud)
+			def deleteResults = GoogleApiService.deleteSubnet(authConfig, subnet.providerId)
 			if(deleteResults.success == true) {
-				rtn.success = true
+				rtn.setSuccess(true)
 			} else if(deleteResults.errorCode == 404) {
 				//not found - success
-				log.warn("not found")
-				rtn.success = true
+				log.warn("not found: ${subnet}")
+				rtn.setSuccess(true)
 			} else {
-				rtn.msg = deleteResults.msg
+				rtn.setMsg(deleteResults.msg)
 			}
 		} else {
-			rtn.success = true
+			rtn.setSuccess(true)
 		}
-		return ServiceResponse.create(rtn)
+		rtn
 	}
 
 	private getAuthConfig(Cloud cloud) {
@@ -374,6 +370,7 @@ class GoogleNetworkProvider implements NetworkProvider {
 		authConfig.clientEmail = configMap.clientEmail
 		authConfig.privateKey = configMap.privateKey
 		authConfig.projectId = configMap.projectId
+		authConfig.regionCode = configMap.googleRegionId
 
 		return authConfig
 	}

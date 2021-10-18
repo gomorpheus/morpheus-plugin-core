@@ -44,6 +44,9 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected String dhcpIp;
 	protected String dnsPrimary;
 	protected String dnsSecondary;
+	protected String dhcpStart;
+	protected String dhcpEnd;
+	protected String dhcpRange;
 	protected String statusMessage;
 	protected String availabilityZone;
 	protected NetworkProxy networkProxy;
@@ -73,14 +76,8 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 		markDirty("networkSubnetType", networkSubnetType);
 	}
 
-
 	public String getDisplayName() {
 		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-		markDirty("displayName", displayName);
 	}
 
 	public String getInterfaceName() {
@@ -244,6 +241,33 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	public void setDnsPrimary(String dnsPrimary) {
 		this.dnsPrimary = dnsPrimary;
 		markDirty("dnsPrimary", dnsPrimary);
+	}
+
+	public String getDhcpStart() {
+		return dhcpStart;
+	}
+
+	public void setDhcpStart(String dhcpStart) {
+		this.dhcpStart = dhcpStart;
+		markDirty("dhcpStart", dhcpStart);
+	}
+
+	public String getDhcpEnd() {
+		return dhcpEnd;
+	}
+
+	public void setDhcpEnd(String dhcpEnd) {
+		this.dhcpEnd = dhcpEnd;
+		markDirty("dhcpEnd", dhcpEnd);
+	}
+
+	public String getDhcpRange() {
+		return dhcpRange;
+	}
+
+	public void setDhcpRange(String dhcpRange) {
+		this.dhcpRange = dhcpRange;
+		markDirty("dhcpRange", dhcpRange);
 	}
 
 	public String getDnsSecondary() {

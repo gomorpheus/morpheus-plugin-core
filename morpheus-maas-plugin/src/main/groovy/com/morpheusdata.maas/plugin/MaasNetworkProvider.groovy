@@ -80,22 +80,22 @@ class MaasNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
-	ServiceResponse validateSubnet(NetworkSubnet subnet, Map opts){
+	ServiceResponse validateSubnet(NetworkSubnet subnet, Network network, Map opts){
 		ServiceResponse.success()
 	}
 
 	@Override
-	ServiceResponse createSubnet(NetworkSubnet subnet, Map opts){
+	ServiceResponse createSubnet(NetworkSubnet subnet, Network network, Map opts){
 		ServiceResponse.success()
 	}
 
 	@Override
-	ServiceResponse updateSubnet(NetworkSubnet subnet, Map opts){
+	ServiceResponse updateSubnet(NetworkSubnet subnet, Network network, Map opts){
 		ServiceResponse.success()
 	}
 
 	@Override
-	ServiceResponse deleteSubnet(NetworkSubnet subnet){
+	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network){
 		ServiceResponse.success()
 	}
 
