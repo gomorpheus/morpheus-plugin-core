@@ -45,6 +45,7 @@ public class CustomLocale {
   
   /**
   * Imitates java.util.Locale getDisplayName()
+  * @return the display name
   */
   public String getDisplayName() {
     String displayName = this.name;

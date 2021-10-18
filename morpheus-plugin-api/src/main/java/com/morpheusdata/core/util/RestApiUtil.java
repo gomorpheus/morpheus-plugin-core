@@ -106,6 +106,9 @@ public class RestApiUtil {
 				case "POST":
 					request = new HttpPost(uriBuilder.build());
 					break;
+				case "PATCH":
+					request = new HttpPatch(uriBuilder.build());
+					break;
 				case "GET":
 					request = new HttpGet(uriBuilder.build());
 					break;

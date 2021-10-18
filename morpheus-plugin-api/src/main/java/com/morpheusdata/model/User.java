@@ -31,6 +31,7 @@ public class User extends MorpheusModel {
 
 	/**
 	 * the User's login username
+	 * @return String the username
 	 */
 	public String getUsername() {
 		return username;
@@ -122,6 +123,7 @@ public class User extends MorpheusModel {
 
 	/**
 	 * A Map of the user's permissions where the key is the {@link Permission#code} and the value is the highest {@link Permission.AccessType}
+	 * @return Map the map of permissions
 	 */
 	public Map<String, String> getPermissions() {
 		return permissions;

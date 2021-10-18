@@ -139,4 +139,11 @@ public interface MorpheusNetworkService {
 
 	Single<Network> setComputeServerNetwork(ComputeServer server, String privateIp, String publicIp, String hostname, Long networkPoolId);
 
+	/**
+	 * Get a {@link NetworkServer} by id.
+	 * @param id NetworkServer id
+	 * @return Observable stream of sync projection
+	 */
+	Single<NetworkServer> getNetworkServerById(Long id);
+
 }

@@ -5,6 +5,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
+import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
@@ -51,6 +52,12 @@ public interface MorpheusContext {
 	 * @return An Instance of the Network Context to be used for calls by various network providers
 	 */
 	MorpheusNetworkService getNetwork();
+
+	/**
+	 * Returns the NetworkSubnetContext used for performing updates or queries on network subnet related assets within Morpheus.
+	 * @return An Instance of the NetworkSubnet Context to be used for calls by various network providers
+	 */
+	MorpheusNetworkSubnetService getNetworkSubnet();
 
 	/**
 	 * Returns the Task context used for automation tasks on assets within Morpheus.

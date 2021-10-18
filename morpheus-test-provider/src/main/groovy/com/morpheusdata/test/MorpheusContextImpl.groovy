@@ -9,6 +9,7 @@ import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
 import com.morpheusdata.core.integration.MorpheusIntegrationService
 import com.morpheusdata.core.network.MorpheusNetworkService
+import com.morpheusdata.core.network.MorpheusNetworkSubnetService
 import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
@@ -22,6 +23,7 @@ import com.morpheusdata.model.Task
 import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.TaskResult
 import com.morpheusdata.test.network.MorpheusNetworkServiceImpl
+import com.morpheusdata.test.network.MorpheusNetworkSubnetServiceImpl
 import io.reactivex.Single
 
 /**
@@ -36,6 +38,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusServicePlanService servicePlanContext
 	protected MorpheusComputeServerService computeServerContext
 	protected MorpheusOsTypeService osTypeContext
+	protected MorpheusNetworkSubnetService subnetContext
 
 
     MorpheusContextImpl() {
@@ -46,6 +49,7 @@ class MorpheusContextImpl implements MorpheusContext {
 		servicePlanContext = new MorpheusServicePlanServiceImpl()
 		computeServerContext = new MorpheusComputeServerServiceImpl()
 	    osTypeContext = new MorpheusOsTypeServiceImpl()
+	    subnetContext = new MorpheusNetworkSubnetServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -73,6 +77,11 @@ class MorpheusContextImpl implements MorpheusContext {
     MorpheusNetworkService getNetwork() {
         return networkContext
     }
+
+	@Override
+	MorpheusNetworkSubnetService getNetworkSubnet() {
+		return subnetContext
+	}
 
 	@Override
 	MorpheusTaskService getTask() {

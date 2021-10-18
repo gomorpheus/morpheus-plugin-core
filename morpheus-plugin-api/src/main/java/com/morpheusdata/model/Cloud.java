@@ -92,6 +92,7 @@ public class Cloud extends MorpheusModel {
 
 	/**
 	 * Morpheus Account
+	 * @return Account the account for the Cloud
 	 */
 	public Account getAccount() {
 		return account;
@@ -99,6 +100,7 @@ public class Cloud extends MorpheusModel {
 
 	/**
 	 * Cloud name
+	 * @return String the name of the Cloud
 	 */
 	public String getName() {
 		return name;
@@ -106,6 +108,7 @@ public class Cloud extends MorpheusModel {
 
 	/**
 	 * Unique code
+	 * @return String the unique code
 	 */
 	public String getCode() {
 		return code;
@@ -113,6 +116,7 @@ public class Cloud extends MorpheusModel {
 
 	/**
 	 * A text description of this Cloud
+	 * @return String the description
 	 */
 	public String getDescription() {
 		return description;

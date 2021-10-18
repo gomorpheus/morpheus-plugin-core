@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.ComputeServerType;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.NetworkType;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.ComputeZonePool;
 

@@ -146,7 +146,7 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * Returns the host type that is to be provisioned
-	 * @return
+	 * @return HostType
 	 */
 	HostType getHostType();
 }
