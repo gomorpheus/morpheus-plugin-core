@@ -125,6 +125,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkType> getNetworkTypes(){
+		return GoogleCommon.getNetworkTypes()
+	}
+
+	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
 		log.debug "validating Cloud: ${zoneInfo.code}"
 		return new ServiceResponse(success: true)

@@ -59,6 +59,11 @@ public interface CloudProvider extends PluginProvider {
 	 */
 	ProvisioningProvider getProvisioningProvider(String providerCode);
 
+	/**
+	 * Provides a Collection of NetworkTypes related to this CloudProvider
+	 * @return Collection of NetworkType
+	 */
+	Collection<NetworkType> getNetworkTypes();
 
 	/**
 	 * Validates the submitted cloud information to make sure it is functioning correctly.

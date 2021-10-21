@@ -127,6 +127,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkType> getNetworkTypes() {
+		return null
+	}
+
+	@Override
 	ServiceResponse validate(Cloud cloudInfo) {
 		log.info("MaaS validate")
 		return new ServiceResponse(success: true)
