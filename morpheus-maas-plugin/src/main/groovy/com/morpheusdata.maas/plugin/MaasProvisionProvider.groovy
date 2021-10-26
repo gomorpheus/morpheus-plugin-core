@@ -411,7 +411,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 		def rtn = [success:false]
 		try {
 			if(workload.server?.internalId) {
-				def authConfig = getAuthConfig(workload.server.zone)
+				def authConfig = getAuthConfig(workload.server.cloud)
 				def powerConfig = [:]
 				def startResults = MaasComputeUtility.powerOnMachine(authConfig, workload.server.externalId, powerConfig)
 				if(startResults.success == true) {
