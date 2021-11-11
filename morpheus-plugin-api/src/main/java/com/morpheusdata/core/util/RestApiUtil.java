@@ -394,8 +394,6 @@ public class RestApiUtil {
 			return;
 		} else {
 			HttpClientBuilder clientBuilder = HttpClients.custom();
-
-
 			if(opts.connectionTimeout != null || opts.readTimeout != null) {
 				RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
 				if(opts.connectionTimeout != null) {
@@ -406,6 +404,7 @@ public class RestApiUtil {
 					reqConfigBuilder.setSocketTimeout(opts.readTimeout);
 				}
 				clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
+
 			}
 			if(opts.cookies == null) {
 				opts.cookies = new BasicCookieStore();
