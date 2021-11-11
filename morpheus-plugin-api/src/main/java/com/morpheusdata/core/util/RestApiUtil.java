@@ -12,6 +12,7 @@ import org.apache.http.config.MessageConstraints;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpConnectionFactory;
 import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.http.conn.routing.HttpRoute;
@@ -374,6 +375,19 @@ public class RestApiUtil {
 		Boolean ignoreSSL = opts.ignoreSSL;
 
 		HttpClientBuilder clientBuilder = HttpClients.custom();
+
+		if(opts.connectionTimeout != null || opts.readTimeout != null) {
+			RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
+			if(opts.connectionTimeout != null) {
+				reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
+				reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
+			}
+			if(opts.readTimeout != null) {
+				reqConfigBuilder.setSocketTimeout(opts.readTimeout);
+			}
+			clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
+		}
+
 		clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
 			public boolean verify(String host, SSLSession sess) {
 				return true;
@@ -521,6 +535,9 @@ public class RestApiUtil {
 		Boolean keepAlive=false;
 		Boolean ignoreSSL=true;
 		Integer timeout = 30000;
+		Integer connectionTimeout = null;
+		Integer readTimeout = null;
+
 		OauthOptions oauth;
 		String apiToken;
 		HttpClient httpClient; //optional pass the client
