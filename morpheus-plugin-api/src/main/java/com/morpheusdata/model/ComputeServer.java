@@ -83,6 +83,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return displayName;
 	}
 
+	/**
+	 * @deprecated
+	 * Use name instead
+	 */
+	@Deprecated
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 		markDirty("displayName",displayName);

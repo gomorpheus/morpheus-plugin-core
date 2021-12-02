@@ -69,7 +69,6 @@ class MaasComputeUtilitySpec extends Specification {
 
 		ComputeServer existingServer = new ComputeServer(id: 2,
 			uuid: '123',
-			displayName: 'hi',
 			status: 'available',
 			networkDomain: networkDomain,
 			serverOs: serverOs,
@@ -88,7 +87,6 @@ class MaasComputeUtilitySpec extends Specification {
 		server.account == cloud.account
 		server.status == 'error'
 		server.uuid == '123'
-		server.displayName == 'hi'
 		server.networkDomain.id == networkDomain.id
 		server.serverOs.id == serverOs.id
 		server.sourceImage.id == virtualImage.id

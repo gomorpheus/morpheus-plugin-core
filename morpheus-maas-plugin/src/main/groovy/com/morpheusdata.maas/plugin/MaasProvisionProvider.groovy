@@ -562,7 +562,6 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	def cleanServer(ComputeServer server) {
 		def internalName = server.internalName
 		server.name = internalName
-		server.displayName = internalName
 		server.hostname = internalName
 		server.internalIp = null
 		server.externalIp = null
