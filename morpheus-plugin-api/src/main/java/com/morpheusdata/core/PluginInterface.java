@@ -14,6 +14,13 @@ public interface PluginInterface {
 
 	String getName();
 	void setName(String name);
+
+	/**
+	 * Gets the code of the current plugin. This is an internal name that must be unique across plugins.
+	 * @return the code for the plugin
+	 */
+	String getCode();
+
 	String getFileName();
 	void setFileName(String fileName);
 	String getVersion();

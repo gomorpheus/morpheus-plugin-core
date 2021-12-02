@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
@@ -53,6 +54,11 @@ public abstract class Plugin implements PluginInterface {
 	protected List<PluginController> controllers = new ArrayList<>();
 
 	/**
+	 * The list of settings for the plugin
+	 */
+	protected List<OptionType> settings = new ArrayList<>();
+
+	/**
 	 * The list of permissions this plugin provides that may affect display of other {@link UIExtensionProvider} based providers.
 	 */
 	protected List<Permission> permissions = new ArrayList<>();
@@ -96,6 +102,18 @@ public abstract class Plugin implements PluginInterface {
 	 * URL for reporting issues with the plugin (if applicable).
 	 */
 	protected String issueTrackerUrl;
+
+	/**
+	 * Sets the setting types for this plugin.
+	 * @param settings a list of the {@link OptionType} settings for this plugin.
+	 */
+	public void setSettings(List<OptionType> settings) { this.settings = settings; }
+
+	/**
+	 * Returns a list of {@link OptionType} settings for this plugin.
+	 * @return this list of settings
+	 */
+	public List<OptionType> getSettings() { return this.settings; }
 
 	/**
 	 * Sets the controllers for custom url endpoints/view rendering that are provided with this plugin. These are often

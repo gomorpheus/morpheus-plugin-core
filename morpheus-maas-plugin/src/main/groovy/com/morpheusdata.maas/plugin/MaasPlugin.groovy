@@ -8,6 +8,11 @@ import com.morpheusdata.core.Plugin
 class MaasPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-maas-plugin'
+	}
+
+	@Override
 	void initialize() {
 		this.setName('MaaS Plugin')
 		def maasProvision = new MaasProvisionProvider(this, this.morpheus)

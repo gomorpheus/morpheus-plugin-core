@@ -7,6 +7,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
+import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.integration.MorpheusIntegrationService
 import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService
@@ -217,6 +218,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	 */
 	@Override
 	Single<Boolean> releaseLock(String name, Map opts) {
+		return null
+	}
+
+	@Override
+	Single<String> getSettings(Plugin plugin) {
 		return null
 	}
 }

@@ -9,6 +9,11 @@ import com.morpheusdata.views.ViewModel
  */
 class ReverseTextTaskPlugin extends Plugin {
 
+	@Override
+	String getCode() {
+		return 'morpheus-reverse-text-task-plugin'
+	}
+
 	/**
 	 * <ul>
 	 * <li>Initializes the plugin name, description, and author.</li>

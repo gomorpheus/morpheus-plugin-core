@@ -9,6 +9,11 @@ import com.morpheusdata.core.Plugin
  */
 class AwsBillingExportPlugin extends Plugin {
 
+	@Override
+	String getCode() {
+		return 'morpheus-aws-billing-export-plugin'
+	}
+
 	/**
 	 * <ul>
 	 * <li>Initializes the plugin name, description, and author.</li>

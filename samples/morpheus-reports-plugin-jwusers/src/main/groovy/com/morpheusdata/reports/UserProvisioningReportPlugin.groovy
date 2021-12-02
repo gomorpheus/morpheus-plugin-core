@@ -8,6 +8,11 @@ import com.morpheusdata.core.Plugin
 class UserProvisioningReportPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-user-provisioning-report-plugin'
+	}
+
+	@Override
 	void initialize() {
 		CustomReportProvider customReportProvider = new CustomReportProvider(this, morpheus)
 		this.pluginProviders.put(customReportProvider.code, customReportProvider)

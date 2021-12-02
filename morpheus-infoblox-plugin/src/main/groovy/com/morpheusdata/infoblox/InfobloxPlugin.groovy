@@ -5,6 +5,11 @@ import com.morpheusdata.core.Plugin
 class InfobloxPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-infoblox-plugin'
+	}
+
+	@Override
 	void initialize() {
 		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheus)
 		this.pluginProviders.put("infoblox2", infobloxProvider)

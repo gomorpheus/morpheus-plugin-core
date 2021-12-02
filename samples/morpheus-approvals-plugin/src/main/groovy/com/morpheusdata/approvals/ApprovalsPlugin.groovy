@@ -8,6 +8,11 @@ import com.morpheusdata.core.Plugin
 class ApprovalsPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-approvals-plugin'
+	}
+
+	@Override
 	void initialize() {
 		this.setName('Approvals Plugin')
 		FileWatcherProvider provider = new FileWatcherProvider(this, morpheus)

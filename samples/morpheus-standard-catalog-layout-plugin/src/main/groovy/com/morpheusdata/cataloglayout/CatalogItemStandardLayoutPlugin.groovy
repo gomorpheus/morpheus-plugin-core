@@ -12,6 +12,11 @@ import com.morpheusdata.model.Permission
 class CatalogItemStandardLayoutPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-catalog-item-standard-layout-plugin'
+	}
+
+	@Override
 	void initialize() {
 		StandardCatalogLayoutProvider standardCatalogLayoutProvider = new StandardCatalogLayoutProvider(this,morpheus)
 		

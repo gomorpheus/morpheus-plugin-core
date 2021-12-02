@@ -5,6 +5,11 @@ import com.morpheusdata.core.Plugin
 class CypherSamplePlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-cypher-sample-plugin'
+	}
+
+	@Override
 	void initialize() {
 		RandomNumberCypherProvider randomNumberCypherProvider = new RandomNumberCypherProvider(this, morpheus)
 		

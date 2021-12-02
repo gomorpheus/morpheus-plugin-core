@@ -132,6 +132,9 @@ class GoogleCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
 		log.debug "validating Cloud: ${zoneInfo.code}"
+		def jsonSettings = this.morpheusContext.getSettings(this.plugin).blockingGet()
+		def settings = new groovy.json.JsonSlurper().parseText(jsonSettings ?: '{}')
+		println "value of setting textField ${settings['textField']}"
 		return new ServiceResponse(success: true)
 	}
 

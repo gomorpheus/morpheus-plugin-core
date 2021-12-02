@@ -8,6 +8,11 @@ import com.morpheusdata.core.Plugin
 class CostingDashboardPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-costing-dashboard-plugin'
+	}
+
+	@Override
 	void initialize() {
 		CustomReportProvider customReportProvider = new CustomReportProvider(this, morpheus)
 		this.pluginProviders.put(customReportProvider.code, customReportProvider)

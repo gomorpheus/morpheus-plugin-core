@@ -5,6 +5,11 @@ import com.morpheusdata.core.Plugin
 class DigitalOceanPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-digital-ocean-plugin'
+	}
+
+	@Override
 	void initialize() {
 		this.name = 'Digital Ocean Plugin'
 		DigitalOceanCloudProvider cloudProvider = new DigitalOceanCloudProvider(this, morpheus)

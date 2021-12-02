@@ -9,6 +9,11 @@ import com.morpheusdata.model.Permission
 class ServerTabPlugin extends Plugin {
 
 	@Override
+	String getCode() {
+		return 'morpheus-server-tab-plugin'
+	}
+
+	@Override
 	void initialize() {
 		CustomServerTabProvider customTabProvider = new CustomServerTabProvider(this, morpheus)
 		this.pluginProviders.put(customTabProvider.code, customTabProvider)

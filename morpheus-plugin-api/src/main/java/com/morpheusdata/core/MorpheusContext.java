@@ -124,6 +124,14 @@ public interface MorpheusContext {
 	 */
 	MorpheusWebRequestService getWebRequest();
 
+	/**
+	 * Returns a json encoded string of the settings for the plugin requested. The settings are defined
+	 * by getSettings() on Plugin
+	 * @param plugin the Plugin to fetch the settings for
+	 * @return a JSON encoded string representing the settings for the plugin
+	 */
+	Single<String> getSettings(Plugin plugin);
+
 	//Common methods used across various contexts
 
 	/**
