@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
     }
     
 }
@@ -25,7 +24,6 @@ targetCompatibility = '1.8'
 repositories {
     mavenLocal()
     // maven { url "https://dl.bintray.com/bertramlabs/gomorpheus/" }
-    jcenter()
 	mavenCentral()
 }
 

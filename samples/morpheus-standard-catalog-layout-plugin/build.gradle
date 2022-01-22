@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
+		mavenCentral()
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
@@ -27,7 +27,6 @@ targetCompatibility = '1.8'
 
 repositories {
 	mavenLocal()
-	jcenter()
 	mavenCentral()
 }
 

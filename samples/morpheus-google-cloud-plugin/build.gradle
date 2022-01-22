@@ -1,7 +1,6 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
@@ -24,7 +23,6 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
 	mavenLocal()
-	jcenter()
 	mavenCentral()
 }
 
