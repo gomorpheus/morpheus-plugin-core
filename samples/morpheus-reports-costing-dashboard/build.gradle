@@ -65,6 +65,8 @@ sourceSets {
 }
 
 assets {
+	excludes = ['gulpfile.unminified.js']
+	minifyJs=false
 	packagePlugin = false //set to true if this is a library
 }
 

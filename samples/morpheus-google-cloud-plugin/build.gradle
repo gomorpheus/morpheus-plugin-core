@@ -33,6 +33,12 @@ configurations {
 	provided
 }
 
+assets {
+	excludes = ['webjars/**','gulpfile.unminified.js']
+	minifyJs = false
+	packagePlugin = false //set to true if this is a library
+}
+
 dependencies {
 	provided project(':morpheus-plugin-api')
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
@@ -143,6 +149,4 @@ tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 }
 
 tasks.assemble.dependsOn tasks.shadowJar
-assets {
-	packagePlugin = false //set to true if this is a library
-}
+

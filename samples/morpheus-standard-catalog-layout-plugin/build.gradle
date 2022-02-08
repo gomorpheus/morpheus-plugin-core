@@ -6,7 +6,7 @@ buildscript {
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
 		classpath "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
-		classpath "com.bertramlabs.plugins:sass-asset-pipeline:$assetPipelineVersion"
+		classpath "com.bertramlabs.plugins:sass-dart-asset-pipeline:$assetPipelineVersion"
 	}
 }
 

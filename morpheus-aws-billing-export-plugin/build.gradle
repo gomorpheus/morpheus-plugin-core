@@ -21,6 +21,8 @@ apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
 version = '0.1.0'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()

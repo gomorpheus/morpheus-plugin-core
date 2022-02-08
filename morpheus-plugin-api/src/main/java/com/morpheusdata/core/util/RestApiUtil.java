@@ -92,7 +92,7 @@ public class RestApiUtil {
 			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
-					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey));
+					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey).toString());
 				}
 			}
 
@@ -265,10 +265,10 @@ public class RestApiUtil {
 
 		} catch(SSLProtocolException sslEx) {
 			log.error("Error Occurred calling API (SSL Exception): {}",sslEx.getMessage(),sslEx);
-			rtn.addError("sslHandshake",  "SSL Handshake Exception (is SNI Misconfigured): ${sslEx.message}");
+			rtn.addError("sslHandshake",  "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
 			rtn.setSuccess(false);
 		} catch (Exception e) {
-			log.error("Error Occurred calling API: ${e.message}",e);
+			log.error("Error Occurred calling API: " + e.getMessage(),e);
 			rtn.addError("error", e.getMessage());
 			rtn.setSuccess(false);
 		}
