@@ -40,6 +40,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	RestApiUtil infobloxAPI
 
 	static String LOCK_NAME = 'infoblox.ipam'
+	private java.lang.Object maxResults
 
 	InfobloxProvider(Plugin plugin, MorpheusContext morpheusContext) {
 		this.morpheusContext = morpheusContext
@@ -673,8 +674,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							 type: poolType, poolEnabled: true, parentType: 'NetworkPoolServer', parentId: poolServer.id]
 			addConfig += networkInfo.config
 			def newNetworkPool =new NetworkPool(addConfig)
+			newNetworkPool.ipRanges = []
 			networkInfo?.ranges?.each { range ->
-				def rangeConfig = [networkPool: newObj, startAddress: range.startAddress,
+				def rangeConfig = [ startAddress: range.startAddress,
 								   endAddress: range.endAddress, addressCount: addConfig.ipCount]
 				def addRange = new NetworkPoolRange(rangeConfig)
 				newNetworkPool.ipRanges.add(addRange)
@@ -1146,7 +1148,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def attempt = 0
 			while(hasMore && attempt < 1000) {
 				def pageQuery = parseNetworkFilter(poolServer.networkFilter)
-				pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults]
+				pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults.toString()]
 				if(pageId != null) {
 					pageQuery['_page_id'] = pageId
 				}
@@ -1182,7 +1184,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 		} else {
 			def pageQuery = parseNetworkFilter(poolServer.networkFilter)
-			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
+			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results': maxResults.toString()]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
 																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
@@ -1209,7 +1211,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def pageId = null
 			def attempt = 0
 			while(hasMore && attempt < 1000) {
-				def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults]
+				def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_paging':'1', '_max_results':maxResults.toString()]
 				if(pageId != null)
 					pageQuery['_page_id'] = pageId
 				//load results
@@ -1243,7 +1245,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				attempt++
 			}
 		} else {
-			def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults]
+			def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults.toString()]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
 																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
