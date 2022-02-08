@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
     }
     dependencies {
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.3.1'
@@ -23,7 +22,6 @@ group "com.morpheusdata"
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 configurations {

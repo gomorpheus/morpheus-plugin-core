@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
+		mavenCentral()
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
@@ -22,8 +22,7 @@ version '1.1.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()
-	maven { url "https://dl.bintray.com/bertramlabs/gomorpheus/" }
-	jcenter()
+//	maven { url "https://dl.bintray.com/bertramlabs/gomorpheus/" }
 	mavenCentral()
 }
 

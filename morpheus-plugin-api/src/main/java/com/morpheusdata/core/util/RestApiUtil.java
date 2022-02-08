@@ -75,15 +75,15 @@ public class RestApiUtil {
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
-	static ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
+	public static ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
 		return callApi(url,path,username,password,new RestOptions(),"POST");
 	}
 
-	static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
+	public static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
 		return callApi(url,path,username,password,opts,"POST");
 	}
 
-	static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
@@ -276,23 +276,23 @@ public class RestApiUtil {
 	}
 
 
-	static ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
+	public static ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, new RestOptions(), "POST");
 	}
 
-	static ServiceResponse callJsonApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
+	public static ServiceResponse callJsonApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, "POST");
 	}
 
-	static ServiceResponse callJsonApi(String url, String path, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public static ServiceResponse callJsonApi(String url, String path, RestOptions opts, String method) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, method);
 	}
 
-	static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
+	public static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url,path,username,password,opts,"POST");
 	}
 
-	static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
@@ -316,11 +316,11 @@ public class RestApiUtil {
 		return rtn;
 	}
 
-	static ServiceResponse callXmlApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
+	public static ServiceResponse callXmlApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
 		return callXmlApi(url, path, null, null, opts, "POST");
 	}
 
-	static ServiceResponse callXmlApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public static ServiceResponse callXmlApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
@@ -349,7 +349,7 @@ public class RestApiUtil {
 		return rtn;
 	}
 
-	static Map<String,String> addRequiredHeader(Map<String,String> headers, String name, String value) {
+	public static Map<String,String> addRequiredHeader(Map<String,String> headers, String name, String value) {
 		if(headers == null) {
 			headers = new LinkedHashMap<>();
 		}
@@ -527,27 +527,27 @@ public class RestApiUtil {
 	}
 
 	public static class RestOptions {
-		Object body;
-		String contentType; //bodyType originally
-		Map<String,String> headers;
-		Map<String,String> queryParams;
-		Boolean suppressLog = true;
-		Boolean keepAlive=false;
-		Boolean ignoreSSL=true;
-		Integer timeout = 30000;
-		Integer connectionTimeout = null;
-		Integer readTimeout = null;
+		public Object body;
+		public String contentType; //bodyType originally
+		public Map<String,String> headers;
+		public Map<String,String> queryParams;
+		public Boolean suppressLog = true;
+		public Boolean keepAlive=false;
+		public Boolean ignoreSSL=true;
+		public Integer timeout = 30000;
+		public Integer connectionTimeout = null;
+		public Integer readTimeout = null;
 
-		OauthOptions oauth;
-		String apiToken;
-		HttpClient httpClient; //optional pass the client
+		public OauthOptions oauth;
+		public String apiToken;
+		public HttpClient httpClient; //optional pass the client
 
 		public static class OauthOptions {
-			String version;
-			String consumerKey;
-			String consumerSecret;
-			String apiKey;
-			String apiSecret;
+			public String version;
+			public String consumerKey;
+			public String consumerSecret;
+			public String apiKey;
+			public String apiSecret;
 		}
 	}
 }

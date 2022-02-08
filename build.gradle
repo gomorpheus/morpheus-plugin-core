@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
@@ -86,7 +85,6 @@ subprojects { project ->
 
 repositories {
     mavenLocal()
-    jcenter()
     mavenCentral()
 }
 

@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
     }
     
 }
@@ -25,7 +24,6 @@ targetCompatibility = '1.8'
 repositories {
     mavenLocal()
     // maven { url "https://dl.bintray.com/bertramlabs/gomorpheus/" }
-    jcenter()
 	mavenCentral()
 }
 
@@ -35,14 +33,16 @@ configurations {
 
 dependencies {
 	api 'io.reactivex.rxjava2:rxjava:2.2.0'
-	api 'org.apache.httpcomponents:httpclient:4.5.3'
-	api 'org.apache.httpcomponents:httpcore:4.4.5'
-	api 'org.apache.httpcomponents:httpmime:4.5.3'
+	api 'org.apache.httpcomponents:httpclient:4.5.13'
+	api 'org.apache.httpcomponents:httpcore:4.4.15'
+	api 'org.apache.httpcomponents:httpmime:4.5.13'
 	api "org.slf4j:slf4j-parent:$slf4jVersion"
 	api 'com.github.jknack:handlebars:4.2.0'
     api "org.slf4j:slf4j-api:1.7.26"
 	implementation 'javax.servlet:javax.servlet-api:3.0.1'
-	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy:$groovyVersion"
+    implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
+    implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
 	compileOnly('com.morpheusdata:cypher-core:0.5.1')
 	api 'org.glassfish:javax.json:1.1.4'
 	api 'javax.json:javax.json-api:1.1.4'
