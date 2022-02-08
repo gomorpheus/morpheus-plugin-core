@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +16,8 @@ public class NetworkPoolRange extends MorpheusModel {
 	protected Boolean active = true;
 	protected Date dateCreated;
 	protected Date lastUpdated;
+
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
 
 	// transients

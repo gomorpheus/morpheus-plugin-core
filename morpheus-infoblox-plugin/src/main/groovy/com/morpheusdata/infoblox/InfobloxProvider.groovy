@@ -640,7 +640,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			Observable<NetworkPoolIdentityProjection> poolRecords = morpheus.network.pool.listIdentityProjections(poolServer.id)
 
 			SyncTask<NetworkPoolIdentityProjection,Map,NetworkPool> syncTask = new SyncTask(poolRecords, apiItems as Collection<Map>)
-			syncTask.addMatchFunction { NetworkDomainIdentityProjection domainObject, Map apiItem ->
+			syncTask.addMatchFunction { NetworkPoolIdentityProjection domainObject, Map apiItem ->
 				domainObject.externalId == apiItem.'_ref'
 			}.onDelete {removeItems ->
 				morpheus.network.pool.remove(poolServer.id, removeItems).blockingGet()
