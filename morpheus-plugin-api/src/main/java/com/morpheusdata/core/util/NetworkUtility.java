@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * Utility methods for Network operations.
- *
+ * TODO: Javadoc needed for individual helper methods
  * @author David Estes
  * @since 0.8.0
  */
@@ -25,14 +25,63 @@ public class NetworkUtility {
 
 	static private Pattern ip4AddressPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	static private Pattern ip4CidrPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$");
+	static private Pattern ip6AddressPattern = Pattern.compile("^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))?$");
+
 
 	static public Boolean validateIpAddr(String addr) {
+		return validateIpAddr(addr,false);
+	}
+
+	static public Boolean validateIpAddr(String addr, Boolean includeIPv6) {
 		Matcher matcher = ip4AddressPattern.matcher(addr);
-		return matcher.matches();
+		Matcher matcher6 = ip6AddressPattern.matcher(addr);
+		return matcher.matches() || matcher6.matches();
+	}
+
+	static public Boolean validateIpAddrOrCidrOrRange(String addr, Boolean includeIPv6) {
+		return validateCidr(addr) || validateIpAddr(addr, includeIPv6) || validateIpRange(addr, includeIPv6);
+	}
+
+	static public Boolean validateIpAddrOrCidrOrRange(String addr) {
+		return validateIpAddrOrCidrOrRange(addr,false);
+	}
+
+	static public Boolean validateIpAddrOrRange(String addr, Boolean includeIPv6) {
+		return validateIpAddr(addr, includeIPv6) || validateIpRange(addr, includeIPv6);
+	}
+
+	static public Boolean validateIpAddrOrRange(String addr) {
+		return validateIpAddrOrRange(addr,false);
+	}
+
+	static public Boolean validateIpRange(String addr) {
+		return validateIpRange(addr,false);
+	}
+
+	static public Boolean validateIpRange(String addr, Boolean includeIPv6) {
+		String[] parts = addr != null ? addr.split("-") : null;
+		if(parts != null && parts.length > 0) {
+			if(parts.length >= 3) {
+				return false;
+			}
+			for(int x=0;x<parts.length ;x++) {
+				if(!validateIpAddr(parts[x].trim(), includeIPv6)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+	static public Boolean validateIpAddrOrCidr(String addr, Boolean includeIPv6) {
+		return validateCidr(addr) || validateIpAddr(addr,includeIPv6);
 	}
 
 	static public Boolean validateIpAddrOrCidr(String addr) {
-		return validateCidr(addr) || validateIpAddr(addr);
+		return validateIpAddrOrCidr(addr,false);
 	}
 
 	static public Boolean validateCidr(String addr) {
