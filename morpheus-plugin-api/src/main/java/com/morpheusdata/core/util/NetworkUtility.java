@@ -480,5 +480,24 @@ public class NetworkUtility {
 	}
 
 
+	static public String getReverseRecordName(String name) {
+		String rtn = null;
+		if(name != null && name.length() > 0) {
+			ArrayList<String> newTokens = new ArrayList<>();
+			String[] nameTokens = name.split("\\.");
+			for(String token : nameTokens) {
+				try {
+					Integer.parseInt(token);
+					newTokens.add(token);
+				} catch(Exception ignore) {
+					//ignore me
+				}
+
+			}
+			rtn = String.join(".",newTokens);
+		}
+		return rtn;
+	}
+
 
 }
