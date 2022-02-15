@@ -89,6 +89,22 @@ public class NetworkUtility {
 		return matcher.matches();
 	}
 
+	static public Boolean validateAddressInRange(String addr, String cidr) {
+		Boolean rtn = false;
+		try {
+			if(cidr.indexOf(':') > -1) {
+				//ipv6
+				//TODO
+			} else {
+				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(cidr).getInfo();
+				rtn = subnetInfo.isInRange(addr);
+			}
+		} catch(Exception e) {
+			log.warn("error validating network cidr ip address: {}", e.getMessage(), e);
+		}
+		return rtn;
+	}
+
 	static public CidrInfo getNetworkCidrConfig(String cidr) {
 		CidrInfo rtn = new CidrInfo();
 		try {

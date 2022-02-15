@@ -240,6 +240,32 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		return new ServiceResponse(success: true)
 	}
 
+	@Override
+	ServiceResponse startServer(ComputeServer computeServer) {
+		String dropletId = computeServer.externalId
+		String apiKey = computeServer.cloud.configMap.doApiKey
+		log.debug "startServer: ${dropletId}"
+		if (!dropletId) {
+			log.debug "no Droplet ID provided"
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
+		}
+		def body = ['type': 'power_on']
+		apiService.performDropletAction(dropletId, body, apiKey)
+	}
+
+	@Override
+	ServiceResponse stopServer(ComputeServer computeServer) {
+		String dropletId = computeServer.externalId
+		String apiKey = computeServer.cloud.configMap.doApiKey
+		log.debug "stopServer: ${dropletId}"
+		if (!dropletId) {
+			log.debug "no Droplet ID provided"
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
+		}
+		def body = ['type': 'shutdown']
+		apiService.performDropletAction(dropletId, body, apiKey)
+	}
+
 	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
 		log.debug "list ${userImages ? 'User' : 'OS'} Images"
 		List<VirtualImage> virtualImages = []

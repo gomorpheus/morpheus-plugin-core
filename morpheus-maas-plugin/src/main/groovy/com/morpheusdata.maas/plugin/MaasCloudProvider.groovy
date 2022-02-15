@@ -183,6 +183,16 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	ServiceResponse startServer(ComputeServer computeServer) {
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse stopServer(ComputeServer computeServer) {
+		return ServiceResponse.success()
+	}
+
+	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
 		log.info "Initializing Cloud: ${cloud.code}"
