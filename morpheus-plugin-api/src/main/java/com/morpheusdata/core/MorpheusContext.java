@@ -7,6 +7,7 @@ import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
+import com.morpheusdata.core.policy.MorpheusPolicyService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -28,6 +29,7 @@ import java.util.Map;
  * @see MorpheusTaskService
  * @see MorpheusVirtualImageService
  * @see MorpheusServicePlanService
+ * @see MorpheusPolicyService
  *
  * @author David Estes
  */
@@ -98,23 +100,29 @@ public interface MorpheusContext {
 	 * Returns the Custom Report Types Context used for generating custom reports.
 	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
 	 *
-	 * @return an instance of the Report Context
+	 * @return an instance of the Report Service
 	 */
 	MorpheusReportService getReport();
 
 	/**
-	 * Returns the Os Type Context
+	 * Returns the Os Type Service
 	 *
-	 * @return an instance of the Os Type Context
+	 * @return an instance of the Os Type Service
 	 */
 	MorpheusOsTypeService getOsType();
 
 	/**
-	 * Returns the Cypher Context
+	 * Returns the Cypher Service
 	 *
-	 * @return an instance of the Cypher Context
+	 * @return an instance of the Cypher Service
 	 */
 	MorpheusCypherService getCypher();
+
+	/**
+	 * Returns the Policy Service for Governance related Policy information.
+	 * @return an instance of teh Policy Service
+	 */
+	MorpheusPolicyService getPolicy();
 
 
 	/**

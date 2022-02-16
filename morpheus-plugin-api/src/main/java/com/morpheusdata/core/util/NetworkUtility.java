@@ -132,13 +132,13 @@ public class NetworkUtility {
 		public ArrayList<CidrRange> ranges = new ArrayList<>();
 		public CidrConfig config = new CidrConfig();
 		public String address;
-		static class CidrConfig {
+		static public class CidrConfig {
 			public String netmask;
 
 			public Long ipCount;
 			public Long ipFreeCount;
 		}
-		static class CidrRange {
+		static public class CidrRange {
 			public String startAddress;
 			public String endAddress;
 		}

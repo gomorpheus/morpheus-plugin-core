@@ -14,6 +14,7 @@ import com.morpheusdata.core.network.MorpheusNetworkSubnetService
 import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
+import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.web.MorpheusWebRequestService
 import com.morpheusdata.model.ComputeServer
@@ -135,7 +136,11 @@ class MorpheusContextImpl implements MorpheusContext {
 		return null
 	}
 
-	/**
+	@Override
+	MorpheusPolicyService getPolicy() {
+		return null
+	}
+/**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
 	 *
 	 * @return an instance of the web request service
