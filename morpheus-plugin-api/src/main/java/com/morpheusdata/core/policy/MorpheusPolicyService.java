@@ -1,7 +1,6 @@
 package com.morpheusdata.core.policy;
 
 import com.morpheusdata.model.Account;
-import com.morpheusdata.model.NetworkPool;
 import com.morpheusdata.model.Policy;
 import com.morpheusdata.model.PolicyType;
 import io.reactivex.Observable;

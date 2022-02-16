@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
@@ -120,10 +121,15 @@ public interface MorpheusContext {
 
 	/**
 	 * Returns the Policy Service for Governance related Policy information.
-	 * @return an instance of teh Policy Service
+	 * @return an instance of the Policy Service
 	 */
 	MorpheusPolicyService getPolicy();
 
+	/**
+	 * Returns the Costing service and all related subservices for dealing with costing data.
+	 * @return an instance of the Costing Service
+	 */
+	MorpheusCostingService getCosting();
 
 	/**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes

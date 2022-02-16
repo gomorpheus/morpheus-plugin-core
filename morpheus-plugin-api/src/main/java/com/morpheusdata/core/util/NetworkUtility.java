@@ -107,6 +107,7 @@ public class NetworkUtility {
 
 	static public CidrInfo getNetworkCidrConfig(String cidr) {
 		CidrInfo rtn = new CidrInfo();
+
 		try {
 			if(cidr.indexOf(':') > -1) {
 				//ipv6

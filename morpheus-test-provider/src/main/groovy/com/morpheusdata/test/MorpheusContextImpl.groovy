@@ -3,6 +3,7 @@ package com.morpheusdata.test
 
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
+import com.morpheusdata.core.costing.MorpheusCostingService
 import com.morpheusdata.core.cypher.MorpheusCypherService
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusOsTypeService
@@ -139,6 +140,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusPolicyService getPolicy() {
 		return null
+	}
+
+	@Override
+	MorpheusCostingService getCosting() {
+		return null;
 	}
 /**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
