@@ -54,7 +54,7 @@ public class PluginManager {
 		}
 	}
 
-	public Object handleRoute(String route, ViewModel<?> model, List<Map<String, String>> permissions) {
+	public Object handleRoute(String route, ViewModel<?> model, Map<String, String> permissions) {
 		return dispatcher.handleRoute(route, model, permissions);
 	}
 

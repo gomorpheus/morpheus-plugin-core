@@ -6,11 +6,36 @@ import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 import com.morpheusdata.web.PluginController
 import com.morpheusdata.web.Route
+import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.MorpheusContext
 
 /**
  * Example PluginController
  */
 class ReverseTextTaskController implements PluginController {
+
+	MorpheusContext morpheusContext
+	Plugin plugin
+
+	public ReverseTextTaskController(Plugin plugin, MorpheusContext morpheusContext) {
+		this.plugin = plugin
+		this.morpheusContext = morpheusContext
+	}
+
+	@Override
+	public String getCode() {
+		return 'reverseTextController'
+	}
+
+	@Override
+	String getName() {
+		return 'Reverse Text Controller'
+	}
+
+	@Override
+	MorpheusContext getMorpheus() {
+		return morpheusContext
+	}
 
 	/**
 	 * Defines two Routes with the builder method
@@ -18,8 +43,8 @@ class ReverseTextTaskController implements PluginController {
 	 */
 	List<Route> getRoutes() {
 		[
-			Route.build("/reverseTask/example", "example", Permission.build("admin", "full")),
-			Route.build("/reverseTask/json", "json", Permission.build("admin", "full"))
+			Route.build("/reverseTask/example", "example", Permission.build("reverseTextPlugin", "full")),
+			Route.build("/reverseTask/json", "json", Permission.build("reverseTextPlugin", "full"))
 		]
 	}
 
@@ -30,7 +55,8 @@ class ReverseTextTaskController implements PluginController {
 	 */
 	def example(ViewModel<String> model) {
 		println model
-		return HTMLResponse.success("foo")
+		println "user: ${model.user}"
+		return HTMLResponse.success("foo: ${model.user.firstName} ${model.user.lastName}")
 	}
 
 	/**
