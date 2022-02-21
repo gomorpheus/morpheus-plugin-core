@@ -2,6 +2,7 @@ package com.morpheusdata.views;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import com.morpheusdata.model.User;
 
 /**
  * This model will be provided from Morpheus-ui to the plugin controller. It contains the request/response
@@ -12,6 +13,7 @@ public class ViewModel<T> {
 	public ServletRequest request;
 	public ServletResponse response;
 	public Integer status = 200;
+	public User user;
 
 	/**
 	 * Helper method to create a successful ViewModel of an object

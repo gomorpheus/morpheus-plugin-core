@@ -15,7 +15,7 @@ class NetworkUtilitySpec extends Specification {
 		'0.0.0.0'                                 | true
 		'O.0.0.0'                                 | false
 		'10.0.0.1'                                | true
-		'::'                                      | false
+		'::'                                      | true
 		'...'                                     | false
 		'999.999.999.999'                         | true
 		'255.255.255.255'                         | true
@@ -23,7 +23,7 @@ class NetworkUtilitySpec extends Specification {
 		'255.2555.255.255'                        | false
 		'255.255.2555.255'                        | false
 		'255.255.255.2555'                        | false
-		'2001:0db8:85a3:0000:0000:8a2e:0370:7334' | false
+		'2001:0db8:85a3:0000:0000:8a2e:0370:7334' | true
 	}
 
 	void "getIpAddressType"() {

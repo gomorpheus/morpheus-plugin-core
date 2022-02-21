@@ -3,6 +3,7 @@ package com.morpheusdata.task
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.views.HandlebarsRenderer
 import com.morpheusdata.views.ViewModel
+import com.morpheusdata.model.Permission
 
 /**
  * An Example Task plugin
@@ -31,7 +32,7 @@ class ReverseTextTaskPlugin extends Plugin {
 		this.setAuthor("Mike Truso")
 		this.pluginProviders.put(reverseTextTaskProvider.code, reverseTextTaskProvider)
 		this.setRenderer(new HandlebarsRenderer(this.classLoader))
-		this.controllers.add(new ReverseTextTaskController())
+		this.controllers.add(new ReverseTextTaskController(this, morpheus))
 		def model = new ViewModel<String>()
 		model.object = "Eric"
 
@@ -45,4 +46,11 @@ class ReverseTextTaskPlugin extends Plugin {
 	void onDestroy() {
 		morpheus.task.disableTask('reverseTextTask')
 	}
+
+	@Override
+	public List<Permission> getPermissions() {
+		Permission permission = new Permission('Reverse Text Plugin', 'reverseTextPlugin', [Permission.AccessType.full])
+		return [permission];
+	}
+
 }

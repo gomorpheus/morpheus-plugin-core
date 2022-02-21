@@ -1,6 +1,6 @@
 package com.morpheusdata.views
 
-
+import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.PluginManager
 import com.morpheusdata.model.Permission
@@ -14,12 +14,13 @@ class DispatcherSpec extends Specification {
 		given:
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
-		plugin.getControllers() >> []
+		def testController = new TestController(plugin, null)
+		plugin.getControllers() >> [testController]
 		pm.getPlugins() >> [plugin]
 		def d = new Dispatcher(pm)
 		expect:
 		d.doDispatch(
-				'com.morpheusdata.views.TestController',
+				testController,
 				'example',
 				new ViewModel<Map>()
 		).html == "foo"
@@ -29,14 +30,15 @@ class DispatcherSpec extends Specification {
 		given:
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
-		plugin.getControllers() >> []
+		def testController = new TestController(plugin, null)
+		plugin.getControllers() >> [testController]
 		pm.getPlugins() >> [plugin]
 
 		def d = new Dispatcher(pm)
 		def map = [foo: "bar"]
 		expect:
 		d.doDispatch(
-				'com.morpheusdata.views.TestController',
+				testController,
 				'json',
 				ViewModel.of(map)
 		).data.foo == "fizz"
@@ -44,13 +46,13 @@ class DispatcherSpec extends Specification {
 
 	void "handle route"() {
 		given:
-		def usersPermissions = [[admin:"full"]]
+		def usersPermissions = [admin:"full"]
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
 		pm.getPlugins() >> [plugin]
 		pm.getRoutes() >> [(TestController.class): [foo: 'example']]
-
-		plugin.getControllers() >> [new TestController()]
+		def testController = new TestController(plugin, null)
+		plugin.getControllers() >> [testController]
 
 		def d = new Dispatcher(pm)
 
@@ -64,10 +66,12 @@ class DispatcherSpec extends Specification {
 
 	void "duplicate routes"() {
 		given:
-		def usersPermissions = [[admin:"full"]]
+		def usersPermissions = [admin:"full"]
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
-		plugin.getControllers() >> [new TestController(), new AnotherController()]
+		def testController = new TestController(plugin, null)
+		def anotherController = new AnotherController(plugin, null)
+		plugin.getControllers() >> [testController, anotherController]
 		pm.getRoutes() >> [
 				(TestController.class):
 						Route.build("/foo/example", "example",
@@ -86,11 +90,12 @@ class DispatcherSpec extends Specification {
 
 	void "handleRoute permission check"() {
 		given:
-		def usersPermissions = [[admin:"full"]]
-		def badPermissions = [[bad:"read"]]
+		def usersPermissions = [admin:"full"]
+		def badPermissions = [bad:"read"]
 		def pm = Mock(PluginManager)
 		def plugin = Mock(Plugin)
-		plugin.getControllers() >> [new PermissionController()]
+		def permissionController = new PermissionController(plugin, null)
+		plugin.getControllers() >> [permissionController]
 		pm.getRoutes() >> [
 				(PermissionController.class):
 					Route.build("/foo/example", "example",
@@ -117,11 +122,34 @@ class DispatcherSpec extends Specification {
 }
 
 class TestController implements PluginController {
+	MorpheusContext morpheusContext
+	Plugin plugin
+
+	public TestController(Plugin plugin, MorpheusContext morpheusContext) {
+		this.plugin = plugin
+		this.morpheusContext = morpheusContext
+	}
+
 	List<Route> getRoutes() {
 		[
 			Route.build("/foo/example", "example", Permission.build("admin", "full")),
 			Route.build("/foo/json", "json", Permission.build("admin", "full"))
 		]
+	}
+
+	@Override
+	public String getCode() {
+		return 'testController'
+	}
+
+	@Override
+	String getName() {
+		return 'Test Controller'
+	}
+
+	@Override
+	MorpheusContext getMorpheus() {
+		return morpheusContext
 	}
 
 	def example(ViewModel<String> model) {
@@ -134,18 +162,64 @@ class TestController implements PluginController {
 }
 
 class AnotherController implements PluginController {
+	MorpheusContext morpheusContext
+	Plugin plugin
+
+	public AnotherController(Plugin plugin, MorpheusContext morpheusContext) {
+		this.plugin = plugin
+		this.morpheusContext = morpheusContext
+	}
+
 	List<Route> getRoutes() {
 		[
 			Route.build("/foo/example", "example", Permission.build("admin", "full"))
 		]
 	}
+
+	@Override
+	public String getCode() {
+		return 'anotherController'
+	}
+
+	@Override
+	String getName() {
+		return 'Another Controller'
+	}
+
+	@Override
+	MorpheusContext getMorpheus() {
+		return morpheusContext
+	}
 }
 
 class PermissionController implements PluginController {
+	MorpheusContext morpheusContext
+	Plugin plugin
+
+	public PermissionController(Plugin plugin, MorpheusContext morpheusContext) {
+		this.plugin = plugin
+		this.morpheusContext = morpheusContext
+	}
+
 	List<Route> getRoutes() {
 		[
 				Route.build("/foo/example", "example", Permission.build("admin", "full"))
 		]
+	}
+
+	@Override
+	public String getCode() {
+		return 'permissionController'
+	}
+
+	@Override
+	String getName() {
+		return 'Permission Controller'
+	}
+
+	@Override
+	MorpheusContext getMorpheus() {
+		return morpheusContext
 	}
 
 	def example(ViewModel<String> model) {
