@@ -1,8 +1,10 @@
 buildscript {
 	repositories {
 		mavenLocal()
+		mavenCentral()
 	}
 	dependencies {
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
 	}
 }
 
@@ -12,6 +14,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
 version = '1.0.0'
@@ -132,3 +135,4 @@ test {
 		showStandardStreams = true
 	}
 }
+tasks.assemble.dependsOn tasks.shadowJar

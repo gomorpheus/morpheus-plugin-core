@@ -533,6 +533,7 @@ public class RestApiUtil {
 			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
 			clientBuilder.setConnectionManager(connectionManager);
 			HttpClient client = clientBuilder.build();
+			Boolean keepAlive = opts.keepAlive;
 			try {
 				if(opts.keepAlive) {
 					opts.httpClient = client;
@@ -541,7 +542,7 @@ public class RestApiUtil {
 				withClientFunction.method(client,opts.cookies);
 
 			} finally {
-				if(!opts.keepAlive) {
+				if(keepAlive == false || keepAlive == null) {
 					connectionManager.shutdown();
 				}
 			}
