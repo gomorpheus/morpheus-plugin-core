@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
  */
 public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
 	protected NetworkPoolRange networkPoolRange;
 	protected String ipType = "assigned"; //assigned, reserved
@@ -34,7 +36,9 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	protected String refType;
 	protected Long refId;
 	protected Long subRefId; //for multiple nics on same host
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkDomain domain;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected User createdBy;
 
 	public NetworkPoolRange getNetworkPoolRange() {
