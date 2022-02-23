@@ -140,6 +140,12 @@ public class MorpheusModel {
 			} else if (val instanceof Number) {
 				if(val instanceof Integer) {
 					builder.add(key, (Integer) val);
+				} else if(val instanceof Double) {
+					builder.add(key, (Double) val);
+				} else if(val instanceof Long) {
+					builder.add(key, (Long) val);
+				} else if(val instanceof Boolean) {
+					builder.add(key, (Boolean) val);
 				} else {
 					builder.add(key, (BigDecimal) val);
 				}
@@ -148,7 +154,11 @@ public class MorpheusModel {
 			} else if(val instanceof Map) {
 				builder.add(key, mapToJson((Map<String, Object>) val));
 			} else {
-				builder.add(key, val.toString());
+				if(val != null) {
+					builder.add(key, val.toString());
+				} else {
+					builder.addNull(key);
+				}
 			}
 		}
 
@@ -220,5 +230,27 @@ public class MorpheusModel {
 			}
 		}
 		return propertyValue;
+	}
+
+	public void setConfigProperty(String prop, Object object) {
+		Map configMap = getConfigMap();
+		if(!prop.contains(".")) {
+			configMap.put(prop, object);
+		} else {
+			String[] parts = prop.split("\\.");
+			Map nestedPart = configMap;
+			for(String part : parts) {
+				if(part.equals(parts[parts.length - 1])) {
+					// last part, set value
+					nestedPart.put(part, object);
+				} else {
+					nestedPart = (Map) nestedPart.get(part);
+				}
+				if(nestedPart == null) {
+					break;
+				}
+			}
+		}
+		setConfigMap(configMap);
 	}
 }
