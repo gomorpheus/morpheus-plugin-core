@@ -216,7 +216,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'POST')
 
 						break
 					case 'AAAA':
@@ -229,7 +229,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'POST')
 
 						break
 					case 'CNAME':
@@ -242,7 +242,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'POST')
 
 						break
 					case 'TXT':
@@ -255,7 +255,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'POST')
 						break
 					case 'MX':
 						apiPath = getServicePath(poolServer.serviceUrl) + 'record:mx'
@@ -267,7 +267,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'POST')
 						break
 				}
 
@@ -601,7 +601,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'],
-																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
+																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true
@@ -1154,7 +1154,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				}
 				//load results
 				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], queryParams: pageQuery,
-																													contentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
+																													contentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 				log.debug("listNetworks results: ${results.toMap()}")
 				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
@@ -1186,9 +1186,10 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def pageQuery = parseNetworkFilter(poolServer.networkFilter)
 			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results': maxResults.toString()]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
-																												contentType:ContentType.APPLICATION_JSON), 'GET')
+																												contentType:ContentType.APPLICATION_JSON, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 			rtn.data = results.data
+
 			if(rtn.success) {
 				rtn.content = results.content ? new JsonSlurper().parseText(results.content) : [:]
 				rtn.headers = results.headers
@@ -1216,7 +1217,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					pageQuery['_page_id'] = pageId
 				//load results
 				def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], queryParams:pageQuery,
-																													contentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
+																													contentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 				log.debug("listZones results: ${results}")
 				if(results?.success && !results?.hasErrors()) {
 					rtn.success = true
@@ -1247,7 +1248,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} else {
 			def pageQuery = ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults.toString()]
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
-																												contentType:ContentType.APPLICATION_JSON), 'GET')
+																												contentType:ContentType.APPLICATION_JSON, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 			if(rtn.success) {
 				rtn.results = results.content ? new JsonSlurper().parseText(results.content)?.result : [:]
@@ -1369,7 +1370,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				pageQuery['_page_id'] = pageId
 			//load results
 			def results = infobloxAPI.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new RestApiUtil.RestOptions(headers:['Content-Type':'application/json'],
-																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, ibapauth: opts.ibapauth), 'GET')
+																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl, cookies: opts.cookies, httpClient: opts.httpClient, keepAlive: opts.keepAlive), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
 				rtn.success = true

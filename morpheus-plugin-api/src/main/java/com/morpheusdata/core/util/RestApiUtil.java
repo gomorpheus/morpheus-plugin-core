@@ -13,6 +13,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.HttpConnectionFactory;
 import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.http.conn.routing.HttpRoute;
@@ -22,10 +23,12 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultHttpResponseFactory;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
@@ -34,6 +37,7 @@ import org.apache.http.impl.conn.DefaultHttpResponseParserFactory;
 import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.io.DefaultHttpRequestWriterFactory;
 import org.apache.http.io.HttpMessageParser;
 import org.apache.http.io.HttpMessageParserFactory;
@@ -210,10 +214,11 @@ public class RestApiUtil {
 				}
 			}
 
-			withClient(opts,(HttpClient client) -> {
+			withClient(opts,(HttpClient client, BasicCookieStore basicCookieStore) -> {
 
 				CloseableHttpResponse response = null;
 				try {
+
 					response = (CloseableHttpResponse)client.execute(request);
 					if(response.getStatusLine().getStatusCode() <= 399) {
 						for(Header header : response.getAllHeaders()) {
@@ -224,6 +229,11 @@ public class RestApiUtil {
 						for(Header header : response.getHeaders("Set-Cookie")) {
 							Map<String,String> cookies = extractCookie(header.getValue());
 							for(String cookieKey : cookies.keySet()) {
+								BasicClientCookie cookie = new BasicClientCookie("cookieKey", cookies.get(cookieKey));
+								cookie.setPath("/");
+								cookie.setDomain(request.getURI().getHost());
+								basicCookieStore.addCookie(cookie);
+
 								rtn.addCookie(cookieKey, cookies.get(cookieKey));
 							}
 						}
@@ -238,7 +248,11 @@ public class RestApiUtil {
 						} else {
 							rtn.setContent(null);
 						}
-						data.put("httpClient",client);
+						if(opts.keepAlive) {
+							data.put("httpClient",client);
+							data.put("cookies",opts.cookies);
+						}
+
 						rtn.setSuccess(true);
 					} else {
 						if(response.getEntity() != null) {
@@ -372,158 +386,198 @@ public class RestApiUtil {
 	}
 
 	private static void withClient(RestOptions opts, WithClientFunction withClientFunction) {
+
 		Boolean ignoreSSL = opts.ignoreSSL;
+		if(opts.httpClient != null) {
+			withClientFunction.method(opts.httpClient,opts.cookies);
+			return;
+		} else {
+			HttpClientBuilder clientBuilder = HttpClients.custom();
 
-		HttpClientBuilder clientBuilder = HttpClients.custom();
 
-		if(opts.connectionTimeout != null || opts.readTimeout != null) {
-			RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
-			if(opts.connectionTimeout != null) {
-				reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
-				reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
+			if(opts.connectionTimeout != null || opts.readTimeout != null) {
+				RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
+				if(opts.connectionTimeout != null) {
+					reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
+					reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
+				}
+				if(opts.readTimeout != null) {
+					reqConfigBuilder.setSocketTimeout(opts.readTimeout);
+				}
+				clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
 			}
-			if(opts.readTimeout != null) {
-				reqConfigBuilder.setSocketTimeout(opts.readTimeout);
-			}
-			clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
-		}
+			clientBuilder.setDefaultCookieStore(opts.cookies);
+			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
+				public boolean verify(String host, SSLSession sess) {
+					return true;
+				}
 
-		clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
-			public boolean verify(String host, SSLSession sess) {
-				return true;
-			}
+				public void verify(String host, SSLSocket ssl) {
 
-			public void verify(String host, SSLSocket ssl) {
+				}
 
-			}
+				public void verify(String host, String[] cns, String[] subjectAlts) {
 
-			public void verify(String host, String[] cns, String[] subjectAlts) {
+				}
 
-			}
+				public void verify(String host, X509Certificate cert) {
 
-			public void verify(String host, X509Certificate cert) {
+				}
 
-			}
+			});
+			SSLConnectionSocketFactory sslConnectionFactory;
+			SSLContext sslcontext = null;
+			if(ignoreSSL) {
+				try {
+					sslcontext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+						@Override
+						public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+							return true;
+						}
+					}).build();
+				} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException ignored) {
+					//;
+				}
+				sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER) {
 
-		});
-		SSLConnectionSocketFactory sslConnectionFactory;
-		SSLContext sslcontext = null;
-		if(ignoreSSL) {
-			try {
-				sslcontext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
 					@Override
-					public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-						return true;
-					}
-				}).build();
-			} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException ignored) {
-				//;
-			}
-			sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER) {
-
-				@Override
-				protected void prepareSocket(SSLSocket socket) {
-					try {
-						PropertyUtils.setProperty(socket, "host", null);
-					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						e.printStackTrace();
-					}
-					List<SNIServerName> serverNames  = Collections.<SNIServerName> emptyList();
+					protected void prepareSocket(SSLSocket socket) {
+						try {
+							PropertyUtils.setProperty(socket, "host", null);
+						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+							e.printStackTrace();
+						}
+						List<SNIServerName> serverNames  = Collections.<SNIServerName> emptyList();
 						SSLParameters sslParams = socket.getSSLParameters();
 						sslParams.setServerNames(serverNames);
 						socket.setSSLParameters(sslParams);
-				}
-				@Override
-				public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
-					if(socket instanceof SSLSocket) {
-						try {
-							String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-							SSLSocket sslSocket = (SSLSocket)socket;
-							sslSocket.setEnabledProtocols(enabledProtocols);
-							PropertyUtils.setProperty(socket, "host", host.getHostName());
-						} catch (Exception ex) {
-							log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors",host, ex);
-						}
 					}
-					return super.connectSocket(WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
-				}
-			};
-		} else {
-			sslcontext = SSLContexts.createSystemDefault();
-			sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext) {
-				@Override
-				public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
-					if(socket instanceof SSLSocket) {
-						try {
-							String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-							SSLSocket sslSocket = (SSLSocket)socket;
-							sslSocket.setEnabledProtocols(enabledProtocols);
-							PropertyUtils.setProperty(socket, "host", host.getHostName());
-						} catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-							//;
-						}
-					}
-
-					return super.connectSocket(opts.timeout != null ? opts.timeout : 30000, socket, host, remoteAddress, localAddress, context);
-				}
-			};
-		}
-
-
-		HttpMessageParserFactory<HttpResponse> responseParserFactory = new DefaultHttpResponseParserFactory() {
-			@Override
-			public HttpMessageParser<HttpResponse> create(SessionInputBuffer ibuffer, MessageConstraints constraints) {
-				LineParser lineParser = new BasicLineParser() {
-
 					@Override
-					public Header parseHeader(final CharArrayBuffer buffer) {
-						try {
-							return super.parseHeader(buffer);
-						} catch (ParseException ex) {
-							return new BasicHeader(buffer.toString(), null);
+					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
+						if(socket instanceof SSLSocket) {
+							try {
+								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+								SSLSocket sslSocket = (SSLSocket)socket;
+								sslSocket.setEnabledProtocols(enabledProtocols);
+								PropertyUtils.setProperty(socket, "host", host.getHostName());
+							} catch (Exception ex) {
+								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors",host, ex);
+							}
 						}
+						return super.connectSocket(WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
 					}
-
 				};
-				return new DefaultHttpResponseParser(
-						ibuffer, lineParser, DefaultHttpResponseFactory.INSTANCE, constraints != null ? constraints : MessageConstraints.DEFAULT) {
+			} else {
+				sslcontext = SSLContexts.createSystemDefault();
+				sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext) {
 					@Override
-					protected boolean reject(final CharArrayBuffer line, int count) {
-						//We need to break out of forever head reads
-						if(count > 100) {
-							return true;
+					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
+						if(socket instanceof SSLSocket) {
+							try {
+								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+								SSLSocket sslSocket = (SSLSocket)socket;
+								sslSocket.setEnabledProtocols(enabledProtocols);
+								PropertyUtils.setProperty(socket, "host", host.getHostName());
+							} catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+								//;
+							}
 						}
-						return false;
 
+						return super.connectSocket(opts.timeout != null ? opts.timeout : 30000, socket, host, remoteAddress, localAddress, context);
 					}
-
 				};
 			}
-		};
 
-		clientBuilder.setSSLSocketFactory(sslConnectionFactory);
-		Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-				.register("https", sslConnectionFactory)
-				.register("http", PlainConnectionSocketFactory.INSTANCE)
-				.build();
 
-		HttpMessageWriterFactory<HttpRequest> requestWriterFactory = new DefaultHttpRequestWriterFactory();
+			HttpMessageParserFactory<HttpResponse> responseParserFactory = new DefaultHttpResponseParserFactory() {
+				@Override
+				public HttpMessageParser<HttpResponse> create(SessionInputBuffer ibuffer, MessageConstraints constraints) {
+					LineParser lineParser = new BasicLineParser() {
 
-		HttpConnectionFactory<HttpRoute, ManagedHttpClientConnection> connFactory = new ManagedHttpClientConnectionFactory(
-				requestWriterFactory, responseParserFactory);
-		BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
-		clientBuilder.setConnectionManager(connectionManager);
-		HttpClient client = clientBuilder.build();
-		try {
-			withClientFunction.method(client);
-		} finally {
-			connectionManager.shutdown();
+						@Override
+						public Header parseHeader(final CharArrayBuffer buffer) {
+							try {
+								return super.parseHeader(buffer);
+							} catch (ParseException ex) {
+								return new BasicHeader(buffer.toString(), null);
+							}
+						}
+
+					};
+					return new DefaultHttpResponseParser(
+							ibuffer, lineParser, DefaultHttpResponseFactory.INSTANCE, constraints != null ? constraints : MessageConstraints.DEFAULT) {
+						@Override
+						protected boolean reject(final CharArrayBuffer line, int count) {
+							//We need to break out of forever head reads
+							if(count > 100) {
+								return true;
+							}
+							return false;
+
+						}
+
+					};
+				}
+			};
+
+			clientBuilder.setSSLSocketFactory(sslConnectionFactory);
+			Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+					.register("https", sslConnectionFactory)
+					.register("http", PlainConnectionSocketFactory.INSTANCE)
+					.build();
+
+			HttpMessageWriterFactory<HttpRequest> requestWriterFactory = new DefaultHttpRequestWriterFactory();
+
+			HttpConnectionFactory<HttpRoute, ManagedHttpClientConnection> connFactory = new ManagedHttpClientConnectionFactory(
+					requestWriterFactory, responseParserFactory);
+			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
+			clientBuilder.setConnectionManager(connectionManager);
+			HttpClient client = clientBuilder.build();
+			try {
+				if(opts.keepAlive) {
+					opts.httpClient = client;
+					opts.connectionManager = connectionManager;
+				}
+				withClientFunction.method(client,opts.cookies);
+
+			} finally {
+				if(!opts.keepAlive) {
+					connectionManager.shutdown();
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * Wrapper method for shutting down an HttpClient connection Manager
+	 * This is typically used when using a Keep-Alive connection manager
+	 * @param httpClient the HttpClient we wish to permanently shutdown.
+	 */
+	public static void shutdownClient(HttpClient httpClient) {
+		if(httpClient != null) {
+			try {
+				httpClient.getConnectionManager().shutdown();
+			} catch(Exception ex) {
+				log.error("Error Shutting Down Keep-Alive {}",ex.getMessage(),ex);
+			}
+		}
+	}
+
+
+	public static void shutdownClient(HttpClientConnectionManager connectionManager) {
+		if(connectionManager != null) {
+			try {
+				connectionManager.shutdown();
+			} catch(Exception ex) {
+				log.error("Error Shutting Down Keep-Alive {}",ex.getMessage(),ex);
+			}
 		}
 	}
 
 	@FunctionalInterface
 	public static interface WithClientFunction {
-		void method(HttpClient client);
+		void method(HttpClient client, BasicCookieStore cookieStore);
 	}
 
 	public static class RestOptions {
@@ -531,6 +585,7 @@ public class RestApiUtil {
 		public String contentType; //bodyType originally
 		public Map<String,String> headers;
 		public Map<String,String> queryParams;
+		public BasicCookieStore cookies = new BasicCookieStore();
 		public Boolean suppressLog = true;
 		public Boolean keepAlive=false;
 		public Boolean ignoreSSL=true;
@@ -541,6 +596,7 @@ public class RestApiUtil {
 		public OauthOptions oauth;
 		public String apiToken;
 		public HttpClient httpClient; //optional pass the client
+		public HttpClientConnectionManager connectionManager;
 
 		public static class OauthOptions {
 			public String version;
