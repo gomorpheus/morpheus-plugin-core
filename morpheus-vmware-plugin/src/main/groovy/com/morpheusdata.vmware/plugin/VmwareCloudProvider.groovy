@@ -12,6 +12,7 @@ import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.vmware.plugin.utils.*
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -97,7 +98,7 @@ class VmwareCloudProvider implements CloudProvider {
 		OptionType resourcePool = new OptionType(
 				name: 'Resource Pool',
 				code: 'vmware-plugin-resource-pool',
-				fieldName: 'cluster',
+				fieldName: 'resourcePoolId',
 				displayOrder: 6,
 				fieldLabel: 'Resource Pool',
 				required: false,
@@ -533,14 +534,15 @@ class VmwareCloudProvider implements CloudProvider {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
+		println "BOBW : VmwareCloudProvider.groovy:536 : datacenter ${datacenter}"
 		rtn = VmwareComputeUtility.listComputeResources(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
 		return rtn
 	}
 
-	def listDatacenters(Cloud cloud) {
+	static listDatacenters(Cloud cloud) {
 		log.debug "listDatacenters: ${cloud}"
 		def rtn = [success:false]
-		def authConfig = vmwareProvisionService.getAuthConfig(cloud)
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listDatacenters(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [:])
 		return rtn
 	}
@@ -559,7 +561,8 @@ class VmwareCloudProvider implements CloudProvider {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		rtn = VmwareComputeUtility.listResourcePools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
+		def cluster = cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listResourcePools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster: cluster])
 		return rtn
 	}
 }

@@ -1,4 +1,4 @@
-package com.morpheusdata.vmware.plugin
+package com.morpheusdata.vmware.plugin.utils
 
 import com.vmware.vim25.*
 import com.vmware.vim25.mo.*

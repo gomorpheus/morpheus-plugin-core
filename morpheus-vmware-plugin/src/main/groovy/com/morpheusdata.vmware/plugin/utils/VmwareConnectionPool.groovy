@@ -1,4 +1,4 @@
-package com.morpheusdata.vmware.plugin
+package com.morpheusdata.vmware.plugin.utils
 
 import groovy.util.logging.Slf4j
 

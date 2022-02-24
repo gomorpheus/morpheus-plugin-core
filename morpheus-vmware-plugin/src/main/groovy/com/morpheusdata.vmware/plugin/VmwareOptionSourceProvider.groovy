@@ -5,6 +5,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.*
 import groovy.util.logging.Slf4j
 import com.morpheusdata.core.OptionSourceProvider
+import com.morpheusdata.vmware.plugin.utils.*
 
 @Slf4j
 class VmwareOptionSourceProvider implements OptionSourceProvider {
@@ -65,18 +66,11 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 
 	def vmwarePluginResourcePool(args) {
 		log.debug "vmwarePluginResourcePool: ${args}"
-		//prepare a lookup zone
-		def configInput = args.config
-		if(!configInput.cluster) {
-			def rtn = [success:true, resourcePools:[]]
-			return []
-		} else {
-			Cloud cloud = loadLookupZone(args)
-			def resourcePools = VmwareCloudProvider.listResourcePools(cloud)?.resourcePools
-			def resourcePoolList = buildPoolTree(resourcePools)
-			def sortedPools = resourcePoolList.sort{ a, b -> a.name <=> b.name }
-			sortedPools.collect {  [name: it.name, value: it.ref] }
-		}
+		Cloud cloud = loadLookupZone(args)
+		def resourcePools = VmwareCloudProvider.listResourcePools(cloud)?.resourcePools
+		def resourcePoolList = buildPoolTree(resourcePools)
+		def sortedPools = resourcePoolList.sort{ a, b -> a.name <=> b.name }
+		sortedPools.collect {  [name: it.name, value: it.ref] }
 	}
 
 	private Cloud loadLookupZone(args) {
@@ -87,8 +81,8 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 			tmpCloud.serviceUrl = cloudArgs.zone.serviceUrl
 			tmpCloud.serviceUsername = cloudArgs.zone.serviceUsername
 			tmpCloud.servicePassword = cloudArgs.zone.servicePassword
-			tmpCloud.setConfigProperty('datacenter', cloudArgs.zone.config?.datacenter)
-			tmpCloud.setConfigProperty('cluster', cloudArgs.zone.config?.cluster)
+			tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
+			tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
 		} else {
 			def zoneId = cloudArgs?.zoneId?.toLong()
 			if (zoneId) {
@@ -104,11 +98,11 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 				if(cloudArgs.zone?.password && cloudArgs.zone.password != MorpheusUtils.passwordHidden)
 					tmpCloud.servicePassword = cloudArgs.zone.servicePassword
 
-				if(cloudArgs.zone?.config?.datacenter)
-					tmpCloud.setConfigProperty('datacenter', cloudArgs.zone.config?.datacenter)
+				if(cloudArgs.config?.datacenter)
+					tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
 
-				if(cloudArgs.zone?.config?.cluster)
-					tmpCloud.setConfigProperty('cluster', cloudArgs.zone.config?.cluster)
+				if(cloudArgs.config?.cluster)
+					tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
 			}
 		}
 		tmpCloud
@@ -116,7 +110,7 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 
 	private buildPoolTree(pools) {
 		def poolsById = pools?.collectEntries{[(it.ref.toString()):it]}
-		def resourcePoolsList = pools.collect { pt ->
+		return pools.collect { pt ->
 			def map = [name:nameForPool(pt,poolsById), type:pt.type, ref:pt.ref]
 			return map
 		}
@@ -128,9 +122,7 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 		if(poolsById) {
 			while(true) {
 				def parent = currentPool.parentId ? poolsById[currentPool.parentId.toString()] : null
-
 				if(!parent || parent.type != 'ResourcePool') {
-
 					break
 				} else {
 					nameElements.add(0,parent.name)

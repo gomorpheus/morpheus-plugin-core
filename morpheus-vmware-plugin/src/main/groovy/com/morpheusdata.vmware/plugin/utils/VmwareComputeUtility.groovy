@@ -1,4 +1,4 @@
-package com.morpheusdata.vmware.plugin
+package com.morpheusdata.vmware.plugin.utils
 
 import com.vmware.vim25.*
 import com.vmware.vim25.mo.*
@@ -28,6 +28,7 @@ class VmwareComputeUtility {
 	}
 
 	static listComputeResources(apiUrl, username, password, opts = [:]) {
+		log.debug "listComputeResources: ${apiUrl} ${opts}"
 		def rtn = [success: false, computeResorces: []]
 		def serviceInstance
 		try {
@@ -158,6 +159,7 @@ class VmwareComputeUtility {
 	}
 
 	static listResourcePools(apiUrl, username, password, opts = [:]) {
+		log.debug "listResourcePools ${opts}"
 		def rtn = [success: false, resourcePools: []]
 		def serviceInstance
 		try {

@@ -6,6 +6,7 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.ProvisionInstanceServers
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.util.*
+import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
