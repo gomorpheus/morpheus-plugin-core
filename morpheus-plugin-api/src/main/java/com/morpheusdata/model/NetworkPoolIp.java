@@ -15,6 +15,7 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolRange networkPoolRange;
 	protected String ipType = "assigned"; //assigned, reserved
 	protected String gatewayAddress;

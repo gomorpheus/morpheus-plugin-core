@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 
 /**
@@ -13,6 +14,10 @@ import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
  */
 public class NetworkDomain extends NetworkDomainIdentityProjection {
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected Account account;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected Account owner;
 
 	protected String displayName;
 	protected String name;
@@ -22,9 +27,24 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	protected Long refId;
 	protected String refSource = "integration";
 	protected String ouPath;
+	String dcServer;
 	protected String zoneType;
 	protected Boolean dnssec;
 	public String fqdn;
+	protected String domainSerial;
+	//reverse zone
+	protected String reverseName;
+	protected String reverseFqdn;
+	protected String reverseExternalId;
+	//tasks
+	//bluecat field for configuration
+	protected String configuration;
+
+	//windows domain join stuff
+	protected String domainUsername;
+	protected String domainPassword;
+	protected String guestUsername;
+	protected String guestPassword;
 
 	/**
 	 * Gets the display name of the current Network Domain. Domains can have a display name for situations where the same
@@ -191,4 +211,91 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 		this.dnssec = dnssec;
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+	public Account getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Account owner) {
+		this.owner = owner;
+	}
+
+	public String getDomainSerial() {
+		return domainSerial;
+	}
+
+	public void setDomainSerial(String domainSerial) {
+		this.domainSerial = domainSerial;
+	}
+
+	public String getReverseName() {
+		return reverseName;
+	}
+
+	public void setReverseName(String reverseName) {
+		this.reverseName = reverseName;
+	}
+
+	public String getReverseFqdn() {
+		return reverseFqdn;
+	}
+
+	public void setReverseFqdn(String reverseFqdn) {
+		this.reverseFqdn = reverseFqdn;
+	}
+
+	public String getReverseExternalId() {
+		return reverseExternalId;
+	}
+
+	public void setReverseExternalId(String reverseExternalId) {
+		this.reverseExternalId = reverseExternalId;
+	}
+
+	public String getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
+	}
+
+	public String getDomainUsername() {
+		return domainUsername;
+	}
+
+	public void setDomainUsername(String domainUsername) {
+		this.domainUsername = domainUsername;
+	}
+
+	public String getDomainPassword() {
+		return domainPassword;
+	}
+
+	public void setDomainPassword(String domainPassword) {
+		this.domainPassword = domainPassword;
+	}
+
+	public String getGuestUsername() {
+		return guestUsername;
+	}
+
+	public void setGuestUsername(String guestUsername) {
+		this.guestUsername = guestUsername;
+	}
+
+	public String getGuestPassword() {
+		return guestPassword;
+	}
+
+	public void setGuestPassword(String guestPassword) {
+		this.guestPassword = guestPassword;
+	}
 }

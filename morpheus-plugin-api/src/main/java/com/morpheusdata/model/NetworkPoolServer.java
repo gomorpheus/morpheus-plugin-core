@@ -27,6 +27,7 @@ public class NetworkPoolServer extends MorpheusModel {
 	protected String serviceMode;
 	protected String serviceUsername;
 	protected String servicePassword;
+	protected Long serviceThrottleRate=0L;
 	protected Integer apiPort;
 	protected Integer adminPort;
 	protected String status = "ok"; //ok, error, warning, offline
@@ -275,4 +276,11 @@ public class NetworkPoolServer extends MorpheusModel {
 		markDirty("account", account);
 	}
 
+	public Long getServiceThrottleRate() {
+		return serviceThrottleRate;
+	}
+
+	public void setServiceThrottleRate(Long serviceThrottleRate) {
+		this.serviceThrottleRate = serviceThrottleRate;
+	}
 }
