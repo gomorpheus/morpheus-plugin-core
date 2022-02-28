@@ -812,7 +812,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			]
 			def extraAttributes
 			if (poolServer.configMap?.extraAttributes) {
-				extraAttributes = generateExtraAttributes(poolServer, [username: networkPoolIp.createdBy.username, userId: networkPoolIp.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date())])
+				extraAttributes = generateExtraAttributes(poolServer, [username: networkPoolIp.createdBy?.username, userId: networkPoolIp.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date())])
 				body.extattrs = extraAttributes
 			}
 
