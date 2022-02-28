@@ -78,6 +78,8 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 		return 'Vmware Plugin'
 	}
 
+	// TODO : Ability to seed in ServicePlans
+
 	@Override
 	ServiceResponse validateWorkload(Map opts = [:]) {
 		// TODO

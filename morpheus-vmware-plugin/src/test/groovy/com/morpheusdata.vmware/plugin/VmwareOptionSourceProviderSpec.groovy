@@ -8,6 +8,7 @@ import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.core.util.RestApiUtil
+import com.morpheusdata.vmware.plugin.utils.*
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -52,17 +53,17 @@ class VmwareOptionSourceProviderSpec extends Specification {
 		releaseModes.size() == 4
 	}
 
-	void "vmwarePluginVDC"() {
-		given:
-		def args = [[zone: [serviceUrl: '1.1.1.1', serviceUsername: 'u1', servicePassword: 'password']]]
-
-		when:
-		def datacenters = service.vmwarePluginVDC(args)
-
-		then:
-		VmwareProvisionProvider.getVmwareApiUrl(*_) >> 'http://localhost'
-		VmwareCloudProvider.listDatastores(*_) >> Single.just(new Cloud(id: 10, serviceUrl: 'http://someurel', serviceToken: 'sometoken'))
-		VmwareComputeUtility.listDatastores(*_) >> [success: true, datastores: [[name: 'dc1', id: '1']]]
-        datacenters == [[name: 'dc1', value: '1']]
-	}
+//	void "vmwarePluginVDC"() {
+//		given:
+//		def args = [[zone: [serviceUrl: '1.1.1.1', serviceUsername: 'u1', servicePassword: 'password']]]
+//
+//		when:
+//		def datacenters = service.vmwarePluginVDC(args)
+//
+//		then:
+//		VmwareProvisionProvider.getVmwareApiUrl(*_) >> 'http://localhost'
+//		VmwareCloudProvider.listDatastores(*_) >> Single.just(new Cloud(id: 10, serviceUrl: 'http://someurel', serviceToken: 'sometoken'))
+//		VmwareComputeUtility.listDatastores(*_) >> [success: true, datastores: [[name: 'dc1', id: '1']]]
+//        datacenters == [[name: 'dc1', value: '1']]
+//	}
 }

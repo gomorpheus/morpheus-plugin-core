@@ -7,6 +7,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.response.ServiceResponse
+import com.morpheusdata.vmware.plugin.utils.*
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe

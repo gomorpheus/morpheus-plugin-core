@@ -1,9 +1,11 @@
 buildscript {
 	repositories {
+		//maven { url "https://repo.grails.org/grails/core" }
 		mavenLocal()
 		mavenCentral()
 	}
 	dependencies {
+		//classpath "org.grails:grails-gradle-plugin:5.0.0"
 		// classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
 	}
 }
@@ -19,6 +21,7 @@ apply plugin: 'maven-publish'
 group = 'com.morpheusdata'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
+	//maven { url "https://repo.grails.org/grails/core" }
 	mavenLocal()
 	mavenCentral()
 }

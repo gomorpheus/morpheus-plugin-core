@@ -9,12 +9,11 @@ public class ComputeZonePool extends ComputeZonePoolIdentityProjection {
 	public ComputeServerGroup serverGroup;
 	public String code;
 	public String config;
+	public String treeName;
 	public String rawData;
 	public String type = "default";
 	public String description;
 	public String regionCode;
-	public String internalId;
-	public String uniqueId;
 	public String refType;
 	public Long refId;
 	public ComputeZonePool parent;

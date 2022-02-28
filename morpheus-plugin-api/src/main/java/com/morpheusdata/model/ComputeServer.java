@@ -38,6 +38,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Long maxStorage;
 	protected Long maxMemory;
 	protected Long maxCores;
+	protected Long coresPerSocket;
 	protected Boolean managed;
 	protected ComputeServerType computeServerType;
 	protected Double hourlyPrice = 0D;
@@ -67,8 +68,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String macAddress;
 	protected ComputeCapacityInfo capacityInfo;
 	protected Boolean agentInstalled;
+	protected Boolean toolsInstalled = false;
 	protected Date lastAgentUpdate;
 	protected String agentVersion;
+	protected Boolean hotResize = false;
+	protected Boolean cpuHotResize = false;
+	protected String consoleType;
+	protected Integer consolePort;
+	protected String consolePassword;
+
 
 	public String getUuid() {
 		return uuid;
@@ -241,6 +249,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return maxCores;
 	}
 
+	public Long getCoresPerSocket() { return coresPerSocket; }
+
 	public Boolean getManaged() {
 		return managed;
 	}
@@ -368,6 +378,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setMaxCores(Long maxCores) {
 		this.maxCores = maxCores;
 		markDirty("maxCores", maxCores);
+	}
+
+	public void setCoresPerSocket(Long coresPerSocket) {
+		this.coresPerSocket = coresPerSocket;
+		markDirty("coresPerSocket", coresPerSocket);
 	}
 
 	public void setManaged(Boolean managed) {
@@ -500,6 +515,24 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("tags",tags);
 	}
 
+	public Boolean getHotResize() {
+		return hotResize;
+	}
+
+	public void setHotResize(Boolean hotResize) {
+		this.hotResize = hotResize;
+		markDirty("hotResize",hotResize);
+	}
+
+	public Boolean getCpuHotResize() {
+		return cpuHotResize;
+	}
+
+	public void setCpuHotResize(Boolean cpuHotResize) {
+		this.cpuHotResize = cpuHotResize;
+		markDirty("cpuHotResize",cpuHotResize);
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -545,6 +578,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("agentInstalled",agentInstalled);
 	}
 
+	public Boolean getToolsInstalled() {
+		return toolsInstalled;
+	}
+
+	public void setToolsInstalled(Boolean toolsInstalled) {
+		this.toolsInstalled = toolsInstalled;
+		markDirty("toolsInstalled",toolsInstalled);
+	}
+
 	public Date getLastAgentUpdate() {
 		return lastAgentUpdate;
 	}
@@ -561,5 +603,32 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setAgentVersion(String agentVersion) {
 		this.agentVersion = agentVersion;
 		markDirty("agentVersion",agentVersion);
+	}
+
+	public String getConsoleType() {
+		return consoleType;
+	}
+
+	public void setConsoleType(String consoleType) {
+		this.consoleType = consoleType;
+		markDirty("consoleType",consoleType);
+	}
+
+	public String getConsolePassword() {
+		return consolePassword;
+	}
+
+	public void setConsolePassword(String consolePassword) {
+		this.consolePassword = consolePassword;
+		markDirty("consolePassword",consolePassword);
+	}
+
+	public Integer getConsolePort() {
+		return consolePort;
+	}
+
+	public void setConsolePort(Integer consolePort) {
+		this.consolePort = consolePort;
+		markDirty("consolePort",consolePort);
 	}
 }
