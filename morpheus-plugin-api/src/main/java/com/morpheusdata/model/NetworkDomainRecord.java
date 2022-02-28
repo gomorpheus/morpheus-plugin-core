@@ -1,7 +1,6 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.NetworkDomainRecordIdentityProjection;
 
 public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
@@ -24,7 +23,7 @@ public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolIp networkPoolIp;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected NetworkDomainIdentityProjection networkDomain;
+	protected NetworkDomain networkDomain;
 
     public void setNetworkPoolIpId(Long id) {
     	this.setNetworkPoolIp(new NetworkPoolIp());

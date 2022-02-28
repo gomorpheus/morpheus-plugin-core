@@ -566,7 +566,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	void addMissingDomainRecords(NetworkDomainIdentityProjection domain, String recordType, Collection<Map> addList) {
 		List<NetworkDomainRecord> records = []
 		addList?.each {
-			def addConfig = [networkDomain: domain, externalId:it.'_ref', name: recordType == 'PTR' ? it.ptrdname : it.name, fqdn: "${it.name}.${it.zone ?: ""}", type: recordType, source: 'sync']
+			def addConfig = [networkDomain: new NetworkDomain(id: domain.id), externalId:it.'_ref', name: recordType == 'PTR' ? it.ptrdname : it.name, fqdn: "${it.name}.${it.zone ?: ""}", type: recordType, source: 'sync']
 			def newObj = new NetworkDomainRecord(addConfig)
 			if(recordType == 'A') {
 				newObj.setContent(it.ipv4addr)
