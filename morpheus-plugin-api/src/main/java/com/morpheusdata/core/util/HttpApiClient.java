@@ -80,8 +80,9 @@ public class HttpApiClient {
 	HttpClientConnectionManager connectionManager;
 	BasicCookieStore cookieStore = new BasicCookieStore();
 	public Long throttleRate = 0L;
+	private Date lastCallTime;
 
-	static Logger log = LoggerFactory.getLogger(RestApiUtil.class);
+	static Logger log = LoggerFactory.getLogger(HttpApiClient.class);
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
@@ -93,16 +94,37 @@ public class HttpApiClient {
 		return callApi(url,path,username,password,opts,"POST");
 	}
 
+	private void sleepIfNecessary() {
+		try {
+			Long tmpThrottleRate = throttleRate;
+			if(tmpThrottleRate != null && tmpThrottleRate > 0) {
+				if(lastCallTime != null) {
+					Date now = new Date();
+					Long timeDiff = now.getTime() - lastCallTime.getTime();
+					tmpThrottleRate = tmpThrottleRate - timeDiff;
+					if(tmpThrottleRate > 0) {
+						Thread.sleep(tmpThrottleRate);
+					}
+				} else {
+					Thread.sleep(tmpThrottleRate);
+				}
+
+			}
+		} catch(InterruptedException ignore) {
+
+		}
+
+	}
+
 	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
 
 		try {
-			if(throttleRate != null && throttleRate > 0) {
-				Thread.sleep(throttleRate);
-			}
 
+			sleepIfNecessary();
+			lastCallTime = new Date();
 			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
@@ -272,6 +294,7 @@ public class HttpApiClient {
 					rtn.setError("Error occurred processing the response for " + url + "/" + path + " : " + ex.getMessage());
 					rtn.setSuccess(false);
 				} finally {
+					lastCallTime = new Date();
 					if(response != null) {
 						try {
 							response.close();

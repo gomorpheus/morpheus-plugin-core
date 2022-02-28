@@ -91,19 +91,15 @@ class CustomReportProvider extends AbstractReportProvider {
 		morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
 		Long displayOrder = 0
 		List<GroovyRowResult> results = []
-		Connection dbConnection
-		
-		try {
-			dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
+		withDbConnection { Connection dbConnection ->
 			if(reportResult.configMap?.phrase) {
 				String phraseMatch = "${reportResult.configMap?.phrase}%"
 				results = new Sql(dbConnection).rows("SELECT id,name,status from instance WHERE name LIKE ${phraseMatch} order by name asc;")
 			} else {
 				results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
 			}
-		} finally {
-			morpheus.report.releaseDatabaseConnection(dbConnection)
 		}
+
 		log.info("Results: ${results}")
 		Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
 		observable.map{ resultRow ->
@@ -119,6 +115,7 @@ class CustomReportProvider extends AbstractReportProvider {
 		}.subscribe {resultRows ->
 			morpheus.report.appendResultRows(reportResult,resultRows).blockingGet()
 		}
+
 	}
 
 	 @Override

@@ -21,7 +21,6 @@ import com.morpheusdata.model.NetworkPoolType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection
 import com.morpheusdata.model.projection.NetworkDomainRecordIdentityProjection
-import com.morpheusdata.model.projection.NetworkIdentityProjection
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection
 import com.morpheusdata.response.ServiceResponse
@@ -33,9 +32,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.http.entity.ContentType
-import org.apache.http.client.HttpClient
 import io.reactivex.Observable
-import org.apache.tools.ant.taskdefs.condition.Http
 
 @Slf4j
 class InfobloxProvider implements IPAMProvider, DNSProvider {
@@ -358,7 +355,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				morpheus.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.error, 'infoblox api not reachable')
 				return ServiceResponse.error("infoblox api not reachable")
 			}
-
+			Date now = new Date()
 			if(testResults.success) {
 				cacheNetworks(infobloxClient,poolServer, opts)
 				cacheZones(infobloxClient,poolServer, opts)
@@ -366,7 +363,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					cacheIpAddressRecords(infobloxClient,poolServer, opts)
 					cacheZoneRecords(infobloxClient,poolServer, opts)
 				}
-				
+				log.info("Sync Completed in ${new Date().time - now.time}ms")
 				morpheus.network.updateNetworkPoolServerStatus(poolServer, AccountIntegration.Status.ok).subscribe().dispose()
 			}
 			return testResults
@@ -690,7 +687,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 	void updateMatchedPools(NetworkPoolServer poolServer, List<SyncTask.UpdateItem<NetworkPool,Map>> chunkedUpdateList) {
-
 		List<NetworkPool> poolsToUpdate = []
 		chunkedUpdateList?.each { update ->
 			NetworkPool existingItem = update.existingItem

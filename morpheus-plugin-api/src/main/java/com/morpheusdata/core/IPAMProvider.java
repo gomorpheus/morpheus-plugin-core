@@ -58,7 +58,7 @@ public interface IPAMProvider extends PluginProvider {
 	void refresh(NetworkPoolServer poolServer);
 
 
-	/*
+	/**
 	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
 	 * @param networkPoolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
 	 * @param networkPool the NetworkPool currently being operated on that contains the ip address for reservation
@@ -83,7 +83,6 @@ public interface IPAMProvider extends PluginProvider {
 
 	/**
 	 * Creates a Host record on the target {@link NetworkPool} within the {@link NetworkPoolServer} integration.
-	 * Typically called outside of automation and is used for administration purposes.
 	 * @param poolServer The Integration Object contains all the saved information regarding configuration of the IPAM Provider.
 	 * @param networkPool the NetworkPool currently being operated on.
 	 * @param networkPoolIp The ip address and metadata related to it for allocation. It is important to create functionality such that
@@ -130,6 +129,7 @@ public interface IPAMProvider extends PluginProvider {
 
 	/**
 	 * Returns the IPAM Integration logo for display when a user needs to view or add this integration
+	 * @since 0.12.3
 	 * @return Icon representation of assets stored in the src/assets of the project.
 	 */
 	Icon getIcon();

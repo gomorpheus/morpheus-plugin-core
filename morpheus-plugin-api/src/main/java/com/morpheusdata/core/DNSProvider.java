@@ -45,6 +45,7 @@ public interface DNSProvider extends PluginProvider {
 	/**
 	 * Returns the DNS Integration logo for display when a user needs to view or add this integration
 	 * @return Icon representation of assets stored in the src/assets of the project.
+	 * @since 0.12.3
 	 */
 	Icon getIcon();
 }

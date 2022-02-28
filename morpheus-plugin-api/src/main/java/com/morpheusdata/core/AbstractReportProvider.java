@@ -5,7 +5,9 @@ import com.morpheusdata.model.ReportType;
 import com.morpheusdata.model.UIScope;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
-
+import io.reactivex.Observable;
+import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,6 +73,23 @@ public abstract class AbstractReportProvider implements ReportProvider {
 			renderer.registerAssetHelper(getPlugin().getName());
 		}
 		return renderer;
+	}
+
+	public Object withDbConnection(WithDbConnectionFunction connectionFunction) {
+		Connection dbConnection = null;
+		try {
+			dbConnection  = getMorpheus().getReport().getReadOnlyDatabaseConnection().blockingGet();
+			return connectionFunction.method(dbConnection);
+		} finally {
+			if(dbConnection != null) {
+				getMorpheus().getReport().releaseDatabaseConnection(dbConnection).subscribe().dispose();
+			}
+		}
+	}
+
+	@FunctionalInterface
+	public interface WithDbConnectionFunction{
+		Observable<Object> method(Connection connection);
 	}
 
 }
