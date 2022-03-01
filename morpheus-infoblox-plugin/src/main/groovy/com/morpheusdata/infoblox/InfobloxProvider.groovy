@@ -826,6 +826,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				def newIp = ipResults.results.ipv4addrs?.first()?.ipv4addr
 				networkPoolIp.externalId = ipResults.results?.getAt('_ref')
 				networkPoolIp.ipAddress = newIp
+				if(createARecord) {
+					networkPoolIp.domain = domain
+				}
 				if (networkPoolIp.id) {
 					networkPoolIp = morpheus.network.pool.poolIp.save(networkPoolIp)?.blockingGet()
 				} else {
@@ -850,6 +853,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 						def aRecordRef = results.content.substring(1, results.content.length() - 1)
 						def domainRecord = new NetworkDomainRecord(networkDomain: domain, networkPoolIp: networkPoolIp, name: hostname, fqdn: hostname, source: 'user', type: 'A', externalId: aRecordRef)
+						domainRecord.content = newIp
 						morpheus.network.domain.record.create(domainRecord).blockingGet()
 						networkPoolIp.internalId = aRecordRef
 					}
@@ -922,9 +926,9 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 //	@Override
 	ServiceResponse deleteHostRecord(NetworkPool networkPool, NetworkPoolIp poolIp, Boolean deleteAssociatedRecords) {
 		HttpApiClient client = new HttpApiClient();
+		def poolServer = morpheus.network.getPoolServerById(networkPool.poolServer.id).blockingGet()
 		try {
 			if(poolIp.externalId) {
-				def poolServer = morpheus.network.getPoolServerById(networkPool.poolServer.id).blockingGet()
 				def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 				def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
 				def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
