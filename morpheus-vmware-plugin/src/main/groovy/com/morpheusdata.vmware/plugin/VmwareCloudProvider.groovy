@@ -24,6 +24,7 @@ import java.security.MessageDigest
 import io.reactivex.*
 import io.reactivex.annotations.NonNull
 import com.morpheusdata.core.util.SyncTask
+import com.morpheusdata.core.util.ComputeUtility
 
 @Slf4j
 class VmwareCloudProvider implements CloudProvider {
@@ -242,6 +243,7 @@ class VmwareCloudProvider implements CloudProvider {
 		try {
 			def syncDate = new Date()
 			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+			def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 			def apiUrlObj = new URL(authConfig.apiUrl)
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
@@ -407,12 +409,13 @@ class VmwareCloudProvider implements CloudProvider {
 
 //					now = new Date()
 //					def doInventory = zone.getConfigProperty('importExisting')
-//					Boolean createNew = false
+					Boolean createNew = true
 //					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
 //						createNew = true
 //					}
 //
 					//Returning Promise Chain now
+					def proxySettings
 					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
 //						refreshZoneVms(zone, [:], syncDate)
 //						return true
@@ -590,20 +593,16 @@ class VmwareCloudProvider implements CloudProvider {
 					})
 					SyncTask<ComputeZonePoolIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, listResults.resourcePools)
 					syncTask.addMatchFunction { ComputeZonePoolIdentityProjection domainObject, Map cloudItem ->
-						println "BOBW : VmwareCloudProvider.groovy:590 : check add match ${domainObject} ${cloudItem}"
 						domainObject.externalId == cloudItem.ref
 					}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItems ->
 						Map<Long, SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
 						morpheus.cloud.pool.listById(updateItems?.collect { it.existingItem.id }).map { ComputeZonePool pool ->
-							println "BOBW : VmwareCloudProvider.groovy:595 : pool ${pool}"
 							SyncTask.UpdateItemDto<ComputeZonePoolIdentityProjection, Map> matchItem = updateItemMap[pool.id]
 							return new SyncTask.UpdateItem<ComputeZonePool, Map>(existingItem: pool, masterItem: matchItem.masterItem)
 						}
 					}.onAdd { itemsToAdd ->
-						println "BOBW : VmwareCloudProvider.groovy:600 : ${itemsToAdd}"
 						addMissingResourcePools(cloud, clusterName, queryResults.clusters[clusterName] as String, itemsToAdd)
 					}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
-						println "BOBW : VmwareCloudProvider.groovy:603 : updateItems ${updateItems}"
 						def nameChanges = updateMatchedResourcePools(cloud, clusterName, queryResults.clusters[clusterName] as String, updateItems)
 //						if(nameChanges) {
 //							propagateResourcePoolTreeNameChanges(nameChanges)
@@ -675,7 +674,7 @@ class VmwareCloudProvider implements CloudProvider {
 			def add = new ComputeZonePool(poolConfig)
 			if(cloudItem.parentType != 'ClusterComputeResource') {
 				def parentPool = parentPools[cloudItem.parentId]
-				println "BOBW : VmwareCloudProvider.groovy:678 : ${parentPool}"
+				add.type = 'default'
 				add.parent = new ComputeZonePool(id: parentPool.id)
 				add.treeName = nameForPool(add)
 			} else {
@@ -694,6 +693,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	def updateMatchedResourcePools(Cloud cloud, String clusterName, String clusterRef, List updateList) {
+		log.debug "updateMatchedResourcePools: ${cloud} ${clusterName} ${clusterRef} ${updateList.size()}"
 //		def matchedResourcePools = ComputeZonePool.where{zone.id == currentZone.id && (internalId == clusterName || internalId == null) && externalId in updateList.collect{ul -> ul.existingItem[1]}}.list()?.collectEntries{[(it.externalId):it]}
 		List<Long> propagateTreeNameChanges = []
 		def updates = []
@@ -798,7 +798,6 @@ class VmwareCloudProvider implements CloudProvider {
 			queryResults.clusters = []
 			morpheusContext.cloud.pool.listById(poolListProjections.collect { it.id }).blockingSubscribe { queryResults.clusters << it }
 
-
 			def cloudItems = []
 			def listResultSuccess = false
 			queryResults.clusters?.each { cluster ->
@@ -816,7 +815,7 @@ class VmwareCloudProvider implements CloudProvider {
 					}
 					false
 				}
-				SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, syncData.cloudItems)
+				SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, cloudItems)
 				syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map cloudItem ->
 					domainObject.externalId == cloudItem?.ref.toString()
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeServerIdentityProjection, Map>> updateItems ->
@@ -849,7 +848,7 @@ class VmwareCloudProvider implements CloudProvider {
 
 //		List<ComputeZonePool> zoneClusters = ComputeZonePool.where{zone.id == currentZone.id &&  type == 'Cluster' && internalId in updateList.collect{it.masterItem.cluster}.unique()}.list()
 		def statsData = []
-		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
+//		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
 		for(update in updateList) {
 			ComputeServer currentServer = update.existingItem
 			def matchedServer = update.masterItem
@@ -879,7 +878,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	def addMissingHosts(Cloud cloud, List clusters, List addList) {
-		log.debug "addMissingHosts: ${cloud} ${updateList.size()}"
+		log.debug "addMissingHosts: ${cloud} ${addList.size()}"
 //		def volumeType = StorageVolumeType.findByCode('vmware-datastore')
 
 		def serverType = new ComputeServerType(code: 'vmware-plugin-hypervisor')
@@ -887,9 +886,9 @@ class VmwareCloudProvider implements CloudProvider {
 		for(cloudItem in addList) {
 			def clusterObj = clusters?.find{ pool -> pool.internalId == cloudItem.cluster }
 
-			def serverConfig = [account:cloud.owner, category:"vmware.vsphere.host.${cloud.id}",
+			def serverConfig = [account:cloud.owner, category:"vmware.vsphere.host.${cloud.id}", cloud: cloud,
 			                    name:cloudItem.name, resourcePool: clusterObj, externalId:cloudItem.ref, uniqueId:cloudItem.uuid, sshUsername:'root', status:'provisioned',
-			                    provision:false, singleTenant:false, serverType:'hypervisor', computeServerType:serverType, statusDate:new Date(), serverOs:serverOs,
+			                    provision:false, serverType:'hypervisor', computeServerType:serverType, serverOs:serverOs,
 			                    osType:'esxi', hostname:cloudItem.hostname]
 			def newServer = new ComputeServer(serverConfig)
 			newServer.maxMemory = cloudItem.memorySize
@@ -1072,7 +1071,7 @@ class VmwareCloudProvider implements CloudProvider {
 						def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedServer.config.guestId)
 						def osType = new OsType(code: osTypeCode ?: 'other')
 						def vmwareHost = matchedServer.guest?.hostName
-						def resourcePoolId = cloudItem.resourcePool?.getVal()
+						def resourcePoolId = matchedServer.resourcePool?.getVal()
 						def resourcePool = resourcePools?.find{ pool -> pool.externalId == resourcePoolId }
 //						def folderId = matchedServer.parent?.getVal()
 //						def folder = zoneFolders?.find { folder -> folder.externalId == folderId }
@@ -1507,7 +1506,6 @@ class VmwareCloudProvider implements CloudProvider {
 				                internalIp:ipAddress, sshHost:ipAddress, sshUsername:'root', hostname:hostname, provision:false, computeServerType:defaultServerType,
 				                cloud:cloud, lvmEnabled:false, managed:false, serverType:'vm', status:'provisioned',
 				                resourcePool:resourcePool, uniqueId:vmUuid, internalId: cloudItem.config.instanceUuid] // folder: folder
-				vmConfig.poweredOn = cloudItem.runtime.powerState == VirtualMachinePowerState.poweredOn
 				vmConfig.powerState = cloudItem.runtime.powerState == VirtualMachinePowerState.poweredOn ? ComputeServer.PowerState.on : (cloudItem.runtime.powerState == VirtualMachinePowerState.suspended ? ComputeServer.PowerState.paused : ComputeServer.PowerState.off)
 				vmConfig.hotResize = (cloudItem.config.memoryHotAddEnabled)
 				vmConfig.cpuHotResize = (cloudItem.config.cpuHotAddEnabled == true)
@@ -1589,7 +1587,7 @@ class VmwareCloudProvider implements CloudProvider {
 		log.debug "getHostsForVirtualMachines: ${cloud} ${cloudVMs?.size()}"
 		def hostExternalIds = cloudVMs.collect{it.runtime?.host?.getVal()}.unique()
 		def hostIdentities = []
-		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { hostIdentities << it }
+		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { hostIdentities << it.id }
 		def hosts = []
 		morpheusContext.computeServer.listById(hostIdentities).blockingSubscribe { ComputeServer it ->
 			if(it.computeServerType.code == 'vmware-plugin-hypervisor' && it.externalId in hostExternalIds) {
@@ -1600,7 +1598,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	private getResourcePoolsForVirtualMachines(Cloud cloud, List cloudVMs) {
-		log.debug "getResourcePoolsForVirtualMachines: ${cloud} ${cloudsVMs?.size()}"
+		log.debug "getResourcePoolsForVirtualMachines: ${cloud} ${cloudVMs?.size()}"
 		def resourcePoolExternalIds = cloudVMs.collect { it.resourcePool?.getVal() }.unique()
 		def resourcePoolProjections = []
 		morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe { resourcePoolProjections << it }
@@ -1641,7 +1639,6 @@ class VmwareCloudProvider implements CloudProvider {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		println "BOBW : VmwareCloudProvider.groovy:536 : datacenter ${datacenter}"
 		rtn = VmwareComputeUtility.listComputeResources(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
 		return rtn
 	}

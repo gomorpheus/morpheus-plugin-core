@@ -155,7 +155,6 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 
 	static getAuthConfig(Cloud cloud) {
 		log.debug "getAuthConfig: ${cloud}"
-		println "BOBW : VmwareProvisionProvider.groovy:155 : ${cloud} ${cloud.serviceUrl}"
 		def rtn = [:]
 
 		rtn.apiUrl = getVmwareApiUrl(cloud.serviceUrl)
@@ -165,7 +164,6 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 	}
 
 	static getVmwareApiUrl(String apiUrl) {
-		println "BOBW : VmwareProvisionProvider.groovy:165 : "
 		if(apiUrl) {
 			def rtn = apiUrl
 			if(rtn.startsWith('http') == false)

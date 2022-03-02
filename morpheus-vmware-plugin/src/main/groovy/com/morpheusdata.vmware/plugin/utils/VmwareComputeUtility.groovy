@@ -394,6 +394,91 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static getVmControllers(virtualDevices) {
+		def rtn = []
+		try {
+			virtualDevices?.each { virtualDevice ->
+				if(virtualDevice instanceof VirtualController) {
+					def newController = [name:virtualDevice.getDeviceInfo()?.getLabel(), description:virtualDevice.getDeviceInfo()?.getSummary(),
+					                     controllerKey:"${virtualDevice.getKey()}", externalId:"${virtualDevice.getKey()}", key:virtualDevice.getKey(),
+					                     unitNumber:virtualDevice.getUnitNumber(), busNumber:virtualDevice.getBusNumber()]
+					if(virtualDevice instanceof VirtualIDEController)
+						newController.type = 'vmware-ide'
+					else if(virtualDevice instanceof VirtualBusLogicController)
+						newController.type = 'vmware-busLogic'
+					else if(virtualDevice instanceof VirtualLsiLogicController)
+						newController.type = 'vmware-lsiLogic'
+					else if(virtualDevice instanceof VirtualLsiLogicSASController)
+						newController.type = 'vmware-lsiLogicSas'
+					else if(virtualDevice instanceof ParaVirtualSCSIController)
+						newController.type = 'vmware-paravirtual'
+					if(newController.type)
+						rtn << newController
+				}
+			}
+		} catch(e) {
+			log.error("getVmControllers error: ${e}")
+		}
+		return rtn
+	}
+
+	static getVmNetworks(virtualDevices) {
+		def rtn = []
+		try {
+			def counter = 0
+			virtualDevices?.each { virtualDevice ->
+				if(virtualDevice instanceof VirtualEthernetCard) {
+
+					def newNic = [name:virtualDevice.getDeviceInfo()?.getLabel(), description:virtualDevice.getDeviceInfo()?.getSummary(),
+					              key:virtualDevice.getKey(), unitNumber:virtualDevice.getUnitNumber(), macAddress:virtualDevice.getMacAddress(),
+					              controllerKey:virtualDevice.getControllerKey(), type:'e1000', row:counter]
+
+					if(virtualDevice.getBacking() instanceof VirtualEthernetCardDistributedVirtualPortBackingInfo) {
+						newNic.portGroup = virtualDevice.getBacking().port.portgroupKey
+						newNic.networkId = virtualDevice.getBacking().port.portgroupKey
+						newNic.switchUuid = virtualDevice.getBacking().port.switchUuid
+					} else if(virtualDevice.getBacking() instanceof VirtualEthernetCardNetworkBackingInfo) {
+						newNic.networkId = virtualDevice.getBacking().network.getVal()
+					}
+					if(virtualDevice instanceof VirtualVmxnet2)
+						newNic.type = 'vmxNet2'
+					else if(virtualDevice instanceof VirtualVmxnet3)
+						newNic.type = 'vmxNet3'
+					rtn << newNic
+					counter++
+				}
+			}
+		} catch(e) {
+			log.error("getVmNetworks error: ${e}")
+		}
+		return rtn
+	}
+
+	static getVmVolumes(virtualDevices) {
+		def rtn = []
+		try {
+			virtualDevices?.each { virtualDevice ->
+				if(virtualDevice instanceof VirtualDisk && !(virtualDevice instanceof VirtualCdrom)) {
+					def newDisk = [name:virtualDevice.getDeviceInfo()?.getLabel(), size:virtualDevice.getCapacityInKB(), key:virtualDevice.getKey(),
+					               unitNumber:virtualDevice.getUnitNumber(), controllerKey:"${virtualDevice.getControllerKey()}", type:'']
+					def backing = virtualDevice.getBacking()
+					if(backing instanceof  VirtualDeviceFileBackingInfo) {
+						newDisk.fileName = backing.getFileName()
+						newDisk.datastore = backing.getDatastore()?.getVal()
+						if(backing instanceof VirtualDiskFlatVer2BackingInfo) {
+							VirtualDiskFlatVer2BackingInfo info = backing as VirtualDiskFlatVer2BackingInfo
+							newDisk.thin = info.getThinProvisioned()
+						}
+					}
+					rtn << newDisk
+				}
+			}
+		} catch(e) {
+			log.error("getVmVolumes error: ${e}")
+		}
+		return rtn
+	}
+
 	static isEntityReadOnly(roleList) {
 		def rtn = true
 		roleList?.each { roleId ->

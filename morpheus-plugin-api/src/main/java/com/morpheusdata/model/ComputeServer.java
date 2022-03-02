@@ -76,6 +76,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String consoleType;
 	protected Integer consolePort;
 	protected String consolePassword;
+	protected ComputeServer parentServer;
 
 
 	public String getUuid() {
@@ -621,6 +622,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setConsolePassword(String consolePassword) {
 		this.consolePassword = consolePassword;
 		markDirty("consolePassword",consolePassword);
+	}
+
+	public ComputeServer getParentServer() {
+		return parentServer;
+	}
+
+	public void setParentServer(ComputeServer parentServer) {
+		this.parentServer = parentServer;
+		markDirty("parentServer",parentServer);
 	}
 
 	public Integer getConsolePort() {
