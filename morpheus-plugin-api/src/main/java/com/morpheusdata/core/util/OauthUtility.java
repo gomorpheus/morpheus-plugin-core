@@ -69,6 +69,54 @@ class OauthUtility {
 		//done
 	}
 
+	static void signOAuthRequestPlainText(HttpRequestBase request, String consumerKey, String consumerSecret, String userKey, String userSecret, HttpApiClient.RequestOptions requestOpts) {
+
+		//request info
+		String requestMethod = request.getMethod();
+		String requestScheme = request.getURI().getScheme();
+		String requestHost = request.getURI().getHost();
+		String requestPath = request.getURI().getPath();
+		String requestUuid = encodeAsHex(java.util.UUID.randomUUID().toString());
+
+		String requestTimestamp = Long.toString(System.currentTimeMillis() / 1000L);
+		//build auth query params for signing
+		LinkedHashMap<String,String> queryHeaders = new LinkedHashMap<>();
+		if(requestOpts.queryParams != null) {
+			for(String queryKey : requestOpts.queryParams.keySet()) {
+				queryHeaders.put(queryKey,requestOpts.queryParams.get(queryKey));
+			}
+		}
+
+		queryHeaders.put("oauth_consumer_key",consumerKey);
+		queryHeaders.put("oauth_token",userKey);
+		queryHeaders.put("oauth_signature_method","PLAINTEXT");
+		//sort the query params
+		String queryString = buildQueryString(queryHeaders);
+		//signing input
+		String signatureBase = encodeOauth(requestMethod) + "&" + encodeOauth(requestScheme + requestHost + requestPath) + "&" + encodeOauth(queryString);
+		log.debug("signature base: {}",signatureBase);
+		//signature
+		String signatureKey = encodeOauth(consumerSecret) + "&" + encodeOauth(userSecret);
+		log.debug("signature key: {}",signatureKey);
+		//build oauth header
+		ArrayList<String> oauthHeaders = new ArrayList<>();
+
+		//realm -
+
+		oauthHeaders.add("oauth_consumer_key=\"" + consumerKey + "\"");
+		oauthHeaders.add("oauth_nonce=\"" + requestUuid + "\"");
+		oauthHeaders.add("oauth_signature_method=\"PLAINTEXT\"");
+		oauthHeaders.add("oauth_timestamp=\"" + requestTimestamp + "\"");
+		oauthHeaders.add("oauth_token=\"" + userKey + "\"");
+		oauthHeaders.add("oauth_signature=\"" + signatureKey + "\"");
+		//add the auth header
+		if(requestOpts.headers == null) {
+			requestOpts.headers = new LinkedHashMap<>();
+		}
+		requestOpts.headers.put("Authorization","OAuth " + String.join(", ",oauthHeaders));
+		//done
+	}
+
 
 	static private String buildQueryString(Map<String,String> query) {
 		Map<String, String> copy = new TreeMap<>(query); //sorts it

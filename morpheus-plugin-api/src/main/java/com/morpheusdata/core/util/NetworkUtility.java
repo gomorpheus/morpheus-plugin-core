@@ -4,7 +4,6 @@ import com.morpheusdata.model.*;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Utility methods for Network operations.
  * TODO: Javadoc needed for individual helper methods
+ *
  * @author David Estes
  * @since 0.8.0
  */
@@ -29,7 +29,7 @@ public class NetworkUtility {
 
 
 	static public Boolean validateIpAddr(String addr) {
-		return validateIpAddr(addr,false);
+		return validateIpAddr(addr, false);
 	}
 
 	static public Boolean validateIpAddr(String addr, Boolean includeIPv6) {
@@ -43,7 +43,7 @@ public class NetworkUtility {
 	}
 
 	static public Boolean validateIpAddrOrCidrOrRange(String addr) {
-		return validateIpAddrOrCidrOrRange(addr,false);
+		return validateIpAddrOrCidrOrRange(addr, false);
 	}
 
 	static public Boolean validateIpAddrOrRange(String addr, Boolean includeIPv6) {
@@ -51,21 +51,21 @@ public class NetworkUtility {
 	}
 
 	static public Boolean validateIpAddrOrRange(String addr) {
-		return validateIpAddrOrRange(addr,false);
+		return validateIpAddrOrRange(addr, false);
 	}
 
 	static public Boolean validateIpRange(String addr) {
-		return validateIpRange(addr,false);
+		return validateIpRange(addr, false);
 	}
 
 	static public Boolean validateIpRange(String addr, Boolean includeIPv6) {
 		String[] parts = addr != null ? addr.split("-") : null;
-		if(parts != null && parts.length > 0) {
-			if(parts.length >= 3) {
+		if (parts != null && parts.length > 0) {
+			if (parts.length >= 3) {
 				return false;
 			}
-			for(int x=0;x<parts.length ;x++) {
-				if(!validateIpAddr(parts[x].trim(), includeIPv6)) {
+			for (int x = 0; x < parts.length; x++) {
+				if (!validateIpAddr(parts[x].trim(), includeIPv6)) {
 					return false;
 				}
 			}
@@ -77,11 +77,11 @@ public class NetworkUtility {
 
 
 	static public Boolean validateIpAddrOrCidr(String addr, Boolean includeIPv6) {
-		return validateCidr(addr) || validateIpAddr(addr,includeIPv6);
+		return validateCidr(addr) || validateIpAddr(addr, includeIPv6);
 	}
 
 	static public Boolean validateIpAddrOrCidr(String addr) {
-		return validateIpAddrOrCidr(addr,false);
+		return validateIpAddrOrCidr(addr, false);
 	}
 
 	static public Boolean validateCidr(String addr) {
@@ -92,14 +92,14 @@ public class NetworkUtility {
 	static public Boolean validateAddressInRange(String addr, String cidr) {
 		Boolean rtn = false;
 		try {
-			if(cidr.indexOf(':') > -1) {
+			if (cidr.indexOf(':') > -1) {
 				//ipv6
 				//TODO
 			} else {
 				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(cidr).getInfo();
 				rtn = subnetInfo.isInRange(addr);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			log.warn("error validating network cidr ip address: {}", e.getMessage(), e);
 		}
 		return rtn;
@@ -109,7 +109,7 @@ public class NetworkUtility {
 		CidrInfo rtn = new CidrInfo();
 
 		try {
-			if(cidr.indexOf(':') > -1) {
+			if (cidr.indexOf(':') > -1) {
 				//ipv6
 				//TODO
 			} else {
@@ -118,58 +118,61 @@ public class NetworkUtility {
 				rtn.config.netmask = subnetInfo.getNetmask();
 				rtn.config.ipCount = subnetInfo.getAddressCountLong();
 				rtn.config.ipFreeCount = rtn.config.ipCount;
-				CidrInfo.CidrRange range = new CidrInfo.CidrRange();
+				CidrRange range = new CidrRange();
 				range.startAddress = subnetInfo.getLowAddress();
 				range.endAddress = subnetInfo.getHighAddress();
 				rtn.ranges.add(range);
 			}
-		} catch(Exception e) {
-			log.warn("error parsing network cidr: {}", e.getMessage(),e);
+		} catch (Exception e) {
+			log.warn("error parsing network cidr: {}", e.getMessage(), e);
 		}
 		return rtn;
+	}
+
+	static public class CidrConfig {
+		public String netmask;
+
+		public Long ipCount;
+		public Long ipFreeCount;
+	}
+
+	static public class CidrRange {
+		public String startAddress;
+		public String endAddress;
 	}
 
 	static public class CidrInfo {
 		public ArrayList<CidrRange> ranges = new ArrayList<>();
 		public CidrConfig config = new CidrConfig();
 		public String address;
-		static public class CidrConfig {
-			public String netmask;
 
-			public Long ipCount;
-			public Long ipFreeCount;
-		}
-		static public class CidrRange {
-			public String startAddress;
-			public String endAddress;
-		}
 
 	}
 
 	static public Integer getIpAddressCountBetween(String startAddress, String endAddress) {
 		Integer cnt = 0;
 		try {
-			if(validateIpAddr(startAddress) && validateIpAddr(endAddress)) {
+			if (validateIpAddr(startAddress) && validateIpAddr(endAddress)) {
 				String[] parts = startAddress.split("\\.");
 				Long startValue = 0L;
-				for(int x = parts.length - 1;x >= 0;x--) {
+				for (int x = parts.length - 1; x >= 0; x--) {
 					Long part = Long.parseLong(parts[x]);
 					Integer index = (parts.length - 1) - x;
-					startValue += part * (long)Math.pow(256d, (double)index);
+					startValue += part * (long) Math.pow(256d, (double) index);
 				}
 
 				parts = endAddress.split("\\.");
 				Long endValue = 0L;
-				for(int x = parts.length - 1;x >= 0;x--) {
+				for (int x = parts.length - 1; x >= 0; x--) {
 					Long part = Long.parseLong(parts[x]);
 					Integer index = (parts.length - 1) - x;
-					endValue += part * (long)Math.pow(256d, (double)index);
+					endValue += part * (long) Math.pow(256d, (double) index);
 				}
 
-				cnt = (int)Math.abs(startValue - endValue);
+				cnt = (int) Math.abs(startValue - endValue);
 			}
-		} catch(Exception e) {
-			log.error("error in calculating address count for {}, {}",startAddress,endAddress,e);
+		} catch (Exception e) {
+			log.error("error in calculating address count for {}, {}", startAddress, endAddress, e);
 		}
 		return cnt;
 	}
@@ -180,8 +183,8 @@ public class NetworkUtility {
 		try {
 			SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(address, netmask).getInfo();
 			rtn = subnetInfo.getCidrSignature();
-		} catch(Exception e) {
-			log.warn("error parsing network to cidr: {}",e.getMessage(), e);
+		} catch (Exception e) {
+			log.warn("error parsing network to cidr: {}", e.getMessage(), e);
 		}
 		return rtn;
 	}
@@ -195,8 +198,8 @@ public class NetworkUtility {
 			String networkAddress = subnetInfo.getNetworkAddress();
 			String cidrRange = addressCidr.substring(addressCidr.indexOf('/'));
 			rtn = networkAddress + cidrRange;
-		} catch(Exception e) {
-			log.warn("error parsing network to cidr - {} {}: {}", address,netmask,e.getMessage(),e);
+		} catch (Exception e) {
+			log.warn("error parsing network to cidr - {} {}: {}", address, netmask, e.getMessage(), e);
 		}
 		return rtn;
 	}
@@ -204,7 +207,7 @@ public class NetworkUtility {
 	//remove the cidr mask if there is one
 	static public String cidrToAddress(String address) {
 		String rtn = null;
-		if(address != null && address.indexOf('/') > -1)
+		if (address != null && address.indexOf('/') > -1)
 			rtn = address.substring(0, address.indexOf('/'));
 		else {
 			rtn = address;
@@ -216,7 +219,7 @@ public class NetworkUtility {
 	//return the cidr if the address is in cidr form
 	static public String addressToCidr(String address) {
 		String rtn = null;
-		if(address != null && address.indexOf('/') > -1) {
+		if (address != null && address.indexOf('/') > -1) {
 			SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(address).getInfo();
 			rtn = subnetInfo.getLowAddress() + address.substring(address.indexOf('/'));
 		}
@@ -225,7 +228,7 @@ public class NetworkUtility {
 
 	static public String addressToSubnet(String address) {
 		String rtn = null;
-		if(address != null && address.indexOf('/') > -1) {
+		if (address != null && address.indexOf('/') > -1) {
 			rtn = new SubnetUtils(address).getInfo().getNetmask();
 		}
 		return rtn;
@@ -233,14 +236,14 @@ public class NetworkUtility {
 
 	static public String extractCidr(String address, String cidr, String netmask) {
 		String rtn = null;
-		if(cidr != null) {
+		if (cidr != null) {
 			//if cidr is there - use it
 			rtn = cidr;
-		} else if(address != null) {
+		} else if (address != null) {
 			//if the address has a cidr component
-			if(address.contains("/")) {
+			if (address.contains("/")) {
 				rtn = addressToCidr(address);
-			} else if(netmask != null) {
+			} else if (netmask != null) {
 				rtn = networkToDisplayCidr(address, netmask);
 			} else {
 				rtn = networkToDisplayCidr(address, "255.255.255.0");
@@ -252,14 +255,14 @@ public class NetworkUtility {
 	static public String extractSubnet(String address, String cidr, String netmask) {
 		String rtn = "255.255.255.0";
 		String newCidr = extractCidr(address, cidr, netmask);
-		if(newCidr != null)
+		if (newCidr != null)
 			rtn = addressToSubnet(newCidr);
 		return rtn;
 	}
 
 	static public String hexToSubnetMask(String hexAddress) {
 		String rtn = null;
-		if(hexAddress != null && hexAddress.length() > 7) {
+		if (hexAddress != null && hexAddress.length() > 7) {
 			String firstOct = hexAddress.substring(0, 2);
 			rtn = Integer.toString(Integer.parseInt(firstOct, 16));
 			String secondOct = hexAddress.substring(2, 4);
@@ -275,9 +278,9 @@ public class NetworkUtility {
 	static public String networkToPrefixLength(String address, String netmask) {
 		String rtn = null;
 		String cidr = networkToCidr(address, netmask);
-		if(cidr != null && cidr.length() > 0) {
+		if (cidr != null && cidr.length() > 0) {
 			int lastSlash = cidr.indexOf('/');
-			if(lastSlash > -1)
+			if (lastSlash > -1)
 				rtn = cidr.substring(lastSlash + 1);
 		}
 		return rtn;
@@ -286,25 +289,25 @@ public class NetworkUtility {
 	static public String getNetworkSubnetMask(NetworkPool networkPool, Network network, NetworkSubnet subnet) {
 		String rtn = null;
 		try {
-			if(subnet != null) {
+			if (subnet != null) {
 				rtn = subnet.getNetmask();
 			}
-			if(rtn == null && subnet != null && subnet.getCidr() != null) {
+			if (rtn == null && subnet != null && subnet.getCidr() != null) {
 				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(subnet.getCidr()).getInfo();
 				rtn = subnetInfo.getNetmask();
 			}
-			if(rtn == null && network != null && network.getNetmask() != null) {
+			if (rtn == null && network != null && network.getNetmask() != null) {
 				rtn = network.getNetmask();
 			}
-			if(rtn == null && network != null && network.getCidr() != null) {
+			if (rtn == null && network != null && network.getCidr() != null) {
 				SubnetUtils.SubnetInfo subnetInfo = new SubnetUtils(network.getCidr()).getInfo();
 				rtn = subnetInfo.getNetmask();
 			}
-			if(rtn == null && networkPool != null) {
+			if (rtn == null && networkPool != null) {
 				rtn = networkPool.getNetmask();
 			}
-		} catch(Exception e) {
-			log.warn("error parsing network cidr: {}",e.getMessage(), e);
+		} catch (Exception e) {
+			log.warn("error parsing network cidr: {}", e.getMessage(), e);
 		}
 		return rtn;
 	}
@@ -320,16 +323,16 @@ public class NetworkUtility {
 
 	static public String getDomainRecordFqdn(String name, String domain) {
 		String rtn = null;
-		if(name.contains(domain)) {
+		if (name.contains(domain)) {
 			rtn = getFqdnDomainName(name);
 		} else {
-			if(domain.endsWith(".")) {
+			if (domain.endsWith(".")) {
 				String shortDomain = getFriendlyDomainName(domain);
-				if(name.contains(shortDomain)) {
+				if (name.contains(shortDomain)) {
 					rtn = getFqdnDomainName(name);
 				}
 			}
-			if(rtn == null) {
+			if (rtn == null) {
 				rtn = getFqdnDomainName(name + "." + domain);
 			}
 		}
@@ -338,11 +341,11 @@ public class NetworkUtility {
 
 	static public String getDomainRecordName(String name, String domain) {
 		String rtn = null;
-		if(domain != null && name != null) {
+		if (domain != null && name != null) {
 			domain = getFqdnDomainName(domain);
 			name = getFqdnDomainName(name);
-			if(name.length() > domain.length()) {
-				log.debug("name: {} domain: {}",name,domain);
+			if (name.length() > domain.length()) {
+				log.debug("name: {} domain: {}", name, domain);
 				rtn = name.substring(0, (name.length() - domain.length() - 1));
 			} else {
 				rtn = name;
@@ -352,9 +355,9 @@ public class NetworkUtility {
 	}
 
 	static public String getFriendlyDomainName(String name) {
-		if(name != null) {
+		if (name != null) {
 			name = name.toLowerCase();
-			if(name.endsWith(".")) {
+			if (name.endsWith(".")) {
 				name = name.substring(0, name.length() - 1);
 			}
 		}
@@ -362,9 +365,9 @@ public class NetworkUtility {
 	}
 
 	public static String getFqdnDomainName(String name) {
-		if(name != null) {
+		if (name != null) {
 			name = name.toLowerCase();
-			if(!name.endsWith("."))
+			if (!name.endsWith("."))
 				name = name + ".";
 		}
 		return name;
@@ -375,13 +378,13 @@ public class NetworkUtility {
 	}
 
 	static public String getNextIpAddress(String ipAddress) throws UnknownHostException {
-		return getNextIpAddress(ipAddress,1);
+		return getNextIpAddress(ipAddress, 1);
 	}
 
 	static public String getNextIpAddress(String ipAddress, Integer increment) throws UnknownHostException {
 		InetAddress address = InetAddress.getByName(ipAddress);
 		byte[] newAddress = address.getAddress();
-		for(int x =0 ;x<increment;x++) {
+		for (int x = 0; x < increment; x++) {
 			for (int i = newAddress.length - 1; i >= 0; i--) {
 				if (++newAddress[i] != 0x00)
 					break;
@@ -392,7 +395,7 @@ public class NetworkUtility {
 
 
 	static public Integer getMinPort(String portRange) {
-		if(portRange.contains("-")) {
+		if (portRange.contains("-")) {
 			String[] ports = portRange.split("-");
 			return Integer.parseInt(ports[0]);
 		} else {
@@ -401,7 +404,7 @@ public class NetworkUtility {
 	}
 
 	static public Integer getMaxPort(String portRange) {
-		if(portRange.contains("-")) {
+		if (portRange.contains("-")) {
 			String[] ports = portRange.split("-");
 			return Integer.parseInt(ports[1]);
 		} else {
@@ -425,21 +428,20 @@ public class NetworkUtility {
 						break;
 					}
 					maxSize--;
-				}
-				catch (Throwable t) {
+				} catch (Throwable t) {
 					log.error(t.getMessage(), t);
 					maxSize--;
 				}
 			}
-			double x = Math.log( end - start + 1) / Math.log( 2 );
-			byte maxDiff = (byte)( 32 - Math.floor( x ) );
-			if ( maxSize < maxDiff) {
+			double x = Math.log(end - start + 1) / Math.log(2);
+			byte maxDiff = (byte) (32 - Math.floor(x));
+			if (maxSize < maxDiff) {
 				maxSize = maxDiff;
 			}
 			String ip = longToIp(start);
 			result.add(ip + "/" + maxSize);
 
-			start = start + (long)Math.pow( 2, (32 - maxSize) );
+			start = start + (long) Math.pow(2, (32 - maxSize));
 		}
 		return result;
 	}
@@ -465,8 +467,8 @@ public class NetworkUtility {
 
 	static public Boolean checkIpv4Ip(String ipAddress) {
 		Boolean rtn = false;
-		if(ipAddress != null) {
-			if(ipAddress.indexOf('.') > 0 && !ipAddress.startsWith("169"))
+		if (ipAddress != null) {
+			if (ipAddress.indexOf('.') > 0 && !ipAddress.startsWith("169"))
 				rtn = true;
 		}
 		return rtn;
@@ -485,10 +487,10 @@ public class NetworkUtility {
 
 	static public String getIpAddressIndex(String name) {
 		String rtn = null;
-		if(name != null) {
-			if(name.startsWith("eth"))
+		if (name != null) {
+			if (name.startsWith("eth"))
 				rtn = name.substring(3);
-			else if(name.startsWith("en"))
+			else if (name.startsWith("en"))
 				rtn = name.substring(name.length() - 1);
 			else
 				rtn = name.substring(name.length() - 1);
@@ -499,22 +501,20 @@ public class NetworkUtility {
 
 	static public String getReverseRecordName(String name) {
 		String rtn = null;
-		if(name != null && name.length() > 0) {
+		if (name != null && name.length() > 0) {
 			ArrayList<String> newTokens = new ArrayList<>();
 			String[] nameTokens = name.split("\\.");
-			for(String token : nameTokens) {
+			for (String token : nameTokens) {
 				try {
 					Integer.parseInt(token);
 					newTokens.add(token);
-				} catch(Exception ignore) {
+				} catch (Exception ignore) {
 					//ignore me
 				}
 
 			}
-			rtn = String.join(".",newTokens);
+			rtn = String.join(".", newTokens);
 		}
 		return rtn;
 	}
-
-
 }

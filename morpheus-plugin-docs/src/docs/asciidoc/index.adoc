@@ -14,6 +14,7 @@ The Morpheus Plugin API is a Java 8 based library for creating Plugins that add 
 * Cypher Modules
 * Custom Reports
 * Cloud Providers
+* Network Providers
 
 include::ReleaseNotes.adoc[]
 
@@ -40,3 +41,7 @@ include::TabsPlugin.adoc[]
 include::ReportsPlugin.adoc[]
 
 include::ApprovalsPlugin.adoc[]
+
+include::IPAMPlugins.adoc[]
+
+include::CloudPlugins.adoc[]

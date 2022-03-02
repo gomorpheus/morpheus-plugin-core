@@ -1,0 +1,11 @@
+=== IPAM/DNS Plugins
+
+The IPAM and DNS Provider Plugin interfaces provide an easy means to create direct orchestration for IP Address allocation/release as well as DNS Name server registrations. An IPAM Provider is often capable of implementing both interfaces as they often provide both services at once. It is also possible to independently register a `DNSProvider` only. 
+
+Both the DNS and IPAM Provider plugins typically consist of just 3 parts. First is defining the provider information such as the configuration options for adding the integration as well as pool types it offers. Secondly periodically syncing state data into morpheus back from the remote integration endpoints. This could include just syncing in available pools or zones, all the way to syncing in all IP host records or DNS zone records. This is up to your implementation.
+
+==== Setup
+
+Before Getting Started, It is recommended to look at the infoblox plugin just to get some bearings. To get started you firstly will create a new class that implements `com.morpheusdata.core.IPAMProvider` and `com.morpheusdata.core.DNSProvider`. The Providers requires implementation of several methods including the code required to sync existing records. All sync related code normally lives in here. 
+
+Both providers also require implementing CRUD based methods for creating host records, deleting host records, as well as creating zone records and deleting zone records. It is important to note that the host record object allows a user to directly enter an ip address to be requested for allocation or, if none is provided, it should be assumed the next available IP should be acquired. Host records are also special in that there are additional options for simultaneously creating DNS records such as A and PTR records. The additional complexity of tieing these pieces into the automated provisioning of workloads is hidden and taken care of by the Morpheus orchestrator.

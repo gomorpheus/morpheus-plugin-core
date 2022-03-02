@@ -77,6 +77,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Integer consolePort;
 	protected String consolePassword;
 	protected ComputeServer parentServer;
+	protected ComputeStats computeStats;
 
 
 	public String getUuid() {
@@ -633,6 +634,23 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("parentServer",parentServer);
 	}
 
+	/**
+	 * Returns the ComputeStats for this server
+	 * @return ComputeStats
+	 */
+	public ComputeStats getComputeStats() {
+		return computeStats;
+	}
+
+	/**
+	 * Sets the ComputeStats for this server
+	 * @param computeStats
+	 */
+	public void setComputeStats(ComputeStats computeStats) {
+		this.computeStats = computeStats;
+		markDirty("computeStats",computeStats);
+	}
+	
 	public Integer getConsolePort() {
 		return consolePort;
 	}

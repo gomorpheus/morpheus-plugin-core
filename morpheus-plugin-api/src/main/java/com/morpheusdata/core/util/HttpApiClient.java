@@ -1,4 +1,5 @@
 package com.morpheusdata.core.util;
+
 import com.morpheusdata.response.ServiceResponse;
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
@@ -23,7 +24,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ContentType;
@@ -74,25 +74,57 @@ import org.xml.sax.SAXParseException;
  * @author David Estes
  * @since 0.8.0
  */
-public class RestApiUtil {
-	static Logger log = LoggerFactory.getLogger(RestApiUtil.class);
+public class HttpApiClient {
+
+	HttpClient httpClient;
+	HttpClientConnectionManager connectionManager;
+	BasicCookieStore cookieStore = new BasicCookieStore();
+	public Long throttleRate = 0L;
+	private Date lastCallTime;
+
+	static Logger log = LoggerFactory.getLogger(HttpApiClient.class);
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
-	public static ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
-		return callApi(url,path,username,password,new RestOptions(),"POST");
+	public ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
+		return callApi(url,path,username,password,new RequestOptions(),"POST");
 	}
 
-	public static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
+	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
 		return callApi(url,path,username,password,opts,"POST");
 	}
 
-	public static ServiceResponse callApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	private void sleepIfNecessary() {
+		try {
+			Long tmpThrottleRate = throttleRate;
+			if(tmpThrottleRate != null && tmpThrottleRate > 0) {
+				if(lastCallTime != null) {
+					Date now = new Date();
+					Long timeDiff = now.getTime() - lastCallTime.getTime();
+					tmpThrottleRate = tmpThrottleRate - timeDiff;
+					if(tmpThrottleRate > 0) {
+						Thread.sleep(tmpThrottleRate);
+					}
+				} else {
+					Thread.sleep(tmpThrottleRate);
+				}
+
+			}
+		} catch(InterruptedException ignore) {
+
+		}
+
+	}
+
+	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
 
 		try {
+
+			sleepIfNecessary();
+			lastCallTime = new Date();
 			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
@@ -214,7 +246,7 @@ public class RestApiUtil {
 				}
 			}
 
-			withClient(opts,(HttpClient client) -> {
+			withClient(opts,(HttpClient client, BasicCookieStore cookieStore) -> {
 
 				CloseableHttpResponse response = null;
 				try {
@@ -229,12 +261,10 @@ public class RestApiUtil {
 						for(Header header : response.getHeaders("Set-Cookie")) {
 							Map<String,String> cookies = extractCookie(header.getValue());
 							for(String cookieKey : cookies.keySet()) {
-								BasicClientCookie cookie = new BasicClientCookie("cookieKey", cookies.get(cookieKey));
+								BasicClientCookie cookie = new BasicClientCookie(cookieKey, cookies.get(cookieKey));
 								cookie.setPath("/");
 								cookie.setDomain(request.getURI().getHost());
-								opts.cookies.addCookie(cookie);
-
-								rtn.addCookie(cookieKey, cookies.get(cookieKey));
+								cookieStore.addCookie(cookie);
 							}
 						}
 
@@ -248,10 +278,7 @@ public class RestApiUtil {
 						} else {
 							rtn.setContent(null);
 						}
-						if(opts.keepAlive != null && opts.keepAlive == true) {
-							data.put("httpClient",client);
-							data.put("cookies",opts.cookies);
-						}
+
 
 						rtn.setSuccess(true);
 					} else {
@@ -267,6 +294,7 @@ public class RestApiUtil {
 					rtn.setError("Error occurred processing the response for " + url + "/" + path + " : " + ex.getMessage());
 					rtn.setSuccess(false);
 				} finally {
+					lastCallTime = new Date();
 					if(response != null) {
 						try {
 							response.close();
@@ -290,23 +318,23 @@ public class RestApiUtil {
 	}
 
 
-	public static ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
-		return callJsonApi(url, path, null, null, new RestOptions(), "POST");
+	public ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
+		return callJsonApi(url, path, null, null, new RequestOptions(), "POST");
 	}
 
-	public static ServiceResponse callJsonApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
+	public ServiceResponse callJsonApi(String url, String path, RequestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, "POST");
 	}
 
-	public static ServiceResponse callJsonApi(String url, String path, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public ServiceResponse callJsonApi(String url, String path, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, method);
 	}
 
-	public static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts) throws URISyntaxException, Exception {
+	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url,path,username,password,opts,"POST");
 	}
 
-	public static ServiceResponse callJsonApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
@@ -330,11 +358,11 @@ public class RestApiUtil {
 		return rtn;
 	}
 
-	public static ServiceResponse callXmlApi(String url, String path, RestOptions opts) throws URISyntaxException, Exception {
+	public ServiceResponse callXmlApi(String url, String path, RequestOptions opts) throws URISyntaxException, Exception {
 		return callXmlApi(url, path, null, null, opts, "POST");
 	}
 
-	public static ServiceResponse callXmlApi(String url, String path, String username, String password, RestOptions opts, String method) throws URISyntaxException, Exception {
+	public ServiceResponse callXmlApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
@@ -363,7 +391,7 @@ public class RestApiUtil {
 		return rtn;
 	}
 
-	public static Map<String,String> addRequiredHeader(Map<String,String> headers, String name, String value) {
+	public Map<String,String> addRequiredHeader(Map<String,String> headers, String name, String value) {
 		if(headers == null) {
 			headers = new LinkedHashMap<>();
 		}
@@ -371,7 +399,7 @@ public class RestApiUtil {
 		return headers;
 	}
 
-	static Map<String, String> extractCookie(String rawCookie) {
+	Map<String, String> extractCookie(String rawCookie) {
 		if(rawCookie == null || rawCookie.length() == 0) return null;
 		String[] cookieArgs = rawCookie.split("=");
 		String name = cookieArgs[0];
@@ -385,12 +413,11 @@ public class RestApiUtil {
 		return cookieMap;
 	}
 
-	private static void withClient(RestOptions opts, WithClientFunction withClientFunction) {
+	private void withClient(RequestOptions opts, WithClientFunction withClientFunction) {
 
 		Boolean ignoreSSL = opts.ignoreSSL;
-		Boolean keepAlive = opts.keepAlive;
-		if(opts.httpClient != null) {
-			withClientFunction.method(opts.httpClient);
+		if(httpClient != null) {
+			withClientFunction.method(httpClient,cookieStore);
 			return;
 		} else {
 			HttpClientBuilder clientBuilder = HttpClients.custom();
@@ -407,10 +434,8 @@ public class RestApiUtil {
 				}
 				clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
 			}
-			if(opts.cookies == null) {
-				opts.cookies = new BasicCookieStore();
-			}
-			clientBuilder.setDefaultCookieStore(opts.cookies);
+
+			clientBuilder.setDefaultCookieStore(cookieStore);
 			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
 				public boolean verify(String host, SSLSession sess) {
 					return true;
@@ -537,40 +562,16 @@ public class RestApiUtil {
 			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
 			clientBuilder.setConnectionManager(connectionManager);
 			HttpClient client = clientBuilder.build();
+			httpClient = client;
+			this.connectionManager = connectionManager;
 
-			try {
-				if(keepAlive != null && keepAlive) {
-					opts.httpClient = client;
-					opts.connectionManager = connectionManager;
-				}
-				withClientFunction.method(client);
+			withClientFunction.method(client,cookieStore);
 
-			} finally {
-				if(keepAlive == null || keepAlive == false) {
-					connectionManager.shutdown();
-				}
-			}
 		}
 
 	}
 
-	/**
-	 * Wrapper method for shutting down an HttpClient connection Manager
-	 * This is typically used when using a Keep-Alive connection manager
-	 * @param httpClient the HttpClient we wish to permanently shutdown.
-	 */
-	public static void shutdownClient(HttpClient httpClient) {
-		if(httpClient != null) {
-			try {
-				httpClient.getConnectionManager().shutdown();
-			} catch(Exception ex) {
-				log.error("Error Shutting Down Keep-Alive {}",ex.getMessage(),ex);
-			}
-		}
-	}
-
-
-	public static void shutdownClient(HttpClientConnectionManager connectionManager) {
+	public void shutdownClient() {
 		if(connectionManager != null) {
 			try {
 				connectionManager.shutdown();
@@ -582,17 +583,15 @@ public class RestApiUtil {
 
 	@FunctionalInterface
 	public static interface WithClientFunction {
-		void method(HttpClient client);
+		void method(HttpClient client, BasicCookieStore cookieStore);
 	}
 
-	public static class RestOptions {
+	public static class RequestOptions {
 		public Object body;
 		public String contentType; //bodyType originally
 		public Map<String,String> headers;
 		public Map<String,String> queryParams;
-		public BasicCookieStore cookies = new BasicCookieStore();
 		public Boolean suppressLog = true;
-		public Boolean keepAlive=false;
 		public Boolean ignoreSSL=true;
 		public Integer timeout = 30000;
 		public Integer connectionTimeout = null;
@@ -612,3 +611,4 @@ public class RestApiUtil {
 		}
 	}
 }
+
