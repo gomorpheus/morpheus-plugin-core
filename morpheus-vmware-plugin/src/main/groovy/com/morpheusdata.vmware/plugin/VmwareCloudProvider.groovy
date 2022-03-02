@@ -970,9 +970,9 @@ class VmwareCloudProvider implements CloudProvider {
 
 	protected removeMissingVirtualMachines(Cloud cloud, List removeList) {
 		log.debug "removeMissingVirtualMachines: ${cloud} ${removeList.size}"
-		for(ComputeServer removeItem in removeList) {
+		for(ComputeServerIdentityProjection removeItem in removeList) {
 			try {
-				ComputeServer tmpServer = ComputeServer.where{ id == removeItem.id}.join('computeServerType').join('volumes').join('controllers').join('interfaces').join('metadata').list()?.first()
+//				ComputeServer tmpServer = ComputeServer.where{ id == removeItem.id}.join('computeServerType').join('volumes').join('controllers').join('interfaces').join('metadata').list()?.first()
 
 				def doDelete = true
 //				if(blackListedNames?.contains(tmpServer.name))
