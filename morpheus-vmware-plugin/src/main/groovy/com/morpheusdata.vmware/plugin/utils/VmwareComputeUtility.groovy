@@ -9,6 +9,7 @@ import groovy.util.logging.Slf4j
 class VmwareComputeUtility {
 
 	static VmwareConnectionPool connectionPool = new VmwareConnectionPool()
+	static long SHUTDOWN_TIMEOUT = 5l*60000l
 
 	static testConnection(apiUrl, username, password, opts = [:]) {
 		def rtn = [success:false, invalidLogin:false]
@@ -868,5 +869,89 @@ class VmwareComputeUtility {
 				return 'other.64'
 		}
 		return 'other.64'
+	}
+
+	static stopVm(apiUrl, username, password, String externalId) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', externalId)
+			def vmRuntime = vm.getRuntime()
+			if(vmRuntime.getPowerState() == VirtualMachinePowerState.poweredOn || vmRuntime.getPowerState() == VirtualMachinePowerState.suspended) {
+				if(vmRuntime.getPowerState() != VirtualMachinePowerState.suspended) {
+					try {
+						vm.shutdownGuest()
+						long counter = 0
+						while(counter < SHUTDOWN_TIMEOUT) {
+							counter += 5000
+							sleep(5000)
+							log.debug "checking powerstate"
+							vm = getManagedObject(serviceInstance, 'VirtualMachine', externalId)
+							vmRuntime = vm.getRuntime()
+							if(vmRuntime.getPowerState() != VirtualMachinePowerState.poweredOn) {
+								log.debug "guest shutdown successful"
+								break
+							}
+						}
+					} catch(ex) {
+						log.error("Error shutting down guest operating system via vmware ${ex.getMessage()}...Attempting hard shutdown.")
+					}
+				}
+				vm = getManagedObject(serviceInstance, 'VirtualMachine', externalId)
+				vmRuntime = vm.getRuntime()
+				if(vmRuntime.getPowerState() == VirtualMachinePowerState.poweredOn || vmRuntime.getPowerState() == VirtualMachinePowerState.suspended) {
+					def vmTask = vm.powerOffVM_Task()
+					def result = vmTask.waitForTask()
+					if(result == Task.SUCCESS) {
+						rtn.success = true
+					}
+				} else {
+					rtn.success = true
+				}
+			} else {
+				rtn.success = true
+				rtn.msg = 'VM is already powered off'
+			}
+		} catch(MethodFault e) {
+			rtn.msg = logFaultError('error powering off vm', e)
+		} catch(e) {
+			log.error("stopVm error: ${e}", e)
+			rtn.msg = 'error powering off vm'
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static startVm(apiUrl, username, password, externalId) {
+		def rtn = [success:false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', externalId)
+			def vmRuntime = vm.getRuntime()
+			if(vmRuntime.getPowerState() == VirtualMachinePowerState.poweredOff || vmRuntime.getPowerState() == VirtualMachinePowerState.suspended) {
+				def vmTask = vm.powerOnVM_Task()
+				def result = vmTask.waitForTask()
+				if(result == Task.SUCCESS) {
+					rtn.success = true
+				}
+			} else {
+				rtn.success = true
+				rtn.msg = 'VM is already powered on'
+			}
+		} catch(MethodFault e) {
+			rtn.msg = logFaultError('error powering on vm', e)
+		} catch(e) {
+			log.error("startVm error: ${e}", e)
+			rtn.msg = 'error powering on vm'
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+		return rtn
 	}
 }

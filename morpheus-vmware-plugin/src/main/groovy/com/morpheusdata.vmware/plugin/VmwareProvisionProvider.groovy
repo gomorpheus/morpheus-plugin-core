@@ -105,12 +105,44 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
-		// TODO
+		log.debug("startServer: ${computeServer}")
+		def rtn = [success:false]
+		try {
+			if(computeServer.managed == true || computeServer.computeServerType?.controlPower) {
+				Cloud cloud = computeServer.cloud
+				def startResults = VmwareComputeUtility.startVm(getVmwareApiUrl(cloud.serviceUrl), cloud.serviceUsername, cloud.servicePassword, computeServer.externalId)
+				if(startResults.success == true) {
+					rtn.success = true
+				}
+			} else {
+				log.info("startServer - ignoring request for unmanaged instance")
+			}
+		} catch(e) {
+			rtn.msg = "Error starting server: ${e.message}"
+			log.error("startServer error: ${e}", e)
+		}
+		return new ServiceResponse(rtn)
 	}
 
 	@Override
 	ServiceResponse stopServer(ComputeServer computeServer) {
-		// TODO
+		log.debug("stopServer: ${computeServer}")
+		def rtn = [success:false]
+		try {
+			if(computeServer.managed == true || computeServer.computeServerType?.controlPower) {
+				Cloud cloud = computeServer.cloud
+				def stopResults = VmwareComputeUtility.stopVm(getVmwareApiUrl(cloud.serviceUrl), cloud.serviceUsername, cloud.servicePassword, computeServer.externalId)
+				if(stopResults.success == true) {
+					rtn.success = true
+				}
+			} else {
+				log.info("stopServer - ignoring request for unmanaged instance")
+			}
+		} catch(e) {
+			rtn.msg = "Error stopping server: ${e.message}"
+			log.error("stopServer error: ${e}", e)
+		}
+		return new ServiceResponse(rtn)
 	}
 
 	@Override

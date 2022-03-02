@@ -650,7 +650,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		this.computeStats = computeStats;
 		markDirty("computeStats",computeStats);
 	}
-	
+
 	public Integer getConsolePort() {
 		return consolePort;
 	}

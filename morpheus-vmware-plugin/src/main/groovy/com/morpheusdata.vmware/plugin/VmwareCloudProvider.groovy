@@ -172,8 +172,36 @@ class VmwareCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse validate(Cloud cloudInfo) {
-		// TODO
-		return new ServiceResponse(success: true)
+		log.info("validate: {}", cloudInfo)
+		try {
+			if(cloudInfo) {
+				def configMap = cloudInfo.getConfigMap()
+				if(configMap.datacenter?.length() < 1) {
+					return new ServiceResponse(success: false, msg: 'Choose a datacenter')
+				} else if(cloudInfo.serviceUsername?.length() < 1) {
+					return new ServiceResponse(success: false, msg: 'Enter a username')
+				} else if(cloudInfo.servicePassword?.length() < 1) {
+					return new ServiceResponse(success: false, msg: 'Enter a password')
+				} else if(cloudInfo.serviceUrl?.length() < 1) {
+					return new ServiceResponse(success: false, msg: 'Enter an api url')
+				} else {
+					//test api call
+					def apiUrl = VmwareProvisionProvider.getVmwareApiUrl(cloudInfo.serviceUrl)
+					//get creds
+					def dcList = VmwareComputeUtility.listDatacenters(apiUrl, cloudInfo.serviceUsername, cloudInfo.servicePassword)
+					if(dcList.success == true) {
+						return ServiceResponse.success()
+					} else {
+						return new ServiceResponse(success: false, msg: 'Invalid vmware credentials')
+					}
+				}
+			} else {
+				return new ServiceResponse(success: false, msg: 'No cloud found')
+			}
+		} catch(e) {
+			log.error('Error validating cloud', e)
+			return new ServiceResponse(success: false, msg: 'Error validating cloud')
+		}
 	}
 
 	@Override
@@ -224,14 +252,28 @@ class VmwareCloudProvider implements CloudProvider {
 
 	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
-		// TODO : implement
-		return ServiceResponse.success()
+		log.debug("startServer: ${computeServer}")
+		def rtn = [success:false]
+		try {
+			return vmwareProvisionProvider().startServer(computeServer)
+		} catch(e) {
+			rtn.msg = "Error starting server: ${e.message}"
+			log.error("startServer error: ${e}", e)
+		}
+		return ServiceResponse.create(rtn)
 	}
 
 	@Override
 	ServiceResponse stopServer(ComputeServer computeServer) {
-		// TODO : implement
-		return ServiceResponse.success()
+		log.debug("stopServer: ${computeServer}")
+		def rtn = [success:false]
+		try {
+			return vmwareProvisionProvider().stopServer(computeServer)
+		} catch(e) {
+			rtn.msg = "Error stoping server: ${e.message}"
+			log.error("stopServer error: ${e}", e)
+		}
+		return ServiceResponse.create(rtn)
 	}
 
 	@Override
@@ -1688,5 +1730,9 @@ class VmwareCloudProvider implements CloudProvider {
 		md.update(regionString.bytes)
 		byte[] checksum = md.digest()
 		return checksum.encodeHex().toString()
+	}
+
+	VmwareProvisionProvider vmwareProvisionProvider() {
+		this.plugin.getProviderByCode('vmware-provision-provider-plugin')
 	}
 }
