@@ -11,9 +11,39 @@ import com.morpheusdata.model.MorpheusModel;
  * @since 0.8.0
  */
 public class ComputeZonePoolIdentityProjection extends MorpheusModel {
+	protected String type;
+	protected String uniqueId;
+	protected String internalId;
 	protected String name;
 	protected String externalId;
 	protected String category;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+		markDirty("type", type);
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+		markDirty("uniqueId", uniqueId);
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+		markDirty("internalId", internalId);
+	}
 
 	public String getName() {
 		return name;

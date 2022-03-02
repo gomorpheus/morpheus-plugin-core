@@ -32,6 +32,13 @@ public interface MorpheusCloudService {
 	void updateZoneStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
 
 	/**
+	 * Save the Cloud
+	 * @param cloud Cloud instance
+	 * @return boolean success
+	 */
+	Single<Boolean> save(Cloud cloud);
+
+	/**
 	 *	Get the ssh credentials associated with an account
 	 * @param account to lookup
 	 * @return Morpheus KeyPair

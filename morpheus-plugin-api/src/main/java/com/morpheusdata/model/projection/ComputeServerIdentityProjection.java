@@ -11,8 +11,48 @@ import com.morpheusdata.model.MorpheusModel;
  * @since 0.8.0
  */
 public class ComputeServerIdentityProjection extends MorpheusModel {
+	protected String status;
+	protected String category;
+	protected String computeServerTypeCode;
+	protected String uniqueId;
 	protected String externalId;
 	protected String name;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+		markDirty("status", status);
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+		markDirty("category", category);
+	}
+
+	public String getComputeServerTypeCode() {
+		return computeServerTypeCode;
+	}
+
+	public void setComputeServerTypeCode(String computeServerTypeCode) {
+		this.computeServerTypeCode = computeServerTypeCode;
+		markDirty("computeServerTypeCode", computeServerTypeCode);
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+		markDirty("uniqueId", uniqueId);
+	}
 
 	public String getExternalId() {
 		return externalId;

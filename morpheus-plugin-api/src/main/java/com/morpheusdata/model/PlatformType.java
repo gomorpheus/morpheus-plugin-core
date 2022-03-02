@@ -7,5 +7,6 @@ public enum PlatformType {
 	windows,
 	linux,
 	mac,
+	esxi,
 	none
 }

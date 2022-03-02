@@ -101,7 +101,7 @@ class MorpheusModelSpec extends Specification {
 		'config.alist'   | '{"zoneId":345, "config":{"alist":["a","b","c"]}}'                   || ['a', 'b', 'c']
 	}
 
-	void "setConfigProperty"() {
+	void "setConfigMap getConfig"() {
 		given:
 		MorpheusModel model = new MorpheusModel(config: '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}')
 
@@ -115,5 +115,23 @@ class MorpheusModelSpec extends Specification {
 		[zoneId: 345]                                          | '{"zoneId":345}'
 		[capacity: 2.5]                                        | '{"capacity":2.5}'
 		[nested: true, instance: [id: 1, name: 'My Instance']] | '{"nested":true,"instance":{"id":1,"name":"My Instance"}}'
+	}
+
+	void "setConfigProperty"() {
+		given:
+		MorpheusModel model = new MorpheusModel(config: '{"zoneId":345, "config":{"apiKey": "foobar", "zone": {"id": 567}}}')
+
+		expect:
+		model.setConfigProperty(propertyName, propertyValue)
+		expectedValue == model.getConfigProperty(propertyName)
+
+		where:
+		propertyName          | propertyValue | expectedValue
+		'foo'                 | 'bar'         | 'bar'
+		'zoneId'              | 345           | 345
+		'config.apikey'       | 'someapikey'  | 'someapikey'
+		'config.nested.bogus' | 'ignored'     | null
+		'somelong'            | 2l            | 2l
+		'somebool'            | true          | true
 	}
 }
