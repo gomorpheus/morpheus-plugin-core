@@ -881,6 +881,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							networkPoolIp.ptrId = prtRecordRef
 						}
 					}
+					networkPoolIp = morpheus.network.pool.poolIp.save(networkPoolIp)?.blockingGet()
 				}
 				return ServiceResponse.success(networkPoolIp)
 			} else {
