@@ -199,7 +199,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				def body
 				def extraAttributes
 				if(poolServer.configMap?.extraAttributes) {
-					extraAttributes = generateExtraAttributes(poolServer,[username: record?.createdBy?.username, userId: record?.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date()) ])
+					extraAttributes = generateExtraAttributes(poolServer,[username: record.createdBy?.username, userId: record.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date()) ])
 				}
 
 				switch(recordType) {
