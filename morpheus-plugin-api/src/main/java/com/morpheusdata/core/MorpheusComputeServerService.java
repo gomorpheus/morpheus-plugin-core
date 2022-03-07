@@ -55,7 +55,7 @@ public interface MorpheusComputeServerService {
 
 	/**
 	 * Remove persisted ComputeServer from Morpheus
-	 * @param computeServers Images to delete
+	 * @param computeServers Servers to delete
 	 * @return success
 	 */
 	Single<Boolean> remove(List<ComputeServerIdentityProjection> computeServers);
