@@ -309,7 +309,7 @@ class VmwareCloudProvider implements CloudProvider {
 					log.debug("resource pools completed in ${new Date().time - now.time} ms")
 					//folders
 //					lockService.renewLock(lockId.toString(),[timeout:lockTimeout, ttl:lockTtl])
-					(new FoldersSync(cloud)).execute()
+					(new FoldersSync(cloud, morpheusContext)).execute()
 
 //					lockService.renewLock(lockId.toString(), [timeout:lockTimeout, ttl:lockTtl])
 					//interrupted thread

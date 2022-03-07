@@ -2,11 +2,13 @@ package com.morpheusdata.vmware.plugin.sync
 
 import groovy.util.logging.Slf4j
 import com.morpheusdata.model.ComputeZoneFolder
+import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection
 import com.morpheusdata.model.Cloud
-import com.morpheusdata.util.MorpheusUtils
 import com.morpheusdata.vmware.plugin.utils.VmwareComputeUtility
 import com.morpheusdata.vmware.plugin.VmwareProvisionProvider
 import com.morpheusdata.core.*
+import com.morpheusdata.core.util.SyncTask
+import io.reactivex.*
 
 @Slf4j
 class FoldersSync {
@@ -16,6 +18,7 @@ class FoldersSync {
 
 	public FoldersSync(Cloud cloud, MorpheusContext morpheusContext) {
 		this.cloud = cloud
+		this.morpheusContext = morpheusContext
 	}
 
 	def execute() {
@@ -26,7 +29,7 @@ class FoldersSync {
 			def datacenter = cloud.getConfigProperty('datacenter')
 	
 			// Make sure we have a root Folder
-			ComputeZoneFolder morpheusRootFolder = getOrCreateRootFolder(cloud)
+			ComputeZoneFolder morpheusRootFolder = getOrCreateRootFolder()
 		
 			// Do the sync
 			def folderResults = VmwareComputeUtility.listFolders(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
@@ -42,41 +45,41 @@ class FoldersSync {
 					return projection.externalId && projection.externalId != '/'
 				}.blockingSubscribe { existingItems << it }
 	
-				// Build up the syncLists
-				def matchFunction = { morpheusItem, Map cloudItem ->
-					return morpheusItem.externalId == cloudItem?.ref
-				}
-				def syncLists = MorpheusUtils.buildSyncLists(existingItems, masterItems, matchFunction)
-				def rootList = rootFolder ? syncLists?.addList?.findAll { it.parentRef == rootFolder.ref } : []
-				def childList = rootFolder ? syncLists?.addList?.findAll { it.parentRef != rootFolder.ref } : []
-	
+				// Build up all the rootList and childList
+				def addList = buildAddLists(existingItems, masterItems)
+				def addRootList = rootFolder ? addList?.findAll { it.parentRef == rootFolder.ref } : []
+				def addChildList = rootFolder ? addList?.findAll { it.parentRef != rootFolder.ref } : []
+
 				// Add the root folders
-				while (rootList?.size() > 0) {
-					List chunkedAddList = rootList.take(10)
-					rootList = rootList.drop(10)
-					addMissingRootFolders(cloud, morpheusRootFolder, chunkedAddList, childList)
+				if (addRootList?.size() > 0) {
+					addMissingRootFolders(cloud, morpheusRootFolder, addRootList, addChildList)
 				}
-	
-				// Add the child folders			
-				while (childList?.size() > 0) {
-					List chunkedAddList = childList.take(50)
-					childList = childList.drop(50)
-					addMissingChildFolders(cloud, chunkedAddList)
+
+				// Add the child folders
+				if (addChildList?.size() > 0) {
+					addMissingChildFolders(cloud, addChildList)
 				}
-	
-				// Update the matched ones
-				while (syncLists?.updateList?.size() > 0) {
-					List chunkedUpdateList = syncLists.updateList.take(50)
-					syncLists.updateList = syncLists.updateList.drop(50)
-					updateMatchedFolders(cloud, morpheusRootFolder, chunkedUpdateList)
+
+				// Do the sync
+				Observable domainRecords = morpheusContext.cloud.folder.listSyncProjections(cloud.id).filter { ComputeZoneFolderIdentityProjection projection ->
+					return (projection.externalId && projection.externalId != '/')
 				}
-	
-				// Remove the missing folders
-				while (syncLists?.removeList?.size() > 0) {
-					List chunkedRemoveList = syncLists.removeList.take(50)
-					syncLists.removeList = syncLists.removeList.drop(50)
-					removeMissingFolders(cloud, chunkedRemoveList)
-				}
+				SyncTask<ComputeZoneFolderIdentityProjection, Map, ComputeZoneFolder> syncTask = new SyncTask<>(domainRecords, masterItems)
+				syncTask.addMatchFunction { ComputeZoneFolderIdentityProjection domainObject, Map cloudItem ->
+					domainObject.externalId == cloudItem?.ref.toString()
+				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ComputeZoneFolderIdentityProjection, Map>> updateItems ->
+					Map<Long, SyncTask.UpdateItemDto<ComputeZoneFolderIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+					morpheusContext.cloud.folder.listById(updateItems?.collect { it.existingItem.id }).map { ComputeZoneFolder folder ->
+						SyncTask.UpdateItemDto<ComputeZoneFolderIdentityProjection, Map> matchItem = updateItemMap[folder.id]
+						return new SyncTask.UpdateItem<ComputeZoneFolder, Map>(existingItem: folder, masterItem: matchItem.masterItem)
+					}
+				}.onAdd { itemsToAdd ->
+					// Ignore.. handled above
+				}.onUpdate { List<SyncTask.UpdateItem<ComputeZoneFolder, Map>> updateItems ->
+					updateMatchedFolders(cloud, morpheusRootFolder, updateItems)
+				}.onDelete { removeItems ->
+					removeMissingFolders(cloud, removeItems)
+				}.start()
 	
 	//				if (cloud.owner.masterAccount == false) {
 	//					zoneFolderService.chooseOwnerFolderDefaults(cloud.owner, cloud)
@@ -170,11 +173,6 @@ class FoldersSync {
 	private updateMatchedFolders(Cloud cloud, ComputeZoneFolder rootFolder, List updateList) {
 		log.debug "updateMatchedFolders: ${cloud} ${updateList?.size()}"
 
-		// Gather up the existing Items
-		def existingRefs = updateList?.collect { cl -> cl.existingItem.externalId }
-		def existingFolders = [:]
-		morpheusContext.cloud.folder.listSyncProjections(cloud.id).filter { it.externalId in existingRefs }.blockingSubscribe { existingFolders[(it.externalId)] = it }
-
 		// Gather up the parents
 		def parentRefs = updateList?.collect { cl -> cl.masterItem.parentRef }
 		def parents = [:]
@@ -182,7 +180,7 @@ class FoldersSync {
 
 		for (update in updateList) {
 			log.debug "Working on ${update}"
-			ComputeZoneFolder existingFolder = existingFolders[update.existingItem.externalId]
+			ComputeZoneFolder existingFolder = update.existingItem
 			if (existingFolder) {
 				def parent = parents[update.masterItem.parentRef]
 				if (!parent) {
@@ -225,6 +223,7 @@ class FoldersSync {
 		if (!rootFolderProjection) {
 			def tmpRootFolder = new ComputeZoneFolder(name: '/', owner: cloud.owner, visibility: 'public', cloud: cloud, externalId: '/')
 			morpheusContext.cloud.folder.create([tmpRootFolder]).blockingGet()
+			morpheusContext.cloud.folder.listSyncProjections(cloud.id).filter { it.name == '/' && it.externalId == '/' }.blockingSubscribe { rootFolderProjection = it }
 		}
 
 		morpheusContext.cloud.folder.listById([rootFolderProjection.id]).blockingSubscribe{ rootFolder = it }
@@ -240,5 +239,34 @@ class FoldersSync {
 		}
 
 		rtn
+	}
+
+	private buildAddLists(existingItems, masterItems) {
+		log.info "buildAddLists: ${existingItems}, ${masterItems}"
+		def updateList = []
+		def addList = []
+		try {
+			existingItems?.each { existing ->
+				def matches = masterItems?.findAll { it ->
+					return existing.externalId == it?.ref
+				}
+				if(matches?.size() > 0) {
+					matches?.each { match ->
+						updateList << [existingItem:existing, masterItem:match]
+					}
+				}
+			}
+			masterItems?.each { masterItem ->
+				def match = updateList?.find {
+					it.masterItem == masterItem
+				}
+				if(!match) {
+					addList << masterItem
+				}
+			}
+		} catch(e) {
+			log.error "buildAddLists error: ${e}", e
+		}
+		return addList
 	}
 }

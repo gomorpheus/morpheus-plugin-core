@@ -395,6 +395,50 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listFolders(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false, folders: []]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				if(datacenter) {
+					def propList = []
+					propList << 'name'
+					propList << 'parent'
+					propList << 'childType'
+					propList << 'effectiveRole'
+
+
+
+					//load hosts
+					def results = listBulkObjects(serviceInstance, datacenter, 'Folder', propList, opts)
+
+					results.objects.each { obj ->
+
+						def objRef = obj.item.getObj()
+						// log.info("Checking array: ${obj['effectiveRole'].get_int()}")
+						def readOnly = isEntityReadOnly(obj['effectiveRole'].get_int())
+						def folderItem = [name: obj['name'], childTypes: obj['childType'].getString(), ref: objRef.val, type:objRef.type, parentRef: obj['parent'].getVal(), parentType: obj['parent'].getType(), readOnly: readOnly, folderRole: obj['effectiveRole'].get_int()]
+						rtn.folders << folderItem
+					}
+
+					rtn.success = true
+				} else {
+					rtn.msg = 'no datacenter found'
+				}
+			} else {
+				rtn.msg = 'no datacenter configured'
+			}
+		} catch(e) {
+			log.error("listFolders: ${opts.datacenter} ${opts.cluster} ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+		return rtn
+	}
+
 	static getVmControllers(virtualDevices) {
 		def rtn = []
 		try {
