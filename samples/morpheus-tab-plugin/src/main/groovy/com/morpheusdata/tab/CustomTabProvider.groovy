@@ -33,14 +33,18 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	 */
 	@Override
 	HTMLResponse renderTemplate(Instance instance) {
+		println "BOBW : CustomTabProvider.groovy:36 : ${instance}"
 		ViewModel<Instance> model = new ViewModel<>()
 		TaskConfig config = morpheus.buildInstanceConfig(instance, [:], null, [], [:]).blockingGet()
 		model.object = instance
-		getRenderer().renderTemplate("hbs/instanceTab", model)
+		def r = getRenderer().renderTemplate("hbs/instanceTab", model)
+		println "BOBW :  :41 : 4 r ${r}"
+		r
 	}
 
 	@Override
 	Boolean show(Instance instance, User user, Account account) {
+		println "BOBW : CustomTabProvider.groovy:45 : "
 		def show = true
 		println "user has permissions: ${user.permissions}"
 		println "instanceType ${instance.instanceTypeCode}"
@@ -59,6 +63,7 @@ class CustomTabProvider extends AbstractInstanceTabProvider {
 	 */
 	@Override
 	ContentSecurityPolicy getContentSecurityPolicy() {
+		println "BOBW : CustomTabProvider.groovy:66 : "
 		def csp = new ContentSecurityPolicy()
 		csp.scriptSrc = '*.jsdelivr.net'
 		csp.frameSrc = '*.digitalocean.com'

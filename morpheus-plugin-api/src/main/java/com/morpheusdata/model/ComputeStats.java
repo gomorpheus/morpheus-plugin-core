@@ -23,6 +23,7 @@ public class ComputeStats {
 
 	/**
 	 * Set the max memory available in bytes
+	 * @param maxMemory max memory available in bytes
 	 */
 	public void setMaxMemory(Long maxMemory) {
 		this.maxMemory = maxMemory;
@@ -30,7 +31,7 @@ public class ComputeStats {
 
 	/**
 	 * The used memory in bytes
-	 * @return used memory
+	 * @return used memory in bytes
 	 */
 	public Long getUsedMemory() {
 		return usedMemory;
@@ -38,6 +39,7 @@ public class ComputeStats {
 
 	/**
 	 * Set the used memory in bytes
+	 * @param usedMemory used memory in bytes
 	 */
 	public void setUsedMemory(Long usedMemory) {
 		this.usedMemory = usedMemory;
@@ -53,6 +55,7 @@ public class ComputeStats {
 
 	/**
 	 * Set the max storage available in bytes
+	 * @param maxStorage max storage available in bytes
 	 */
 	public void setMaxStorage(Long maxStorage) {
 		this.maxStorage = maxStorage;
@@ -68,6 +71,7 @@ public class ComputeStats {
 
 	/**
 	 * Set the used storage in bytes
+	 * @param usedStorage used storage in bytes
 	 */
 	public void setUsedStorage(Long usedStorage) {
 		this.usedStorage = usedStorage;
@@ -83,6 +87,7 @@ public class ComputeStats {
 
 	/**
 	 * Set the cpu usage as a percentage (0.0-100.0)
+	 * @param cpuUsage cpu usage as a percentage
 	 */
 	public void setCpuUsage(Double cpuUsage) {
 		this.cpuUsage = cpuUsage;

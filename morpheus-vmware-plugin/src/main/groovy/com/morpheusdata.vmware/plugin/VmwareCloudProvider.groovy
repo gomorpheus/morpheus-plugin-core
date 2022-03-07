@@ -17,6 +17,7 @@ import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.projection.*
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
+import com.morpheusdata.vmware.plugin.sync.FoldersSync
 import groovy.util.logging.Slf4j
 import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
@@ -302,13 +303,13 @@ class VmwareCloudProvider implements CloudProvider {
 
 					cacheResourcePools(cloud)
 
-					if (Thread.interrupted()) {
-						throw new InterruptedException();
-					}
+//					if (Thread.interrupted()) {
+//						throw new InterruptedException();
+//					}
 					log.debug("resource pools completed in ${new Date().time - now.time} ms")
 					//folders
 //					lockService.renewLock(lockId.toString(),[timeout:lockTimeout, ttl:lockTtl])
-//					cacheFolders(cloud).get()
+					(new FoldersSync(cloud)).execute()
 
 //					lockService.renewLock(lockId.toString(), [timeout:lockTimeout, ttl:lockTtl])
 					//interrupted thread
@@ -810,7 +811,6 @@ class VmwareCloudProvider implements CloudProvider {
 //		}
 		morpheusContext.cloud.pool.remove(removeList).blockingGet()
 	}
-
 
 	protected nameForPool(pool) {
 		def nameElements = [pool.name]
