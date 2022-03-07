@@ -24,6 +24,8 @@ public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
 	protected NetworkPoolIp networkPoolIp;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected User createdBy;
 
     public void setNetworkPoolIpId(Long id) {
     	this.setNetworkPoolIp(new NetworkPoolIp());
@@ -177,5 +179,13 @@ public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
 
 	public void setNetworkDomain(NetworkDomain networkDomain) {
 		this.networkDomain = networkDomain;
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 }
