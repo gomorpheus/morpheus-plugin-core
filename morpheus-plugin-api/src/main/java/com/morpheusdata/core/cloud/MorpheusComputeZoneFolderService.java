@@ -55,7 +55,7 @@ public interface MorpheusComputeZoneFolderService {
 	/**
 	 * Remove persisted ComputeZoneFolder from Morpheus
 	 *
-	 * @param folders Images to delete
+	 * @param folders Folders to delete
 	 * @return success
 	 */
 	Single<Boolean> remove(List<ComputeZoneFolderIdentityProjection> folders);

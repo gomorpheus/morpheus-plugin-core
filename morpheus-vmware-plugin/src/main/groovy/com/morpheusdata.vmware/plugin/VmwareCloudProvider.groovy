@@ -17,6 +17,8 @@ import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.projection.*
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
+import com.morpheusdata.vmware.plugin.sync.DatastoresSync
+
 import com.morpheusdata.vmware.plugin.sync.FoldersSync
 import groovy.util.logging.Slf4j
 import com.vmware.vim25.*
@@ -307,6 +309,7 @@ class VmwareCloudProvider implements CloudProvider {
 //						throw new InterruptedException();
 //					}
 					log.debug("resource pools completed in ${new Date().time - now.time} ms")
+
 					//folders
 //					lockService.renewLock(lockId.toString(),[timeout:lockTimeout, ttl:lockTtl])
 					(new FoldersSync(cloud, morpheusContext)).execute()
@@ -318,7 +321,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("folders completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 //					//datastores
-//					cacheDatastores([zone:zone])
+					(new DatastoresSync(cloud, morpheusContext)).execute()
 
 //					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
 					//
@@ -1693,12 +1696,12 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	static listDatastores(Cloud cloud) {
+	static listDatastores(Cloud cloud, String clusterInternalId=null) {
 		log.debug "listDatastores: ${cloud}"
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		def cluster = cloud?.getConfigProperty('cluster')
+		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listDatastores(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
