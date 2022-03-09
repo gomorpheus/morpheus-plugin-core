@@ -76,7 +76,6 @@ class DatastoresSync {
 						for(item in updateItems) {
 							def masterItem = item.masterItem
 							Datastore existingItem = item.existingItem
-
 							def save = false
 							def type = masterItem.summary?.type ?: 'generic'
 							if(masterItem.accessible != existingItem.online) {
@@ -112,11 +111,11 @@ class DatastoresSync {
 								save=true
 							}
 							if(save) {
-								morpheusContext.cloud.datastore.save([existingItem])
+								morpheusContext.cloud.datastore.save([existingItem]).blockingGet()
 							}
 						}
 					}.onDelete { removeItems ->
-							morpheusContext.cloud.datastore.remove(syncLists.removeList, cluster)
+						morpheusContext.cloud.datastore.remove(removeItems, cluster).blockingGet()
 					}.start()
 
 
