@@ -15,6 +15,13 @@ import java.util.List;
  * @author Mike Truso
  */
 public interface MorpheusVirtualImageService {
+
+	/**
+	 * The context for dealing with VirtualImageLocations
+	 * @return MorpheusVirtualImageLocationService
+	 */
+	MorpheusVirtualImageLocationService getLocation();
+
 	/**
 	 * Get a list of VirtualImage projections based on Cloud id
 	 * @param cloudId Cloud id

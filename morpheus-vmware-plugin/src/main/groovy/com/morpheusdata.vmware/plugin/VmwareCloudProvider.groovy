@@ -20,6 +20,7 @@ import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.vmware.plugin.sync.DatastoresSync
 
 import com.morpheusdata.vmware.plugin.sync.FoldersSync
+import com.morpheusdata.vmware.plugin.sync.TemplatesSync
 import groovy.util.logging.Slf4j
 import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
@@ -340,7 +341,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("region codes completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 //					//templates
-//					cacheTemplates([zone:zone]).get()
+					(new TemplatesSync(cloud, morpheusContext)).execute()
 //					cacheContentLibraryItems([zone:zone,proxySettings:proxySettings]) //dont pause for this right now
 //
 //					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
@@ -1722,6 +1723,16 @@ class VmwareCloudProvider implements CloudProvider {
 		def cluster = cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
 		rtn = VmwareComputeUtility.listVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, resourcePool:resourcePool, cluster:cluster])
+		return rtn
+	}
+
+	static listTemplates(Cloud cloud) {
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = cloud.zone?.getConfigProperty('cluster')
+		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
+		rtn = VmwareComputeUtility.listTemplates(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, resourcePool:resourcePool, cluster:cluster])
 		return rtn
 	}
 

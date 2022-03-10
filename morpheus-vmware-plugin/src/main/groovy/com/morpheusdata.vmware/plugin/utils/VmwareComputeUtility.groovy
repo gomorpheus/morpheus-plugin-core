@@ -713,6 +713,67 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listTemplates(apiUrl, username, password, opts = [:]) {
+		def rtn = [success:false, templates:[]]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				if(datacenter) {
+					def parentEntity = datacenter
+					if(parentEntity) {
+						def propList = []
+						propList << 'name'
+						propList << 'resourcePool'
+						propList << 'config.uuid'
+						propList << 'config.guestFullName'
+						propList << 'config.template'
+						propList << 'summary.config.numCpu'
+						propList << 'summary.config.memorySizeMB'
+						propList << 'summary.config.vmPathName'
+						propList << 'config.guestId'
+						propList << 'config.hardware.device'
+						def results = listBulkObjects(serviceInstance, parentEntity, 'VirtualMachine', propList, opts)
+						log.debug("results: ${results}")
+						if(results.success == true) {
+							results.objects?.each { obj ->
+								if(obj['config.template'] == true) {
+									def objRef = obj.item.getObj()
+									def deviceList = obj['config.hardware.device']?.getVirtualDevice()
+									def resourcePool = obj.resourcePool
+									def resourcePoolId = resourcePool?.getVal()
+									rtn.templates << [name:obj.name, os:obj['config.guestFullName'], resourcePool:resourcePoolId, type:objRef.type, ref:objRef.val,
+									                  config:[template:obj['config.template'], uuid:obj['config.uuid'], guestId:obj['config.guestId'],
+									                          hardware:[device:deviceList]],
+									                  summary:[
+											                  config:[numCpu:obj['summary.config.numCpu'], memorySizeMB:obj['summary.config.memorySizeMB'], vmPathName:obj['summary.config.vmPathName']]],
+									                  volumes:getVmVolumes(deviceList),
+									                  controllers:getVmControllers(deviceList),
+									                  networks:getVmNetworks(deviceList)
+									]
+								}
+							}
+						}
+						rtn.success = results.success
+					}
+				} else {
+					rtn.msg = "no datacenter found"
+				}
+				log.debug("count: ${rtn?.templates?.size()} results: ${rtn}")
+			} else {
+				rtn.msg = 'no datacenter configured'
+			}
+		} catch(e) {
+			log.error("listTemplates - url: ${apiUrl} error:${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
 	static getMapVmwareOsType(vmwareType) {
 		switch(vmwareType) {
 			case 'asianux3_64Guest':
