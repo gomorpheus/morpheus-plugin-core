@@ -16,6 +16,8 @@ public class NetworkPoolRange extends MorpheusModel {
 	protected Boolean active = true;
 	protected Date dateCreated;
 	protected Date lastUpdated;
+	protected Boolean readOnly = false;
+	protected String cidr;
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
@@ -130,5 +132,21 @@ public class NetworkPoolRange extends MorpheusModel {
 	public void setReservationCount(Integer reservationCount) {
 		this.reservationCount = reservationCount;
 		markDirty("reservationCount", reservationCount);
+	}
+
+	public Boolean getReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(Boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public String getCidr() {
+		return cidr;
+	}
+
+	public void setCidr(String cidr) {
+		this.cidr = cidr;
 	}
 }
