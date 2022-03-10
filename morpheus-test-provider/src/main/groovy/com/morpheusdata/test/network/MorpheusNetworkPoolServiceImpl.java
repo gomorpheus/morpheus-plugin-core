@@ -34,6 +34,11 @@ public class MorpheusNetworkPoolServiceImpl implements MorpheusNetworkPoolServic
 		return null;
 	}
 
+	@Override
+	public Observable<NetworkPoolIdentityProjection> listIdentityProjections() {
+		return null;
+	}
+
 	/**
 	 * Lists all {@link NetworkPool} objects by a list of Identifiers. This is commonly used in sync / caching logic.
 	 *
@@ -62,6 +67,11 @@ public class MorpheusNetworkPoolServiceImpl implements MorpheusNetworkPoolServic
 		return null;
 	}
 
+	@Override
+	public Single<Boolean> remove(List<NetworkPoolIdentityProjection> removeList) {
+		return null;
+	}
+
 	/**
 	 * Creates new Network Pools from cache / sync implementations
 	 * This ensures proper ownership and pool server association. It also creates the poolRanges attached to the model.
@@ -72,6 +82,11 @@ public class MorpheusNetworkPoolServiceImpl implements MorpheusNetworkPoolServic
 	 */
 	@Override
 	public Single<Boolean> create(Long poolServerId, List<NetworkPool> addList) {
+		return null;
+	}
+
+	@Override
+	public Single<Boolean> create(List<NetworkPool> addList) {
 		return null;
 	}
 
