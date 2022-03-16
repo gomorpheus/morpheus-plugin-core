@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.VirtualImageLocation;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import io.reactivex.Observable;
@@ -36,16 +37,18 @@ public interface MorpheusVirtualImageLocationService {
 	/**
 	 * Save updates to existing VirtualImageLocations
 	 * @param virtualImageLocations updated VirtualImageLocations
+	 * @param cloud the Cloud instance
 	 * @return success
 	 */
-	Single<Boolean> save(List<VirtualImageLocation> virtualImageLocations);
+	Single<Boolean> save(List<VirtualImageLocation> virtualImageLocations, Cloud cloud);
 
 	/**
 	 * Create new VirtualImageLocations in Morpheus
 	 * @param virtualImageLocations new VirtualImageLocations to persist
+	 * @param cloud the Cloud instance
 	 * @return success
 	 */
-	Single<Boolean> create(List<VirtualImageLocation> virtualImageLocations);
+	Single<Boolean> create(List<VirtualImageLocation> virtualImageLocations, Cloud cloud);
 
 	/**
 	 * Remove persisted VirtualImageLocations from Morpheus

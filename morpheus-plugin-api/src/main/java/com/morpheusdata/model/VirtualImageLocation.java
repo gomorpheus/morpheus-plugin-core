@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class VirtualImageLocation extends VirtualImageLocationIdentityProjection {
 
-	protected VirtualImage virtualImage;
 	protected String code;
 	protected String internalId;
 	protected String imageRegion;
@@ -22,10 +21,6 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected Datastore datastore;
 //	protected List<StorageVolume> volumes = new ArrayList<>();
 //	protected List<StorageController> controllers = new ArrayList<>();
-
-	public VirtualImage getVirtualImage() {
-		return virtualImage;
-	}
 
 	public String getCode() {
 		return code;

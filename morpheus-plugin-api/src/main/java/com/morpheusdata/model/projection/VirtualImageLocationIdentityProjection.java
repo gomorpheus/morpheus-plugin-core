@@ -12,18 +12,20 @@ import com.morpheusdata.model.MorpheusModel;
  */
 public class VirtualImageLocationIdentityProjection extends MorpheusModel {
 
-	protected VirtualImageIdentityProjection virtualImageIdentityProjection;
+	protected VirtualImageIdentityProjection virtualImage;
 	protected String externalId;
 	protected String imageName;
 	protected Boolean sharedStorage = false;
+	protected String refType;
+	protected Long refId;
 
 	public VirtualImageIdentityProjection getVirtualImage() {
-		return virtualImageIdentityProjection;
+		return virtualImage;
 	}
 
-	public void setVirtualImageIdentityProjection(VirtualImageIdentityProjection virtualImageIdentityProjection) {
-		this.virtualImageIdentityProjection = virtualImageIdentityProjection;
-		markDirty("virtualImageIdentityProjection", virtualImageIdentityProjection);
+	public void setVirtualImage(VirtualImageIdentityProjection virtualImage) {
+		this.virtualImage = virtualImage;
+		markDirty("virtualImage", virtualImage);
 	}
 
 	public String getExternalId() {
@@ -50,5 +52,29 @@ public class VirtualImageLocationIdentityProjection extends MorpheusModel {
 
 	public void setSharedStorage(Boolean sharedStorage) {
 		this.sharedStorage = sharedStorage;
+	}
+
+	public String getRefType() {
+		return refType;
+	}
+
+	/**
+	 * This should normally be set to 'ComputeZone' when creating new VirtualImageLocations for a Cloud
+	 * @param refType
+	 */
+	public void setRefType(String refType) {
+		this.refType = refType;
+	}
+
+	public Long getRefId() {
+		return refId;
+	}
+
+	/**
+	 * This should be set to the Cloud's id when creating a new VirtualImageLocation
+	 * @param refId
+	 */
+	public void setRefId(Long refId) {
+		this.refId = refId;
 	}
 }
