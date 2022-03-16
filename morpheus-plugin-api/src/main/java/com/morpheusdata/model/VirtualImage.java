@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +15,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Account account;
 	protected String code;
 	protected String description;
-	protected ImageType imageType;
 	protected String uniqueId;
 	protected String category;
 	protected Boolean isPublic;
@@ -25,6 +25,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String refId;
 	protected String refType;
 	protected Boolean isCloudInit;
+	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -51,15 +52,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setDescription(String description) {
 		this.description = description;
 		markDirty("description", description);
-	}
-
-	public ImageType getImageType() {
-		return imageType;
-	}
-
-	public void setImageType(ImageType imageType) {
-		this.imageType = imageType;
-		markDirty("imageType", imageType);
 	}
 
 	public String getUniqueId() {
@@ -150,5 +142,22 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setRefType(Boolean isCloudInit) {
 		this.isCloudInit = isCloudInit;
 		markDirty("isCloudInit", isCloudInit);
+	}
+
+	/**
+	 * Retrieve the list of VirtualImageLocations for the VirtualImage. The same VirtualImage may span regions
+	 * or Clouds and they are represented by VirtualImageLocations
+	 * @return locations
+	 */
+	public List<VirtualImageLocation> getImageLocations() {
+		return imageLocations;
+	}
+
+	/**
+	 * Set the list of VirtualImageLocations for the VirtualImage
+	 * @param imageLocations
+	 */
+	public void setImageLocations(List<VirtualImageLocation> imageLocations) {
+		this.imageLocations = imageLocations;
 	}
 }

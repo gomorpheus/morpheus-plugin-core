@@ -22,6 +22,10 @@ public interface MorpheusCloudService {
 
 	MorpheusComputeZonePoolService getPool();
 
+	MorpheusComputeZoneFolderService getFolder();
+
+	MorpheusDatastoreService getDatastore();
+
 	/**
 	 * Update the status of a Cloud during setup
 	 * @param cloud Cloud instance

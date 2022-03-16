@@ -32,6 +32,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String osType = "linux"; //linux, windows, unmanaged
 	protected String platform;
 	protected ComputeZonePool resourcePool;
+	protected ComputeZoneFolder folder;
 	protected String serverType;
 	protected String consoleHost;
 	protected PowerState powerState;
@@ -96,6 +97,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	/**
 	 * @deprecated
 	 * Use name instead
+	 * @param displayName displayName
 	 */
 	@Deprecated
 	public void setDisplayName(String displayName) {
@@ -227,6 +229,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return resourcePool;
 	}
 
+	public ComputeZoneFolder getFolder() {
+		return folder;
+	}
+
 	public String getServerType() {
 		return serverType;
 	}
@@ -350,6 +356,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setResourcePool(ComputeZonePool resourcePool) {
 		this.resourcePool = resourcePool;
 		markDirty("resourcePool", resourcePool);
+	}
+
+	public void setFolder(ComputeZoneFolder folder) {
+		this.folder = folder;
+		markDirty("folder", folder);
 	}
 
 	public void setServerType(String serverType) {
@@ -644,7 +655,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	/**
 	 * Sets the ComputeStats for this server
-	 * @param computeStats
+	 * @param computeStats The stats for this server
 	 */
 	public void setComputeStats(ComputeStats computeStats) {
 		this.computeStats = computeStats;

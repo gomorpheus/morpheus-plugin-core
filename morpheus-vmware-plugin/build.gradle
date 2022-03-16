@@ -1,0 +1,157 @@
+buildscript {
+	repositories {
+		//maven { url "https://repo.grails.org/grails/core" }
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		//classpath "org.grails:grails-gradle-plugin:5.0.0"
+		// classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+	}
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+// apply plugin: 'asset-pipeline'
+
+group = 'com.morpheusdata'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+repositories {
+	//maven { url "https://repo.grails.org/grails/core" }
+	mavenLocal()
+	mavenCentral()
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+configurations {
+	provided
+}
+
+dependencies {
+	compileOnly project(':morpheus-plugin-api')
+	compileOnly "org.codehaus.groovy:groovy-all:$groovyVersion"
+	
+	implementation 'commons-net:commons-net:3.6'
+	compileOnly "org.codehaus.gpars:gpars:1.2.1"
+
+	// Include morpheus-core and it's dependencies
+	testImplementation project(':morpheus-plugin-api')
+	testImplementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	testImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
+	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation project(':morpheus-test-provider')
+	testImplementation 'net.bytebuddy:byte-buddy:1.9.3'
+	testImplementation 'org.objenesis:objenesis:2.6'
+	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation 'cglib:cglib-nodep:3.2.12'
+	implementation('com.toastcoders:yavijava:6.0.05') {
+		transitive = false
+		exclude module: 'dom4j'
+		exclude module: 'org.dom4j.dom4j'
+	}
+}
+// https://brokenco.de/2015/07/15/gradle-goodness-excluding-depends-from-shadow.html
+configurations {
+	/* We don't want the morpheus-core dependency in our shadowJar */
+//	runtime.exclude module: 'morpheus-core'
+}
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+	}
+}
+
+shadowJar {
+	manifest {
+		attributes(
+				'Plugin-Class': 'com.morpheusdata.vmware.plugin.VmwarePlugin',
+				'Plugin-Version': version
+		)
+	}
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+task morpheusJavaDoc(type: Javadoc) {
+	source = sourceSets.main.allJava
+	title = "Morpheus Core Docs"
+}
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+	main = 'groovy.ui.Console'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId 'morpheus-vmware-provider'
+			pom.withXml {
+				asNode().children().last() + {
+					resolveStrategy = Closure.DELEGATE_FIRST
+					name 'morpheus-vmware-plugin'
+					description 'Vmware platform'
+					url 'https://github.com/'
+					scm {
+						url 'https://github.com/bertramdev/morpheus-core'
+						connection 'scm:https://bertramdev@github.com/gomorpheus/morpheus-core.git'
+						developerConnection 'scm:git://github.com/gomorpheus/morpheus-core.git'
+					}
+					licenses {
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/license/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
+					}
+					developers {
+						developer {
+							id 'bwhiton'
+							name 'Bob Whiton'
+							email 'bob.whiton@gmail.com'
+						}
+					}
+				}
+			}
+			from components.java
+		}
+	}
+	repositories {
+        maven {
+            if( !isReleaseVersion ) {
+                url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+                if(project.hasProperty('labsNexusUser')) {
+                    credentials {
+                        username = labsNexusUser
+                        password = labsNexusPassword
+                    }
+                }
+            }
+        }
+    }
+}
+
+test {
+	testLogging {
+		exceptionFormat = 'full'
+		showStandardStreams = true
+	}
+}
+
+tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+	destinationDirectory = file("$rootDir/plugins")
+}
+
+// tasks.assemble.dependsOn tasks.shadowJar
