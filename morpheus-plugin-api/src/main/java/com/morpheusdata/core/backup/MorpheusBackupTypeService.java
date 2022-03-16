@@ -5,10 +5,7 @@ import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.projection.BackupTypeIdentityProjection;
 import io.reactivex.Observable;
 
-import java.util.Collection;
-import java.util.List;
-
-public interface MorpheusBackupTypeContext {
+public interface MorpheusBackupTypeService {
 
 	//ORM Object Methods
 	/**

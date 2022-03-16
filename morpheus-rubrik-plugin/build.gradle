@@ -1,18 +1,16 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
 	}
 	dependencies {
 	}
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'com.morpheusdata'
 version = '0.1.0'
@@ -35,7 +33,6 @@ dependencies {
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
 	implementation 'commons-net:commons-net:3.6'
-	implementation project(':morpheus-apiutil-compat')
 
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
@@ -133,5 +130,3 @@ test {
 tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 	destinationDirectory = file("$rootDir/plugins")
 }
-
-tasks.assemble.dependsOn tasks.shadowJar

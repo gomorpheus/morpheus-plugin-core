@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.core.BackupProvider;
+import com.morpheusdata.model.BackupProvider;
 
 import java.util.Date;
 

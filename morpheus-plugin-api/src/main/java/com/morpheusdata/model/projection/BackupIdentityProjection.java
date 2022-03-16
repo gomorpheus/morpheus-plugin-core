@@ -1,13 +1,13 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.core.backup.MorpheusBackupContext;
+import com.morpheusdata.core.backup.MorpheusBackupService;
 import com.morpheusdata.model.MorpheusModel;
 import com.morpheusdata.model.BackupType;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.Backup} object for doing a sync match
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
- * @see MorpheusBackupContext
+ * @see MorpheusBackupService
  * @author Dustin DeYoung
  */
 public class BackupIdentityProjection extends MorpheusModel {

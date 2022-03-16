@@ -1,7 +1,6 @@
 package com.morpheusdata.core.backup;
 
 import com.morpheusdata.core.BackupProvider;
-import com.morpheusdata.core.network.MorpheusNetworkTypeContext;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
 import io.reactivex.Completable;
@@ -11,28 +10,28 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
-public interface MorpheusBackupContext {
+public interface MorpheusBackupService {
 
 	/**
 	 * Returns the BackupJobContext used for performing updates or queries on {@link BackupJob} related assets within Morpheus.
 	 * Typically this would be called by a {@link BackupProvider}
 	 * @return An instance of the Backup Job Context to be used for calls by various backup providers
 	 */
-	MorpheusBackupJobContext getBackupJob();
+	MorpheusBackupJobService getBackupJob();
 
 	/**
 	 * Returns the BackupResultContext used for performing updates or queries on {@link BackupResult} related assets within Morpheus.
 	 * Typically this would be called by a {@link BackupProvider}.
 	 * @return An instance of the Backup Result Context to be used for calls by various backup providers
 	 */
-	MorpheusBackupResultContext getBackupResult();
+	MorpheusBackupResultService getBackupResult();
 
 	/**
 	 * Returns the MorpheusBackupTypeContext used for performing updates/queries on {@link BackupType} related assets
 	 * within Morpheus.
 	 * @return An instance of the BackupTypeContext to be used for calls by various backup providers
 	 */
-	MorpheusBackupTypeContext getType();
+	MorpheusBackupTypeService getType();
 
 	//ORM Object Methods
 	/**

@@ -80,6 +80,15 @@ subprojects { project ->
             shouldRunAfter(tasks.withType(Sign))
         }
     }
+
+	// tasks.register('copyToMorpheus', Copy) {
+	// 	from(layout.buildDirectory.dir('packages'))
+	// 	// includes
+	// 	if(project.hasProperty("includePattern")) {
+	// 		include includePattern
+	// 	}
+	// 	into(layout.projectDirectory.dir(morpheusSeedFolder))
+	// }
     
 }
 

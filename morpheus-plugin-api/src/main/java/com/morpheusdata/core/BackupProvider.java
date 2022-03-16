@@ -10,11 +10,11 @@ import java.util.Map;
 
 /**
  * Provides a standard set of methods for interacting with backup providers.
- * TODO: UNDER DEVELOPMENT STILL
- * @author Mike Truso
+ * @since 0.12.2
+ * @author Dustin DeYoung
  */
 public interface BackupProvider extends PluginProvider {
-
+	
 	// Backup Jobs
 	ServiceResponse configureBackupJob();
 	ServiceResponse validateBackupJob();
