@@ -1730,13 +1730,13 @@ class VmwareCloudProvider implements CloudProvider {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		def cluster = cloud.zone?.getConfigProperty('cluster')
+		def cluster = cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
 		rtn = VmwareComputeUtility.listTemplates(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, resourcePool:resourcePool, cluster:cluster])
 		return rtn
 	}
 
-	String getRegionCode(Cloud cloud) {
+	static getRegionCode(Cloud cloud) {
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def apiUrl = VmwareProvisionProvider.getVmwareApiUrl(cloud.serviceUrl)
 		def regionString = "${apiUrl}.${datacenter}"

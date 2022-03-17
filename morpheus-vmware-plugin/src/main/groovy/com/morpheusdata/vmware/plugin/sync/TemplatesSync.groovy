@@ -2,14 +2,18 @@ package com.morpheusdata.vmware.plugin.sync
 
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
+import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.model.Account
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.Datastore
+import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.VirtualImageLocation
+import com.morpheusdata.model.ImageType
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.core.*
-import com.morpheusdata.core.util.SyncTask
+import com.morpheusdata.core.util.*
 import io.reactivex.*
 
 @Slf4j
@@ -34,7 +38,7 @@ class TemplatesSync {
 		def listResults = VmwareCloudProvider.listTemplates(cloud)
 		if(listResults.success) {
 			Observable domainRecords = morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
-				return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in ['ovf', 'vmware', 'vmdk']
+				return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
 			}
 			SyncTask<VirtualImageLocationIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, listResults?.templates)
 			syncTask.addMatchFunction { VirtualImageLocationIdentityProjection domainObject, Map cloudItem ->
@@ -46,9 +50,9 @@ class TemplatesSync {
 					return new SyncTask.UpdateItem<Datastore, Map>(existingItem: virtualImageLocation, masterItem: matchItem.masterItem)
 				}
 			}.onAdd { itemsToAdd ->
-//				addMissingVirtualImageLocations(cloud, itemsToAdd)
+				addMissingVirtualImageLocations(itemsToAdd)
 			}.onUpdate { List<SyncTask.UpdateItem<Datastore, Map>> updateItems ->
-//				updateMatchedVirtualImages(cloud, updateItems)
+				updateMatchedVirtualImages(updateItems)
 			}.onDelete { removeItems ->
 //				removeMissingVirtualImages(cloud, removeItems)
 			}.start()
@@ -98,78 +102,78 @@ class TemplatesSync {
 		}
 	}
 
-//	@Transactional(readOnly=true)
-//	protected addMissingVirtualImageLocations(ComputeZone zone, List objList) {
-//
-//		def names = objList.collect{it.name}?.unique()
-//		def existingItems = VirtualImage.createCriteria().list() {
-//			createAlias('owner','owner', CriteriaSpecification.LEFT_JOIN)
-//			inList('imageType',['ovf','vmware','vmdk'])
-//			inList('name', names)
-//			or {
-//				eq('systemImage', true)
-//				or {
-//					isNull('owner')
-//					eq('owner.id', zone.owner.id)
-//				}
-//			}
-//			projections {
-//				property('name')
-//				property('externalId')
-//				property('imageType')
-//				property('id')
-//			}
-//		}
-//		def existingIds = existingItems.collect{existing -> [name:existing[0], externalId:existing[1], imageType:existing[2], id:existing[3]]} ?: []
-//		existingIds.unique{"${it.imageType}:${it.name}"}
-//		def secondaryMatchFunction = { Map morpheusItem, Map cloudItem ->
-//			cloudItem.name == morpheusItem.name
-//		}
-//		def syncLists = ComputeUtility.buildSyncLists(existingIds, objList, secondaryMatchFunction)
-//		//add missing
-//		while(syncLists.addList?.size() > 0) {
-//			List chunkedAddList = syncLists.addList.take(50)
-//			syncLists.addList = syncLists.addList.drop(50)
-//			addMissingVirtualImages(zone, chunkedAddList)
-//		}
-//		//update list
-//		while(syncLists.updateList?.size() > 0) {
-//			List chunkedUpdateList = syncLists.updateList.take(50)
-//			syncLists.updateList = syncLists.updateList.drop(50)
-//			updateMatchedVirtualImages(zone, chunkedUpdateList)
-//		}
-//		//removes?
-//		syncLists.removeList?.each { removeItem ->
-//			// println("need to remove: ${removeItem}")
-//		}
-//	}
-//
-//	@Transactional(propagation=Propagation.REQUIRES_NEW)
-//	protected addMissingVirtualImages(ComputeZone zone, List addList) {
-//		Account owner = Account.read(zone.owner.id)
-//		Account account = zone.account ? Account.read(zone.account.id) : null
-//		def regionCode = getRegionCode(zone)
-//		addList?.each {
-//			def imageConfig = [owner:owner, visibility:'private', category:"vmware.vsphere.image.${zone.id}", name:it.name,
-//			                   code:"vmware.vsphere.image.${zone.id}.${it.ref}", imageType:'vmdk', minRam:it.summary?.config?.memorySizeMB * ComputeUtility.ONE_MEGABYTE, status: 'Active',
-//			                   remotePath:it.summary?.config?.vmPathName, externalId:it.ref, imageRegion:regionCode, internalId:it.config?.uuid,
-//			                   refType:'ComputeZone', refId:"${zone.id}"]
-//			def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(it.config.guestId)
-//			log.debug "cacheTemplates osTypeCode: ${osTypeCode}"
-//			def osType = OsType.findByCode(osTypeCode ?: 'other')
-//			log.debug "osType: ${osType}"
-//			imageConfig.osType = osType
-//			imageConfig.platform = osType?.platform
-//			if(imageConfig.platform == 'windows') {
-//				imageConfig.isForceCustomization = true
-//				imageConfig.isCloudInit = false
-//			}
-//			imageConfig.virtioSupported = false
-//
-//			def add = new VirtualImage(imageConfig)
-//			if(account) {
-//				add.addToAccounts(account)
-//			}
+	def addMissingVirtualImageLocations(List objList) {
+		log.debug "addMissingVirtualImageLocations: ${objList?.size()}"
+
+		def names = objList.collect{it.name}?.unique()
+		List<VirtualImageIdentityProjection> existingItems = []
+		def allowedImageTypes = [ImageType.ovf, ImageType.vmdk]
+
+		def osTypes = []
+		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
+
+		def uniqueIds = [] as Set
+		Observable domainRecords = morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { VirtualImageIdentityProjection proj ->
+			def include = proj.imageType in allowedImageTypes && proj.name in names && (proj.systemImage || (!proj.ownerId || proj.ownerId == cloud.owner.id))
+			if(include) {
+				def uniqueKey = "${proj.imageType.toString()}:${proj.name}".toString()
+				if(!uniqueIds.contains(uniqueKey)) {
+					uniqueIds << uniqueKey
+					return true
+				}
+			}
+			return false
+		}
+		SyncTask<VirtualImageIdentityProjection, Map, VirtualImage> syncTask = new SyncTask<>(domainRecords, objList)
+		syncTask.addMatchFunction { VirtualImageIdentityProjection domainObject, Map cloudItem ->
+			cloudItem.name == domainObject.name
+		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItems ->
+			Map<Long, SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+			morpheusContext.virtualImage.listById(updateItems?.collect { it.existingItem.id }).map { VirtualImage virtualImage ->
+				SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map> matchItem = updateItemMap[virtualImage.id]
+				return new SyncTask.UpdateItem<VirtualImage, Map>(existingItem: virtualImage, masterItem: matchItem.masterItem)
+			}
+		}.onAdd { itemsToAdd ->
+			addMissingVirtualImages(itemsToAdd, osTypes)
+		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
+//			updateMatchedVirtualImages(updateItems)
+		}.start()
+	}
+
+	private addMissingVirtualImages(List addList, List osTypes) {
+		log.debug "addMissingVirtualImages ${addList?.size()}"
+		Account account = cloud.account
+		def regionCode = VmwareCloudProvider.getRegionCode(cloud)
+		def adds = []
+		def addNames = []
+		addList?.each {
+			addNames << it.name
+			def imageConfig = [
+					account    : account,
+					category   : "vmware.vsphere.image.${cloud.id}",
+					name       : it.name,
+					code       : "vmware.vsphere.image.${cloud.id}.${it.ref}",
+					imageType  : ImageType.vmdk,
+					minRam     : it.summary?.config?.memorySizeMB * ComputeUtility.ONE_MEGABYTE,
+					status     : 'Active',
+					remotePath : it.summary?.config?.vmPathName,
+					externalId : it.ref,
+					imageRegion: regionCode,
+					internalId : it.config?.uuid
+			]
+			def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(it.config.guestId)
+			log.debug "cacheTemplates osTypeCode: ${osTypeCode}"
+			osTypeCode = osTypeCode ?: 'other'
+			def osType = osTypes.find { it.code == osTypeCode }
+			log.debug "osType: ${osType}"
+			imageConfig.osType = osType
+			imageConfig.platform = osType?.platform
+			if(imageConfig.platform == 'windows') {
+				imageConfig.isForceCustomization = true
+				imageConfig.isCloudInit = false
+			}
+			imageConfig.virtioSupported = false
+
 //			it.controllers?.each { controller ->
 //				def controllerConfig = [name:controller.name, description:controller.description, controllerKey:"${controller.key}",
 //				                        type:StorageControllerType.findByCode(controller.type), unitNumber:"${controller.unitNumber}", busNumber:"${controller.busNumber}",
@@ -189,19 +193,49 @@ class TemplatesSync {
 //				newVolume.save()
 //				add.addToVolumes(newVolume)
 //			}
-//			def locationConfig = [code:"vmware.vsphere.image.${zone.id}.${it.ref}", externalId:it.ref,
-//			                      refType:'ComputeZone', refId:zone.id, imageName:it.name, imageRegion:regionCode]
-//			def addLocation = new VirtualImageLocation(locationConfig)
-//			add.addToLocations(addLocation)
-//			add.save(flush:true)
-//
-//			def msg = [refId:addLocation.id, jobType:'virtualImageUpdatePricePlan']
-//			sendRabbitMessage('main','', ApplianceJobService.applianceJobHighQueue, msg)
-//		}
-//	}
-//
-//	@Transactional(propagation=Propagation.REQUIRES_NEW)
-//	protected updateMatchedVirtualImages(ComputeZone zone, List updateList) {
+			def add = new VirtualImage(imageConfig)
+			adds << add
+		}
+
+		// Create em all!
+		log.debug "About to create ${adds.size()} virtualImages"
+		morpheusContext.virtualImage.create(adds, cloud).blockingGet()
+
+		// Now add the locations
+		def locationAdds = []
+		// Fetch the images that we just created
+		def imageMap = [:]
+		morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { VirtualImageIdentityProjection proj ->
+			addNames.contains(proj.name)
+		}.blockingSubscribe { imageMap[it.externalId] = it }
+
+		adds?.each { add ->
+			log.debug "Adding location for ${add.externalId}"
+			def virtualImage = imageMap[add.externalId]
+			if(virtualImage) {
+				def locationConfig = [
+						virtualImage: virtualImage,
+						code        : "vmware.vsphere.image.${cloud.id}.${add.externalId}",
+						externalId  : add.externalId,
+						imageName   : add.name,
+						imageRegion : regionCode,
+				]
+				VirtualImageLocation location = new VirtualImageLocation(locationConfig)
+				locationAdds << location
+			} else {
+				log.warn "Unable to find virtualImage for ${add.externalId}"
+			}
+		}
+
+		if(locationAdds) {
+			log.debug "About to create ${locationAdds.size()} locations"
+			morpheusContext.virtualImage.location.create(locationAdds, cloud).blockingGet()
+		}
+	}
+
+	private updateMatchedVirtualImages(List updateList) {
+		log.debug "updateMatchedVirtualImages: ${updateList?.size()}"
+
 //		def regionCode = getRegionCode(zone)
 //		def locationIds = updateList?.findAll{ it.existingItem.locationId }?.collect{ it.existingItem.locationId }
 //		def isPublicImage = false
@@ -328,7 +362,7 @@ class TemplatesSync {
 //
 //			}
 //		}
-//	}
+	}
 //
 //	@Transactional(propagation=Propagation.REQUIRES_NEW)
 //	protected removeMissingVirtualImages(ComputeZone zone, List removeList) {

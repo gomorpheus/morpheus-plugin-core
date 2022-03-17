@@ -76,9 +76,9 @@ class FoldersSync {
 				}.onAdd { itemsToAdd ->
 					// Ignore.. handled above
 				}.onUpdate { List<SyncTask.UpdateItem<ComputeZoneFolder, Map>> updateItems ->
-					updateMatchedFolders(cloud, morpheusRootFolder, updateItems)
+					updateMatchedFolders(morpheusRootFolder, updateItems)
 				}.onDelete { removeItems ->
-					removeMissingFolders(cloud, removeItems)
+					removeMissingFolders(removeItems)
 				}.start()
 	
 	//				if (cloud.owner.masterAccount == false) {
@@ -170,7 +170,7 @@ class FoldersSync {
 		}
 	}
 
-	private updateMatchedFolders(Cloud cloud, ComputeZoneFolder rootFolder, List updateList) {
+	private updateMatchedFolders(ComputeZoneFolder rootFolder, List updateList) {
 		log.debug "updateMatchedFolders: ${cloud} ${updateList?.size()}"
 
 		// Gather up the parents
@@ -206,7 +206,7 @@ class FoldersSync {
 		}
 	}
 
-	private removeMissingFolders(Cloud cloud, List removeList) {
+	private removeMissingFolders(List removeList) {
 		log.debug "removeMissingFolders: ${cloud} ${removeList?.size()}"
 		morpheusContext.cloud.folder.remove(removeList).blockingGet()
 	}
