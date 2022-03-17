@@ -20,11 +20,18 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isPublic;
 	protected String platform;
 	protected Long minDisk;
+	protected Long minRam;
+	protected String internalId;
+	protected String remotePath;
+	protected String status;
 	protected List<String> locations;
 	protected OsType osType;
 	protected String refId;
 	protected String refType;
+	protected String imageRegion;
+	protected Boolean isForceCustomization;
 	protected Boolean isCloudInit;
+	protected Boolean virtioSupported;
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 
 	public Account getAccount() {
@@ -159,5 +166,61 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	 */
 	public void setImageLocations(List<VirtualImageLocation> imageLocations) {
 		this.imageLocations = imageLocations;
+	}
+
+	public Long getMinRam() {
+		return minRam;
+	}
+
+	public void setMinRam(Long minRam) {
+		this.minRam = minRam;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
+
+	public String getRemotePath() {
+		return remotePath;
+	}
+
+	public void setRemotePath(String remotePath) {
+		this.remotePath = remotePath;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Boolean getForceCustomization() {
+		return isForceCustomization;
+	}
+
+	public void setForceCustomization(Boolean forceCustomization) {
+		isForceCustomization = forceCustomization;
+	}
+
+	public Boolean getVirtioSupported() {
+		return virtioSupported;
+	}
+
+	public void setVirtioSupported(Boolean virtioSupported) {
+		this.virtioSupported = virtioSupported;
+	}
+
+	public String getImageRegion() {
+		return imageRegion;
+	}
+
+	public void setImageRegion(String imageRegion) {
+		this.imageRegion = imageRegion;
 	}
 }
