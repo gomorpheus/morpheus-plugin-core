@@ -1,4 +1,4 @@
-<h1>Hello There{{name}}</h1>
+<h1>Hello There {{name}}</h1>
 <dl>
 	<dt>Description</dt>
 	<dd>{{description}}</dd>
@@ -7,6 +7,14 @@
 	<dt>Max Cores</dt>
 	<dd>{{maxCores}}</dd>
 </dl>
+
+<form id="test-post" action="/plugin/customTab/example" method="post">
+	<input type="hidden" name="_csrf">
+	<h1>Test Form</h1>
+	<input type="text">
+	<button type="submit">Test</button>
+</form>
+
 <script src="{{asset "/instance-tab.js"}}" ></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <iframe src="https://www.digitalocean.com/" title="Digital Ocean Home Page"></iframe>
