@@ -51,28 +51,12 @@ class TemplatesSync {
 				}
 			}.onAdd { itemsToAdd ->
 				addMissingVirtualImageLocations(itemsToAdd)
-			}.onUpdate { List<SyncTask.UpdateItem<Datastore, Map>> updateItems ->
+			}.onUpdate { List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateItems ->
 				updateMatchedVirtualImages(updateItems)
 			}.onDelete { removeItems ->
-//				removeMissingVirtualImages(cloud, removeItems)
+				removeMissingVirtualImages(removeItems)
 			}.start()
 		}
-
-//				def queryResults = [listResults: listResults, existingLocations:[]]
-//				queryResults.existingLocations = VirtualImageLocation.withCriteria(cache:false) {
-//					createAlias('virtualImage', 'virtualImage')
-//					createAlias('virtualImage.owner', 'virtualImageOwner', CriteriaSpecification.LEFT_JOIN)
-//					inList('virtualImage.imageType',['ovf','vmware','vmdk'])
-//					ne('virtualImage.linkedClone',true)
-//					eq('sharedStorage',false)
-//					projections {
-//						property('imageName')
-//						property('externalId')
-//						property('virtualImage.imageType')
-//						property('id')
-//						property('virtualImage.id')
-//					}
-//				}
 
 	// TODO: Do we still need dedupe logic
 //				//dedupe
@@ -136,7 +120,8 @@ class TemplatesSync {
 		}.onAdd { itemsToAdd ->
 			addMissingVirtualImages(itemsToAdd, osTypes)
 		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
-//			updateMatchedVirtualImages(updateItems)
+			// Found the VirtualImage for this location.. just need to create the location
+			addMissingVirtualImageLocationsForImages(updateItems)
 		}.start()
 	}
 
@@ -233,70 +218,100 @@ class TemplatesSync {
 		}
 	}
 
-	private updateMatchedVirtualImages(List updateList) {
+	private addMissingVirtualImageLocationsForImages(List<SyncTask.UpdateItem<VirtualImage, Map>> addItems) {
+		log.debug "addMissingVirtualImageLocationsForImages ${addItems?.size()}"
+
+		def regionCode = VmwareCloudProvider.getRegionCode(cloud)
+		def locationAdds = []
+		addItems?.each { add ->
+			VirtualImage virtualImage = add.existingItem
+			def locationConfig = [
+					virtualImage: virtualImage,
+					code        : "vmware.vsphere.image.${cloud.id}.${virtualImage.externalId}",
+					externalId  : virtualImage.externalId,
+					imageName   : virtualImage.name,
+					imageRegion : regionCode,
+			]
+			VirtualImageLocation location = new VirtualImageLocation(locationConfig)
+			locationAdds << location
+		}
+
+		if(locationAdds) {
+			log.debug "About to create ${locationAdds.size()} locations"
+			morpheusContext.virtualImage.location.create(locationAdds, cloud).blockingGet()
+		}
+	}
+
+	private updateMatchedVirtualImages(List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateList) {
 		log.debug "updateMatchedVirtualImages: ${updateList?.size()}"
 
-//		def regionCode = getRegionCode(zone)
-//		def locationIds = updateList?.findAll{ it.existingItem.locationId }?.collect{ it.existingItem.locationId }
-//		def isPublicImage = false
-//		List<VirtualImageLocation> existingLocations = locationIds ? VirtualImageLocation.where { id in locationIds && refType == 'ComputeZone' && refId == zone.id }.list(readOnly:true) : []
-//		def imageIds = updateList?.findAll{ it.existingItem.id }?.collect{ it.existingItem.id }
-//		def externalIds = updateList?.findAll{ it.existingItem.externalId }?.collect{ it.existingItem.externalId }
-//		List<VirtualImage> existingItems = []
-//		if(imageIds && externalIds) {
-//			existingItems	= VirtualImage.where{ id in imageIds ||
-//					(systemImage == false && externalId != null && refType == 'ComputeZone' && refId == zone.id.toString() &&
-//							externalId in externalIds && locations.size() == 0) }.join('locations').list(cache:false,readOnly:true)
-//		} else if(imageIds) {
-//			existingItems	= VirtualImage.where{ id in imageIds }.list(cache:false,readOnly:true)
-//		}
-//		//dedupe
-//		def groupedImages = existingItems.groupBy({ row -> row.externalId })
-//		def dupedImages = groupedImages.findAll{ key, value -> key != null && value.size() > 1 }
-//		if(dupedImages?.size() > 0)
-//			log.warn("removing duplicate images: {}", dupedImages.collect{ it.key })
-//		dupedImages?.each { key, value ->
-//			//each pass is set of all the images with the same external id
-//			def dupeCleanup = []
-//			value.eachWithIndex { row, index ->
-//				def locationMatch = existingLocations.find{ it.virtualImage.id == row.id }
-//				if(locationMatch == null) {
-//					dupeCleanup << row
-//					existingItems.remove(row)
-//				}
-//			}
-//			//cleanup
-//			log.info("duplicate key: ${key} total: ${value.size()} remove count: ${dupeCleanup.size()}")
-//			//remove the dupes
-//			deleteSyncedVirtualImages([key], dupeCleanup, [], zone, [hardDelete:true])
-//		}
-//		//updates
-//		updateList?.each { update ->
-//			def matchedTemplate = update.masterItem
-//			def imageLocation = existingLocations?.find { it.id == update.existingItem.locationId }
-//			if(imageLocation) {
-//				def save = false
-//				def saveImage = false
-//				if(imageLocation.imageName != matchedTemplate.name) {
-//					imageLocation.imageName = matchedTemplate.name
+		List<VirtualImageLocation> existingLocations = updateList?.collect { it.existingItem }
+		def regionCode = VmwareCloudProvider.getRegionCode(cloud)
+		def isPublicImage = false
+
+		def imageIds = updateList?.findAll{ it.existingItem.virtualImage?.id }?.collect{ it.existingItem.virtualImage.id }
+		def externalIds = updateList?.findAll{ it.existingItem.externalId }?.collect{ it.existingItem.externalId }
+		List<VirtualImage> existingItems = []
+		if(imageIds && externalIds) {
+			def tmpImgProjs = []
+			morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { img ->
+				!img.systemImage && img.externalId != null && img.externalId in externalIds
+			}.blockingSubscribe { tmpImgProjs << it }
+			if(tmpImgProjs) {
+				morpheusContext.virtualImage.listById(tmpImgProjs.collect { it.id }).filter { img ->
+					img.imageLocations.size() == 0
+				}.blockingSubscribe { existingItems << it }
+			}
+		} else if(imageIds) {
+			morpheusContext.virtualImage.listById(imageIds).blockingSubscribe { existingItems << it }
+		}
+		//dedupe
+		def groupedImages = existingItems.groupBy({ row -> row.externalId })
+		def dupedImages = groupedImages.findAll{ key, value -> key != null && value.size() > 1 }
+		if(dupedImages?.size() > 0)
+			log.warn("removing duplicate images: {}", dupedImages.collect{ it.key })
+		dupedImages?.each { key, value ->
+			//each pass is set of all the images with the same external id
+			def dupeCleanup = []
+			value.eachWithIndex { row, index ->
+				def locationMatch = existingLocations.find{ it.virtualImage.id == row.id }
+				if(locationMatch == null) {
+					dupeCleanup << row
+					existingItems.remove(row)
+				}
+			}
+			//cleanup
+			log.info("duplicate key: ${key} total: ${value.size()} remove count: ${dupeCleanup.size()}")
+			//remove the dupes
+			morpheusContext.virtualImage.remove([row], cloud).blockingGet()
+		}
+		//updates
+		updateList?.each { update ->
+			def matchedTemplate = update.masterItem
+			VirtualImageLocation imageLocation = existingLocations?.find { it.id == update.existingItem.id }
+			if(imageLocation) {
+				def save = false
+				def saveImage = false
+				if(imageLocation.imageName != matchedTemplate.name) {
+					imageLocation.imageName = matchedTemplate.name
 //					if(imageLocation.virtualImage.refId == imageLocation.refId.toString()) {
 //						imageLocation.virtualImage.name = matchedTemplate.name
 //						imageLocation.virtualImage.save()
 //					}
-//					save = true
-//				}
-//				if(imageLocation.code == null) {
-//					imageLocation.code = "vmware.vsphere.image.${zone.id}.${matchedTemplate.ref}"
-//					save = true
-//				}
-//				if(imageLocation.externalId != matchedTemplate.ref) {
-//					imageLocation.externalId = matchedTemplate.ref
-//					save = true
-//				}
-//				if(matchedTemplate.config?.uuid && imageLocation.internalId != matchedTemplate.config?.uuid) {
-//					imageLocation.internalId = matchedTemplate.config.uuid
-//					save = true
-//				}
+					save = true
+				}
+				if(imageLocation.code == null) {
+					imageLocation.code = "vmware.vsphere.image.${cloud.id}.${matchedTemplate.ref}"
+					save = true
+				}
+				if(imageLocation.externalId != matchedTemplate.ref) {
+					imageLocation.externalId = matchedTemplate.ref
+					save = true
+				}
+				if(matchedTemplate.config?.uuid && imageLocation.internalId != matchedTemplate.config?.uuid) {
+					imageLocation.internalId = matchedTemplate.config.uuid
+					save = true
+				}
 //				if(matchedTemplate.controllers) {
 //					def start = new Date()
 //					def changed = vmwareProvisionService.syncControllers(zone, imageLocation, matchedTemplate.controllers, false)
@@ -332,73 +347,43 @@ class TemplatesSync {
 //					saveImage = true
 //					save = true
 //				}
-//				if(save) {
-//					imageLocation.attach()
-//					imageLocation.save()
-//				}
-//				if(saveImage) {
+				if(save) {
+					morpheusContext.virtualImage.location.save([imageLocation], cloud).blockingGet() // TODO: Save these in a batch
+				}
+				if(saveImage) {
 //					imageLocation.virtualImage?.save(flush:true)
-//				}
-//			} else {
-//				def image = existingItems?.find { it.externalId == matchedTemplate.ref || it.name == matchedTemplate.name }
-//				if(image) {
-//					image.attach()
-//					//if we matched by virtual image and not a location record we need to create that location record
-//					def locationConfig = [code:"vmware.vsphere.image.${zone.id}.${matchedTemplate.ref}", externalId:matchedTemplate.ref,
-//					                      internalId:matchedTemplate.config?.uuid, refType:'ComputeZone', refId:zone.id, imageName:matchedTemplate.name, imageRegion:regionCode]
-//					def addLocation = new VirtualImageLocation(locationConfig)
-//					addLocation.save()
-//					//tmp fix
-//					if(!image.owner && !image.systemImage)
-//						image.owner = zone.owner
+				}
+			} else {
+				VirtualImage image = existingItems?.find { it.externalId == matchedTemplate.ref || it.name == matchedTemplate.name }
+				if(image) {
+					//if we matched by virtual image and not a location record we need to create that location record
+					def locationConfig = [
+							code        : "vmware.vsphere.image.${cloud.id}.${matchedTemplate.ref}",
+							externalId  : matchedTemplate.ref,
+							internalId  : matchedTemplate.config?.uuid,
+							imageName   : matchedTemplate.name,
+							imageRegion : regionCode,
+							virtualImage: new VirtualImageIdentityProjection(id: image.id)
+					]
+					def addLocation = new VirtualImageLocation(locationConfig)
+					morpheusContext.virtualImage.location.save([addLocation], cloud).blockingGet()
+
+					//tmp fix
+					if(!image.owner && !image.systemImage)
+						image.ownerId = cloud.owner.id
 //					image.deleted = false
-//					image.addToLocations(addLocation)
-//					image.isPublic = isPublicImage
-//					image.save()
-//
-//					def msg = [refId:addLocation.id, jobType:'virtualImageUpdatePricePlan']
-//					sendRabbitMessage('main','', ApplianceJobService.applianceJobHighQueue, msg)
-//				}
-//
-//			}
-//		}
+					image.isPublic = isPublicImage
+					morpheusContext.virtualImage.save([image], cloud).blockingGet()  // TODO: Save these in a batch
+				}
+
+			}
+		}
 	}
-//
-//	@Transactional(propagation=Propagation.REQUIRES_NEW)
-//	protected removeMissingVirtualImages(ComputeZone zone, List removeList) {
-//		def locationIds = removeList.findAll{ it.locationId }?.collect{ it.locationId }
-//		List<VirtualImageLocation> existingLocations = locationIds ? VirtualImageLocation.where { id in locationIds && refType == 'ComputeZone' &&
-//				refId == zone.id }.join('virtualImage').join('virtualImage.locations').list() : []
-//		try {
-//			for(vlocation in existingLocations) {
-//				if(vlocation.virtualImage.locations?.size() == 1) {
-//					if(vlocation.virtualImage.systemImage != true && !vlocation.virtualImage.userUploaded && !vlocation.virtualImage.userDefined) {
-//						vlocation.virtualImage.deleted = true
-//						vlocation.virtualImage.save(flush:true)
-//					}
-//					vlocation.virtualImage.removeFromLocations(vlocation)
-//					vlocation.delete(flush:true)
-//				} else if(vlocation.virtualImage.locations.size() > 1 && vlocation.virtualImage.locations?.every{it.refId == zone.id}) {
-//					vlocation.virtualImage.locations.findAll{it.refId == zone.id && it.id != vlocation.id}?.each { vloc ->
-//						vlocation.virtualImage.removeFromLocations(vloc)
-//						vloc.delete(flush:true)
-//					}
-//					if(vlocation.virtualImage.systemImage != true && !vlocation.virtualImage.userUploaded && !vlocation.virtualImage.userDefined) {
-//						vlocation.virtualImage.deleted = true
-//						vlocation.virtualImage.save(flush:true)
-//					}
-//					vlocation.virtualImage.removeFromLocations(vlocation)
-//					vlocation.delete(flush:true)
-//				} else {
-//					vlocation.virtualImage.removeFromLocations(vlocation)
-//					vlocation.delete(flush:true)
-//				}
-//
-//				accountUsageService.queueStopAllUsage(null, AccountUsage.VIRTUAL_IMAGE_LOCATION_REF_TYPE, vlocation.id)
-//			}
-//		} catch(e) {
-//			log.error("error deleting synced virtual image: ${e}", e)
-//		}
-//	}
+
+	private removeMissingVirtualImages(List removeList) {
+		log.debug "removeMissingVirtualImages: ${removeList?.size()}"
+
+		morpheusContext.virtualImage.location.remove(removeList).blockingGet()
+	}
 
 }
