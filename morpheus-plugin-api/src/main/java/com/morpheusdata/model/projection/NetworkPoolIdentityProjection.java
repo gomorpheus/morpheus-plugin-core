@@ -2,6 +2,7 @@ package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.MorpheusNetworkPoolService;
 import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.NetworkPoolType;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.NetworkPool} object for doing a sync match
@@ -27,6 +28,7 @@ public class NetworkPoolIdentityProjection extends MorpheusModel {
 	 * The default constructor for creating a projection object.
 	 * @param id the database id of the object
 	 * @param externalId the API id of the object
+	 * @param typeCode the type code from the {@link NetworkPoolType}
 	 */
 	public NetworkPoolIdentityProjection(Long id, String externalId,String typeCode) {
 		this.id = id;

@@ -68,6 +68,7 @@ public interface IPAMProvider extends PluginProvider {
 	 * @param subAssignedId the sub object attached to the reference object this ip address is being reserved for. Typically this is the network interface id on the server
 	 * @param assignedHostname the hostname of the server/interface the ip is being allocated for. Typically this would be assigned on the host record and also used to create a PTR or A record automatically
 	 * @param opts list of additional options that can be passed for reservation. for example, if a user wants a specific ip address. this exists as opts.ipAddress
+	 * @return a ServiceResponse containing the success state of the reserve pool address
 	 */
 	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
