@@ -349,6 +349,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("templates completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 					//networks
+					(new NetworksSync(cloud, morpheusContext)).execute()
 //					cacheNetworks([zone:zone]).get()
 //					sessionFactory.currentSession.clear()
 //					zone.attach()
@@ -842,6 +843,17 @@ class VmwareCloudProvider implements CloudProvider {
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		rtn = VmwareComputeUtility.listComputeResources(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
+		return rtn
+	}
+
+	def listNetworks(Cloud cloud) {
+		log.debug "listDatacenters: ${cloud}"
+
+		def rtn = [success:false]
+		def authConfig = vmwareProvisionService.getAuthConfig(opts.zone)
+		def datacenter = opts.zone?.getConfigProperty('datacenter')
+		def cluster = opts.cluster ?: opts.zone?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listNetworks(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
