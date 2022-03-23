@@ -31,7 +31,7 @@ public class NetworkPoolIdentityProjection extends MorpheusModel {
 	public NetworkPoolIdentityProjection(Long id, String externalId,String typeCode) {
 		this.id = id;
 		this.externalId = externalId;
-		this.typeCode = typeCode
+		this.typeCode = typeCode;
 	}
 
 	public NetworkPoolIdentityProjection() {
