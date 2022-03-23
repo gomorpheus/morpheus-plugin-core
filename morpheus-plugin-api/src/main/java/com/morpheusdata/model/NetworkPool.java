@@ -18,24 +18,7 @@ import java.util.List;
  */
 public class NetworkPool extends NetworkPoolIdentityProjection {
 
-	/**
-	 * Gets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 *
-	 * @return the code correlating to the {@link NetworkPoolType} this record belongs to.
-	 */
-	public String getTypeCode() {
-		return typeCode;
-	}
 
-	/**
-	 * Sets the unique code correlating to the {@link NetworkPoolType} this pool belongs to. Pool type codes are globally unique.
-	 *
-	 * @param typeCode the code correlating to the {@link NetworkPoolType} this record belongs to.
-	 */
-	public void setTypeCode(String typeCode) {
-		this.typeCode = typeCode;
-		markDirty("typeCode", typeCode);
-	}
 
 	/**
 	 * Gets the Human readable name of the Network Pool this record represents. Some integrations represent this as the CIDR name
@@ -395,7 +378,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 		markDirty("cidr", cidr);
 	}
 
-	protected String typeCode;
+	
 	protected String name;
 	protected String displayName;
 	protected String internalId;
