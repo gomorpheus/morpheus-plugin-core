@@ -22,8 +22,6 @@ public class NetworkPoolRange extends MorpheusModel {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
 
-	// transients
-	protected List<NetworkPoolIp> ips;
 	protected Integer reservationCount;
 
 	public String getStartAddress() {
@@ -64,10 +62,6 @@ public class NetworkPoolRange extends MorpheusModel {
 
 	public NetworkPool getNetworkPool() {
 		return networkPool;
-	}
-
-	public List<NetworkPoolIp> getIps() {
-		return ips;
 	}
 
 	public Integer getReservationCount() {
@@ -122,11 +116,6 @@ public class NetworkPoolRange extends MorpheusModel {
 	public void setNetworkPool(NetworkPool networkPool) {
 		this.networkPool = networkPool;
 		markDirty("networkPool", networkPool);
-	}
-
-	public void setIps(List<NetworkPoolIp> ips) {
-		this.ips = ips;
-		markDirty("ips", ips);
 	}
 
 	public void setReservationCount(Integer reservationCount) {

@@ -1,6 +1,7 @@
 package com.morpheusdata.test.network;
 
 import com.morpheusdata.core.network.MorpheusNetworkPoolService;
+import com.morpheusdata.core.network.MorpheusNetworkPoolRangeService;
 import com.morpheusdata.core.network.MorpheusNetworkPoolIpService;
 import com.morpheusdata.model.NetworkPool;
 import com.morpheusdata.model.NetworkPoolServer;
@@ -19,6 +20,11 @@ public class MorpheusNetworkPoolServiceImpl implements MorpheusNetworkPoolServic
 	 */
 	@Override
 	public MorpheusNetworkPoolIpService getPoolIp() {
+		return null;
+	}
+
+	@Override
+	public MorpheusNetworkPoolRangeService getPoolRange() {
 		return null;
 	}
 

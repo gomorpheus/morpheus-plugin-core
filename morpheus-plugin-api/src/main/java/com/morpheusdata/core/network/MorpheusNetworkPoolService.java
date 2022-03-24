@@ -1,6 +1,8 @@
 package com.morpheusdata.core.network;
 
 import com.morpheusdata.model.NetworkPool;
+import com.morpheusdata.model.NetworkPoolIp;
+import com.morpheusdata.model.NetworkPoolRange;
 import com.morpheusdata.model.NetworkPoolServer;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 import io.reactivex.Observable;
@@ -27,6 +29,12 @@ public interface MorpheusNetworkPoolService {
 	 * @return the Pool IP Context to use for performing IPAM operations within Morpheus.
 	 */
 	MorpheusNetworkPoolIpService getPoolIp();
+
+	/**
+	 * Returns the Pool Range Context
+	 * @return the Pool Range Context to use for listing {@link NetworkPoolIp} on a range
+	 */
+	MorpheusNetworkPoolRangeService getPoolRange();
 
 	/**
 	 * Lists all network pool projection objects for a specified pool server id aka {@link NetworkPoolServer}.
