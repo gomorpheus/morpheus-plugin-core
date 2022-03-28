@@ -69,7 +69,9 @@ public interface IPAMProvider extends PluginProvider {
 	 * @param assignedHostname the hostname of the server/interface the ip is being allocated for. Typically this would be assigned on the host record and also used to create a PTR or A record automatically
 	 * @param opts list of additional options that can be passed for reservation. for example, if a user wants a specific ip address. this exists as opts.ipAddress
 	 * @return a ServiceResponse containing the success state of the reserve pool address
+	 * @deprecated No longer necessary after simplification of plugin concepts. can equally be achieved with createHostRecord
 	 */
+	@Deprecated
 	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts);
 
 

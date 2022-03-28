@@ -22,6 +22,9 @@ https://github.com/jknack/handlebars.java[Handlebars] is the default provided te
 To override this default, implement the `com.morpheusdata.core.InstanceTabProvider` interface and then write
 your own `getRenderer()` method.
 
+[TIP]
+The `HandlebersRenderer` provides a helper called `{{nonce}}` for injecting into script tags
+
 ==== Setup Server Tabs
 Create a new class that extends `com.morpheusdata.core.AbstractServerTabProvider`. When the Morpheus UI builds the Server Details UI, it calls the `renderTemplate` method.
 Below is a simple example binding the Instance object to the template model.
@@ -68,7 +71,7 @@ Boolean show(Instance instance, User user, Account account) {
 
 ===== Content Security Policy
 If your custom UI needs to include external resources such as scripts, stylesheets, or frames,
-you will need to customize the Morpheus `Content-Security-Policy` Header to allow those elements to be loaded in the browser.
+you may need to customize the Morpheus `Content-Security-Policy` Header to allow those elements to be loaded in the browser.
 
 [source, groovy]
 ----
@@ -82,4 +85,11 @@ TabContentSecurityPolicy getContentSecurityPolicy() {
   csp
 }
 ----
-=
+
+You can also use the per request `nonce` token to set the attribute on the `<script/>` tags you may be injecting:
+
+[source, handlebars]
+----
+<script src="blah.js" nonce="{{nonce}}"/>
+----
+

@@ -17,19 +17,16 @@ void process(ReportResult reportResult) {
   Long displayOrder = 0
   List<GroovyRowResult> results = []
   Connection dbConnection
-
-  try {
-    dbConnection = morpheus.report.getReadOnlyDatabaseConnection().blockingGet()
+  withDbConnection { Connection dbConnection ->
     if(reportResult.configMap?.phrase) {
       String phraseMatch = "${reportResult.configMap?.phrase}%"
       results = new Sql(dbConnection).rows("SELECT id,name,status from instance WHERE name LIKE ${phraseMatch} order by name asc;")
     } else {
       results = new Sql(dbConnection).rows("SELECT id,name,status from instance order by name asc;")
     }
-  } finally {
-    morpheus.report.releaseDatabaseConnection(dbConnection)
   }
-  Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
+
+Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Observable<GroovyRowResult>
   observable.map{ resultRow ->
     Map<String,Object> data = [name: resultRow.name, id: resultRow.id, status: resultRow.status]
     ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
@@ -44,7 +41,7 @@ void process(ReportResult reportResult) {
 }
 ----
 
-**NOTE:** Notice that this process method feaures the ability to get a read only database connection to the morpheus MySQL Database. This isnt always the best option but is a good fallbak option for grabbing data you may not otherwise be able to get. Other data query methods are available on the various `MorpheusContext` subService classes. Expect more of these to be filled out as the plugin ecosystem develops.
+**NOTE:** Notice that this process method features the ability to get a read only database connection to the morpheus MySQL Database. This isn't always the best option but is a good fallback option for grabbing data you may not otherwise be able to get. Other data query methods are available on the various `MorpheusContext` subService classes. Expect more of these to be filled out as the plugin ecosystem develops. A good example of this is the `MorpheusAccountInvoiceService` found via the `MorpheusCostingService`. It enables you to query all invoices just as you would from the api.
 
 ==== Custom Filters
 
@@ -72,6 +69,9 @@ HTMLResponse renderTemplate(ReportResult reportResult, Map<String, List<ReportRe
     getRenderer().renderTemplate("hbs/instanceReport", model)
 }
 ----
+
+[TIP]
+When using custom javascript or stylesheets be sure to use the provided `{{nonce}}` helper to inject the appropriate nonce token for the `Content-Security-Policy`.
 
 
 
