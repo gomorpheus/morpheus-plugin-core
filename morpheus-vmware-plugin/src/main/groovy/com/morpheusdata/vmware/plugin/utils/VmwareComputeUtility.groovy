@@ -225,6 +225,48 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listStoragePods(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false, storagePods: []]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				if(datacenter) {
+					def entityList
+					//if(opts.cluster) {
+					//	def cluster = new InventoryNavigator(datacenter).searchManagedEntity('ComputeResource', opts.cluster)
+					//	entityList = new InventoryNavigator(cluster).searchManagedEntities('StoragePod')
+					//} else {
+					entityList = new InventoryNavigator(datacenter).searchManagedEntities('StoragePod')
+					//}
+
+					entityList?.each { pod ->
+						def summary = pod.getSummary()
+						rtn.storagePods << [name:summary.getName(), capacity:summary.getCapacity(), freeSpace:summary.getFreeSpace(),
+						                    ref:pod.getMOR().getVal(), drsEnabled:pod.getPodStorageDrsEntry()?.getStorageDrsConfig()?.getPodConfig()?.isEnabled(),
+						                    datastores:pod.getChildEntity()?.collect{ ds -> [datastore: ds, summary: ds.getSummary()]}, datastoreRefs: pod.getChildEntity()?.collect{ds -> ds.getMOR().val}, parent:pod.getParent()]
+						//println("pod parent name: ${pod.getParent()?.getName()}")
+						//println("pod parent: ${pod.getParent()?.getParent()}")
+					}
+					log.debug("storage pods: ${rtn.storagePods}")
+					rtn.success = true
+				} else {
+					rtn.msg = "no datacenter found"
+				}
+			} else {
+				rtn.msg = 'no datacenter configured'
+			}
+		} catch(e) {
+			log.error("listStoragePods: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
 	static listResourcePools(apiUrl, username, password, opts = [:]) {
 		log.debug "listResourcePools ${opts}"
 		def rtn = [success: false, resourcePools: []]

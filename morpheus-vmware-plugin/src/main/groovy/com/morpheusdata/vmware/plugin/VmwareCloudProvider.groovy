@@ -21,6 +21,7 @@ import com.morpheusdata.vmware.plugin.sync.DatastoresSync
 
 import com.morpheusdata.vmware.plugin.sync.FoldersSync
 import com.morpheusdata.vmware.plugin.sync.TemplatesSync
+import com.morpheusdata.vmware.plugin.sync.StoragePodsSync
 import groovy.util.logging.Slf4j
 import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
@@ -375,7 +376,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("hosts completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 //					//storage pods
-//					cacheStoragePods([zone:zone])
+					(new StoragePodsSync(cloud, morpheusContext)).execute()
 //					sessionFactory.currentSession.clear()
 //					zone.attach()
 //					zone.account.attach()
@@ -1704,6 +1705,16 @@ class VmwareCloudProvider implements CloudProvider {
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listDatastores(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
+		return rtn
+	}
+
+	static listStoragePods(Cloud cloud, String clusterInternalId=null) {
+		log.debug "listStoragePods: ${cloud}"
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listStoragePods(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
