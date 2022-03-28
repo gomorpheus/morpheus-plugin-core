@@ -171,7 +171,7 @@ class StoragePodsSync {
 			log.debug "Saving ${datastores.size()} storage pods"
 			morpheusContext.cloud.datastore.save(datastores).blockingGet()
 
-			syncDatastoresToPods(storagePods)
+			syncDatastoresToPods(storagePods.collect { it.masterItem })
 		}
 
 	}
