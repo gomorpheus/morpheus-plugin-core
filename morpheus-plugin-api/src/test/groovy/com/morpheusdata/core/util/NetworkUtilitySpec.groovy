@@ -86,6 +86,39 @@ class NetworkUtilitySpec extends Specification {
 		new NetworkPool(netmask: '255.255.240.0') | new Network(cidr: null)              | null                                        || '255.255.240.0'
 	}
 
+	void "ipToLong"() {
+		expect:
+		longVal == NetworkUtility.ipToLong(ip)
+
+		where:
+		ip                                        | longVal
+		'0.0.0.0'                                 | 0
+		'10.0.0.1'                                | 167772161
+		'255.255.255.255'                         | 4294967295
+	}
+
+	void "longToIp"() {
+		expect:
+		ip == NetworkUtility.longToIp(longVal)
+
+		where:
+		ip                                        | longVal
+		'0.0.0.0'                                 | 0
+		'10.0.0.1'                                | 167772161
+		'255.255.255.255'                         | 4294967295
+	}
+
+	void "getNextIpAddress"() {
+		expect:
+		res == NetworkUtility.getNextIpAddress(ip, cnt)
+
+		where:
+		ip                                        | cnt           | res
+		'0.0.0.0'                                 | 0             | '0.0.0.0'
+		'10.0.0.1'                                | 1             | '10.0.0.2'
+		'10.0.0.1'                                | 300           | '10.0.1.45'
+	}
+
 
 }
 
