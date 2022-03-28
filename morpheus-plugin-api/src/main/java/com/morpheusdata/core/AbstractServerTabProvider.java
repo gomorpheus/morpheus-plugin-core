@@ -17,6 +17,7 @@ public abstract class AbstractServerTabProvider implements ServerTabProvider {
 		if(renderer == null) {
 			renderer = new HandlebarsRenderer("renderer", getPlugin().getClassLoader());
 			renderer.registerAssetHelper(getPlugin().getName());
+			renderer.registerNonceHelper(getMorpheus().getWebRequest());
 		}
 		return renderer;
 	}

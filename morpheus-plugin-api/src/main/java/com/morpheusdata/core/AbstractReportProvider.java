@@ -75,6 +75,11 @@ public abstract class AbstractReportProvider implements ReportProvider {
 		return renderer;
 	}
 
+    /**
+     * Provides a lambda method for wrapping code that needs a temporary read only database connection. Exposes a Connection for use by things like Groovy SQL.
+     * When the script is complete, the connection is automatically released from the context for use by another operation.
+     * @param connectionFunction the lambda function containing the code needing a db connection.
+     */
 	public Object withDbConnection(WithDbConnectionFunction connectionFunction) {
 		Connection dbConnection = null;
 		try {

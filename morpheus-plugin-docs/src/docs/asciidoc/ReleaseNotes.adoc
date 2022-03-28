@@ -2,6 +2,8 @@
 
 **Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum.
 
+* **0.12.4** - IPAM NetworkPoolType filters for handling multiple pool types in one integration. Deprecated reservePoolAddress from IPAMProvider as its no longer needed. Added typeCode to the `NetworkPoolIdentityProjection`. Added `{{nonce}}` helper to handlebars tab providers for injecting javascript safely within the Content Security Policies in place.
+* **0.12.3** - Simplification and Polish if IPAM/DNS Interface Implementations (need Morpheus 5.4.4+). Added new ReportProvider helper for easier management of db connection use `withDbConnection { connection -> }`.
 * **0.12.0** - Cloud Provider Plugin Critical Fixes (WIP). Added Plugin settings.
 * **0.11.0** - Cloud Provider Plugin Support. UI Nonce token attribute added for injecting javascript securely and css. Network Provider Plugin support. Create providers for dynamically creating networks and network related objects.
 * **0.10.0** - Custom Report Type Providers have been added.
@@ -10,4 +12,3 @@
 * **0.7.0** - Please note due to jcenter() EOL Don't use 0.7.0
 * **0.6.0** - Primary Plugin target base version for 5.2.x Morpheus Releases
 
-**NOTE:** You will have to rebuild any plugins previously against `morpheus-plugin-api:0.8.0`

@@ -5,6 +5,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.morpheusdata.core.web.MorpheusWebRequestService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -110,6 +111,10 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	 */
 	public void registerAssetHelper(String pluginName) {
 		engine.registerHelper("asset", (Helper<String>) (context, options) -> "/assets/plugin/" + pluginName.toLowerCase().replace(" ", "-") + context);
+	}
+
+	public void registerNonceHelper(MorpheusWebRequestService requestService) {
+		engine.registerHelper("nonce", (Helper<Object>) (context, options) -> requestService.getNonceToken() );
 	}
 
 	/**

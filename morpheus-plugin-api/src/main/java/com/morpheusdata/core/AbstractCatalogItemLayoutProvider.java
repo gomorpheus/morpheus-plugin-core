@@ -18,6 +18,7 @@ public abstract class AbstractCatalogItemLayoutProvider implements CatalogItemLa
 		if(renderer == null) {
 			renderer = new HandlebarsRenderer("renderer", getPlugin().getClassLoader());
 			renderer.registerAssetHelper(getPlugin().getName());
+			renderer.registerNonceHelper(getMorpheus().getWebRequest());
 		}
 		return renderer;
 	}
