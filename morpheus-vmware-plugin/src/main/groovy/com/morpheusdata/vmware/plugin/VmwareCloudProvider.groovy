@@ -385,7 +385,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("storage pods completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 //					//ip pools
-//					cacheIpPools([zone:zone])
+					(new IPPoolsSync(cloud, morpheusContext)).execute()
 //					sessionFactory.currentSession.clear()
 //					zone.attach()
 //					zone.account.attach()
@@ -897,6 +897,15 @@ class VmwareCloudProvider implements CloudProvider {
 		def cluster = cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
 		rtn = VmwareComputeUtility.listTemplates(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, resourcePool:resourcePool, cluster:cluster])
+		return rtn
+	}
+
+	static listIpPools(Cloud cloud) {
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listIpPools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 

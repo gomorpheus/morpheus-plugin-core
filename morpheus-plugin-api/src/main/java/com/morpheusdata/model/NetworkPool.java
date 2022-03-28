@@ -407,7 +407,6 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	public NetworkPoolType type;
 	public String parentType;
 	public String parentId;
-	public String category;
 
 	public List<NetworkPoolRange> ipRanges;
 
