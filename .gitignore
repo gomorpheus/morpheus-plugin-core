@@ -11,3 +11,5 @@ testplugins/
 .DS_Store
 out/
 .assetcache
+disabled/
+*.hprof
