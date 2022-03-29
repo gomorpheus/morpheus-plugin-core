@@ -390,6 +390,9 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	protected List<String> dnsSuffixList;
 	protected String gateway;
 	protected String netmask;
+	protected String dnsSearchPath;
+	protected String dhcpServer;
+	protected String subnetAddress;
 	protected Integer ipCount = 0;
 	protected Integer ipFreeCount = 0;
 	protected Boolean poolEnabled = false;
@@ -433,5 +436,32 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 		this.owner = new Account();
 		this.owner.id = id;
 		markDirty("ownerId",id);
+	}
+
+	public String getDnsSearchPath() {
+		return dnsSearchPath;
+	}
+
+	public void setDnsSearchPath(String dnsSearchPath) {
+		this.dnsSearchPath = dnsSearchPath;
+		markDirty("dnsSearchPath",id);
+	}
+
+	public String getDhcpServer() {
+		return dhcpServer;
+	}
+
+	public void setDhcpServer(String dhcpServer) {
+		this.dhcpServer = dhcpServer;
+		markDirty("dhcpServer",id);
+	}
+
+	public String getSubnetAddress() {
+		return subnetAddress;
+	}
+
+	public void setSubnetAddress(String subnetAddress) {
+		this.subnetAddress = subnetAddress;
+		markDirty("subnetAddress",id);
 	}
 }
