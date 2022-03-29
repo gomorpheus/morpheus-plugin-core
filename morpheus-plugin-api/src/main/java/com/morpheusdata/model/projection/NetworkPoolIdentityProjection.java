@@ -20,10 +20,14 @@ public class NetworkPoolIdentityProjection extends MorpheusModel {
 	 * The default constructor for creating a projection object.
 	 * @param id the database id of the object
 	 * @param externalId the API id of the object
+	 * @param category the category of the object
+	 * @param accountId the account id of the object
 	 */
-	public NetworkPoolIdentityProjection(Long id, String externalId) {
+	public NetworkPoolIdentityProjection(Long id, String externalId, String category, Long accountId) {
 		this.id = id;
 		this.externalId = externalId;
+		this.category = category;
+		this.accountId = accountId;
 	}
 
 	/**
@@ -94,7 +98,7 @@ public class NetworkPoolIdentityProjection extends MorpheusModel {
 	}
 
 	/*
-	 * returns the category of the equivalent object.
+	 * Returns the category of the equivalent object.
 	 * @return the category of the current record
 	 */
 	public String getCategory() {
