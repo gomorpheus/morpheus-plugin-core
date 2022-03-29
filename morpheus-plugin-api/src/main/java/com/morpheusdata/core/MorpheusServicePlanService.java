@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ServicePlan;
+import com.morpheusdata.model.ProvisionType;
 import com.morpheusdata.model.projection.ServicePlanIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -21,6 +22,14 @@ public interface MorpheusServicePlanService {
 	 * @return Observable stream of sync projection
 	 */
 	Observable<ServicePlanIdentityProjection> listSyncProjections(Long cloudId);
+
+	/**
+	 * Get a list of ServicePlan projections based on {@link ProvisionType}
+	 * ProvisionType must, at least, have an id or code set
+	 * @param provisionType {@link ProvisionType}
+	 * @return Observable stream of sync projection
+	 */
+	Observable<ServicePlanIdentityProjection> listSyncProjections(ProvisionType provisionType);
 
 	/**
 	 * Get a list of ServicePlan objects from a list of projection ids
