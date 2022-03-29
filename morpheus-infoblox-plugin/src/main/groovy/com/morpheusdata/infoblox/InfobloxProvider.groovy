@@ -803,8 +803,15 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if (domain && hostname && !hostname.endsWith(domain.name)) {
 				hostname = "${hostname}.${domain.name}"
 			}
+			String shortHostname = hostname
+			if(domain && hostname.endsWith('.' + domain.name)) {
+				def suffixIndex = hostname.indexOf('.' + domain.name)
+				if(suffixIndex > -1) {
+					shortHostname = hostname.substring(0,suffixIndex)
+				}
+			}
 			def body = [
-					name             : hostname,
+					name             : shortHostname,
 					ipv4addrs        : [
 							[configure_for_dhcp: false, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.name}".toString()]
 					],
