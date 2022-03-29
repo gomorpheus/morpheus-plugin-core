@@ -13,10 +13,9 @@ After a report is run a `ReportResult` is generated. This represents the informa
 [source, groovy]
 ----
 void process(ReportResult reportResult) {
-  morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet();
+  morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.generating).blockingGet()
   Long displayOrder = 0
   List<GroovyRowResult> results = []
-  Connection dbConnection
   withDbConnection { Connection dbConnection ->
     if(reportResult.configMap?.phrase) {
       String phraseMatch = "${reportResult.configMap?.phrase}%"
@@ -32,9 +31,9 @@ Observable<GroovyRowResult> observable = Observable.fromIterable(results) as Obs
     ReportResultRow resultRowRecord = new ReportResultRow(section: ReportResultRow.SECTION_MAIN, displayOrder: displayOrder++, dataMap: data)
     return resultRowRecord
   }.buffer(50).doOnComplete {
-    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet();
+    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.ready).blockingGet()
   }.doOnError { Throwable t ->
-    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet();
+    morpheus.report.updateReportResultStatus(reportResult,ReportResult.Status.failed).blockingGet()
   }.subscribe {resultRows ->
     morpheus.report.appendResultRows(reportResult,resultRows).blockingGet()
   }
