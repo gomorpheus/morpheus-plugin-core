@@ -804,12 +804,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				hostname = "${hostname}.${domain.name}"
 			}
 			String shortHostname = hostname
-			if(domain && hostname.endsWith('.' + domain.name)) {
-				def suffixIndex = hostname.indexOf('.' + domain.name)
+			def networkDomainName =  domain?.name ? ('.' + domain.name) : '.localdomain'
+			if(networkDomainName && hostname.endsWith(networkDomainName)) {
+				def suffixIndex = hostname.indexOf(networkDomainName)
 				if(suffixIndex > -1) {
 					shortHostname = hostname.substring(0,suffixIndex)
 				}
 			}
+			
 			def body = [
 					name             : shortHostname,
 					ipv4addrs        : [
