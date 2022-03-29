@@ -720,8 +720,10 @@ class VmwareCloudProvider implements CloudProvider {
 			def add = new ComputeZonePool(poolConfig)
 			if(cloudItem.parentType != 'ClusterComputeResource') {
 				def parentPool = parentPools[cloudItem.parentId]
+				if(parentPool) {
+					add.parent = new ComputeZonePool(id: parentPool.id)
+				}
 				add.type = 'default'
-				add.parent = new ComputeZonePool(id: parentPool.id)
 				add.treeName = nameForPool(add)
 			} else {
 				add.type = 'Cluster'
