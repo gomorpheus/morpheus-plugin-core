@@ -17,12 +17,11 @@ import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.projection.*
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
-import com.morpheusdata.vmware.plugin.sync.DatastoresSync
-
 import com.morpheusdata.vmware.plugin.sync.*
 import groovy.util.logging.Slf4j
 import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
+
 import java.security.MessageDigest
 import io.reactivex.*
 import io.reactivex.annotations.NonNull
@@ -303,156 +302,27 @@ class VmwareCloudProvider implements CloudProvider {
 					Date now = new Date()
 
 					cacheResourcePools(cloud)
-
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
 					log.debug("resource pools completed in ${new Date().time - now.time} ms")
-
-					//folders
-//					lockService.renewLock(lockId.toString(),[timeout:lockTimeout, ttl:lockTtl])
 					(new FoldersSync(cloud, morpheusContext)).execute()
-
-//					lockService.renewLock(lockId.toString(), [timeout:lockTimeout, ttl:lockTtl])
-					//interrupted thread
-//					if(Thread.interrupted())
-//						throw new InterruptedException();
-//					log.debug("folders completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-//					//datastores
 					(new DatastoresSync(cloud, morpheusContext)).execute()
-
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-					//
-//					if(Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("datastores completed in ${new Date().time - now.time} ms")
-//					now = new Date()
 //					//fix region codes?
 //					fixMissingRegionCodes(zone, getRegionCode(zone))
-
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("region codes completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-//					//templates
 					(new TemplatesSync(cloud, morpheusContext)).execute()
 //					cacheContentLibraryItems([zone:zone,proxySettings:proxySettings]) //dont pause for this right now
-//
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("templates completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-					//networks
 //					cacheNetworks([zone:zone]).get()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("networks completed in ${new Date().time - now.time} ms")
-					now = new Date()
-					//hosts
 					(new HostsSync(cloud, morpheusContext)).execute()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("hosts completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-//					//storage pods
 					(new StoragePodsSync(cloud, morpheusContext)).execute()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("storage pods completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-//					//ip pools
 					(new IPPoolsSync(cloud, morpheusContext)).execute()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					now = new Date()
-					//custom specs
 //					cacheCustomSpecs([zone:zone])
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("cacheCustomSpecs completed in ${new Date().time - now.time} ms")
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
-//					now = new Date()
-//					//alarms
 //					cacheAlarms([zone:zone]).get()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("alarms completed in ${new Date().time - now.time} ms")
-//					now = new Date()
-//					//events
 //					cacheEvents([zone:zone]).get()
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("events completed in ${new Date().time - now.time} ms")
-					//datacenters
-//					now = new Date()
 //					cacheDatacenters([zone:zone])
-//					sessionFactory.currentSession.clear()
-//					zone.attach()
-//					zone.account.attach()
-//					zone.owner.attach()
-//					if (Thread.interrupted()) {
-//						throw new InterruptedException();
-//					}
-//					log.debug("datacenters completed in ${new Date().time - now.time} ms")
-//					lockService.renewLock(lockId.toString(),[timeout: lockTimeout, ttl: lockTtl])
 //					//vms
 //					if(apiVersion && apiVersion != '6.0') {
 //						now = new Date()
 //						cacheCategories([zone:zone,proxySettings:proxySettings])
-//						if (Thread.interrupted()) {
-//							throw new InterruptedException();
-//						}
-//						log.debug("categories completed in ${new Date().time - now.time} ms")
-//						now = new Date()
 //						cacheTags([zone:zone,proxySettings:proxySettings])
-//						if (Thread.interrupted()) {
-//							throw new InterruptedException();
-//						}
-//						log.debug("tags completed in ${new Date().time - now.time} ms")
 //					}
-
-//					now = new Date()
 //					def doInventory = zone.getConfigProperty('importExisting')
 					Boolean createNew = true
 //					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
@@ -475,8 +345,6 @@ class VmwareCloudProvider implements CloudProvider {
 //						newSessionClearZoneAlarm(zone.id)
 //						log.debug("Cached Virtual Machines in ${new Date().time - now.time}ms")
 //					}
-
-
 				}
 				else {
 					if (testResults.invalidLogin == true) {

@@ -17,7 +17,7 @@ class IPPoolsSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 
-	public HostsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public IPPoolsSync(Cloud cloud, MorpheusContext morpheusContext) {
 		this.cloud = cloud
 		this.morpheusContext = morpheusContext
 	}
@@ -31,7 +31,7 @@ class IPPoolsSync {
 				
 				def masterItems = listResults?.ipPools
 				
-				Observable domainRecords = morpheusContext.cloud.pool.listSyncProjections(cloud.id).filter { NetworkPoolIdentityProjection projection ->
+				Observable domainRecords = morpheusContext.network.pool.listIdentityProjections().filter { NetworkPoolIdentityProjection projection ->
 					return (projection.accountId == cloud.account.id && projection.category ==  "vmware.vsphere.ipPool.${cloud.id}")
 				}
 				SyncTask<NetworkPoolIdentityProjection, Map, NetworkPool> syncTask = new SyncTask<>(domainRecords, masterItems)
@@ -39,7 +39,7 @@ class IPPoolsSync {
 					domainObject.externalId == cloudItem?.ref.toString()
 				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkPoolIdentityProjection, Map>> updateItems ->
 					Map<Long, SyncTask.UpdateItemDto<NetworkPoolIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
-					morpheusContext.cloud.pool.listById(updateItems?.collect { it.existingItem.id }).map { NetworkPool networkPool ->
+					morpheusContext.network.pool.listById(updateItems?.collect { it.existingItem.id }).map { NetworkPool networkPool ->
 						SyncTask.UpdateItemDto<NetworkPoolIdentityProjection, Map> matchItem = updateItemMap[networkPool.id]
 						return new SyncTask.UpdateItem<NetworkPool, Map>(existingItem: networkPool, masterItem: matchItem.masterItem)
 					}
@@ -117,7 +117,7 @@ class IPPoolsSync {
 
 		if(ipPools) {
 			log.debug "Adding ${ipPools.size()} NetworkPools"
-			morpheusContext.cloud.pool.create(ipPools).blockingGet()
+			morpheusContext.network.pool.create(ipPools).blockingGet()
 		}
 	}
 
@@ -173,12 +173,12 @@ class IPPoolsSync {
 
 		if(itemsToSave) {
 			log.debug "Saving ${itemsToSave.size()} NetworkPools"
-			morpheusContext.cloud.pool.save(itemsToSave).blockingGet()
+			morpheusContext.network.pool.save(itemsToSave).blockingGet()
 		}
 	}
 
 	private removeIPPools(ipPools) {
 		log.debug "removeIPPools: ${ipPools?.size()}"
-		morpheusContext.cloud.pool.remove(ipPools).blockingGet()
+		morpheusContext.network.pool.remove(ipPools).blockingGet()
 	}
 }
