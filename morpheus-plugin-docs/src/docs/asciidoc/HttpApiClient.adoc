@@ -1,0 +1,33 @@
+== HTTP API Client
+
+The `morpheus-plugin-api` library comes with a utility for facilitating quick and easy API calls to external integrations. This is called teh `HttpApiClient` and replaces the use of the `RestApiUtil`.
+
+The developer is, of course, able to utilize any HTTP or SDK/API client they choose within the java ecosystem if so desired. However, this client provides some common functions such as SSL Validation, Throttling, Keep-Alive, Etc. and is based on the Apache HTTP Client.
+
+[TIP]
+Reuse the same client instance when dealing with periodic refresh methods related to caching for best performance. Be mindful that throttling might be necessary to slow down the calls to the service.
+
+=== Example
+Below is an example API Call taken from the `Infoblox` plugin.
+[source,groovy]
+----
+import com.morpheusdata.core.util.HttpApiClient
+
+HttpApiClient infobloxClient = new HttpApiClient()
+try {
+    def results = infobloxClient.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'],
+                                                                                                                    queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl), 'GET')
+} catch(e) {
+    log.error("verifyPoolServer error: ${e}", e)
+} finally {
+    infobloxClient.shutdownClient()
+}
+return rtn
+----
+
+There are several methods to call the api and automatically handle certain payload formats such as `callJsonApi`, `callXmlApi`, or plain `callApi`.
+
+Options can be passed relating to the request via the `HttpApiClient.RequestOptions` object. Please refer to the java api doc for available options.
+
+[TIP]
+Remember to always shutdown the client after it is used to clean up the connection manager in a `try{} finally{}` type block
