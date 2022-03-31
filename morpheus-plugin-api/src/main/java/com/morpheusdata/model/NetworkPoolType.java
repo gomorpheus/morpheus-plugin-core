@@ -33,6 +33,8 @@ public class NetworkPoolType extends MorpheusModel{
 
 	protected Boolean rangeSupportsCidr = false;
 
+	protected Boolean hostRecordEditable = true;
+
 
 	/**
 	 * Fetches the unique code pertaining to this particular network pool type. Morpheus uses codes for easier reference instead
@@ -124,5 +126,13 @@ public class NetworkPoolType extends MorpheusModel{
 	 */
 	public void setRangeSupportsCidr(Boolean rangeSupportsCidr) {
 		this.rangeSupportsCidr = rangeSupportsCidr;
+	}
+
+	public Boolean getHostRecordEditable() {
+		return hostRecordEditable;
+	}
+
+	public void setHostRecordEditable(Boolean hostRecordEditable) {
+		this.hostRecordEditable = hostRecordEditable;
 	}
 }
