@@ -1,0 +1,92 @@
+=== Catalog Layouts Plugin
+
+It is becoming popular for some enterprises and managed service providers to expose simpler options when it comes to provisioning workloads. These could be used to target employees who are not highly technical or to further restrict what someone is allowed to order. Not only can they provision workloads like vms, and containers, but also execute operational tasks created by the administrator. Sometimes, it is necessary to further customize how a catalog detail page looks. There may be special ways of displaying information, or even the order form components need some advanced customization.
+
+This plugin exposes the ability to control everything from the HTML used to render the catalog item, to the javascript that controls the form options. By default, we use a server-side handlebars template renderer however this can be completely customized if so desired.
+
+=== Setup
+
+Given the advanced nature of this plugin, it may be best to start with the sample plugin provided in the main project repository called `samples/morpheus-standard-catalog-layout-plugin`. This plugin replicates the embedded layout functionality so acts as a great starting point. It even includes the javascript used for rendering the option types within it.
+
+[TIP]
+Reference the Sample Catalog Layout Plugin before making your own.
+
+The core of the plugin starts with the `CatalogItemLayoutProvider` which extends the common `UIProvider`. Most of the UI related plugin types have some commonalities. The primary difference is the command line arguments sent to the `render()` method.
+
+[source, groovy]
+----
+/**
+ * Example TabProvider
+ */
+class StandardCatalogLayoutProvider extends AbstractCatalogItemLayoutProvider {
+	Plugin plugin
+	MorpheusContext morpheus
+
+	String code = 'catalog-item-standard'
+	String name = 'Standard Catalog Layout'
+
+	StandardCatalogLayoutProvider(Plugin plugin, MorpheusContext context) {
+		this.plugin = plugin
+		this.morpheus = context
+	}
+
+    /**
+     * Demonstrates building a TaskConfig to get details about the Server and renders the html from the specified template.
+     * @param server details of a ComputeServer
+     * @return
+     */
+	@Override
+    HTMLResponse renderTemplate(CatalogItemType catalogItemType, User user) {
+        ViewModel<CatalogItemType> model = new ViewModel<>()
+        model.object = catalogItemType
+        getRenderer().renderTemplate("hbs/standardCatalogItem", model)
+    }
+
+}
+
+----
+
+The render method allows the `CatalogItemType` model to be passed into a handlebars view for rendering.
+
+The handlebars template, in this case, takes over the rendering of the entire page below the main navigation. It allows inclusion of external assets as well as assets included in the project via `asset-pipeline`.
+
+[source, html]
+----
+<script src="{{asset "/form_manager.js"}}" ></script>
+<link rel="stylesheet" type="text/css" href="{{asset "/styles.css"}}">
+<script src="{{asset "/templates/plugin-configurable-option.js"}}" ></script>
+<div class="page-content">
+	<div class="catalog-item-details">
+		<div class="item-type-header">
+			<div class="item-type-image">
+				<img class="item-header-img" src="{{catalogTypeImage}}" title="{{name}}" onError="loadImage(this);"/>
+			</div>
+			<h1 class="ellipsize" title="{{name}}">{{name}}</h1>
+			<div class="desc">{{description}}</div>
+		</div>
+		<div class="catalog-item-body break-container-sm">
+			{{#hasWiki}}
+				<div class="catalog-item-content wiki-content">
+					{{wiki}}
+				</div>
+			{{/hasWiki}}
+			<div class="catalog-item-configuration {{#hasWiki}}with-item-content{{/hasWiki}}">
+				{{#orderForm}}
+					<div class="actions text-right">
+
+					</div>
+				{{/orderForm}}
+			</div>
+		</div>
+	</div>
+</div>
+----
+
+**NOTE:** A couple helper methods are registered such as the `orderForm` block which injects the order form data into the html render.
+
+[TIP]
+Pay special attention to the included javascript files used for rendering options. More often than not, one would want to copy these for use in a custom layout.
+
+=== Consuming the Plugin
+
+Once a Catalog Layout plugin is compiled and loaded into a Morpheus environment, the layout is automatically made available globally for use when creating a service catalog item in the `Blueprints` section. Simply edit the catalog item and a new dropdown showing available layouts should be available to choose.

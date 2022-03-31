@@ -28,6 +28,8 @@ include::Models.adoc[]
 
 include::HTTPRouting.adoc[]
 
+include::HttpApiClient.adoc[]
+
 include::Views.adoc[]
 
 include::Testing.adoc[]
@@ -37,6 +39,8 @@ include::Testing.adoc[]
 include::TaskPlugin.adoc[]
 
 include::TabsPlugin.adoc[]
+
+include::CatalogLayout.adoc[]
 
 include::ReportsPlugin.adoc[]
 

@@ -811,7 +811,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					shortHostname = hostname.substring(0,suffixIndex)
 				}
 			}
-			
+
 			def body = [
 					name             : shortHostname,
 					ipv4addrs        : [
