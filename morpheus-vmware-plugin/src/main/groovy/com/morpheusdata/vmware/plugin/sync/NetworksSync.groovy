@@ -92,6 +92,10 @@ class NetworksSync {
 								existingItem.zonePoolId = clusterId
 								save = true
 							}
+							if(existingItem.name != masterItem.name) {
+								existingItem.name = masterItem.name
+								save = true
+							}
 							if(existingItem.externalId != masterItem.ref) {
 								existingItem.externalId = masterItem.ref
 								save = true
