@@ -162,7 +162,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Boolean hasNetworks() {
-		false
+		true
 	}
 
 	@Override

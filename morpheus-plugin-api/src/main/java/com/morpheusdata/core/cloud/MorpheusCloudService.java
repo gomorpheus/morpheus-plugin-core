@@ -1,6 +1,7 @@
 package com.morpheusdata.core.cloud;
 
 import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
@@ -25,6 +26,8 @@ public interface MorpheusCloudService {
 	MorpheusComputeZoneFolderService getFolder();
 
 	MorpheusDatastoreService getDatastore();
+
+	MorpheusNetworkService getNetwork();
 
 	/**
 	 * Update the status of a Cloud during setup

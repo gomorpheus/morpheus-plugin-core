@@ -16,7 +16,7 @@ class IPPoolsSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 
-	public HostsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public IPPoolsSync(Cloud cloud, MorpheusContext morpheusContext) {
 		this.cloud = cloud
 		this.morpheusContext = morpheusContext
 	}
@@ -30,7 +30,7 @@ class IPPoolsSync {
 				
 				def masterItems = listResults?.ipPools
 				
-				Observable domainRecords = morpheusContext.cloud.pool.listSyncProjections(cloud.id).filter { NetworkPoolIdentityProjection projection ->
+				Observable domainRecords = morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { NetworkPoolIdentityProjection projection ->
 					return (projection.accountId == cloud.account.id && projection.category ==  "vmware.vsphere.ipPool.${cloud.id}")
 				}
 				SyncTask<NetworkPoolIdentityProjection, Map, NetworkPool> syncTask = new SyncTask<>(domainRecords, masterItems)

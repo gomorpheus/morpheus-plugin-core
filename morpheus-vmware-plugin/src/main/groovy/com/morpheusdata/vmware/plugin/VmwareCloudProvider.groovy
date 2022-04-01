@@ -10,6 +10,7 @@ import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeCapacityInfo
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
+import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.OsType
@@ -169,7 +170,71 @@ class VmwareCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<NetworkType> getNetworkTypes() {
-		return null
+		//Replace this with seed (e.g GoogleCommon networkTypes [mapped to GoogleSeed]) also consult getOptionTypes
+		def vmwareNetworkConfig = [
+				code: 'vmware-plugin-network',
+				externalType: 'Network',
+				cidrEditable:true,
+				dhcpServerEditable:true,
+				dnsEditable:true,
+				gatewayEditable:true,
+				vlanIdEditable:true,
+				canAssignPool:true,
+				name: 'VMware Plugin Network'
+		]
+		NetworkType vmwareNetwork = new NetworkType(vmwareNetworkConfig)
+
+		def subnetConfig = [
+				code: 'esxi-plugin-subnet',
+				dhcpServerEditable: true,
+				canAssignPool: true,
+				cidrRequired: true,
+				cidrEditable: true,
+				name: 'Esxi Plugin Subnet'
+		]
+		NetworkSubnetType esxiSubnet = new NetworkSubnetType(subnetConfig)
+		vmwareNetwork.setNetworkSubnetTypes([esxiSubnet])
+
+		def vmwareDistributedSwitchConfig = [
+				code: 'vmware-plugin-distributed-switch',
+				externalType: 'DistributedSwitch',
+				cidrEditable:true,
+				dhcpServerEditable:true,
+				dnsEditable:true,
+				gatewayEditable:true,
+				vlanIdEditable:true,
+				canAssignPool:true,
+				name: 'VMware Plugin Distributed Switch'
+		]
+		NetworkType vmwareDistributedSwitch = new NetworkType(vmwareDistributedSwitchConfig)
+
+		def vmwareDistributedConfig = [
+				code: 'vmware-plugin-distributed',
+				externalType: 'DistributedVirtualPortgroup',
+				cidrEditable:true,
+				dhcpServerEditable:true,
+				dnsEditable:true,
+				gatewayEditable:true,
+				vlanIdEditable:true,
+				canAssignPool:true,
+				name: 'VMware Plugin Distributed Switch Group'
+		]
+		NetworkType vmwareDistributed = new NetworkType(vmwareDistributedConfig)
+
+		def vmwareOpaqueConfig = [
+				code: 'vmware-plugin-opaque',
+				externalType: 'OpaqueNetwork',
+				cidrEditable:true,
+				dhcpServerEditable:true,
+				dnsEditable:true,
+				gatewayEditable:true,
+				vlanIdEditable:true,
+				canAssignPool:true,
+				name: 'VMware Plugin Opaque Network'
+		]
+		NetworkType vmwareOpaque = new NetworkType(vmwareOpaqueConfig)
+
+		return [vmwareNetwork, vmwareDistributedSwitch, vmwareDistributed, vmwareOpaque]
 	}
 
 	@Override
@@ -349,7 +414,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("templates completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 					//networks
-					(new NetworksSync(cloud, morpheusContext)).execute()
+					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
 //					cacheNetworks([zone:zone]).get()
 //					sessionFactory.currentSession.clear()
 //					zone.attach()
@@ -386,7 +451,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					log.debug("storage pods completed in ${new Date().time - now.time} ms")
 //					now = new Date()
 //					//ip pools
-					(new IPPoolsSync(cloud, morpheusContext)).execute()
+					//(new IPPoolsSync(cloud, morpheusContext)).execute()
 //					sessionFactory.currentSession.clear()
 //					zone.attach()
 //					zone.account.attach()
@@ -608,7 +673,7 @@ class VmwareCloudProvider implements CloudProvider {
 			def tmpExistingItems = []
 			def oldClusterNamesByRef = []
 			if (!poolResults.isEmpty()) {
-				morpheus.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
+				morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
 					if (projection.type != 'Datacenter' && (projection.internalId == null || (projection.internalId in poolResults.keySet()))) {
 						return true
 					}
@@ -704,10 +769,11 @@ class VmwareCloudProvider implements CloudProvider {
 				parentIds << cloudItem.parentId
 			}
 		}
+		
 
 		def parentPools = [:]
 		if(parentIds) {
-			morpheus.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
 				return (projection.externalId in parentIds)
 			}.blockingSubscribe {
 				parentPools[it.externalId] = it
@@ -846,17 +912,6 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	def listNetworks(Cloud cloud) {
-		log.debug "listDatacenters: ${cloud}"
-
-		def rtn = [success:false]
-		def authConfig = vmwareProvisionService.getAuthConfig(opts.zone)
-		def datacenter = opts.zone?.getConfigProperty('datacenter')
-		def cluster = opts.cluster ?: opts.zone?.getConfigProperty('cluster')
-		rtn = VmwareComputeUtility.listNetworks(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
-		return rtn
-	}
-
 	static listDatacenters(Cloud cloud) {
 		log.debug "listDatacenters: ${cloud}"
 		def rtn = [success:false]
@@ -920,6 +975,15 @@ class VmwareCloudProvider implements CloudProvider {
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listIpPools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
+		return rtn
+	}
+
+	static listNetworks(Cloud cloud) {
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listNetworks(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 

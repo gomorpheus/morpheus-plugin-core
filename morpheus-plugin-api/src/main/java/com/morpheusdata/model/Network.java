@@ -3,6 +3,9 @@ package com.morpheusdata.model;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a Network that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
  * used during provisioning of compute or services. They also can be used to allow the user to specify network specific information
@@ -65,6 +68,7 @@ public class Network extends NetworkIdentityProjection {
 	public String code;
 	public Integer cidrMask;
 
+	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
 
 	public void setCloudId(Long id) {
 		this.cloud = new Cloud();
@@ -455,6 +459,14 @@ public class Network extends NetworkIdentityProjection {
 	public void setAssignPublicIp(Boolean assignPublicIp) {
 		this.assignPublicIp = assignPublicIp;
 		markDirty("assignPublicIp", assignPublicIp);
+	}
+
+	public List<ComputeZonePool> getAssignedZonePools() {
+		return assignedZonePools;
+	}
+
+	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+		this.assignedZonePools = assignedZonePools;
 	}
 
 }
