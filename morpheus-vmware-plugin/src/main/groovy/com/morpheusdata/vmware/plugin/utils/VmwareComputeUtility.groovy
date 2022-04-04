@@ -1142,4 +1142,28 @@ class VmwareComputeUtility {
 
 		return rtn
 	}
+
+	static listCustomizationSpecs(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false, customSpecs: []]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def customManager = serviceInstance.getCustomizationSpecManager()
+			if(customManager) {
+				def entityList = customManager.getInfo()
+				entityList?.each { spec ->
+					rtn.customSpecs << [name: spec.getName(), type: spec.getType(), description: spec.getDescription(), version: spec.getChangeVersion(), spec: spec]
+				}
+				rtn.success = true
+			} else {
+				rtn.msg = 'no datacenter found'
+			}
+		} catch(e) {
+			log.error("listCustomizationSpecs: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
 }

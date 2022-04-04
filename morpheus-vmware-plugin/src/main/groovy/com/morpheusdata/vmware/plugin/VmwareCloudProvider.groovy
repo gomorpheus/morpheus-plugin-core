@@ -313,7 +313,7 @@ class VmwareCloudProvider implements CloudProvider {
 					(new HostsSync(cloud, morpheusContext)).execute()
 					(new StoragePodsSync(cloud, morpheusContext)).execute()
 					(new IPPoolsSync(cloud, morpheusContext)).execute()
-//					cacheCustomSpecs([zone:zone])
+					(new CustomSpecSync(cloud, morpheusContext)).execute()
 //					cacheAlarms([zone:zone]).get()
 //					cacheEvents([zone:zone]).get()
 //					cacheDatacenters([zone:zone])
@@ -776,6 +776,15 @@ class VmwareCloudProvider implements CloudProvider {
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listIpPools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
+		return rtn
+	}
+
+	static listCustomizationSpecs(Cloud cloud) {
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listCustomizationSpecs(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
