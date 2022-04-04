@@ -4,7 +4,7 @@ It is becoming popular for some enterprises and managed service providers to exp
 
 This plugin exposes the ability to control everything from the HTML used to render the catalog item, to the javascript that controls the form options. By default, we use a server-side handlebars template renderer however this can be completely customized if so desired.
 
-=== Setup
+==== Setup
 
 Given the advanced nature of this plugin, it may be best to start with the sample plugin provided in the main project repository called `samples/morpheus-standard-catalog-layout-plugin`. This plugin replicates the embedded layout functionality so acts as a great starting point. It even includes the javascript used for rendering the option types within it.
 
@@ -87,6 +87,6 @@ The handlebars template, in this case, takes over the rendering of the entire pa
 [TIP]
 Pay special attention to the included javascript files used for rendering options. More often than not, one would want to copy these for use in a custom layout.
 
-=== Consuming the Plugin
+==== Consuming the Plugin
 
 Once a Catalog Layout plugin is compiled and loaded into a Morpheus environment, the layout is automatically made available globally for use when creating a service catalog item in the `Blueprints` section. Simply edit the catalog item and a new dropdown showing available layouts should be available to choose.
