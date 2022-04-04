@@ -29,3 +29,32 @@ A plugin may contain any number of Plugin Providers. A Plugin Provider contains 
 There are provided classes such as `TaskProvider`, `ProvisioningProvider`, `ApprovalProvider`, `ReportProvider`, `InstanceTabProvider`, `ServerTabProvider`, and others to get you started building your provider. For example the `InstanceTabProvider` provides a renderer, show method, and security checking method to make it easy to build your own custom tab on the instance page.
 
 Providers are registered in your plugin during the `initialize()` method call within the `Plugin` class as can be seen in the `MyPlugin.java` sample seen above.
+
+=== Settings
+
+As of 0.8.0 Plugins can now have settings that can be applied globally after installing a plugin. Some users may use this to configure an integration to a third party service like Datadog, or affect how providers may behave based on some setting. These can be set after uploading a plugin in `Administration -> Integrations -> Plugins`.
+
+Settings, much like any other form aspect of a plugin, can take advantage of `OptionType` and `OptionProvider` entities to configure how the options are presented to the user and what options are available to choose from.
+
+[source,groovy]
+----
+    class MyPlugin extends Plugin {
+        /**
+         * Returns a list of {@link OptionType} settings for this plugin.
+         * @return this list of settings
+         */
+        public List<OptionType> getSettings() { return this.settings; }
+    }
+
+----
+
+Implementing the above getter method allows one to specify the form option-types of settings that could be saved by the user.
+
+Fetching setting values for use in a provider can easily be accomplished via the `morpheusContext`. There is a method that returns a JSON String of the setting values that is up to the plugin developer to deserialize called `morpheusContext.getSettings(Plugin plugin)`. Simply pass the plugin class instance to it and an rxJava `Single<String>` is returned.
+
+[source,groovy]
+----
+String pluginSettings = morpheus.getSettings(this.plugin).blockingGet()
+def pluginDeserialized = new JsonSlurper().parseText(pluginSettings)
+----
+
