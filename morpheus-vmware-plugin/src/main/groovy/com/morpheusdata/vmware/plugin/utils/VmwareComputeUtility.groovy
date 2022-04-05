@@ -1166,4 +1166,49 @@ class VmwareComputeUtility {
 
 		return rtn
 	}
+
+	static listAlarms(apiUrl, username, password, Map opts = [:]) {
+		def rtn = [success: false, alarms:[]]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password,)
+			def alarmManager = serviceInstance.getAlarmManager()
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				def entityList =  datacenter?.getTriggeredAlarmState()  //alarmManager.getAlarmState(datacenter)
+				entityList?.each { alarm ->
+					def alarmObj = getManagedObject(serviceInstance, 'Alarm', alarm.getAlarm())
+					def alarmInfo = alarmObj.getAlarmInfo()
+					def alarmEntityId = alarm.getEntity()
+					def alarmEntity = getManagedObject(serviceInstance, 'Unknown', alarmEntityId)
+					def addAlarm = [acknowledged:alarm.getAcknowledged(), time:alarm.getTime()?.getTime(), key:alarm.getKey(),
+					                acknowledgedByUser:alarm.getAcknowledgedByUser(), acknowledgedTime:alarm.getAcknowledgedTime()?.getTime(),
+					                status:(alarm.getOverallStatus()?.toString() ?: 'unknown'), externalId:alarm.getKey(),
+					                alarm:[action:alarmInfo.getAction(), description:alarmInfo.getDescription(), name:alarmInfo.getName(),
+					                       setting:alarmInfo.getSetting(), systemName:alarmInfo.getSystemName()]
+					]
+					alarm?.getDynamicProperty()?.each { prop ->
+						def propName = prop.getName()
+						if(propName)
+							addAlarm[propName] = prop.getVal()
+					}
+					if(alarmEntity) {
+						addAlarm.entity = [type:alarmEntityId?.getType(), id:alarmEntityId?.getVal(), name:alarmEntity.getName(),
+						                   status:(alarmEntity.getOverallStatus()?.toString() ?: 'unknown'),
+						                   configStatus:(alarmEntity.getConfigStatus()?.toString() ?: 'unknown')]
+					}
+					rtn.alarms << addAlarm
+				}
+				rtn.success = true
+			} else {
+				rtn.msg = 'no datacenter found'
+			}
+		} catch(e) {
+			log.error("listAlarms: ${opts.datacenter} ${opts.cluster} ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl, username, password,, serviceInstance)}
+		}
+		return rtn
+	}
 }

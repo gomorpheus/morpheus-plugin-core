@@ -9,6 +9,7 @@ import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.policy.MorpheusPolicyService;
+import com.morpheusdata.core.MorpheusOperationNotificationService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -31,6 +32,7 @@ import java.util.Map;
  * @see MorpheusVirtualImageService
  * @see MorpheusServicePlanService
  * @see MorpheusPolicyService
+ * @see MorpheusOperationNotificationService
  *
  * @author David Estes
  */
@@ -137,6 +139,13 @@ public interface MorpheusContext {
 	 * @return an instance of the web request service
 	 */
 	MorpheusWebRequestService getWebRequest();
+
+	/**
+	 * Returns the Operation Notification Service
+	 *
+	 * @return An instance of the Operation Notification Service
+	 */
+	MorpheusOperationNotificationService getOperationNotification();
 
 	/**
 	 * Returns a json encoded string of the settings for the plugin requested. The settings are defined

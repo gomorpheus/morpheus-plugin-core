@@ -314,7 +314,7 @@ class VmwareCloudProvider implements CloudProvider {
 					(new StoragePodsSync(cloud, morpheusContext)).execute()
 					(new IPPoolsSync(cloud, morpheusContext)).execute()
 					(new CustomSpecSync(cloud, morpheusContext)).execute()
-//					cacheAlarms([zone:zone]).get()
+					(new AlarmsSync(cloud, morpheusContext)).execute()
 //					cacheEvents([zone:zone]).get()
 //					cacheDatacenters([zone:zone])
 //					//vms
@@ -785,6 +785,15 @@ class VmwareCloudProvider implements CloudProvider {
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listCustomizationSpecs(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
+		return rtn
+	}
+
+	static listAlarms(Cloud cloud) {
+		def rtn = [success:false]
+		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def datacenter = cloud?.getConfigProperty('datacenter')
+		def cluster = cloud?.getConfigProperty('cluster')
+		rtn = VmwareComputeUtility.listAlarms(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 

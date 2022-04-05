@@ -15,6 +15,7 @@ import com.morpheusdata.core.network.MorpheusNetworkSubnetService
 import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
+import com.morpheusdata.core.MorpheusOperationNotificationService
 import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.web.MorpheusWebRequestService
@@ -42,6 +43,8 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusComputeServerService computeServerContext
 	protected MorpheusOsTypeService osTypeContext
 	protected MorpheusNetworkSubnetService subnetContext
+	protected MorpheusOperationNotificationService operationNotification
+
 
 
     MorpheusContextImpl() {
@@ -53,6 +56,7 @@ class MorpheusContextImpl implements MorpheusContext {
 		computeServerContext = new MorpheusComputeServerServiceImpl()
 	    osTypeContext = new MorpheusOsTypeServiceImpl()
 	    subnetContext = new MorpheusNetworkSubnetServiceImpl()
+	    operationNotification = new MorpheusOperationNotificationServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -61,6 +65,11 @@ class MorpheusContextImpl implements MorpheusContext {
 		this.taskContext = taskContext
 		this.virtualImageContext = virtualImageContext
     }
+
+	@Override
+	MorpheusOperationNotificationService getOperationNotification() {
+		return operationNotification
+	}
 
     @Override
     MorpheusCloudService getCloud() {
