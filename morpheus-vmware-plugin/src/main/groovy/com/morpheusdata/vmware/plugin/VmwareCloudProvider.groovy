@@ -315,7 +315,7 @@ class VmwareCloudProvider implements CloudProvider {
 					(new IPPoolsSync(cloud, morpheusContext)).execute()
 					(new CustomSpecSync(cloud, morpheusContext)).execute()
 					(new AlarmsSync(cloud, morpheusContext)).execute()
-//					cacheEvents([zone:zone]).get()
+//					cacheEvents([zone:zone]).get() // TODO : OperationEvents don't seem to be used.. skipping
 //					cacheDatacenters([zone:zone])
 //					//vms
 //					if(apiVersion && apiVersion != '6.0') {

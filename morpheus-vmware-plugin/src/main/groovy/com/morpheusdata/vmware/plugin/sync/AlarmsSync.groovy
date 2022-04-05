@@ -29,8 +29,6 @@ class AlarmsSync {
 				Observable<OperationNotificationIdentityProjection> domainRecords = morpheusContext.operationNotification.listSyncProjections("vwmare.alarm.${cloud.id}")
 				SyncTask<OperationNotificationIdentityProjection, Map, OperationNotification> syncTask = new SyncTask<>(domainRecords, listResults?.alarms ?: [])
 				syncTask.addMatchFunction { OperationNotificationIdentityProjection domainObject, Map apiItem ->
-					println "BOBW : AlarmsSync.groovy:32 : apiItem: ${apiItem}"
-					println "BOBW : AlarmsSync.groovy:33 : domain ${domainObject.externalId}"
 					domainObject.externalId == apiItem.externalId
 				}.onDelete { removeItems ->
 					removeMissingAlarms(removeItems)
