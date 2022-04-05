@@ -1207,7 +1207,7 @@ class VmwareComputeUtility {
 		} catch(e) {
 			log.error("listAlarms: ${opts.datacenter} ${opts.cluster} ${e}", e)
 		} finally {
-			if(serviceInstance) {connectionPool.releaseConnection(apiUrl, username, password,, serviceInstance)}
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl, username, password, serviceInstance)}
 		}
 		return rtn
 	}

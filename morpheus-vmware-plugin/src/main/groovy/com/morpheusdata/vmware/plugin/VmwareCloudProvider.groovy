@@ -807,6 +807,59 @@ class VmwareCloudProvider implements CloudProvider {
 		return checksum.encodeHex().toString()
 	}
 
+	static findManagedObject(morpheusContext, Cloud cloud, String type, String id) {
+		//find the matching item in our db
+		def rtn = [refType:null, refId:null]
+		if(type && id) {
+			def assignToZone = false
+			switch(type) {
+				case 'StoragePod':
+					def match
+					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
+						.filter { it.externalId == id && it.type == 'cluster' }
+						.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'datastore'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+				case 'Datastore':
+					def match
+					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
+							.filter { it.externalId == id && it.type != 'cluster' }
+							.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'datastore'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+				case 'VirtualMachine':
+				case 'HostSystem':
+					def match
+					morpheusContext.computeServer.listSyncProjections(cloud.id)
+							.filter { it.externalId == id }
+							.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'computeServer'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+			}
+			//fallback to zone
+			if(assignToZone) {
+				rtn.refType = 'computeZone'
+				rtn.refId = cloud.id
+			}
+		}
+		return rtn
+	}
+
 	VmwareProvisionProvider vmwareProvisionProvider() {
 		this.plugin.getProviderByCode('vmware-provision-provider-plugin')
 	}
