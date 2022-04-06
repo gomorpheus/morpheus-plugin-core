@@ -385,7 +385,7 @@ class VmwareCloudProvider implements CloudProvider {
 					(new CustomSpecSync(cloud, morpheusContext)).execute()
 					(new AlarmsSync(cloud, morpheusContext)).execute()
 //					cacheEvents([zone:zone]).get() // TODO : OperationEvents don't seem to be used.. skipping
-//					cacheDatacenters([zone:zone])
+					(new DatacentersSync(cloud, morpheusContext)).execute()
 //					//vms
 //					if(apiVersion && apiVersion != '6.0') {
 //						now = new Date()
@@ -783,10 +783,9 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	static listDatacenters(Cloud cloud) {
-		log.debug "listDatacenters: ${cloud}"
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
-		rtn = VmwareComputeUtility.listDatacenters(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [:])
+		rtn = VmwareComputeUtility.listDatacenters(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, getApiOptions(cloud))
 		return rtn
 	}
 
@@ -869,9 +868,7 @@ class VmwareCloudProvider implements CloudProvider {
 	static listAlarms(Cloud cloud) {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
-		def datacenter = cloud?.getConfigProperty('datacenter')
-		def cluster = cloud?.getConfigProperty('cluster')
-		rtn = VmwareComputeUtility.listAlarms(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
+		rtn = VmwareComputeUtility.listAlarms(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, getApiOptions(cloud))
 		return rtn
 	}
 
@@ -883,6 +880,15 @@ class VmwareCloudProvider implements CloudProvider {
 		md.update(regionString.bytes)
 		byte[] checksum = md.digest()
 		return checksum.encodeHex().toString()
+	}
+
+	static getApiOptions(Cloud cloud, Map opts = [:]) {
+		def rtn = [:]
+		rtn.datacenter = cloud?.getConfigProperty('datacenter')
+		rtn.cluster = opts.cluster ?: cloud?.getConfigProperty('cluster')
+		rtn.resourcePool = cloud?.getConfigProperty('resourcePoolId')
+		rtn.proxySettings = opts.proxySettings
+		return rtn
 	}
 
 	static findManagedObject(morpheusContext, Cloud cloud, String type, String id) {
