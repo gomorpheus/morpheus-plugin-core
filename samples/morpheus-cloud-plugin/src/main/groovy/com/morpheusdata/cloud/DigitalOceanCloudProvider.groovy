@@ -55,7 +55,12 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Boolean getHasComputeZonePools() {
+	Boolean hasComputeZonePools() {
+		return false
+	}
+
+	@Override
+	Boolean hasNetworks() {
 		return false
 	}
 

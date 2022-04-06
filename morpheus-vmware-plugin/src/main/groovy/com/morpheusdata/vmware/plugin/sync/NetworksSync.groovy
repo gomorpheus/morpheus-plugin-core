@@ -44,12 +44,18 @@ class NetworksSync {
 				}
 			}
 			Observable domainRecords = morpheusContext.cloud.network.listSyncProjections(cloud.id).filter { NetworkIdentityProjection projection ->
-				return projection.type.code != 'childNetwork' && projection.category ==  "vmware.network.${cloud.id}"
+				return projection.typeCode != 'childNetwork'
 			}
 			for(clusterId in allResults.keySet()) {
 				SyncTask<NetworkIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, allResults[clusterId].networks)
 				syncTask.addMatchFunction { NetworkIdentityProjection domainObject, Map cloudItem ->
-					domainObject[0] == cloudItem?.ref || (domainObject[3] == 'nsxt' && domainObject[1] == cloudItem.name)
+					domainObject.externalId == cloudItem?.ref || (domainObject.typeCode == 'nsxt' && domainObject.name == cloudItem.name)
+				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkIdentityProjection, Map>> updateItems ->
+					Map<Long, SyncTask.UpdateItemDto<NetworkIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+					morpheusContext.cloud.network.listById(updateItems?.collect { it.existingItem.id }).map { Network network ->
+						SyncTask.UpdateItemDto<NetworkIdentityProjection, Map> matchItem = updateItemMap[network.id]
+						return new SyncTask.UpdateItem<NetworkIdentityProjection, Map>(existingItem: network, masterItem: matchItem.masterItem)
+					}
 				}.onAdd { itemsToAdd ->
 					def adds = []
 					def alreadyAddedRefs = []
@@ -58,7 +64,7 @@ class NetworksSync {
 							def networkType = networkTypes?.find{it.externalType == cloudItem.type}
 							def networkConfig = [
 									owner: new Account(id: cloud.owner.id),
-									category:" vmware.network.${cloud.id}",
+									category: "vmware.network.${cloud.id}",
 									name: cloudItem.name,
 									displayName: cloudItem.name,
 									code: "vmware.network.${cloud.id}.${cloudItem.ref}",
@@ -72,7 +78,6 @@ class NetworksSync {
 									zonePoolId: clusterId,
 									active:true
 							]
-							println "AC Log - NetworksSync:execute add - ${networkConfig}"
 							if(cloudItem.switchUuid)
 								networkConfig.internalId = cloudItem.switchUuid
 							Network add = new Network(networkConfig)
@@ -113,10 +118,8 @@ class NetworksSync {
 								save = true
 							}
 							if(!existingItem.assignedZonePools?.find{it.id == clusterId}) {
-								def assignedZonePools = existingItem.assignedZonePools
-								assignedZonePools << new ComputeZonePool(id: clusterId)
-								existingItem.assignedZonePools = assignedZonePools
-								save=true
+								existingItem.assignedZonePools += new ComputeZonePool(id: clusterId)
+								save = true
 							}
 							if(masterItem.switchUuid && masterItem.switchUuid != existingItem.internalId) {
 								existingItem.internalId = masterItem.switchUuid

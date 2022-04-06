@@ -5,6 +5,7 @@ import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.NetworkType;
+import com.morpheusdata.model.Network;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.ComputeZonePool;
 
@@ -111,7 +112,13 @@ public interface CloudProvider extends PluginProvider {
 	 * Returns whether the cloud supports {@link ComputeZonePool}
 	 * @return Boolean
 	 */
-	Boolean getHasComputeZonePools();
+	Boolean hasComputeZonePools();
+
+	/**
+	 * Returns whether a cloud supports {@link Network}
+	 * @return Collection of NetworkType
+	 */
+	Boolean hasNetworks();
 
 	/**
 	 * Called when a server should be started. Returning a response of success will cause corresponding updates to usage

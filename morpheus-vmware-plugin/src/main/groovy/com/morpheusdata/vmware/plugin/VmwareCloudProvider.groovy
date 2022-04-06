@@ -313,7 +313,12 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Boolean getHasComputeZonePools() {
+	Boolean hasComputeZonePools() {
+		return true
+	}
+
+	@Override
+	Boolean hasNetworks() {
 		return true
 	}
 
