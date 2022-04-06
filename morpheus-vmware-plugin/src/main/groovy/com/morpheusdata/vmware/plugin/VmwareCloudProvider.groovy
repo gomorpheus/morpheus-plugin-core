@@ -359,7 +359,7 @@ class VmwareCloudProvider implements CloudProvider {
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
 			def proxySettings = getCloudProxySettings(cloud)
-			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, proxySettings)
+			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, cloud.apiProxy)
 			log.debug("vmware online: {} - {}", apiHost, hostOnline)
 			if(hostOnline) {
 				def testResults = VmwareComputeUtility.testConnection(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
