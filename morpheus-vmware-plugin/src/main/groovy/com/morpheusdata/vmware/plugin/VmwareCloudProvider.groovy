@@ -358,7 +358,8 @@ class VmwareCloudProvider implements CloudProvider {
 			def apiUrlObj = new URL(authConfig.apiUrl)
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
-			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, null)
+			def proxySettings = getCloudProxySettings(cloud)
+			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, proxySettings)
 			log.debug("vmware online: {} - {}", apiHost, hostOnline)
 			if(hostOnline) {
 				def testResults = VmwareComputeUtility.testConnection(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
@@ -398,7 +399,6 @@ class VmwareCloudProvider implements CloudProvider {
 //					}
 //
 					//Returning Promise Chain now
-					def proxySettings
 					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext)).execute()
 //					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
 //						refreshZoneVms(zone, [:], syncDate)
@@ -941,6 +941,21 @@ class VmwareCloudProvider implements CloudProvider {
 			}
 		}
 		return rtn
+	}
+
+	Map getCloudProxySettings(Cloud cloud) {
+		if(cloud.apiProxy) {
+			return [
+					proxyHost: cloud.apiProxy?.proxyHost,
+					proxyPort: cloud.apiProxy?.proxyPort,
+					proxyUser: cloud.apiProxy?.proxyUser,
+					proxyPassword: cloud.apiProxy?.proxyPassword,
+					proxyDomain: cloud.apiProxy?.proxyDomain,
+					proxyWorkstation: cloud.apiProxy?.proxyWorkstation
+			]
+		} else {
+			return null
+		}
 	}
 
 	VmwareProvisionProvider vmwareProvisionProvider() {
