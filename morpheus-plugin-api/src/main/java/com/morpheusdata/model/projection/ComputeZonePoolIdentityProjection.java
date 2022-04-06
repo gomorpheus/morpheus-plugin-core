@@ -17,6 +17,7 @@ public class ComputeZonePoolIdentityProjection extends MorpheusModel {
 	protected String name;
 	protected String externalId;
 	protected String category;
+	protected Long ownerId;
 
 	public String getType() {
 		return type;
@@ -70,6 +71,15 @@ public class ComputeZonePoolIdentityProjection extends MorpheusModel {
 	public void setCategory(String category) {
 		this.category = category;
 		markDirty("category", category);
+	}
+
+	public Long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
+		markDirty("ownerId", ownerId);
 	}
 
 
