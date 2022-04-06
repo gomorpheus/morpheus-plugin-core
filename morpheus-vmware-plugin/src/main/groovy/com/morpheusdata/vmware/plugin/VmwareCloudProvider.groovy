@@ -394,7 +394,7 @@ class VmwareCloudProvider implements CloudProvider {
 					//vms
 					if(apiVersion && apiVersion != '6.0') {
 						(new CategoriesSync(cloud, morpheusContext, client)).execute()
-//						cacheTags([zone:zone,proxySettings:proxySettings])
+						(new TagsSync(cloud, morpheusContext, client)).execute()
 					}
 //					def doInventory = zone.getConfigProperty('importExisting')
 					Boolean createNew = true

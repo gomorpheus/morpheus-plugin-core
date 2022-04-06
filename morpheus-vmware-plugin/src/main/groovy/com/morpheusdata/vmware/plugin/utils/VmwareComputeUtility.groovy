@@ -1333,6 +1333,41 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listTags(apiUrl,username,password,HttpApiClient client,opts=[:]) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def apiResults
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			def sessionResults = getRestSessionId(client, url, username,password,opts)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			log.debug("sessionId: ${sessionId}")
+			// TODO: proxySettings support
+			apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/tag",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'GET')
+			rtn.tagIds = apiResults.data?.value
+			rtn.tags = []
+			rtn.tagIds?.each { tagId ->
+				// TODO : proxySettings support
+				// apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/tag/id:${tagId}",null,null,[headers: ["vmware-api-session-id": sessionId],reuse:true,proxySettings: opts.proxySettings, httpClient: apiResults.httpClient],'GET')
+				apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/tag/id:${tagId}",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'GET')
+				sleep(50)
+				if(apiResults.success) {
+					def tagObj = [externalId: tagId, name: apiResults.data.value.name, categoryId: apiResults.data.value.category_id, description: apiResults.data.value.description]
+					rtn.tags << tagObj
+				}
+			}
+			rtn.success = apiResults.success
+		} catch(e) {
+			log.error("listTags: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url,sessionId,opts)
+			}
+		}
+
+		return rtn
+	}
+
 	static getRestSessionId(HttpApiClient client, url, username, password,opts=[:]) {
 		// TODO : Add proxySettings support to HttpApiClient
 		//def apiResults = client.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions([proxySettings: opts.proxySettings]),'POST')
