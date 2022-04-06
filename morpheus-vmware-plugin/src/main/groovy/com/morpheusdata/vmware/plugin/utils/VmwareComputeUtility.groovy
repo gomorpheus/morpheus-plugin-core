@@ -4,6 +4,8 @@ import com.vmware.vim25.*
 import com.vmware.vim25.mo.*
 import com.vmware.vim25.VirtualEthernetCard
 import groovy.util.logging.Slf4j
+import com.morpheusdata.core.util.HttpApiClient
+import org.apache.http.client.utils.URIBuilder
 
 @Slf4j
 class VmwareComputeUtility {
@@ -1296,5 +1298,57 @@ class VmwareComputeUtility {
 			if(serviceInstance) {connectionPool.releaseConnection(apiUrl, username, password, serviceInstance)}
 		}
 		return rtn
+	}
+
+	static listCategories(apiUrl,username,password, HttpApiClient client,opts=[:]) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def apiResults
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			def sessionResults = getRestSessionId(client, url, username,password,opts)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			log.debug("sessionId: ${sessionId}")
+			apiResults = client.callJsonApi(url, "/rest/com/vmware/cis/tagging/category",null,null, new HttpApiClient.RequestOptions(headers:["vmware-api-session-id": sessionId]), 'GET')
+			rtn.categoryIds = apiResults.data?.value
+			rtn.categories = []
+			rtn.categoryIds?.each { categoryId ->
+				apiResults = client.callJsonApi(url, "/rest/com/vmware/cis/tagging/category/id:${categoryId}",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'GET')
+				sleep(50)
+				if(apiResults.success) {
+					def categoryObj = [externalId: categoryId, name: apiResults.data.value.name, description: apiResults.data.value.description]
+					rtn.categories << categoryObj
+				}
+			}
+
+			rtn.success = apiResults.success
+		} catch(e) {
+			log.error("listCustomizationSpecs: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url, sessionId,opts)
+			}
+		}
+
+		return rtn
+	}
+
+	static getRestSessionId(HttpApiClient client, url, username, password,opts=[:]) {
+		// TODO : Add proxySettings support to HttpApiClient
+		//def apiResults = client.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions([proxySettings: opts.proxySettings]),'POST')
+		def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions(),'POST')
+		return [success:apiResults.success,sessionId:apiResults.data?.value]
+	}
+
+	static logoutRestSessionId(client, url, sessionId,opts=[:]) {
+		def apiResults = client.callJsonApi(url, "/rest/com/vmware/cis/session",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'DELETE')
+		// TODO : Add proxySettings support to HttpApiClient
+		//def apiResults = client.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/cis/session",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId],proxySettings: opts.proxySettings],'DELETE')
+		return [success:apiResults.success]
+	}
+
+	static privateGetSchemeHostAndPort(apiUrl) {
+		URIBuilder uriBuilder = new URIBuilder(apiUrl)
+		"${uriBuilder.scheme}://${uriBuilder.host}${uriBuilder.port != -1 ? ':' + uriBuilder.port : ''}"
 	}
 }

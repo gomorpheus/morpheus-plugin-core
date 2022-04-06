@@ -16,6 +16,7 @@ import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.core.MorpheusOperationNotificationService
+import com.morpheusdata.core.MorpheusMetadataTagService
 import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.web.MorpheusWebRequestService
@@ -44,6 +45,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusOsTypeService osTypeContext
 	protected MorpheusNetworkSubnetService subnetContext
 	protected MorpheusOperationNotificationService operationNotification
+	protected MorpheusMetadataTagService tagService
 
 
 
@@ -57,6 +59,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    osTypeContext = new MorpheusOsTypeServiceImpl()
 	    subnetContext = new MorpheusNetworkSubnetServiceImpl()
 	    operationNotification = new MorpheusOperationNotificationServiceImpl()
+	    tagService = new MorpheusMetadataTagServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -69,6 +72,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusOperationNotificationService getOperationNotification() {
 		return operationNotification
+	}
+
+	@Override
+	MorpheusMetadataTagService getMetadataTag() {
+		return tagService
 	}
 
     @Override
