@@ -816,6 +816,134 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listNetworks(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false, networks: []]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				if(datacenter) {
+					def entityList
+					if(opts.cluster) {
+						def cluster = new InventoryNavigator(datacenter).searchManagedEntity('ComputeResource', opts.cluster)
+						if(cluster) {
+							log.debug("loading cluster networks")
+							entityList = cluster.getNetworks()
+						}
+					} else {
+						entityList = new InventoryNavigator(datacenter).searchManagedEntities('Network')
+					}
+					//need to pull up distributed port groups
+					def portGroupResults = listPortGroups(apiUrl, username, password, opts + [serviceInstance: serviceInstance])
+					entityList?.each { network ->
+						log.debug("network: ${network.getName()} ${network.getMOR().getType()}")
+						if(!opts.distributed || network.getMOR().getType() == 'DistributedVirtualPortgroup') {
+							def addItem = [name:network.getName(), type:network.getMOR().getType(), ref:network.getMOR().getVal(), obj:network]
+							if(network.getMOR().getType() == 'DistributedVirtualPortgroup') {
+								addItem.key = network.getKey()
+								def matchPortGroup = portGroupResults.portGroups?.find{ it.key == addItem.key }
+								if(matchPortGroup) {
+									addItem.switchName = matchPortGroup.switchName
+									addItem.switchUuid = matchPortGroup.switchUuid
+									addItem.uplink = matchPortGroup.uplinkPortgroup
+								}
+							}
+							rtn.networks << addItem
+						}
+					}
+					rtn.success = true
+				} else {
+					rtn.msg = "no datacenter found"
+				}
+			} else {
+				rtn.msg = 'no datacenter configured'
+			}
+		} catch(e) {
+			log.error("listNetworks: ${e}", e)
+		} finally {
+			if(serviceInstance) { connectionPool.releaseConnection(apiUrl,username,password, serviceInstance) }
+		}
+		return rtn
+	}
+
+	static listPortGroups(apiUrl, username, password, opts = [:]) {
+		def rtn = [success:false, portGroups:[]]
+		def serviceInstance = opts.serviceInstance
+		try {
+			serviceInstance = serviceInstance ?: connectionPool.getConnection(apiUrl, username, password)
+			def hostList = listHosts(apiUrl, username, password, opts)
+			hostList?.hosts?.each { host ->
+				def hostParent = getManagedObject(serviceInstance, host.parent.getType(), host.parent.getVal())
+				def envBrowser = hostParent.getEnvironmentBrowser()
+				if(envBrowser) {
+					def configTarget = envBrowser.queryConfigTarget(host.entity)
+					def portGroupList = configTarget.getDistributedVirtualPortgroup()
+					portGroupList?.each { portGroup ->
+						def newItem = [name:portGroup.portgroupName, key:portGroup.portgroupKey, entity:portGroup,
+									   type:portGroup.portgroupType, switchName:portGroup.switchName, switchUuid:portGroup.switchUuid,
+									   uplink:portGroup.uplinkPortgroup]
+						def match = rtn.portGroups.find{ it.key == newItem.key }
+						if(!match)
+							rtn.portGroups << newItem
+					}
+				} else {
+					log.warn("It appears a host ${host.name} is down during sync... Skipping")
+				}
+
+			}
+			rtn.success = true
+		} catch(e) {
+			log.error("listPortGroups: ${e}", e)
+		} finally {
+			if(serviceInstance && !opts.serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+		return rtn
+	}
+
+	static listIpPools(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false, ipPools: []]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			if(opts.datacenter) {
+				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+				if(datacenter) {
+					def serviceContent = serviceInstance.retrieveServiceContent()
+					def ipPoolManagerRef = serviceContent.getIpPoolManager()
+					def ipPoolManager = ipPoolManagerRef ? getManagedObject(serviceInstance, 'IpPoolManager', ipPoolManagerRef.getVal()) : null
+					def entityList = ipPoolManager ? ipPoolManager.queryIpPools(datacenter) : []
+					log.debug("ip pools: ${entityList}")
+					entityList?.each { ipPool ->
+						def ipv4Config = ipPool.getIpv4Config()
+						def ipv6Config = ipPool.getIpv6Config()
+						rtn.ipPools << [name:ipPool.getName(), id:ipPool.getId(), ref:"${ipPool.getId()}", ipv4Count:ipPool.getAllocatedIpv4Addresses(),
+										ipv6Count:ipPool.getAllocatedIpv6Addresses(), ipv4Available:ipPool.getAvailableIpv4Addresses(), ipv6Available:ipPool.getAvailableIpv6Addresses(),
+										dnsDomain:ipPool.getDnsDomain(), dnsSearchPath:ipPool.getDnsSearchPath(), hostPrefix:ipPool.getHostPrefix(), httpProxy:ipPool.getHttpProxy(),
+										dhcpServer:ipv4Config.getDhcpServerAvailable(), dnsServers:ipv4Config.getDns(), gateway:ipv4Config.getGateway(),
+										ipPoolEnabled:ipv4Config.getIpPoolEnabled(), netmask:ipv4Config.getNetmask(), ipRanges:ipv4Config.getRange(),
+										subnetAddress:ipv4Config.getSubnetAddress()
+						]
+					}
+					rtn.success = true
+				} else {
+					rtn.msg = 'no datacenter found'
+				}
+			} else {
+				rtn.msg = 'no datacenter configured'
+			}
+		} catch(e) {
+			log.error("listIpPools: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+
 	static getMapVmwareOsType(vmwareType) {
 		switch(vmwareType) {
 			case 'asianux3_64Guest':
