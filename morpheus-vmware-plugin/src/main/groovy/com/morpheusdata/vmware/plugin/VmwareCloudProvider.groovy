@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin
 
+import com.morpheusdata.core.util.HttpApiClient
 import com.morpheusdata.core.BackupProvider
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
@@ -350,7 +351,9 @@ class VmwareCloudProvider implements CloudProvider {
 		ServiceResponse rtn = new ServiceResponse(success: false)
 		log.info "Initializing Cloud: ${cloud.code}"
 		log.info "config: ${cloud.configMap}"
-		
+
+		HttpApiClient client
+
 		try {
 			def syncDate = new Date()
 			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
@@ -366,10 +369,12 @@ class VmwareCloudProvider implements CloudProvider {
 				if(testResults.success == true) {
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 
+					client = new HttpApiClient()
+
 					checkZoneConfig(cloud)
 					checkCluster(cloud)
-					Date now = new Date()
 
+					// TODO : need to support proxySettings
 					cacheResourcePools(cloud)
 					log.debug("resource pools completed in ${new Date().time - now.time} ms")
 					(new FoldersSync(cloud, morpheusContext)).execute()
@@ -386,12 +391,11 @@ class VmwareCloudProvider implements CloudProvider {
 					(new AlarmsSync(cloud, morpheusContext)).execute()
 //					cacheEvents([zone:zone]).get() // TODO : OperationEvents don't seem to be used.. skipping
 					(new DatacentersSync(cloud, morpheusContext)).execute()
-//					//vms
-//					if(apiVersion && apiVersion != '6.0') {
-//						now = new Date()
-//						cacheCategories([zone:zone,proxySettings:proxySettings])
+					//vms
+					if(apiVersion && apiVersion != '6.0') {
+						(new CategoriesSync(cloud, morpheusContext, client)).execute()
 //						cacheTags([zone:zone,proxySettings:proxySettings])
-//					}
+					}
 //					def doInventory = zone.getConfigProperty('importExisting')
 					Boolean createNew = true
 //					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
@@ -428,6 +432,10 @@ class VmwareCloudProvider implements CloudProvider {
 			rtn.success = true
 		} catch (e) {
 			log.error("refresh cloud error: ${e}", e)
+		} finally {
+			if(client) {
+				client.shutdownClient()
+			}
 		}
 		return rtn
 	}
