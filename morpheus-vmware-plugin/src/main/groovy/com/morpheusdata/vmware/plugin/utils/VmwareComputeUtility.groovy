@@ -902,48 +902,6 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
-	static listIpPools(apiUrl, username, password, opts = [:]) {
-		def rtn = [success: false, ipPools: []]
-		def serviceInstance
-		try {
-			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
-			def rootFolder = serviceInstance.getRootFolder()
-			if(opts.datacenter) {
-				def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
-				if(datacenter) {
-					def serviceContent = serviceInstance.retrieveServiceContent()
-					def ipPoolManagerRef = serviceContent.getIpPoolManager()
-					def ipPoolManager = ipPoolManagerRef ? getManagedObject(serviceInstance, 'IpPoolManager', ipPoolManagerRef.getVal()) : null
-					def entityList = ipPoolManager ? ipPoolManager.queryIpPools(datacenter) : []
-					log.debug("ip pools: ${entityList}")
-					entityList?.each { ipPool ->
-						def ipv4Config = ipPool.getIpv4Config()
-						def ipv6Config = ipPool.getIpv6Config()
-						rtn.ipPools << [name:ipPool.getName(), id:ipPool.getId(), ref:"${ipPool.getId()}", ipv4Count:ipPool.getAllocatedIpv4Addresses(),
-										ipv6Count:ipPool.getAllocatedIpv6Addresses(), ipv4Available:ipPool.getAvailableIpv4Addresses(), ipv6Available:ipPool.getAvailableIpv6Addresses(),
-										dnsDomain:ipPool.getDnsDomain(), dnsSearchPath:ipPool.getDnsSearchPath(), hostPrefix:ipPool.getHostPrefix(), httpProxy:ipPool.getHttpProxy(),
-										dhcpServer:ipv4Config.getDhcpServerAvailable(), dnsServers:ipv4Config.getDns(), gateway:ipv4Config.getGateway(),
-										ipPoolEnabled:ipv4Config.getIpPoolEnabled(), netmask:ipv4Config.getNetmask(), ipRanges:ipv4Config.getRange(),
-										subnetAddress:ipv4Config.getSubnetAddress()
-						]
-					}
-					rtn.success = true
-				} else {
-					rtn.msg = 'no datacenter found'
-				}
-			} else {
-				rtn.msg = 'no datacenter configured'
-			}
-		} catch(e) {
-			log.error("listIpPools: ${e}", e)
-		} finally {
-			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
-		}
-
-		return rtn
-	}
-
-
 	static getMapVmwareOsType(vmwareType) {
 		switch(vmwareType) {
 			case 'asianux3_64Guest':
