@@ -35,24 +35,21 @@ class VirtualMachineSync {
 		try {
 			def queryResults = [:]
 			def startTime = new Date().time
-
-//			queryResults.clusters = ComputeZonePool.where { refType == 'ComputeZone' && refId == opts.zone.id && type == 'Cluster' && internalId != null && inventory != false }.property('internalId').list()
-//			queryResults.serverType = ComputeServerType.findByCode('vmwareUnmanaged')
-			// TODO : Handle blackListedNames!
-//			queryResults.blackListedNames = queryResults.existingItems.findAll { it[3] == 'provisioning' }.collect { it[2] }
+			queryResults.clusters = []
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
+				return projection.type == 'Cluster' && projection.internalId != null
+			}.blockingSubscribe { queryResults.clusters << it }
 
 			def cloudItems = []
 			def listResultSuccess = true
-			// TODO : Handle cluster by cluster
-//			queryResults.clusters?.each { cluster ->
-//				def listResults = listVirtualMachines(opts + [cluster:cluster])
-//				if(!listResults.success) {
-//					listResultSuccess = false
-//				}else {
-//					cloudItems += listResults?.virtualMachines
-//				}
-//			}
-			cloudItems = VmwareCloudProvider.listVirtualMachines(cloud)?.virtualMachines
+			queryResults.clusters?.each { ComputeZonePoolIdentityProjection cluster ->
+				def listResults = VmwareCloudProvider.listVirtualMachines(cloud, cluster.internalId)
+				if(!listResults.success) {
+					listResultSuccess = false
+				}else {
+					cloudItems += listResults?.virtualMachines
+				}
+			}
 
 			if (listResultSuccess) {
 				cloudItems = cloudItems?.unique { it.config.uuid }
@@ -65,11 +62,17 @@ class VirtualMachineSync {
 			log.info("virtualMachines to cache: ${syncData.cloudItems.size()}")
 
 			Observable domainRecords = morpheusContext.computeServer.listSyncProjections(cloud.id).filter { ComputeServerIdentityProjection projection ->
-				if (projection.computeServerTypeCode != 'vmware-plugin-hypervisor' || !projection.computeServerTypeCode) {
-					return true
-				}
-				false
+				projection.computeServerTypeCode != 'vmware-plugin-hypervisor' || !projection.computeServerTypeCode
 			}
+			queryResults.blackListedNames = []
+			domainRecords.blockingSubscribe {ComputeServerIdentityProjection server ->
+				if(server.status == 'provisioning') {
+					queryResults.blackListedNames << server.name
+				}
+			}
+
+			def hosts = getAllHosts(cloud)
+			def resourcePools = getAllResourcePools(cloud)
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, syncData.cloudItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map cloudItem ->
 				domainObject.uniqueId && (domainObject.uniqueId == cloudItem?.config.uuid)
@@ -83,13 +86,13 @@ class VirtualMachineSync {
 				}
 			}.onAdd { itemsToAdd ->
 				if (createNew) {
-					addMissingVirtualMachines(cloud, itemsToAdd, defaultServerType)
+					addMissingVirtualMachines(cloud, hosts, resourcePools, itemsToAdd, defaultServerType, queryResults.blackListedNames)
 				}
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
-				updateMatchedVirtualMachines(cloud, updateItems)
+				updateMatchedVirtualMachines(cloud, hosts, resourcePools,  updateItems)
 //				updateServerUsages(usageLists.startUsageIds, usageLists.stopUsageIds, usageLists.restartUsageIds)
 			}.onDelete { removeItems ->
-				removeMissingVirtualMachines(cloud, removeItems)
+				removeMissingVirtualMachines(cloud, removeItems, queryResults.blackListedNames)
 //				morpheusContext.computeServer.remove(removeItems).blockingGet()
 			}.start()
 		} catch(e) {
@@ -98,15 +101,15 @@ class VirtualMachineSync {
 
 	}
 
-	protected removeMissingVirtualMachines(Cloud cloud, List removeList) {
+	protected removeMissingVirtualMachines(Cloud cloud, List removeList, List blackListedNames=[]) {
 		log.debug "removeMissingVirtualMachines: ${cloud} ${removeList.size}"
 		for(ComputeServerIdentityProjection removeItem in removeList) {
 			try {
 //				ComputeServer tmpServer = ComputeServer.where{ id == removeItem.id}.join('computeServerType').join('volumes').join('controllers').join('interfaces').join('metadata').list()?.first()
 
 				def doDelete = true
-//				if(blackListedNames?.contains(tmpServer.name))
-//					doDelete = false
+				if(blackListedNames?.contains(removeItem.name))
+					doDelete = false
 				if(doDelete) {
 					log.info("remove vm: ${removeItem}")
 					morpheusContext.computeServer.remove([removeItem]).blockingGet()
@@ -116,18 +119,15 @@ class VirtualMachineSync {
 //						disableRemovedManagedServer(tmpServer)
 //					}
 				}
-			} catch(de) {
+			} catch(e) {
 				log.warn("Unable to remove Server from inventory, Perhaps it is associated with an instance currently... ${removeItem.name} - ID: ${removeItem.id}")
 			}
 		}
 	}
 
-	protected updateMatchedVirtualMachines(Cloud cloud, List updateList) {
+	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List updateList) {
 		log.debug "updateMatchedVirtualMachines: ${cloud} ${updateList?.size()}"
 		def rtn = [restartUsageIds: [], stopUsageIds: [], startUsageIds: []]
-
-		def hosts = getHostsForVirtualMachines(cloud, updateList.collect { it.masterItem } )
-		def resourcePools = getResourcePoolsForVirtualMachines(cloud, updateList.collect { it.masterItem})
 
 //		Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list(readOnly:true)?.collectEntries{[(it.externalId):it]}
 //		List<ComputeZonePool> zoneResourcePools = ComputeZonePool.where{ zone == cloud && externalId in updateList.collect{it.masterItem.resourcePool?.getVal()}.unique()}.list(readOnly:true)
@@ -582,14 +582,10 @@ class VirtualMachineSync {
 		return rtn
 	}
 
-	def addMissingVirtualMachines(Cloud cloud, List addList, ComputeServerType defaultServerType, blackListedNames=[]) {
+	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
 //		Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list()?.collectEntries{[(it.externalId):it]}
 
-		// Gather up all the hosts needed
-		// TODO: Maybe pass these in rather than refetch?
-		def hosts = getHostsForVirtualMachines(cloud, addList)
-		def resourcePools = getResourcePoolsForVirtualMachines(cloud, addList)
 		// TODO : Set the plan
 //		def plans = getServicePlans(cloud)
 		// TODO : Handle Folders and Networks
@@ -711,6 +707,30 @@ class VirtualMachineSync {
 		}
 //		tagCompliancePolicyService.checkTagComplianceForServers(cloud,addedServers)
 
+	}
+
+	private getAllHosts(Cloud cloud) {
+		log.debug "getAllHosts: ${cloud}"
+		def hostIdentities = []
+		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { hostIdentities << it.id }
+		def hosts = []
+		morpheusContext.computeServer.listById(hostIdentities).blockingSubscribe { ComputeServer it ->
+			if(it.computeServerType.code == 'vmware-plugin-hypervisor') {
+				hosts << it
+			}
+		}
+		hosts
+	}
+
+	private getAllResourcePools(Cloud cloud) {
+		log.debug "getAllResourcePools: ${cloud}"
+		def resourcePoolProjections = []
+		morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe { resourcePoolProjections << it }
+		def resourcePools = []
+		morpheusContext.cloud.pool.listById(resourcePoolProjections.collect { it.id }).blockingSubscribe { ComputeZonePool it ->
+			resourcePools << it
+		}
+		resourcePools
 	}
 
 	private getHostsForVirtualMachines(Cloud cloud, List cloudVMs) {
