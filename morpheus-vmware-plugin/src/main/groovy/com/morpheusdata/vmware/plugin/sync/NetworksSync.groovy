@@ -38,7 +38,7 @@ class NetworksSync {
 			}.blockingSubscribe { clusters << it }
 			def allResults = [:]
 			clusters?.each { ComputeZonePoolIdentityProjection cluster ->
-				def listResults = VmwareCloudProvider.listNetworks(cloud)
+				def listResults = VmwareCloudProvider.listNetworks(cloud, cluster.internalId)
 				if (listResults.success == true) {
 					allResults[cluster.id] = listResults
 				}
@@ -88,6 +88,7 @@ class NetworksSync {
 					}
 					morpheusContext.cloud.network.create(adds).blockingGet()
 				}.onUpdate { List<SyncTask.UpdateItem<Network, Map>> updateItems ->
+					List<Network> itemsToUpdate = []
 					for(item in updateItems) {
 						def masterItem = item.masterItem
 						Network existingItem = item.existingItem
@@ -125,13 +126,15 @@ class NetworksSync {
 								existingItem.internalId = masterItem.switchUuid
 								save = true
 							}
-
 							if(save) {
-								morpheusContext.cloud.network.save([existingItem]).blockingGet()
+								itemsToUpdate << existingItem
 							}
 						}
-
 					}
+					if(itemsToUpdate.size() > 0) {
+						morpheusContext.cloud.network.save(itemsToUpdate).blockingGet()
+					}
+
 				}.onDelete { removeItems ->
 					morpheusContext.cloud.network.remove(removeItems).blockingGet()
 				}.start()

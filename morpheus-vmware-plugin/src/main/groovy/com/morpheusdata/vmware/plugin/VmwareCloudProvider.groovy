@@ -817,11 +817,11 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	static listVirtualMachines(Cloud cloud) {
+	static listVirtualMachines(Cloud cloud, String clusterInternalId=null) {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		def cluster = cloud?.getConfigProperty('cluster')
+		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
 		rtn = VmwareComputeUtility.listVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, resourcePool:resourcePool, cluster:cluster])
 		return rtn
@@ -846,11 +846,11 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	static listNetworks(Cloud cloud) {
+	static listNetworks(Cloud cloud, String clusterInternalId=null) {
 		def rtn = [success:false]
 		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
-		def cluster = cloud?.getConfigProperty('cluster')
+		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listNetworks(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
