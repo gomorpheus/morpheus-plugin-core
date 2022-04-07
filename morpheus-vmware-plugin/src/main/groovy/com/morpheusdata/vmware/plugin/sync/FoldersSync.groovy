@@ -164,8 +164,8 @@ class FoldersSync {
 			def add = new ComputeZoneFolder(addConfig)
 			def parent = parents[cloudItem.parentRef]
 			if (parent) {
-				add.parent = parent
-				morpheusContext.cloud.folder.save([add]).blockingGet()
+				add.parent = new ComputeZoneFolder([id: parent.id])
+				morpheusContext.cloud.folder.create([add]).blockingGet()
 			}
 		}
 	}

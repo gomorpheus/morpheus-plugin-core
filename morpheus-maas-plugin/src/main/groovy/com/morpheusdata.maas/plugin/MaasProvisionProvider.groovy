@@ -85,6 +85,11 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	Collection<ServicePlan> getServicePlans() {
+		return []
+	}
+
+	@Override
 	String getCode() {
 		return 'maas-provision-provider-plugin'
 	}

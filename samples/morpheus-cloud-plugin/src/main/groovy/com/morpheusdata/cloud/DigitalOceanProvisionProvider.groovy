@@ -79,6 +79,11 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
+	Collection<ServicePlan> getServicePlans() {
+		return []
+	}
+
+	@Override
 	String getCode() {
 		return 'do-provider'
 	}

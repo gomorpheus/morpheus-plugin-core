@@ -29,6 +29,13 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	public Collection<OptionType> getNodeOptionTypes();
 
+
+	/**
+	 * Provides a Collection of ServicePlans related to this CloudProvider
+	 * @return Collection of ServicePlan
+	 */
+	public Collection<ServicePlan> getServicePlans();
+
 	/**
 	 * Determines if this provision type has datastores that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has datastores

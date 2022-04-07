@@ -69,6 +69,138 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
+	Collection<ServicePlan> getServicePlans() {
+		def servicePlans = []
+		def servicePlanConfig = [
+				code:'vm-plugin-512',
+				editable:true,
+				name:'1 CPU, 512MB Memory',
+				description:'1 CPU, 512MB Memory',
+				sortOrder:0,
+				maxStorage:10l * 1024l * 1024l * 1024l,
+				maxMemory:1l * 512l * 1024l * 1024l, maxCpu:0,
+				maxCores:1,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-10254',
+				editable:true,
+				name:'1 CPU, 1GB Memory',
+				description:'1 CPU, 1GB Memory',
+				sortOrder:1,
+				maxStorage:10l * 1024l * 1024l * 1024l,
+				maxMemory:1l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:1,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-2048',
+				editable:true,
+				name:'1 CPU, 2GB Memory',
+				description:'1 CPU, 2GB Memory',
+				sortOrder:2,
+				maxStorage:20l * 1024l * 1024l * 1024l,
+				maxMemory:2l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:1,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-4096',
+				editable:true,
+				name:'1 CPU, 4GB Memory',
+				description:'1 CPU, 4GB Memory',
+				sortOrder:3,
+				maxStorage:40l * 1024l * 1024l * 1024l,
+				maxMemory:4l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:1,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-8192',
+				editable:true,
+				name:'2 CPU, 8GB Memory',
+				description:'2 CPU, 8GB Memory',
+				sortOrder:4,
+				maxStorage:80l * 1024l * 1024l * 1024l,
+				maxMemory:8l * 1024l * 1024l * 1024l,
+				maxCpu:0, maxCores:2,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-16384',
+				editable:true,
+				name:'2 CPU, 16GB Memory',
+				description:'2 CPU, 16GB Memory',
+				sortOrder:5,
+				maxStorage:160l * 1024l * 1024l * 1024l,
+				maxMemory:16l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:2,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-24576',
+				editable:true,
+				name:'4 CPU, 24GB Memory',
+				description:'4 CPU, 24GB Memory',
+				sortOrder:6,
+				maxStorage:240l * 1024l * 1024l * 1024l,
+				maxMemory:24l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:4,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'vm-plugin-32768',
+				editable:true,
+				name:'4 CPU, 32GB Memory',
+				description:'4 CPU, 32GB Memory',
+				sortOrder:7,
+				maxStorage:320l * 1024l * 1024l * 1024l,
+				maxMemory:32l * 1024l * 1024l * 1024l,
+				maxCpu:0,
+				maxCores:4,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				coresPerSocket:1
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
+		return servicePlans
+	}
+
+	@Override
 	String getCode() {
 		return 'vmware-provision-provider-plugin'
 	}
