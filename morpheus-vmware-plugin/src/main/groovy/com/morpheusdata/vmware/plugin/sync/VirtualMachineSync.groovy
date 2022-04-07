@@ -18,10 +18,10 @@ class VirtualMachineSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	private Boolean createNew
-	private Map proxySettings
+	private NetworkProxy proxySettings
 	private String apiVersion
 
-	public VirtualMachineSync(Cloud cloud, Boolean createNew, proxySettings, apiVersion, MorpheusContext morpheusContext) {
+	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext) {
 		this.cloud = cloud
 		this.createNew = createNew
 		this.proxySettings = proxySettings

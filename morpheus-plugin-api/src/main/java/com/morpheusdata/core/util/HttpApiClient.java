@@ -1,10 +1,14 @@
 package com.morpheusdata.core.util;
 
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.model.NetworkProxy;
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
@@ -29,6 +33,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
@@ -80,6 +86,7 @@ public class HttpApiClient {
 	HttpClientConnectionManager connectionManager;
 	BasicCookieStore cookieStore = new BasicCookieStore();
 	public Long throttleRate = 0L;
+	public NetworkProxy networkProxy;
 	private Date lastCallTime;
 
 	static Logger log = LoggerFactory.getLogger(HttpApiClient.class);
@@ -561,12 +568,32 @@ public class HttpApiClient {
 					requestWriterFactory, responseParserFactory);
 			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
 			clientBuilder.setConnectionManager(connectionManager);
+			if(networkProxy != null) {
+				String proxyHost = networkProxy.getProxyHost();
+				Integer proxyPort = networkProxy.getProxyPort();
+				if (proxyHost != null && proxyPort != null) {
+					log.debug("proxy detected at ${proxyHost}:${proxyPort}");
+					String proxyUser = networkProxy.getProxyUser();
+					String proxyPassword = networkProxy.getProxyPassword();
+					String proxyWorkstation = networkProxy.getProxyWorkstation() != null ? networkProxy.getProxyWorkstation() : null;
+					String proxyDomain = networkProxy.getProxyDomain() != null ? networkProxy.getProxyDomain() : null;
+					clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+					if (proxyUser != null) {
+						CredentialsProvider credsProvider = new BasicCredentialsProvider();
+						NTCredentials ntCreds = new NTCredentials(proxyUser, proxyPassword, proxyWorkstation, proxyDomain);
+						credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), ntCreds);
+
+						clientBuilder.setDefaultCredentialsProvider(credsProvider);
+						clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+					}
+				}
+			}
+
 			HttpClient client = clientBuilder.build();
 			httpClient = client;
 			this.connectionManager = connectionManager;
 
 			withClientFunction.method(client,cookieStore);
-
 		}
 
 	}

@@ -27,7 +27,7 @@ class TagsSync {
 	def execute() {
 		log.debug "execute: ${cloud}"
 		try {
-			def opts = [:] // TODO : Pass along proxySettings
+			def opts = [:]
 			def listResults = listTags(client, [:])
 			if(listResults.success) {
 				def existingCategories = [:]

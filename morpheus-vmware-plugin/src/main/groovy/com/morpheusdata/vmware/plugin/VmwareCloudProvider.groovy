@@ -12,6 +12,7 @@ import com.morpheusdata.model.ComputeCapacityInfo
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.NetworkSubnetType
+import com.morpheusdata.model.NetworkProxy
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.OsType
@@ -361,8 +362,8 @@ class VmwareCloudProvider implements CloudProvider {
 			def apiUrlObj = new URL(authConfig.apiUrl)
 			def apiHost = apiUrlObj.getHost()
 			def apiPort = apiUrlObj.getPort() > 0 ? apiUrlObj.getPort() : (apiUrlObj?.getProtocol()?.toLowerCase() == 'https' ? 443 : 80)
-			def proxySettings = getCloudProxySettings(cloud)
-			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, cloud.apiProxy)
+			NetworkProxy proxySettings = cloud.apiProxy
+			def hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, proxySettings)
 			log.debug("vmware online: {} - {}", apiHost, hostOnline)
 			if(hostOnline) {
 				def testResults = VmwareComputeUtility.testConnection(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
@@ -370,13 +371,12 @@ class VmwareCloudProvider implements CloudProvider {
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 
 					client = new HttpApiClient()
+					client.networkProxy = proxySettings
 
 					checkZoneConfig(cloud)
 					checkCluster(cloud)
 
-					// TODO : need to support proxySettings
 					cacheResourcePools(cloud)
-					log.debug("resource pools completed in ${new Date().time - now.time} ms")
 					(new FoldersSync(cloud, morpheusContext)).execute()
 					(new DatastoresSync(cloud, morpheusContext)).execute()
 //					//fix region codes?
@@ -889,12 +889,12 @@ class VmwareCloudProvider implements CloudProvider {
 		return checksum.encodeHex().toString()
 	}
 
-	static getApiOptions(Cloud cloud, Map opts = [:]) {
+	static getApiOptions(Cloud cloud) {
 		def rtn = [:]
 		rtn.datacenter = cloud?.getConfigProperty('datacenter')
-		rtn.cluster = opts.cluster ?: cloud?.getConfigProperty('cluster')
+		rtn.cluster = cloud?.getConfigProperty('cluster')
 		rtn.resourcePool = cloud?.getConfigProperty('resourcePoolId')
-		rtn.proxySettings = opts.proxySettings
+		rtn.proxySettings = cloud.apiProxy
 		return rtn
 	}
 
@@ -949,21 +949,6 @@ class VmwareCloudProvider implements CloudProvider {
 			}
 		}
 		return rtn
-	}
-
-	Map getCloudProxySettings(Cloud cloud) {
-		if(cloud.apiProxy) {
-			return [
-					proxyHost: cloud.apiProxy?.proxyHost,
-					proxyPort: cloud.apiProxy?.proxyPort,
-					proxyUser: cloud.apiProxy?.proxyUser,
-					proxyPassword: cloud.apiProxy?.proxyPassword,
-					proxyDomain: cloud.apiProxy?.proxyDomain,
-					proxyWorkstation: cloud.apiProxy?.proxyWorkstation
-			]
-		} else {
-			return null
-		}
 	}
 
 	VmwareProvisionProvider vmwareProvisionProvider() {

@@ -27,7 +27,7 @@ class CategoriesSync {
 	def execute() {
 		log.debug "execute: ${cloud}"
 		try {
-			def opts = [:] // TODO : Pass along proxySettings
+			def opts = [:]
 			def listResults = listTagCategories(client, [:])
 			if(listResults.success) {
 				Observable<MetadataTagTypeIdentityProjection> domainRecords = morpheusContext.metadataTag.metadataTagType.listSyncProjections('ComputeZone', cloud.id)
