@@ -797,7 +797,6 @@ class VirtualMachineSync {
 		networks
 	}
 
-
 	ServicePlan findServicePlanBySizing(Collection<ServicePlan> allPlans, Long maxMemory, Long maxCores, Long coresPerSocket=null, ServicePlan fallbackPlan=null, ServicePlan existingPlan = null, Account account = null) {
 		Collection<ServicePlan> availablePlans = allPlans
 		if(account) {
