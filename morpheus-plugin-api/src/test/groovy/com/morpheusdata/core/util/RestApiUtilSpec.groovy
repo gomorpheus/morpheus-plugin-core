@@ -17,7 +17,7 @@ class RestApiUtilSpec extends Specification {
 		RestApiUtil.extractCookie(rawCookie) == [ibapauth: "ip=10.30.19.110,client=API,group=admin-group,ctime=1568815778,timeout=600,mtime=1568815778,su=1,auth=LOCAL,user=admin,xOdj0yvvEvBpRXesDLHIirxYXyER0m6CrKg"]
 	}
 
-		void "addRequiredHeader"() {
+	void "addRequiredHeader"() {
 		expect:
 		finalHeaders == RestApiUtil.addRequiredHeader(headers, name, value)
 

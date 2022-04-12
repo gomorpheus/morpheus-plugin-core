@@ -15,7 +15,7 @@ public class VirtualImageLocationIdentityProjection extends MorpheusModel {
 	protected VirtualImageIdentityProjection virtualImage;
 	protected String externalId;
 	protected String imageName;
-	protected Boolean sharedStorage = false;
+	protected Boolean sharedStorage;
 	protected String refType;
 	protected Long refId;
 

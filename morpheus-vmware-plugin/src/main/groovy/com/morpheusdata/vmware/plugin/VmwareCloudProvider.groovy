@@ -382,7 +382,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					//fix region codes?
 //					fixMissingRegionCodes(zone, getRegionCode(zone))
 					(new TemplatesSync(cloud, morpheusContext)).execute()
-//					cacheContentLibraryItems([zone:zone,proxySettings:proxySettings]) //dont pause for this right now
+					(new ContentLibrarySync(cloud, morpheusContext, client)).execute()  // Doesn't have to be synchronous
 					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
 					(new HostsSync(cloud, morpheusContext)).execute()
 					(new StoragePodsSync(cloud, morpheusContext)).execute()

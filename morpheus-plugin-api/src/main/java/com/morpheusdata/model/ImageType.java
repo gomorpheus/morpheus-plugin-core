@@ -5,6 +5,7 @@ package com.morpheusdata.model;
  */
 public enum ImageType {
 	ami,
+	iso,
 	ova,
 	ovf,
 	pxe,

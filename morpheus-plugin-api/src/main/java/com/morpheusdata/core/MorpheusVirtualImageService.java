@@ -65,6 +65,16 @@ public interface MorpheusVirtualImageService {
 	Single<Boolean> create(List<VirtualImage> virtualImages, Cloud cloud);
 
 	/**
+	 * Create new VirtualImage in Morpheus
+	 * NOTE: Any additions of VirtualImageLocations related to the VirtualImage should be
+	 * performed via the VirtualImageLocationService
+	 * @param virtualImage new VirtualImage to persist
+	 * @param cloud the Cloud instance
+	 * @return the VirtualImage
+	 */
+	Single<VirtualImage> create(VirtualImage virtualImage, Cloud cloud);
+
+	/**
 	 * Remove persisted VirtualImages from Morpheus. Typically called during sync operations for the cloud
 	 * to inform Morpheus that the VirtualImage no longer exists in the cloud
 	 * @param virtualImages Images to remove

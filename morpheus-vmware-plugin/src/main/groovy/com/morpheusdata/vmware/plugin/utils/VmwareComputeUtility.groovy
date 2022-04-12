@@ -1368,17 +1368,87 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listContentLibraryItems(apiUrl,username,password,HttpApiClient client) {
+		def rtn = [success: false,libraryItems:[]]
+		def sessionId
+		def apiResults
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			def contentLibResults = listContentLibraries(apiUrl,username,password,client)
+			if(contentLibResults.success ) {
+				rtn.libraryItems = []
+				rtn.libraryItemIds = []
+				def sessionResults = getRestSessionId(client, url, username, password)
+				sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+				contentLibResults.libraries?.each { library ->
+					String libraryId = library.externalId
+					log.debug("sessionId: ${sessionId}")
+					def query = ['library_id': libraryId]
+					apiResults = client.callJsonApi(url, "/rest/com/vmware/content/library/item", null, null, new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId], queryParams: query), 'GET')
+					def libraryItemIds = apiResults.data?.value
+					rtn.libraryItemIds += libraryItemIds
+					libraryItemIds?.each { itemId ->
+						apiResults = client.callJsonApi(url, "/rest/com/vmware/content/library/item/id:${itemId}", null, null, new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]), 'GET')
+						sleep(50)
+						if (apiResults.success) {
+							def libItemObj = [externalId: itemId] + apiResults.data.value + [storage_backings: library.storage_backings]
+							rtn.libraryItems << libItemObj
+						}
+					}
+				}
+
+				rtn.success = true
+			}
+		} catch(e) {
+			log.error("listContentLibraries: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url, sessionId)
+			}
+		}
+
+		return rtn
+	}
+
+	static listContentLibraries(apiUrl,username,password,HttpApiClient client) {
+		def rtn = [success: false]
+		def sessionId
+		def apiResults
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			def sessionResults = getRestSessionId(client, url, username,password)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			log.debug("sessionId: ${sessionId}")
+			apiResults = client.callJsonApi(url,"/rest/com/vmware/content/library",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'GET')
+			rtn.libraryIds = apiResults.data?.value
+			rtn.libraries = []
+			rtn.libraryIds?.each { libId ->
+				apiResults = client.callJsonApi(url,"/rest/com/vmware/content/library/id:${libId}",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'GET')
+				sleep(50)
+				if(apiResults.success) {
+					def libObj = [externalId: libId] + apiResults.data.value
+					rtn.libraries << libObj
+				}
+			}
+			rtn.success = apiResults.success
+		} catch(e) {
+			log.error("listContentLibraries: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url, sessionId)
+			}
+		}
+
+		return rtn
+	}
+
 	static getRestSessionId(HttpApiClient client, url, username, password,opts=[:]) {
-		// TODO : Add proxySettings support to HttpApiClient
-		//def apiResults = client.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions([proxySettings: opts.proxySettings]),'POST')
 		def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions(),'POST')
 		return [success:apiResults.success,sessionId:apiResults.data?.value]
 	}
 
 	static logoutRestSessionId(client, url, sessionId,opts=[:]) {
 		def apiResults = client.callJsonApi(url, "/rest/com/vmware/cis/session",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId]),'DELETE')
-		// TODO : Add proxySettings support to HttpApiClient
-		//def apiResults = client.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/cis/session",null,null,new HttpApiClient.RequestOptions(headers: ["vmware-api-session-id": sessionId],proxySettings: opts.proxySettings],'DELETE')
 		return [success:apiResults.success]
 	}
 

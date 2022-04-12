@@ -18,6 +18,7 @@ public class VirtualImageIdentityProjection extends MorpheusModel {
 	protected Boolean linkedClone;
 	protected Long ownerId;
 	protected Boolean systemImage;
+	protected Boolean deleted;
 
 	public String getExternalId() {
 		return externalId;
@@ -68,5 +69,13 @@ public class VirtualImageIdentityProjection extends MorpheusModel {
 
 	public void setSystemImage(Boolean systemImage) {
 		this.systemImage = systemImage;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 }
