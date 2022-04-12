@@ -20,13 +20,15 @@ class VirtualMachineSync {
 	private Boolean createNew
 	private NetworkProxy proxySettings
 	private String apiVersion
+	private ProvisioningProvider provisioningProvider
 
-	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext) {
+	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext, ProvisioningProvider provisioningProvider) {
 		this.cloud = cloud
 		this.createNew = createNew
 		this.proxySettings = proxySettings
 		this.apiVersion = apiVersion
 		this.morpheusContext = morpheusContext
+		this.provisioningProvider = provisioningProvider
 	}
 
 	def execute() {
@@ -71,8 +73,11 @@ class VirtualMachineSync {
 				}
 			}
 
+			def servicePlans = getAllServicePlans(cloud)
 			def hosts = getAllHosts(cloud)
 			def resourcePools = getAllResourcePools(cloud)
+			def folders = getAllFolders(cloud)
+			def networks = getAllNetworks(cloud)
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, syncData.cloudItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map cloudItem ->
 				domainObject.uniqueId && (domainObject.uniqueId == cloudItem?.config.uuid)
@@ -86,10 +91,10 @@ class VirtualMachineSync {
 				}
 			}.onAdd { itemsToAdd ->
 				if (createNew) {
-					addMissingVirtualMachines(cloud, hosts, resourcePools, itemsToAdd, defaultServerType, queryResults.blackListedNames)
+					addMissingVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, itemsToAdd, defaultServerType, queryResults.blackListedNames)
 				}
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
-				updateMatchedVirtualMachines(cloud, hosts, resourcePools,  updateItems)
+				updateMatchedVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, updateItems)
 //				updateServerUsages(usageLists.startUsageIds, usageLists.stopUsageIds, usageLists.restartUsageIds)
 			}.onDelete { removeItems ->
 				removeMissingVirtualMachines(cloud, removeItems, queryResults.blackListedNames)
@@ -125,19 +130,19 @@ class VirtualMachineSync {
 		}
 	}
 
-	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List updateList) {
+	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List updateList) {
 		log.debug "updateMatchedVirtualMachines: ${cloud} ${updateList?.size()}"
 		def rtn = [restartUsageIds: [], stopUsageIds: [], startUsageIds: []]
 
-//		Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list(readOnly:true)?.collectEntries{[(it.externalId):it]}
-//		List<ComputeZonePool> zoneResourcePools = ComputeZonePool.where{ zone == cloud && externalId in updateList.collect{it.masterItem.resourcePool?.getVal()}.unique()}.list(readOnly:true)
-//		List<ComputeZoneFolder> zoneFolders = ComputeZoneFolder.where{ zone == cloud && externalId in updateList.collect{it.masterItem.parent?.getVal()}.unique()}.list(readOnly:true)
-//		Map<String,Network> systemNetworks
-//		def networkIds = updateList.collect{it.masterItem.networks.collect{it.networkId}}.flatten().unique()
-//		if(networkIds.size() > 0) {
-//			systemNetworks = Network.where{refType == 'ComputeZone' && refId == cloud.id && type.code != 'childNetwork' && externalId in networkIds}.list(readOnly:true)?.collectEntries{[("${it.internalId ?: ''}:${it.externalId}".toString()):it]}
-//		}
-//		ServicePlan fallbackPlan = ServicePlan.findByCode('internal-custom-vmware')
+		//Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list(readOnly:true)?.collectEntries{[(it.externalId):it]}
+		Map<String,Network> systemNetworks
+		def networkIds = updateList.collect{it.masterItem.networks.collect{it.networkId}}.flatten().unique()
+		if(networkIds) {
+			def matchingNets = networks.findAll { it.externalId in networkIds}
+			systemNetworks = matchingNets.inject([:]) {result, network -> [("${network.internalId ?: ''}:${network.externalId}".toString()):network]}
+		}
+
+		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
 //		Collection<ServicePlan> availablePlans = ServicePlan.where{active == true && deleted != true && provisionType.code == 'vmware'}.list(readOnly:true)
 //		Collection<ResourcePermission> availablePlanPermissions = []
 //		if(availablePlans) {
@@ -203,8 +208,8 @@ class VirtualMachineSync {
 						def vmwareHost = matchedServer.guest?.hostName
 						def resourcePoolId = matchedServer.resourcePool?.getVal()
 						def resourcePool = resourcePools?.find{ pool -> pool.externalId == resourcePoolId }
-//						def folderId = matchedServer.parent?.getVal()
-//						def folder = zoneFolders?.find { folder -> folder.externalId == folderId }
+						def folderId = matchedServer.parent?.getVal()
+						def folder = zoneFolders?.find { folder -> folder.externalId == folderId }
 						def powerState = matchedServer.runtime?.powerState == VirtualMachinePowerState.poweredOn ? ComputeServer.PowerState.on : (matchedServer.runtime?.powerState == VirtualMachinePowerState.suspended ? ComputeServer.PowerState.paused : ComputeServer.PowerState.off)
 						def save = false
 						def extraConfig = matchedServer.config?.extraConfig ?: []
@@ -259,10 +264,10 @@ class VirtualMachineSync {
 							currentServer.resourcePool = resourcePool
 							save = true
 						}
-//						if(currentServer.folder?.id != folder?.id) {
-//							currentServer.folder = folder
-//							save = true
-//						}
+						if(currentServer.folder?.id != folder?.id) {
+							currentServer.folder = folder
+							save = true
+						}
 //						if(currentServer.computeServerType == null) {
 //							currentServer.computeServerType = serverType
 //							save = true
@@ -313,14 +318,14 @@ class VirtualMachineSync {
 							save = true
 						}
 						//plan
-//						ServicePlan plan = findServicePlanBySizing(availablePlans, currentServer.maxMemory, currentServer.maxCores,
-//								currentServer.coresPerSocket, fallbackPlan,currentServer.plan, currentServer.account, availablePlanPermissions)
-//						if(currentServer.plan?.id != plan?.id) {
-//							currentServer.plan = plan
-//							// log.info("Changing Server Plan to ${plan?.name} -- ${currentServer.name}")
-//							planInfoChanged = true
-//							save = true
-//						}
+						ServicePlan plan = findServicePlanBySizing(availablePlans, currentServer.maxMemory, currentServer.maxCores,
+								currentServer.coresPerSocket, fallbackPlan,currentServer.plan, currentServer.account)
+						if(currentServer.plan?.id != plan?.id) {
+							currentServer.plan = plan
+							log.debug("Changing Server Plan to ${plan?.name} -- ${currentServer.name}")
+							planInfoChanged = true
+							save = true
+						}
 						//check storage
 //						if(matchedServer.controllers) {
 //							if(currentServer.status != 'resizing') {
@@ -344,7 +349,7 @@ class VirtualMachineSync {
 //						//check networks
 //						if(matchedServer.networks) {
 //							if(currentServer.status != 'resizing') {
-//								def changed = vmwareProvisionService.syncInterfaces(cloud, currentServer, matchedServer.networks, serverIps.ipList, currentServer.account, systemNetworks, netTypes)
+//								def changed = syncInterfaces(cloud, currentServer, matchedServer.networks, serverIps.ipList, currentServer.account, systemNetworks, netTypes)
 //								if(changed == true)
 //									save = true
 //							}
@@ -582,22 +587,18 @@ class VirtualMachineSync {
 		return rtn
 	}
 
-	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
+	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
 //		Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list()?.collectEntries{[(it.externalId):it]}
 
-		// TODO : Set the plan
-//		def plans = getServicePlans(cloud)
-		// TODO : Handle Folders and Networks
-//		List<ComputeZoneFolder> zoneFolders = ComputeZoneFolder.where{zone == cloud && externalId in addList.collect{it.parent?.getVal()}.unique()}.list()
-//		Map<String,Network> systemNetworks
-//		def networkIds = addList.collect{it.networks.collect{it.networkId}}.flatten().unique()
+		// TODO : Handle Networks
+		Map<String,Network> systemNetworks
+		def networkIds = addList.collect{it.networks.collect{it.networkId}}.flatten().unique()
 //		if(networkIds) {
-//			systemNetworks = Network.where{refType == 'ComputeZone' && refId == cloud.id && type.code != 'childNetwork' && externalId in networkIds}.list()?.collectEntries{[("${it.internalId ?: ''}:${it.externalId}".toString()):it]}
+//			systemNetworks = networks.findAll{ it.externalId in networkIds}?.collectEntries{[("${it.internalId ?: ''}:${it.externalId}".toString()):it]}
 //		}
 
-//		ServicePlan fallbackPlan = ServicePlan.findByCode('internal-custom-vmware')
-//		Collection<ServicePlan> availablePlans = ServicePlan.where{active == true && deleted != true && provisionType.code == 'vmware'}.list()
+		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
 //		Collection<ResourcePermission> availablePlanPermissions = []
 //		if(availablePlans) {
 //			availablePlanPermissions = ResourcePermission.where{ morpheusResourceType == 'ServicePlan' && morpheusResourceId in availablePlans.collect{pl -> pl.id}}.list()
@@ -626,16 +627,16 @@ class VirtualMachineSync {
 				def hostname = cloudItem.guest.hostName
 
 				// TODO : Handle folder
-//				def folderId = cloudItem.parent?.getVal()
-//				def folder = zoneFolders?.find{ folder -> folder.externalId == folderId }
+				def folderId = cloudItem.parent?.getVal()
+				def folder = zoneFolders?.find{ folder -> folder.externalId == folderId }
 				def vmConfig = [account:cloud.account, externalId:cloudItem.ref, name:cloudItem.name, externalIp:ipAddress,
 				                internalIp:ipAddress, sshHost:ipAddress, sshUsername:'root', hostname:hostname, provision:false, computeServerType:defaultServerType,
 				                cloud:cloud, lvmEnabled:false, managed:false, serverType:'vm', status:'provisioned',
-				                resourcePool:resourcePool, uniqueId:vmUuid, internalId: cloudItem.config.instanceUuid] // folder: folder
+				                resourcePool:resourcePool, uniqueId:vmUuid, internalId: cloudItem.config.instanceUuid, folder: folder]
 				vmConfig.powerState = cloudItem.runtime.powerState == VirtualMachinePowerState.poweredOn ? ComputeServer.PowerState.on : (cloudItem.runtime.powerState == VirtualMachinePowerState.suspended ? ComputeServer.PowerState.paused : ComputeServer.PowerState.off)
 				vmConfig.hotResize = (cloudItem.config.memoryHotAddEnabled)
 				vmConfig.cpuHotResize = (cloudItem.config.cpuHotAddEnabled == true)
-//				vmConfig.plan = fallbackPlan
+				vmConfig.plan = fallbackPlan
 				ComputeServer add = new ComputeServer(vmConfig)
 				def maxStorage = 0
 				def maxMemory = 0
@@ -654,8 +655,7 @@ class VirtualMachineSync {
 					add.maxMemory = maxMemory
 					add.maxCores = maxCores
 					add.coresPerSocket = coresPerSocket
-					// TODO : Set the plan
-//					add.plan = findServicePlanBySizing(availablePlans, add.maxMemory, add.maxCores, coresPerSocket, fallbackPlan,null,add.account,availablePlanPermissions)
+					add.plan = findServicePlanBySizing(availablePlans, add.maxMemory, add.maxCores, coresPerSocket, fallbackPlan,null,add.account)
 					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId)
 					def osType = new OsType(code: osTypeCode ?: 'other')
 					add.serverOs = osType
@@ -761,17 +761,83 @@ class VirtualMachineSync {
 		resourcePools
 	}
 
-	private getServicePlans(Cloud cloud) {
-		log.debug "getServicePlans: ${cloud}"
+	private getAllServicePlans(Cloud cloud) {
+		log.debug "getAllServicePlans: ${cloud}"
 		def servicePlanProjections = []
-		morpheusContext.servicePlan.listSyncProjections(cloud.id).blockingSubscribe { servicePlanProjections << it }
+		def provisionType = new ProvisionType(code: provisioningProvider.code)
+		morpheusContext.servicePlan.listSyncProjections(provisionType).blockingSubscribe { servicePlanProjections << it }
 		def plans = []
 		morpheusContext.servicePlan.listById(servicePlanProjections.collect { it.id }).blockingSubscribe {
-			// TODO : Use custom seeded service plans
-			if(it.active == true && it.deleted != true && it.provisionTypeCode == 'vmware') {
+			if(it.active == true && it.deleted != true) {
 				plans << it
 			}
 		}
 		plans
 	}
+
+	private getAllFolders(Cloud cloud) {
+		log.debug "getAllFolders: ${cloud}"
+		def folderProjections = []
+		morpheusContext.cloud.folder.listSyncProjections(cloud.id).blockingSubscribe { folderProjections << it }
+		def folders = []
+		morpheusContext.cloud.folder.listById(folderProjections.collect { it.id }).blockingSubscribe {
+			folders << it
+		}
+		folders
+	}
+
+
+	ServicePlan findServicePlanBySizing(Collection<ServicePlan> allPlans, Long maxMemory, Long maxCores, Long coresPerSocket=null, ServicePlan fallbackPlan=null, ServicePlan existingPlan = null, Account account = null) {
+		Collection<ServicePlan> availablePlans = allPlans
+		if(account) {
+			availablePlans = allPlans?.findAll { pl -> pl.visibility == 'public' || pl.account?.id == account?.id || pl.owner?.id == account?.id || (pl.account == null && pl.visibility == 'public')  }
+			if(existingPlan) {
+				if(existingPlan.visibility == 'public' || existingPlan.account?.id == account?.id || existingPlan.owner?.id == account?.id || (existingPlan.account == null && existingPlan.visibility == 'public') ) {
+					existingPlan = existingPlan
+				} else {
+					existingPlan = null //we have to correct a plan discrepency due to permissions on the vm
+				}
+			}
+		}
+
+		//first lets try to find a match by zone and an exact match at that
+		if(existingPlan && existingPlan != fallbackPlan) {
+			if((existingPlan.maxMemory == maxMemory || existingPlan.customMaxMemory) && ((existingPlan.maxCores == 0 && maxCores == 1) || existingPlan.maxCores == maxCores || existingPlan.customCores) && (!coresPerSocket || (existingPlan.coresPerSocket == coresPerSocket || existingPlan.customCores))) {
+				return existingPlan //existingPlan is still sufficient
+			}
+		}
+		Collection<ServicePlan> matchedPlans
+		if(!coresPerSocket || coresPerSocket == 1) {
+
+			matchedPlans = availablePlans.findAll{it.maxMemory == maxMemory && it.customMaxMemory != true && it.customCores != true && ((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && (it.coresPerSocket == null || it.coresPerSocket == 1)}
+		} else {
+			matchedPlans = availablePlans.findAll{it.maxMemory == maxMemory && ((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && it.customMaxMemory != true && it.customCores != true && it.coresPerSocket == coresPerSocket}
+		}
+
+		if(!matchedPlans) {
+			matchedPlans = availablePlans.findAll { it.maxMemory == maxMemory && it.customCores }
+		}
+
+		//check globals
+		if(!matchedPlans) {
+			//we need to look by custom
+			if(!coresPerSocket || coresPerSocket == 1) {
+				matchedPlans = availablePlans.findAll { ((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && (it.coresPerSocket == null || it.coresPerSocket == 1) && it.customMaxMemory }
+			} else {
+				matchedPlans = availablePlans.findAll { ((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && it.coresPerSocket == coresPerSocket && it.customMaxMemory }
+			}
+
+		}
+
+		if(!matchedPlans) {
+			matchedPlans = availablePlans.findAll { it.customMaxMemory && it.customCores }
+		}
+
+		if(matchedPlans) {
+			return matchedPlans.first()
+		} else {
+			return fallbackPlan
+		}
+	}
+
 }
