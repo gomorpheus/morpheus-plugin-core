@@ -403,7 +403,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					}
 //
 					//Returning Promise Chain now
-					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext)).execute()
+					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider())).execute()
 //					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
 //						refreshZoneVms(zone, [:], syncDate)
 //						return true

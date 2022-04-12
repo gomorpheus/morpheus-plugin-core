@@ -197,6 +197,27 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 				coresPerSocket:1
 		]
 		servicePlans << new ServicePlan(servicePlanConfig)
+		servicePlanConfig = [
+				code:'plugin-internal-custom-vmware',
+				editable:false,
+				name:'Custom VMWare',
+				description:'Custom VMWare',
+				sortOrder:0,
+				customMaxStorage:true,
+				customMaxDataStorage:true,
+				addVolumes:true,
+				customCpu:true,
+				customCores:true,
+				customMaxMemory:true,
+				deletable:false,
+				provisionable:false,
+				maxStorage:0l,
+				maxMemory:0l,
+				maxCpu:0,
+				maxCores:1,
+				coresPerSocket:0
+		]
+		servicePlans << new ServicePlan(servicePlanConfig)
 		return servicePlans
 	}
 
