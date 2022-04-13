@@ -300,6 +300,10 @@ class TemplatesSync {
 //					}
 					save = true
 				}
+				if(imageLocation.imageRegion != regionCode) {
+					imageLocation.imageRegion = regionCode
+					save = true
+				}
 				if(imageLocation.code == null) {
 					imageLocation.code = "vmware.vsphere.image.${cloud.id}.${matchedTemplate.ref}"
 					save = true

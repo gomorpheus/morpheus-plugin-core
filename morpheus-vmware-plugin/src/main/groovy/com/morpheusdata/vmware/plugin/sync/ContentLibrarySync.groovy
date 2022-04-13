@@ -296,6 +296,10 @@ class ContentLibrarySync {
 					}
 					saveLocation = true
 				}
+				if(imageLocation.imageRegion != regionCode) {
+					imageLocation.imageRegion = regionCode
+					saveLocation = true
+				}
 				if(imageLocation.datastore?.id != datastore?.id) {
 					imageLocation.datastore = datastore
 					saveLocation = true
@@ -367,6 +371,11 @@ class ContentLibrarySync {
 					if(!image.account && !image.systemImage)
 						image.account = cloud.owner
 					image.deleted = false
+
+					if(image.imageRegion != regionCode) {
+						image.imageRegion = regionCode
+					}
+
 					imagesToSave << image
 				}
 			}

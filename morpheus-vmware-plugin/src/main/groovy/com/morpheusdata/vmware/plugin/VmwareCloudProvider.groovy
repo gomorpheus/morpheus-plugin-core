@@ -379,8 +379,6 @@ class VmwareCloudProvider implements CloudProvider {
 					cacheResourcePools(cloud)
 					(new FoldersSync(cloud, morpheusContext)).execute()
 					(new DatastoresSync(cloud, morpheusContext)).execute()
-//					//fix region codes?
-//					fixMissingRegionCodes(zone, getRegionCode(zone))
 					(new TemplatesSync(cloud, morpheusContext)).execute()
 					(new ContentLibrarySync(cloud, morpheusContext, client)).execute()  // Doesn't have to be synchronous
 					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
