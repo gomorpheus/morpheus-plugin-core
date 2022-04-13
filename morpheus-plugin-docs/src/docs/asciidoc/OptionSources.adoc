@@ -1,0 +1,56 @@
+== Option Sources
+
+An Option source is a server side call to load a dynamic dataset for custom form inputs. These normally feed dropdown lists, multiselect components, and typeahead components. These can be very useful when designing task types that have custom options or even custom catalog item layouts.
+
+=== Getting Started
+
+To get started, simply create an implementation of an `OptionSourceProvider`. The primary implementation method is called `getMethodNames` and just returns a list of methods on the class that are accessed via API as datasets.
+
+
+[source,groovy]
+----
+class GoogleOptionSourceProvider implements OptionSourceProvider {
+@Override
+    List<String> getMethodNames() {
+        return new ArrayList<String>(['googlePluginProjects', 'googlePluginRegions', 'googlePluginZonePools', 'googlePluginMtu'])
+    }
+
+    def googlePluginProjects(args) {
+        Map authConfig = getAuthConfig(args)
+        def projectResults = []
+        if(authConfig.clientEmail && authConfig.privateKey) {
+            def listResults = GoogleApiService.listProjects(authConfig)
+            if(listResults.success) {
+                projectResults = listResults.projects?.collect { [name: it.name, value: it.projectId] }
+                projectResults = projectResults.sort { a, b -> a.name?.toLowerCase() <=> b.name?.toLowerCase() }
+            }
+        }
+        projectResults
+    }
+}
+----
+
+Above is an example option source registered for the Google Cloud Plugin. **NOTE:** Every method must have a singular input argument of type `Object` (which is the default in Groovy). In reality, it is a Map containing passed in params from the api call that can be referenced as well as the current user object. It is also worth noting that the return type expected is a `List<Map<String,String>>` whereby the properties on the map are of keys `name,value`.
+
+Now, when defining your `OptionType` simply set your `optionSource` property to the field name defined in your provider. It is important not to conflict names with other plugins so please try to use a unique method name.
+
+[TIP]
+Use a Unique Method name that will not interfere with other plugins the user may load.
+
+[source,groovy]
+----
+OptionType ot4 = new OptionType(
+				name: 'Region',
+				code: 'google-plugin-region',
+				fieldName: 'googleRegionId',
+				optionSource: 'googlePluginRegions', //Note the Option Source Defined here.
+				displayOrder: 3,
+				fieldLabel: 'Region',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				dependsOn: 'google-plugin-project-id',
+				fieldContext: 'config'
+		)
+----
+
+

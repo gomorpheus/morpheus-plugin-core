@@ -55,6 +55,12 @@ public interface TaskProvider extends PluginProvider {
 	Boolean isAllowRemoteKeyAuth();
 
 	/**
+	 * A flag indicating if the TaskType presents results that can be chained into other tasks
+	 * @return
+	 */
+	Boolean hasResults();
+
+	/**
 	 * Additional task configuration
 	 * {@link OptionType}
 	 * @return a List of OptionType
