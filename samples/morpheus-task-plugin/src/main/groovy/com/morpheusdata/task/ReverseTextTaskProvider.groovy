@@ -77,6 +77,11 @@ class ReverseTextTaskProvider implements TaskProvider {
 		return true
 	}
 
+	@Override
+	Boolean hasResults() {
+		return true
+	}
+
 	/**
 	 * Builds an OptionType to take some text
 	 * @return list of OptionType
