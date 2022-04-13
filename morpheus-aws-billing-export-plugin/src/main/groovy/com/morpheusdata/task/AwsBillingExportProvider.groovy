@@ -77,6 +77,11 @@ class AwsBillingExportProvider implements TaskProvider {
 	}
 
 	@Override
+	Boolean hasResults() {
+		return false
+	}
+
+	@Override
 	Boolean isAllowRemoteKeyAuth() {
 		return false
 	}
