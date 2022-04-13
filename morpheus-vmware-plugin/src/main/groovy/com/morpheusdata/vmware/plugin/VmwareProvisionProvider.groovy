@@ -222,6 +222,39 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
+	Collection<ComputeServerInterfaceType> getComputeServerInterfaceTypes() {
+		def computeServerInterfaceTypes = []
+		def config = [
+				code:'vmware-plugin-e1000',
+				externalId:'e1000',
+				name:'VMware Plugin E1000',
+				defaultType: false,
+				enabled: true,
+				displayOrder:3
+		]
+		computeServerInterfaceTypes << new ComputeServerInterfaceType(config)
+		config = [
+				code:'vmware-plugin-vmxNet2',
+				externalId:'vmxNet2',
+				name:'VMware Plugin VMXNET 2',
+				defaultType: false,
+				enabled: true,
+				displayOrder:2
+		]
+		computeServerInterfaceTypes << new ComputeServerInterfaceType(config)
+		config = [
+				code:'vmware-plugin-vmxNet3',
+				externalId:'vmxNet3',
+				name:'VMware Plugin VMXNET 3',
+				defaultType: true,
+				enabled: true,
+				displayOrder:1
+		]
+		computeServerInterfaceTypes << new ComputeServerInterfaceType(config)
+		return computeServerInterfaceTypes
+	}
+
+	@Override
 	String getCode() {
 		return 'vmware-provision-provider-plugin'
 	}

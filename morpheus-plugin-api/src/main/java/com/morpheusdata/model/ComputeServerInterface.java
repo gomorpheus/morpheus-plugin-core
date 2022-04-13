@@ -34,7 +34,7 @@ protected String networkPosition;
 	protected Integer displayOrder = 0;
 	protected NetworkPool networkPool;
 	protected NetworkDomain networkDomain;
-//	public ComputeServerInterfaceType type;
+	public ComputeServerInterfaceType type;
 protected String ipMode; //dhcp/static/pool
 	protected Boolean replaceHostRecord;
 	protected String macAddress;
@@ -135,6 +135,8 @@ protected String ipMode; //dhcp/static/pool
 	public NetworkDomain getNetworkDomain() {
 		return networkDomain;
 	}
+
+	public ComputeServerInterfaceType getType() { return type; }
 
 	public String getIpMode() {
 		return ipMode;
@@ -281,6 +283,11 @@ protected String ipMode; //dhcp/static/pool
 	public void setNetworkDomain(NetworkDomain networkDomain) {
 		this.networkDomain = networkDomain;
 		markDirty("networkDomain", networkDomain);
+	}
+
+	public void setType(ComputeServerInterfaceType type) {
+		this.type = type;
+		markDirty("type", type);
 	}
 
 	public void setIpMode(String ipMode) {

@@ -21,6 +21,7 @@ class VirtualMachineSync {
 	private NetworkProxy proxySettings
 	private String apiVersion
 	private ProvisioningProvider provisioningProvider
+	private Collection<ComputeServerInterfaceType> netTypes
 
 	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext, ProvisioningProvider provisioningProvider) {
 		this.cloud = cloud
@@ -28,6 +29,7 @@ class VirtualMachineSync {
 		this.proxySettings = proxySettings
 		this.apiVersion = apiVersion
 		this.morpheusContext = morpheusContext
+		this.netTypes = provisioningProvider.getComputeServerInterfaceTypes()
 		this.provisioningProvider = provisioningProvider
 	}
 
@@ -134,12 +136,14 @@ class VirtualMachineSync {
 		log.debug "updateMatchedVirtualMachines: ${cloud} ${updateList?.size()}"
 		def rtn = [restartUsageIds: [], stopUsageIds: [], startUsageIds: []]
 
-		//Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list(readOnly:true)?.collectEntries{[(it.externalId):it]}
 		Map<String,Network> systemNetworks
 		def networkIds = updateList.collect{it.masterItem.networks.collect{it.networkId}}.flatten().unique()
 		if(networkIds) {
 			def matchingNets = networks.findAll { it.externalId in networkIds}
-			systemNetworks = matchingNets.inject([:]) {result, network -> [("${network.internalId ?: ''}:${network.externalId}".toString()):network]}
+			systemNetworks = matchingNets.inject([:]) {result, network ->
+				result[("${network.internalId ?: ''}:${network.externalId}".toString())] = network
+				return result
+			}
 		}
 
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
@@ -346,14 +350,14 @@ class VirtualMachineSync {
 //								}
 //							}
 //						}
-//						//check networks
-//						if(matchedServer.networks) {
-//							if(currentServer.status != 'resizing') {
-//								def changed = syncInterfaces(cloud, currentServer, matchedServer.networks, serverIps.ipList, currentServer.account, systemNetworks, netTypes)
-//								if(changed == true)
-//									save = true
-//							}
-//						}
+						//check networks
+						if(matchedServer.networks) {
+							if(currentServer.status != 'resizing') {
+								def changed = syncInterfaces(cloud, currentServer, matchedServer.networks, serverIps.ipList, currentServer.account, systemNetworks)
+								if(changed)
+									save = true
+							}
+						}
 //						if(planInfoChanged && currentServer.computeServerType?.guestVm) {
 //							Container.where{server == currentServer}.updateAll(plan:  plan, maxCores: currentServer.maxCores, maxMemory: currentServer.maxMemory, coresPerSocket: currentServer.coresPerSocket, maxStorage: currentServer.maxStorage)
 //							Instance.where{ containers.server.id == currentServer.id}.join('containers').list(cache:false)?.each { instance ->
@@ -589,15 +593,16 @@ class VirtualMachineSync {
 
 	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
-//		Map<String,ComputeServerInterfaceType> netTypes = ComputeServerInterfaceType.list()?.collectEntries{[(it.externalId):it]}
 
-		// TODO : Handle Networks
 		Map<String,Network> systemNetworks
 		def networkIds = addList.collect{it.networks.collect{it.networkId}}.flatten().unique()
-//		if(networkIds) {
-//			systemNetworks = networks.findAll{ it.externalId in networkIds}?.collectEntries{[("${it.internalId ?: ''}:${it.externalId}".toString()):it]}
-//		}
-
+		if(networkIds) {
+			def matchingNets = networks.findAll { it.externalId in networkIds}
+			systemNetworks = matchingNets.inject([:]) {result, network ->
+				result[("${network.internalId ?: ''}:${network.externalId}".toString())] = network
+				return result
+			}
+		}
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
 //		Collection<ResourcePermission> availablePlanPermissions = []
 //		if(availablePlans) {
@@ -676,7 +681,8 @@ class VirtualMachineSync {
 						}
 					}
 					add.capacityInfo = new ComputeCapacityInfo(maxCores:maxCores, maxMemory:maxMemory, maxStorage:maxStorage, usedStorage:usedStorage)
-					if(!morpheusContext.computeServer.create([add]).blockingGet()){
+					def savedServer = morpheusContext.computeServer.create(add).blockingGet()
+					if(!savedServer){
 						log.error "Error in creating server ${add}"
 					}
 
@@ -688,7 +694,7 @@ class VirtualMachineSync {
 //					vmwareProvisionService.syncControllers(cloud, add, cloudItem.controllers, add.account)
 //					//sync volumes
 //					vmwareProvisionService.syncVolumes(cloud, add, cloudItem.volumes, add.account)
-//					vmwareProvisionService.syncInterfaces(cloud, add, cloudItem.networks, serverIps.ipList, add.account,systemNetworks,netTypes)
+					syncInterfaces(cloud, savedServer, cloudItem.networks, serverIps.ipList, savedServer.account, systemNetworks)
 				} else {
 					add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
 					if (!morpheusContext.computeServer.create([add]).blockingGet()) {
@@ -848,6 +854,95 @@ class VirtualMachineSync {
 		} else {
 			return fallbackPlan
 		}
+	}
+
+	Boolean syncInterfaces(zone, server, networks, ipList, account, systemNetworks) {
+		def rtn = false
+		log.debug("ipList: ${ipList}")
+		try {
+			def serverInterfaces = server.interfaces
+			def missingInterfaces = []
+			def newInterfaces = []
+			Boolean primaryInterfaceExists = serverInterfaces?.any{it.primaryInterface}
+			networks.eachWithIndex { netEntry, index ->
+				def ipAddress = ipList.find{ it.mode == 'ipv4' && it.macAddress == netEntry.macAddress}?.ipAddress
+				def ipv6Address = ipList.find{ it.mode == 'ipv6' && it.macAddress == netEntry.macAddress}?.ipAddress
+				def netType = netTypes.find{it.externalId == netEntry.type}
+				def net = systemNetworks["${netEntry.switchUuid ?:''}:${netEntry.networkId}".toString()]//.find{it.externalId == netEntry.networkId && it.internalId == netEntry.switchUuid}
+				def matchedInterface = serverInterfaces?.find{ it.externalId == netEntry.key.toString()}
+				if(!matchedInterface) {
+					matchedInterface = serverInterfaces?.find{!it.externalId}
+				}
+				if(!matchedInterface) {
+					def newInterface = new ComputeServerInterface(externalId: netEntry.key, type: netType, macAddress: netEntry.macAddress, name: netEntry.name, ipAddress: ipAddress, ipv6Address: ipv6Address, network:net, displayOrder:netEntry.row)
+					if(!serverInterfaces) {
+						newInterface.primaryInterface = true
+					} else {
+						newInterface.primaryInterface = false
+					}
+					newInterfaces << newInterface
+				} else {
+					def primaryInterface = netEntry.row?.toInteger() == 0
+					def save = false
+					if(!primaryInterfaceExists) {
+						if(matchedInterface.primaryInterface != primaryInterface) {
+							matchedInterface.primaryInterface = primaryInterface
+							save = true
+						}
+					}
+					if(net && matchedInterface.network?.code != net.code) {
+						matchedInterface.network = net
+						save = true
+					}
+					if(matchedInterface.ipAddress != ipAddress) {
+						matchedInterface.ipAddress = ipAddress
+						save = true
+					}
+					if(matchedInterface.ipv6Address != ipv6Address) {
+						matchedInterface.ipv6Address = ipv6Address
+						save = true
+					}
+					if(matchedInterface.macAddress != netEntry.macAddress) {
+						matchedInterface.macAddress = netEntry.macAddress
+						save = true
+					}
+					if(matchedInterface.externalId != netEntry.key.toString()) {
+						matchedInterface.externalId = netEntry.key.toString()
+						save = true
+					}
+					if(matchedInterface.type?.code != netType.code) {
+						matchedInterface.type = netType
+						save = true
+					}
+					if(matchedInterface.displayOrder != netEntry.row) {
+						matchedInterface.displayOrder = netEntry.row
+						save = true
+					}
+					if(save) {
+						morpheusContext.computeServer.computeServerInterface.save([matchedInterface]).blockingGet()
+						rtn = true
+					}
+				}
+			}
+
+			server.interfaces?.each { iface ->
+				def found = networks.find{it.key.toString() == iface.externalId}
+				if(!found) {
+					missingInterfaces << iface
+				}
+			}
+			if(missingInterfaces) {
+				morpheusContext.computeServer.computeServerInterface.remove(missingInterfaces, server).blockingGet()
+				rtn = true
+			}
+			if(newInterfaces?.size() > 0) {
+				morpheusContext.computeServer.computeServerInterface.create(newInterfaces, server).blockingGet()
+				rtn = true
+			}
+		} catch(e) {
+			log.error("syncInterfaces error: ${e}", e)
+		}
+		return rtn
 	}
 
 }

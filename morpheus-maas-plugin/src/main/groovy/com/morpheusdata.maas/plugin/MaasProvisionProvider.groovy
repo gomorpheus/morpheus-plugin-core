@@ -90,6 +90,11 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	Collection<ComputeServerInterfaceType> getComputeServerInterfaceTypes() {
+		return []
+	}
+
+	@Override
 	String getCode() {
 		return 'maas-provision-provider-plugin'
 	}

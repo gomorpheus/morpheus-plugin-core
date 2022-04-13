@@ -5,6 +5,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.ComputeServerInterfaceType
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.NetworkConfiguration
@@ -80,6 +81,11 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Collection<ServicePlan> getServicePlans() {
+		return []
+	}
+
+	@Override
+	Collection<ComputeServerInterfaceType> getComputeServerInterfaceTypes() {
 		return []
 	}
 

@@ -54,6 +54,13 @@ public interface MorpheusComputeServerService {
 	Single<Boolean> create(List<ComputeServer> computeServers);
 
 	/**
+	 * Create a new ComputeServer in Morpheus
+	 * @param computeServer new ComputeServer to persist
+	 * @return the ComputeServer
+	 */
+	Single<ComputeServer> create(ComputeServer computeServer);
+
+	/**
 	 * Remove persisted ComputeServer from Morpheus
 	 * @param computeServers Servers to delete
 	 * @return success

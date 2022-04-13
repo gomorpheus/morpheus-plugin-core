@@ -31,10 +31,16 @@ public interface ProvisioningProvider extends PluginProvider {
 
 
 	/**
-	 * Provides a Collection of ServicePlans related to this CloudProvider
+	 * Provides a Collection of ${@link ServicePlan} related to this ProvisioningProvider
 	 * @return Collection of ServicePlan
 	 */
 	public Collection<ServicePlan> getServicePlans();
+
+	/**
+	 * Provides a Collection of {@link ComputeServerInterfaceType} related to this ProvisioningProvider
+	 * @return Collection of ComputeServerInterfaceType
+	 */
+	Collection<ComputeServerInterfaceType> getComputeServerInterfaceTypes();
 
 	/**
 	 * Determines if this provision type has datastores that can be selected or not.

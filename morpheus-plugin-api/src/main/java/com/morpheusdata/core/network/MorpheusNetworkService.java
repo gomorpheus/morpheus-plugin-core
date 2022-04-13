@@ -78,7 +78,7 @@ public interface MorpheusNetworkService {
 	/**
 	 * Lists all network projection objects for a specified cloud.
 	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
-	 * 2@param cloud the {@link Cloud} identifier associated to the domains to be listed.
+	 * @param cloud the {@link Cloud} identifier associated to the domains to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<NetworkIdentityProjection> listIdentityProjections(Cloud cloud);

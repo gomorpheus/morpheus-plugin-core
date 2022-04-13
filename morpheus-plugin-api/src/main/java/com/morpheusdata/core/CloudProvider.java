@@ -62,7 +62,7 @@ public interface CloudProvider extends PluginProvider {
 	ProvisioningProvider getProvisioningProvider(String providerCode);
 
 	/**
-	 * Provides a Collection of NetworkTypes related to this CloudProvider
+	 * Provides a Collection of {@link NetworkType} related to this CloudProvider
 	 * @return Collection of NetworkType
 	 */
 	Collection<NetworkType> getNetworkTypes();
