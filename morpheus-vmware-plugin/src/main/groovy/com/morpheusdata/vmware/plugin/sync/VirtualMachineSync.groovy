@@ -297,7 +297,7 @@ class VirtualMachineSync {
 						def capacityInfo = currentServer.capacityInfo
 						//create one if it doesn't exist
 						if(!capacityInfo) {
-							currentServer.capacityInfo = new ComputeCapacityInfo(maxCores:maxCores, coresPerSocket:coresPerSocket, maxMemory:maxMemory)
+							currentServer.capacityInfo = new ComputeCapacityInfo(maxCores:maxCores, maxMemory:maxMemory)
 							capacityInfo = currentServer.capacityInfo
 							save = true
 						}
