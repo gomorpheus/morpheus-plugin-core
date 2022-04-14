@@ -204,6 +204,24 @@ class ResourcePoolsSync {
 //		def matchedResourcePools = ComputeZonePool.where{zone.id == currentZone.id && (internalId == clusterName || internalId == null) && externalId in updateList.collect{ul -> ul.existingItem[1]}}.list()?.collectEntries{[(it.externalId):it]}
 		List<Long> propagateTreeNameChanges = []
 		def updates = []
+
+		def parentIds = []
+		for(update in updateList) {
+			def cloudItem = update.masterItem
+			if (cloudItem.parentType != 'ClusterComputeResource') {
+				parentIds << cloudItem.parentId
+			}
+		}
+
+		def parentPools = [:]
+		if(parentIds) {
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { ComputeZonePoolIdentityProjection projection ->
+				return (projection.externalId in parentIds)
+			}.blockingSubscribe {
+				parentPools[it.externalId] = it
+			}
+		}
+
 		for(update in updateList) {
 			def existingStore = update.existingItem
 			if (existingStore) {
@@ -230,8 +248,10 @@ class ResourcePoolsSync {
 
 				if(existingStore && existingStore.parent?.externalId != matchItem.parentId) {
 					if(matchItem.parentType == 'ResourcePool') {
-//						def parentPool = ComputeZonePool.findByZoneAndExternalId(currentZone,matchItem.parentId)
-//						existingStore.parent = parentPool
+						def parentPool = parentPools[matchItem.parentId]
+						if(parentPool) {
+							existingStore.parent = new ComputeZonePool(id: parentPool.id, name: parentPool.name)
+						}
 					} else {
 						existingStore.parent = null
 						existingStore.type = 'Cluster'
