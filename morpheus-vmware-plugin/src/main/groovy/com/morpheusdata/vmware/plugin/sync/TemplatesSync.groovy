@@ -242,25 +242,8 @@ class TemplatesSync {
 			morpheusContext.virtualImage.listById(imageIds).blockingSubscribe { existingItems << it }
 		}
 		//dedupe
-		def groupedImages = existingItems.groupBy({ row -> row.externalId })
-		def dupedImages = groupedImages.findAll{ key, value -> key != null && value.size() > 1 }
-		if(dupedImages?.size() > 0)
-			log.warn("removing duplicate images: {}", dupedImages.collect{ it.key })
-		dupedImages?.each { key, value ->
-			//each pass is set of all the images with the same external id
-			def dupeCleanup = []
-			value.eachWithIndex { row, index ->
-				def locationMatch = existingLocations.find{ it.virtualImage.id == row.id }
-				if(locationMatch == null) {
-					dupeCleanup << row
-					existingItems.remove(row)
-				}
-			}
-			//cleanup
-			log.info("duplicate key: ${key} total: ${value.size()} remove count: ${dupeCleanup.size()}")
-			//remove the dupes
-			morpheusContext.virtualImage.remove([row], cloud).blockingGet()
-		}
+		VmwareSyncUtils.deDupeVirtualImages(existingItems, existingLocations, cloud, morpheusContext)
+
 		//updates
 		updateList?.each { update ->
 			def matchedTemplate = update.masterItem
@@ -362,26 +345,11 @@ class TemplatesSync {
 
 	private removeDuplicates() {
 		log.debug "removeDuplicates for ${cloud}"
-		try {
-			ArrayList allLocations = []
-			morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
-				return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
-			}.blockingSubscribe { allLocations << it }
-			def groupedLocations = allLocations.groupBy { it.externalId }
-			def dupedLocations = groupedLocations.findAll { key, value -> value.size() > 1 }
-			def dupeCleanup = []
-			if (dupedLocations?.size() > 0)
-				log.warn("removing duplicate image locations: {}", dupedLocations.collect { it.key })
-			dupedLocations?.each { key, value ->
-				value.eachWithIndex { row, index ->
-					if (index > 0)
-						dupeCleanup << row
-				}
-			}
-			morpheusContext.virtualImage.location.remove(dupeCleanup).blockingGet()
-		} catch(e) {
-			log.error "Error in removingDuplicates: ${e}", e
-		}
+		List<VirtualImageLocationIdentityProjection> allLocations = []
+		morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
+			return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
+		}.blockingSubscribe { allLocations << it }
+		VmwareSyncUtils.deDupeVirtualImageLocations(allLocations, cloud, morpheusContext)
 	}
 
 	private removeMissingVirtualImages(List removeList) {
