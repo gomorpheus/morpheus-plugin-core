@@ -188,6 +188,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasFolders() {
+		return false
+	}
+
+	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		return ServiceResponse.success()
 	}

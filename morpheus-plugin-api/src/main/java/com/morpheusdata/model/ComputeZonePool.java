@@ -25,6 +25,7 @@ public class ComputeZonePool extends ComputeZonePoolIdentityProjection {
 	public Status status = Status.available;
 	public Boolean editable;
 	public Boolean removable;
+	public Boolean inventory = true;
 
 	enum Status {
 		deploying,

@@ -65,6 +65,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasFolders() {
+		return false
+	}
+
+	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Username',

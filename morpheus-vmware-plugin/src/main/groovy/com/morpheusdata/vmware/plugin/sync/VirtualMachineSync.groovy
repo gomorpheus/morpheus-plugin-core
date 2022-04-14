@@ -605,9 +605,9 @@ class VirtualMachineSync {
 			def resourcePoolId = cloudItem.resourcePool?.getVal()
 			def resourcePool = resourcePools?.find{ pool -> pool.externalId == resourcePoolId }
 			def doCreate = true
-//			if(resourcePool.inventory == false) {
-//				doCreate = false //granular inventory control
-//			}
+			if(resourcePool.inventory == false) {
+				doCreate = false //granular inventory control
+			}
 			if(blackListedNames?.contains(cloudItem.name)) {
 				doCreate = false
 			}
