@@ -147,37 +147,29 @@ class VirtualMachineSync {
 		}
 
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
-//		Collection<ServicePlan> availablePlans = ServicePlan.where{active == true && deleted != true && provisionType.code == 'vmware'}.list(readOnly:true)
-//		Collection<ResourcePermission> availablePlanPermissions = []
-//		if(availablePlans) {
-//			availablePlanPermissions = ResourcePermission.where{ morpheusResourceType == 'ServicePlan' && morpheusResourceId in availablePlans.collect{pl -> pl.id}}.list(readOnly:true)
-//		}
+		// TODO: Handle Tags
 //		Collection<MetadataTag> existingTags = MetadataTag.where{refType == 'ComputeZone' && refId == cloud.id}.list(readOnly:true)
-//		List<ComputeServer> matchedServers = ComputeServer.where {
-//			zone == cloud && (uniqueId in updateList.collect { rm -> rm.existingItem[0] } || externalId in updateList.collect { rm -> rm.existingItem[1] })
-//		}.join('account').join('zone').join('zone.zoneType').join('computeServerType').join('plan').join('chassis').join('serverOs').join('sourceImage').join('folder').join('createdBy')
-//				.join('userGroup').join('networkDomain').join('interfaces').join('serverOs').join('controllers').join('snapshots').join('metadata').join('volumes').join('volumes.datastore')
-//				.join('resourcePool').join('parentServer').join('capacityInfo').join('metadata').list()
+
+		List<ComputeServer> matchedServers = getAllServersByUpdateList(cloud, updateList)
 
 //		def managedServerIds = matchedServers?.findAll{it.computeServerType?.managed}?.collect{it.id}
 //		def tmpContainers = [:]
 //		if(managedServerIds) {
 //			tmpContainers = Container.where{server.id in managedServerIds}.join('containerType').list(readOnly:true).groupBy{it.serverId}
 //		}
-//		//lets look for duplicate discovered vms in the result set and delete if unmanaged
-//		def serversGroupedByUniqueId = matchedServers.groupBy{it.uniqueId}
-//		serversGroupedByUniqueId?.each { tmpUniqueId, svList ->
-//			if(svList.size() > 1) {
-//				def discoveredServer = svList.find{ !it.computeServerType.managed}
-//				if(discoveredServer) {
-//					matchedServers.remove(discoveredServer)
-//					deleteUnmanagedServer(discoveredServer)
-//				}
-//			}
-//		}
-		// println "Matched Servers: ${matchedServers?.collect{"${it.id}:${it.name}"}}"
-//		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
-//		def matchedServersByUniqueId = matchedServers?.collectEntries { [(it.uniqueId): it] }
+		//lets look for duplicate discovered vms in the result set and delete if unmanaged
+		def serversGroupedByUniqueId = matchedServers.groupBy{it.uniqueId}
+		serversGroupedByUniqueId?.each { tmpUniqueId, svList ->
+			if(svList.size() > 1) {
+				def discoveredServer = svList.find{ !it.computeServerType.managed}
+				if(discoveredServer) {
+					matchedServers.remove(discoveredServer)
+					morpheusContext.computeServer.remove([discoveredServer]).blockingGet()
+				}
+			}
+		}
+		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
+		def matchedServersByUniqueId = matchedServers?.collectEntries { [(it.uniqueId): it] }
 //		Map<Long, WikiPage> serverNotes = WikiPage.where{refType == 'ComputeServer' && refId in matchedServers.collect{it.id}}.list()?.collectEntries { [(it.refId): it] }
 //		def vmIds = matchedServers.collect{it.externalId}
 //		def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
@@ -189,14 +181,11 @@ class VirtualMachineSync {
 //		def updateServers = []
 
 		for(update in updateList) {
-			// TODO : Handle matching via uniqueId
-//			ComputeServer currentServer = update.existingItem[0] ? matchedServersByUniqueId[update.existingItem[0]] : null
-			ComputeServer currentServer = update.existingItem
+			ComputeServer currentServer = update.existingItem ? matchedServersByUniqueId[update.existingItem] : null
 			def matchedServer = update.masterItem
-//			if(!currentServer) {
-//				currentServer = matchedServersByExternalId[update.existingItem[1]]
-//				// println "Found ${currentServer?.id}: ${currentServer?.name} by external id ${currentServer.externalId}"
-//			}
+			if(!currentServer) {
+				currentServer = matchedServersByExternalId[update.existingItem.externalId]
+			}
 			if(currentServer) {
 //				updateServers << currentServer
 				//update view ?
@@ -591,6 +580,7 @@ class VirtualMachineSync {
 		return rtn
 	}
 
+
 	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
 
@@ -739,34 +729,6 @@ class VirtualMachineSync {
 		resourcePools
 	}
 
-	private getHostsForVirtualMachines(Cloud cloud, List cloudVMs) {
-		log.debug "getHostsForVirtualMachines: ${cloud} ${cloudVMs?.size()}"
-		def hostExternalIds = cloudVMs.collect{it.runtime?.host?.getVal()}.unique()
-		def hostIdentities = []
-		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { hostIdentities << it.id }
-		def hosts = []
-		morpheusContext.computeServer.listById(hostIdentities).blockingSubscribe { ComputeServer it ->
-			if(it.computeServerType.code == 'vmware-plugin-hypervisor' && it.externalId in hostExternalIds) {
-				hosts << it
-			}
-		}
-		hosts
-	}
-
-	private getResourcePoolsForVirtualMachines(Cloud cloud, List cloudVMs) {
-		log.debug "getResourcePoolsForVirtualMachines: ${cloud} ${cloudVMs?.size()}"
-		def resourcePoolExternalIds = cloudVMs.collect { it.resourcePool?.getVal() }.unique()
-		def resourcePoolProjections = []
-		morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe { resourcePoolProjections << it }
-		def resourcePools = []
-		morpheusContext.cloud.pool.listById(resourcePoolProjections.collect { it.id }).blockingSubscribe { ComputeZonePool it ->
-			if (it.externalId in resourcePoolExternalIds) {
-				resourcePools << it
-			}
-		}
-		resourcePools
-	}
-
 	private getAllServicePlans(Cloud cloud) {
 		log.debug "getAllServicePlans: ${cloud}"
 		def servicePlanProjections = []
@@ -801,6 +763,21 @@ class VirtualMachineSync {
 			networks << it
 		}
 		networks
+	}
+
+	private getAllServersByUpdateList(Cloud cloud, List<SyncTask.UpdateItem> updateList) {
+		log.debug "getAllServersByUniqueId: ${cloud}"
+		def serverProjections = []
+		morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { serverProjections << it }
+		def servers = []
+		def uniqueIds = updateList.collect { rm -> rm.existingItem.uniqueId }
+		def externalIds = updateList.collect { rm -> rm.existingItem.externalId }
+		morpheusContext.computeServer.listById(serverProjections.collect { it.id }).blockingSubscribe {
+			if(it.uniqueId in uniqueIds || it.externalId in externalIds) {
+				servers << it
+			}
+		}
+		servers
 	}
 
 	ServicePlan findServicePlanBySizing(Collection<ServicePlan> allPlans, Long maxMemory, Long maxCores, Long coresPerSocket=null, ServicePlan fallbackPlan=null, ServicePlan existingPlan = null, Account account = null) {
