@@ -8,9 +8,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
-import com.morpheusdata.model.ComputeCapacityInfo
 import com.morpheusdata.model.ComputeServerType
-import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkProxy
 import com.morpheusdata.model.NetworkType
@@ -26,8 +24,6 @@ import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
 import java.security.MessageDigest
 import io.reactivex.*
-import io.reactivex.annotations.NonNull
-import com.morpheusdata.core.util.SyncTask
 
 @Slf4j
 class VmwareCloudProvider implements CloudProvider {

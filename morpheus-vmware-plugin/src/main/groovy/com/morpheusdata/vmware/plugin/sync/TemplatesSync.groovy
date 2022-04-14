@@ -29,58 +29,34 @@ class TemplatesSync {
 
 	def execute() {
 		log.debug "cacheTemplates: ${cloud}"
-		def lock
-		def configMap = cloud.getConfigMap()
-		def datacenter = configMap.datacenter
-//		def lockKey = "zone.refresh.images.vmware.${datacenter}"
-//		def regionCode = getRegionCode(opts.zone)
-//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
-		def listResults = VmwareCloudProvider.listTemplates(cloud)
-		if(listResults.success) {
-			Observable domainRecords = morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
-				return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
-			}
-			SyncTask<VirtualImageLocationIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, listResults?.templates)
-			syncTask.addMatchFunction { VirtualImageLocationIdentityProjection domainObject, Map cloudItem ->
-				domainObject.externalId == cloudItem?.ref
-			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map>> updateItems ->
-				Map<Long, SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
-				morpheusContext.virtualImage.location.listById(updateItems?.collect { it.existingItem.id }).map { VirtualImageLocation virtualImageLocation ->
-					SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map> matchItem = updateItemMap[virtualImageLocation.id]
-					return new SyncTask.UpdateItem<Datastore, Map>(existingItem: virtualImageLocation, masterItem: matchItem.masterItem)
-				}
-			}.onAdd { itemsToAdd ->
-				addMissingVirtualImageLocations(itemsToAdd)
-			}.onUpdate { List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateItems ->
-				updateMatchedVirtualImages(updateItems)
-			}.onDelete { removeItems ->
-				removeMissingVirtualImages(removeItems)
-			}.start()
-		}
 
-	// TODO: Do we still need dedupe logic
-//				//dedupe
-//				def groupedLocations = queryResults.existingLocations.groupBy({ row -> row[1] })
-//				def dupedLocations = groupedLocations.findAll{ key, value -> value.size() > 1 }
-//				def dupeCleanup = []
-//				if(dupedLocations?.size() > 0)
-//					log.warn("removing duplicate image locations: {}", dupedLocations.collect{ it.key })
-//				dupedLocations?.each { key, value ->
-//					value.eachWithIndex { row, index ->
-//						if(index > 0)
-//							dupeCleanup << row
-//					}
-//				}
-//				VirtualImageLocation.withNewSession { session ->
-//					dupeCleanup?.each { row ->
-//						def dupeResults = virtualImageService.removeVirtualImageLocation(row[3])
-//						if (dupeResults.success == true)
-//							queryResults.existingLocations.remove(row)
-//					}
-//				}
-//				return queryResults
 		try {
-
+	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
+			def listResults = VmwareCloudProvider.listTemplates(cloud)
+			if(listResults.success) {
+				// First pass through.. dedupe logic
+				removeDuplicates()
+				// Now.. get on with the sync
+				Observable domainRecords = morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
+					return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
+				}
+				SyncTask<VirtualImageLocationIdentityProjection, Map, ComputeZonePool> syncTask = new SyncTask<>(domainRecords, listResults?.templates)
+				syncTask.addMatchFunction { VirtualImageLocationIdentityProjection domainObject, Map cloudItem ->
+					domainObject.externalId == cloudItem?.ref
+				}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map>> updateItems ->
+					Map<Long, SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+					morpheusContext.virtualImage.location.listById(updateItems?.collect { it.existingItem.id }).map { VirtualImageLocation virtualImageLocation ->
+						SyncTask.UpdateItemDto<VirtualImageLocationIdentityProjection, Map> matchItem = updateItemMap[virtualImageLocation.id]
+						return new SyncTask.UpdateItem<Datastore, Map>(existingItem: virtualImageLocation, masterItem: matchItem.masterItem)
+					}
+				}.onAdd { itemsToAdd ->
+					addMissingVirtualImageLocations(itemsToAdd)
+				}.onUpdate { List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateItems ->
+					updateMatchedVirtualImages(updateItems)
+				}.onDelete { removeItems ->
+					removeMissingVirtualImages(removeItems)
+				}.start()
+			}
 		} catch(e) {
 			log.error "Error in execute of TemplatesSync: ${e}", e
 		}
@@ -381,6 +357,30 @@ class TemplatesSync {
 				}
 
 			}
+		}
+	}
+
+	private removeDuplicates() {
+		log.debug "removeDuplicates for ${cloud}"
+		try {
+			ArrayList allLocations = []
+			morpheusContext.virtualImage.location.listSyncProjections(cloud.id).filter { VirtualImageLocationIdentityProjection projection ->
+				return projection.virtualImage.linkedClone != true && !projection.sharedStorage && projection.virtualImage.imageType in [ImageType.ovf, ImageType.vmdk]
+			}.blockingSubscribe { allLocations << it }
+			def groupedLocations = allLocations.groupBy { it.externalId }
+			def dupedLocations = groupedLocations.findAll { key, value -> value.size() > 1 }
+			def dupeCleanup = []
+			if (dupedLocations?.size() > 0)
+				log.warn("removing duplicate image locations: {}", dupedLocations.collect { it.key })
+			dupedLocations?.each { key, value ->
+				value.eachWithIndex { row, index ->
+					if (index > 0)
+						dupeCleanup << row
+				}
+			}
+			morpheusContext.virtualImage.location.remove(dupeCleanup).blockingGet()
+		} catch(e) {
+			log.error "Error in removingDuplicates: ${e}", e
 		}
 	}
 
