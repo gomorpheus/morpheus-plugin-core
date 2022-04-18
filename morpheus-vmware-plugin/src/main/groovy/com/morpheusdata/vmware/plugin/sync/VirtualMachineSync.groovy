@@ -150,7 +150,6 @@ class VirtualMachineSync {
 		}
 
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
-		// TODO: Handle Tags
 		Collection<MetadataTag> existingTags = getAllTags('ComputeZone', cloud.id)
 
 		List<ComputeServer> matchedServers = getAllServersByUpdateList(cloud, updateList)
