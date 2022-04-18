@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin.sync
 
+import com.morpheusdata.core.util.HttpApiClient
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
 import com.morpheusdata.model.Cloud
@@ -22,8 +23,9 @@ class VirtualMachineSync {
 	private String apiVersion
 	private ProvisioningProvider provisioningProvider
 	private Collection<ComputeServerInterfaceType> netTypes
+	private HttpApiClient client
 
-	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext, ProvisioningProvider provisioningProvider) {
+	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext, ProvisioningProvider provisioningProvider, HttpApiClient client) {
 		this.cloud = cloud
 		this.createNew = createNew
 		this.proxySettings = proxySettings
@@ -31,6 +33,7 @@ class VirtualMachineSync {
 		this.morpheusContext = morpheusContext
 		this.netTypes = provisioningProvider.getComputeServerInterfaceTypes()
 		this.provisioningProvider = provisioningProvider
+		this.client = client
 	}
 
 	def execute() {
@@ -148,7 +151,7 @@ class VirtualMachineSync {
 
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
 		// TODO: Handle Tags
-//		Collection<MetadataTag> existingTags = MetadataTag.where{refType == 'ComputeZone' && refId == cloud.id}.list(readOnly:true)
+		Collection<MetadataTag> existingTags = getAllTags('ComputeZone', cloud.id)
 
 		List<ComputeServer> matchedServers = getAllServersByUpdateList(cloud, updateList)
 
@@ -171,12 +174,13 @@ class VirtualMachineSync {
 		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
 		def matchedServersByUniqueId = matchedServers?.collectEntries { [(it.uniqueId): it] }
 //		Map<Long, WikiPage> serverNotes = WikiPage.where{refType == 'ComputeServer' && refId in matchedServers.collect{it.id}}.list()?.collectEntries { [(it.refId): it] }
-//		def vmIds = matchedServers.collect{it.externalId}
-//		def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
-//		def tagAssociations
-//		if(apiVersion && apiVersion != '6.0') {
-//			tagAssociations = listTagAssociations([zone:cloud,vmIds: vmIds, proxySettings:opts.proxySettings])
-//		}
+		def vmIds = matchedServers.collect{it.externalId}
+		def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
+		def tagAssociations
+		if(apiVersion && apiVersion != '6.0') {
+			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+			tagAssociations = VmwareComputeUtility.listTagAssociationsForVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [vmIds: vmIds])
+		}
 //		def statsData = []
 //		def updateServers = []
 
@@ -454,33 +458,35 @@ class VirtualMachineSync {
 						}
 
 //						syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot)
-
 						Boolean tagChanges = false
-//						if(tagAssociations && tagAssociations.success) {
-//							def associatedTags = tagAssociations ? tagAssociations.associations[currentServer.externalId] : null
-//							def tags = []
-//							if(associatedTags) {
-//								associatedTags.each { tagA ->
-//									def tagMatch = existingTags.find{it.externalId == tagA}
-//									if(tagMatch) {
-//										tags << tagMatch
-//									}
-//								}
-//							}
-//							def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
-//								morpheusItem?.id == matchedMetadata?.id
-//							}
-//							def tagSyncLists = ComputeUtility.buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
-//							tagSyncLists.addList?.each { tag ->
-//								currentServer.addToMetadata(tag)
-//								save = true
-//								tagChanges = true
-//							}
-//							tagSyncLists.removeList?.each { tagRemove ->
-//								currentServer.removeFromMetadata(tagRemove)
-//								save = true
-//								tagChanges = true
-//							}
+						if(tagAssociations && tagAssociations.success) {
+							def associatedTags = tagAssociations ? tagAssociations.associations[currentServer.externalId] : null
+							def tags = []
+							if(associatedTags) {
+								associatedTags.each { tagA ->
+									def tagMatch = existingTags.find{it.externalId == tagA}
+									if(tagMatch) {
+										tags << tagMatch
+									}
+								}
+							}
+							def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
+								morpheusItem?.id == matchedMetadata?.id
+							}
+							def tagSyncLists = buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
+							tagSyncLists.addList?.each { tag ->
+								def createdTag = morpheusContext.metadataTag.create(tag).blockingGet()
+								currentServer.metadata += createdTag
+								save = true
+								tagChanges = true
+							}
+							tagSyncLists.removeList?.each { tagRemove ->
+								morpheusContext.metadataTag.remove([tagRemove]).blockingGet()
+								currentServer.metadata.remove(tagRemove)
+								save = true
+								tagChanges = true
+							}
+							//TODO?: tags on instances?
 //							if(tagChanges && currentServer.computeServerType?.containerHypervisor == false && currentServer.computeServerType?.vmHypervisor == false) {
 //								def instances = Container.where{server == currentServer && instance != null}.join('instance').list()?.collect{ct -> ct.instance}
 //								instances?.each { instance ->
@@ -494,7 +500,7 @@ class VirtualMachineSync {
 //									instance.save(flush:true)
 //								}
 //							}
-//						}
+						}
 						//check for restart usage records
 						if(planInfoChanged || volumeInfoChanged || tagChanges) {
 //							if(!rtn.stopUsageIds.contains(currentServer.id) && !rtn.startUsageIds.contains(currentServer.id))
@@ -621,7 +627,6 @@ class VirtualMachineSync {
 				def ipAddress = serverIps.ipAddress
 				def hostname = cloudItem.guest.hostName
 
-				// TODO : Handle folder
 				def folderId = cloudItem.parent?.getVal()
 				def folder = zoneFolders?.find{ folder -> folder.externalId == folderId }
 				def vmConfig = [account:cloud.account, externalId:cloudItem.ref, name:cloudItem.name, externalIp:ipAddress,
@@ -922,4 +927,44 @@ class VirtualMachineSync {
 		return rtn
 	}
 
+	static buildSyncLists(existingItems, masterItems, matchExistingToMasterFunc, secondaryMatchExistingToMasterFunc=null) {
+		def rtn = [addList:[], updateList: [], removeList: []]
+		try {
+			existingItems?.each { existing ->
+				def matches = masterItems?.findAll { matchExistingToMasterFunc(existing, it) }
+				if(!matches && secondaryMatchExistingToMasterFunc != null) {
+					matches = masterItems?.findAll { secondaryMatchExistingToMasterFunc(existing, it) }
+				}
+				if(matches?.size() > 0) {
+					matches?.each { match ->
+						rtn.updateList << [existingItem:existing, masterItem:match]
+					}
+				} else {
+					rtn.removeList << existing
+				}
+			}
+			masterItems?.each { masterItem ->
+				def match = rtn?.updateList?.find {
+					it.masterItem == masterItem
+				}
+				if(!match) {
+					rtn.addList << masterItem
+				}
+			}
+		} catch(e) {
+			log.error "buildSyncLists error: ${e}", e
+		}
+		return rtn
+	}
+
+	Collection<MetadataTag> getAllTags(String refType, Long refId) {
+		log.debug "getAllTags: ${cloud}"
+		def tagProjections = []
+		morpheusContext.metadataTag.listSyncProjections(refType, refId).blockingSubscribe { tagProjections << it }
+		def tags = []
+		morpheusContext.metadataTag.listById(tagProjections.collect { it.id }).blockingSubscribe {
+			tags << it
+		}
+		tags
+	}
 }

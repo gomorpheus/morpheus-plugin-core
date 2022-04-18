@@ -318,6 +318,11 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasFolders() {
+		return true
+	}
+
+	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		log.debug("startServer: ${computeServer}")
 		def rtn = [success:false]
@@ -397,7 +402,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					}
 //
 					//Returning Promise Chain now
-					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider())).execute()
+					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
 //					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
 //						refreshZoneVms(zone, [:], syncDate)
 //						return true

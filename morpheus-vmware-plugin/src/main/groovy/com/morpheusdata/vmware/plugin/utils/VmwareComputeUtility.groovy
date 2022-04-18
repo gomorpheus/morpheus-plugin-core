@@ -1442,6 +1442,39 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static listTagAssociationsForVirtualMachines(apiUrl,username,password,HttpApiClient client,opts=[:]) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			rtn.associations = [:]
+			def sessionResults = getRestSessionId(client, url, username, password)
+			sessionId = sessionResults.sessionId
+			log.debug("sessionId: ${sessionId}")
+			def body = [object_ids: []]
+			def params = ['~action':'list-attached-tags-on-objects']
+			body.object_ids = opts.vmIds.collect{[type: 'VirtualMachine', id: it]}
+			def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/tag-association",null,null,new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId], body: body, queryParams: params]),'POST')
+			if(apiResults.success) {
+				apiResults.data?.value.collect { association ->
+					rtn.associations[association.object_id.id] = association.tag_ids
+				}
+			} else {
+				log.warn("Error Calling Tag Associations API: ${apiResults.statusCode} for VMs: ${opts.vmIds}")
+				rtn.success = false
+			}
+			rtn.success = apiResults.success
+		} catch(e) {
+			log.error("listTagAssociations: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url, sessionId)
+			}
+		}
+
+		return rtn
+	}
+
 	static getRestSessionId(HttpApiClient client, url, username, password,opts=[:]) {
 		def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/session",username,password,new HttpApiClient.RequestOptions(),'POST')
 		return [success:apiResults.success,sessionId:apiResults.data?.value]

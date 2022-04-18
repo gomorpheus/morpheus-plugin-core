@@ -79,6 +79,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String consolePassword;
 	protected ComputeServer parentServer;
 	protected ComputeStats computeStats;
+	protected List<MetadataTag> metadata;
 
 
 	public String getUuid() {
@@ -290,6 +291,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public List<StorageVolume> getVolumes() {
 		return volumes;
 	}
+
+	public List<MetadataTag> getMetadata() { return metadata;}
 
 	public enum PowerState {
 		on,
@@ -669,5 +672,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setConsolePort(Integer consolePort) {
 		this.consolePort = consolePort;
 		markDirty("consolePort",consolePort);
+	}
+
+	public void setMetadata(List<MetadataTag> metadata) {
+		this.metadata = metadata;
+		markDirty("metadata", metadata);
 	}
 }
