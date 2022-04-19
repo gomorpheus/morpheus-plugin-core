@@ -315,7 +315,7 @@ class TemplatesSync {
 //							if (a.rootVolume) {
 //								return -1
 //							}
-//							return a.controllerMountPoint <=> b.controllerMountPoint
+//							return a.controllerMountPoint <=> b.controllerMountPoint TODO: Need controller support for this
 //						}.eachWithIndex { vol, index ->
 //							vol.displayOrder = index;
 //							vol.save()

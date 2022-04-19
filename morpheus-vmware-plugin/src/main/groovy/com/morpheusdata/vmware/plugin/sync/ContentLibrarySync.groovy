@@ -145,12 +145,6 @@ class ContentLibrarySync {
 			imageConfig.virtioSupported = false
 
 			def add = new VirtualImage(imageConfig)
-			// TODO : Need to add to accounts?
-			//		Account account = cloud.account
-//			if(account) {
-//				add.addToAccounts(account)
-//			}
-
 			def createdImage = morpheusContext.virtualImage.create(add, cloud).blockingGet()
 
 			def locationConfig = [
@@ -289,7 +283,7 @@ class ContentLibrarySync {
 //							if (a.rootVolume) {
 //								return -1
 //							}
-//							return a.controllerMountPoint <=> b.controllerMountPoint
+//							return a.controllerMountPoint <=> b.controllerMountPoint // TODO : Need controller for this
 //						}.eachWithIndex { vol, index ->
 //							vol.displayOrder = index;
 //							vol.save()
