@@ -13,6 +13,7 @@ import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkProxy
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.StorageVolumeType
 import com.morpheusdata.model.OsType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.projection.*
@@ -232,6 +233,20 @@ class VmwareCloudProvider implements CloudProvider {
 		NetworkType vmwareOpaque = new NetworkType(vmwareOpaqueConfig)
 
 		return [vmwareNetwork, vmwareDistributedSwitch, vmwareDistributed, vmwareOpaque]
+	}
+
+	@Override
+	Collection<StorageVolumeType> getStorageVolumeTypes() {
+		def datastoreVolumeType = new StorageVolumeType([
+				code: 'vmware-plugin-datastore',
+				name: 'Vmware Datastore'
+		])
+		def diskVolumeType = new StorageVolumeType([
+				code: 'vmware-plugin-disk',
+				name: 'Disk'
+		])
+
+		return [datastoreVolumeType, diskVolumeType]
 	}
 
 	@Override

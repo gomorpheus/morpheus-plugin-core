@@ -212,7 +212,7 @@ class VmwareSyncUtils {
 		if(volume.storageType)
 			storageVolume.type = new StorageVolumeType(id: volume.storageType?.toLong())
 		else
-			storageVolume.type = new StorageVolumeType(code: 'standard') // TODO : Seed in vmware storagevolumetype
+			storageVolume.type = new StorageVolumeType(code: 'vmware-plugin-disk')
 		if(volume.externalId)
 			storageVolume.externalId = volume.externalId
 		if(volume.internalId)

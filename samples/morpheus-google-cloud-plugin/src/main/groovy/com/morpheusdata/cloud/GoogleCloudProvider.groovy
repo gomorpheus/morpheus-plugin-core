@@ -150,6 +150,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<StorageVolumeType> getStorageVolumeTypes() {
+		return null
+	}
+
+	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
 		log.debug "validating Cloud: ${zoneInfo.code}"
 		def jsonSettings = this.morpheusContext.getSettings(this.plugin).blockingGet()

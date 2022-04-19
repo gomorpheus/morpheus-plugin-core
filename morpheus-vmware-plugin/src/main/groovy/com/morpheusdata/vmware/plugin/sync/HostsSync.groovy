@@ -86,7 +86,7 @@ class HostsSync {
 	def updateMatchedHosts(Cloud cloud, List clusters, List updateList) {
 		log.debug "updateMatchedHosts: ${cloud} ${updateList.size()}"
 
-		def volumeType = new StorageVolumeType(code: 'vmware-datastore') // TODO : Seed in storagevolumetype
+		def volumeType = new StorageVolumeType(code: 'vmware-plugin-datastore')
 
 		List<ComputeZonePoolIdentityProjection> zoneClusters = []
 		def clusterNames = updateList.collect{it.masterItem.cluster}.unique()
@@ -122,7 +122,7 @@ class HostsSync {
 	def addMissingHosts(Cloud cloud, List clusters, List addList) {
 		log.debug "addMissingHosts: ${cloud} ${addList.size()}"
 
-		def volumeType = new StorageVolumeType(code: 'vmware-datastore') // TODO : Seed in storage volume type
+		def volumeType = new StorageVolumeType(code: 'vmware-plugin-datastore')
 		def serverType = new ComputeServerType(code: 'vmware-plugin-hypervisor')
 		def serverOs = new OsType(code: 'esxi.6')
 		for(cloudItem in addList) {

@@ -166,7 +166,7 @@ class TemplatesSync {
 							maxStorage  : (volume.size * ComputeUtility.ONE_KILOBYTE),
 							displayOrder: index,
 							diskIndex   : index,
-							type        : new StorageVolumeType(code: 'vmware-disk'), // TODO : Seed StorageVolumeType
+							type        : new StorageVolumeType(code: 'vmware-plugin-disk'),
 							unitNumber  : "${volume.unitNumber}",
 							externalId  : volume.key,
 							internalId  : volume.fileName,

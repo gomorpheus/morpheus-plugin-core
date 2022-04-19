@@ -16,6 +16,7 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
 import com.morpheusdata.model.ReferenceData
 import com.morpheusdata.model.VirtualImage
+import com.morpheusdata.model.StorageVolumeType
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.NetworkIdentityProjection
@@ -128,6 +129,11 @@ class MaasCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<NetworkType> getNetworkTypes() {
+		return null
+	}
+
+	@Override
+	Collection<StorageVolumeType> getStorageVolumeTypes() {
 		return null
 	}
 
