@@ -172,7 +172,11 @@ class VirtualMachineSync {
 		}
 		def matchedServersByExternalId = matchedServers?.collectEntries { [(it.externalId): it] }
 		def matchedServersByUniqueId = matchedServers?.collectEntries { [(it.uniqueId): it] }
-//		Map<Long, WikiPage> serverNotes = WikiPage.where{refType == 'ComputeServer' && refId in matchedServers.collect{it.id}}.list()?.collectEntries { [(it.refId): it] }
+		List<WikiPage> allNotes = getAllWikiPagesForServers(cloud, matchedServers)
+		Map<Long, WikiPage> serverNotes = allNotes.inject([:]) { result, page ->
+			result[page.refId] = page
+			return result
+		}
 		def vmIds = matchedServers.collect{it.externalId}
 		def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 		def tagAssociations
@@ -365,18 +369,30 @@ class VirtualMachineSync {
 //								}
 //							}
 //						}
-//						def notesPage = serverNotes[currentServer.id]
-//						// println "Annotation is ${matchedServer.summary.config.annotation} ${matchedServer.summary.config.annotation == null}"
-//						if((notesPage != null && matchedServer.summary.config.annotation != notesPage?.content) || (notesPage == null && matchedServer.summary.config.annotation)) {
-//							computeService.saveNotes(currentServer, matchedServer.summary.config.annotation, false, false)
+						def notesPage = serverNotes[currentServer.id]
+						if((notesPage != null && matchedServer.summary.config.annotation != notesPage?.content) || (notesPage == null && matchedServer.summary.config.annotation)) {
+							if(notesPage == null) {
+								WikiPage newPage = new WikiPage([
+								        name: currentServer.displayName ?: currentServer.name,
+										category: 'servers',
+										account:  currentServer.account,
+										refType: 'ComputeServer',
+										refId: currentServer.id,
+										content: matchedServer.summary.config.annotation
+								])
+								morpheusContext.wikiPage.create(newPage).blockingGet()
+							} else {
+								notesPage.content = matchedServer.summary.config.annotation
+								morpheusContext.wikiPage.save([notesPage]).blockingGet()
+							}
 //							if(!(currentServer.computeServerType?.containerHypervisor) && !(currentServer.computeServerType?.vmHypervisor)) {
 //								Instance.where { containers.server == currentServer}.list()?.each { instance ->
 //									def page = wikiPageService.findOrCreateReferencePage(instance.account, 'Instance', instance.id)
 //									wikiPageService.updatePage(page, [name:instance.displayName ?: instance.name, category:'instances', content:matchedServer.summary.config.annotation], null,false)
 //								}
 //							}
-//							save = true
-//						}
+							save = true
+						}
 						if(powerState != currentServer.powerState) {
 							def previousState = currentServer.powerState
 							currentServer.powerState = powerState
@@ -580,6 +596,7 @@ class VirtualMachineSync {
 //			sendRabbitMessage('main', '', ApplianceJobService.applianceMonitorQueue, msg)
 //		}
 //		if(updateServers) {
+		//TODO?: Tag Compliance?
 //			tagCompliancePolicyService.checkTagComplianceForServers(cloud, updateServers)
 //		}
 		return rtn
@@ -599,10 +616,6 @@ class VirtualMachineSync {
 			}
 		}
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
-//		Collection<ResourcePermission> availablePlanPermissions = []
-//		if(availablePlans) {
-//			availablePlanPermissions = ResourcePermission.where{ morpheusResourceType == 'ServicePlan' && morpheusResourceId in availablePlans.collect{pl -> pl.id}}.list()
-//		}
 //		def addedServers = []
 		for(cloudItem in addList) {
 			//if we have extra zones - try to find the vm in that zone first
@@ -767,6 +780,19 @@ class VirtualMachineSync {
 			networks << it
 		}
 		networks
+	}
+
+	private getAllWikiPagesForServers(Cloud cloud, List<ComputeServer> matchedServers) {
+		log.debug "getAllWikiPages: ${cloud}"
+		def wikiProjections = []
+		morpheusContext.wikiPage.listSyncProjections('ComputeServer', matchedServers.collect{cs -> cs.id}).blockingSubscribe {
+			wikiProjections << it
+		}
+		def wikiPages = []
+		morpheusContext.wikiPage.listById(wikiProjections.collect { it.id }).blockingSubscribe {
+			wikiPages << it
+		}
+		wikiPages
 	}
 
 	private getAllServersByUpdateList(Cloud cloud, List<SyncTask.UpdateItem> updateList) {

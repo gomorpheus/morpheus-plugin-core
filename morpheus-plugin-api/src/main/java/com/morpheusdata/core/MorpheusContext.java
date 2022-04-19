@@ -155,6 +155,13 @@ public interface MorpheusContext {
 	MorpheusMetadataTagService getMetadataTag();
 
 	/**
+	 * Returns the Wiki Page Service
+	 *
+	 * @return An instance of the Wiki Page Service
+	 */
+	MorpheusWikiPageService getWikiPage();
+
+	/**
 	 * Returns the StorageVolume Service
 	 *
 	 * @return An instance of the StorageVolume Service
