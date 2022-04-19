@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.DatastoreIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -16,6 +17,15 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String deviceName;
 	protected Long maxStorage;
 	protected StorageVolumeType type;
+	protected Integer displayOrder;
+	protected Boolean rootVolume = false;
+	protected String internalId;
+	protected String unitNumber;
+	protected DatastoreIdentityProjection datastore;
+	protected Integer maxIOPS;
+	protected Boolean removable = false;
+	protected Integer diskIndex;
+	protected String uniqueId;
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -47,5 +57,148 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public StorageVolumeType getType() {
 		return type;
+	}
+
+	/**
+	 * The display order of the disk in the user interface when displayed with other related disks for a ComputeServer,
+	 * VirtualImage, or VirtualImageLocation
+	 * @return displayOrder
+	 */
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+
+	/**
+	 * The display order of the disk in the user interface when displayed with other related disks for a ComputeServer,
+	 * VirtualImage, or VirtualImageLocation
+	 * @param displayOrder displayOrder
+	 */
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
+	/**
+	 * Represents if this StorageVolume is a root volume
+	 * @return rootVolume
+	 */
+	public Boolean getRootVolume() {
+		return rootVolume;
+	}
+
+	/**
+	 * Represents if this StorageVolume is a root volume
+	 * @param rootVolume rootVolume
+	 */
+	public void setRootVolume(Boolean rootVolume) {
+		this.rootVolume = rootVolume;
+	}
+
+	/**
+	 * An internal ID for this StorageVolume. Not controlled by Morpheus.
+	 * @return internalId
+	 */
+	public String getInternalId() {
+		return internalId;
+	}
+
+	/**
+	 * An internal ID for this StorageVolume. Not controlled by Morpheus.
+	 * @param internalId internalId
+	 */
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
+
+	/**
+	 * The unit number
+	 * @return unitNumber
+	 */
+	public String getUnitNumber() {
+		return unitNumber;
+	}
+
+	/**
+	 * The unit number
+	 * @param unitNumber unitNumber
+	 */
+	public void setUnitNumber(String unitNumber) {
+		this.unitNumber = unitNumber;
+	}
+
+	/**
+	 * The Datastore associated with this StorageVolume
+	 * @return datastore
+	 */
+	public DatastoreIdentityProjection getDatastore() {
+		return datastore;
+	}
+
+	/**
+	 * The Datastore associated with this StorageVolume
+	 * @param datastore datastore
+	 */
+	public void setDatastore(DatastoreIdentityProjection datastore) {
+		this.datastore = datastore;
+	}
+
+	public Integer getMaxIOPS() {
+		return maxIOPS;
+	}
+
+	public void setMaxIOPS(Integer maxIOPS) {
+		this.maxIOPS = maxIOPS;
+	}
+
+	/**
+	 * Indicates if the disk is able to be removed
+	 * @return removable
+	 */
+	public Boolean getRemovable() {
+		return removable;
+	}
+
+	/**
+	 * Indicates if the disk is able to be removed
+	 * @param removable removable
+	 */
+	public void setRemovable(Boolean removable) {
+		this.removable = removable;
+	}
+
+	/**
+	 * Utilized during creation to set logical defaults for deviceName and deviceDisplayName if they are null.
+	 * Not stored in Morpheus or returned
+	 * For example: 0 may result in a diskName of vda
+	 * @return diskIndex diskIndex
+	 */
+	public Integer getDiskIndex() {
+		return diskIndex;
+	}
+
+	/**
+	 * Utilized during creation to set logical defaults for deviceName and deviceDisplayName if they are null.
+	 * Not stored in Morpheus or returned
+	 * For example: 0 may result in a diskName of vda
+	 * @param diskIndex diskIndex
+	 */
+	public void setDiskIndex(Integer diskIndex) {
+		this.diskIndex = diskIndex;
+	}
+
+	/**
+	 * A unique identifier. Not controlled by Morpheus.
+	 * @param uniqueId
+	 */
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+		markDirty("uniqueId",uniqueId);
+	}
+
+	/**
+	 * Get the unique identifier. Not controlled by Morpheus.
+	 * @return uniqueId
+	 */
+	public String getUniqueId() {
+		return uniqueId;
 	}
 }

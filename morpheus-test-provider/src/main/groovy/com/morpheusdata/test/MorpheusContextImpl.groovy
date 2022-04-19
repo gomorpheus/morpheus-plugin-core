@@ -16,6 +16,7 @@ import com.morpheusdata.core.MorpheusServicePlanService
 import com.morpheusdata.core.MorpheusTaskService
 import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.core.MorpheusOperationNotificationService
+import com.morpheusdata.core.MorpheusStorageVolumeService
 import com.morpheusdata.core.MorpheusMetadataTagService
 import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
@@ -46,7 +47,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusNetworkSubnetService subnetContext
 	protected MorpheusOperationNotificationService operationNotification
 	protected MorpheusMetadataTagService tagService
-
+	protected MorpheusStorageVolumeService storageVolumeContext
 
 
     MorpheusContextImpl() {
@@ -60,6 +61,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    subnetContext = new MorpheusNetworkSubnetServiceImpl()
 	    operationNotification = new MorpheusOperationNotificationServiceImpl()
 	    tagService = new MorpheusMetadataTagServiceImpl()
+	    storageVolumeContext = new MorpheusStorageVolumeServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -68,6 +70,11 @@ class MorpheusContextImpl implements MorpheusContext {
 		this.taskContext = taskContext
 		this.virtualImageContext = virtualImageContext
     }
+
+	@Override
+	MorpheusStorageVolumeService getStorageVolume() {
+		return storageVolumeContext
+	}
 
 	@Override
 	MorpheusOperationNotificationService getOperationNotification() {

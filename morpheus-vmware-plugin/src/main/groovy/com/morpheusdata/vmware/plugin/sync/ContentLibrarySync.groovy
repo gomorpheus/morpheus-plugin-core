@@ -88,7 +88,7 @@ class ContentLibrarySync {
 		def secondaryMatchFunction = { Map morpheusItem, Map cloudItem ->
 			cloudItem.name == morpheusItem.name  && ((cloudItem.type == 'ovf' && morpheusItem.imageType != ImageType.iso) || (cloudItem.type == ImageType.iso && morpheusItem.imageType == ImageType.iso))
 		}
-		def syncLists = buildSyncLists(existingIds, objList, secondaryMatchFunction)
+		def syncLists = VmwareSyncUtils.buildSyncLists(existingIds, objList, secondaryMatchFunction)
 		//add missing
 		while(syncLists.addList?.size() > 0) {
 			List chunkedAddList = syncLists.addList.take(50)
@@ -379,36 +379,5 @@ class ContentLibrarySync {
 		}.blockingSubscribe { allLocations << it }
 
 		VmwareSyncUtils.deDupeVirtualImageLocations(allLocations, cloud, morpheusContext)
-	}
-
-	static buildSyncLists(existingItems, masterItems, matchExistingToMasterFunc, secondaryMatchExistingToMasterFunc=null) {
-		log.info "buildSyncLists: ${existingItems}, ${masterItems}"
-		def rtn = [addList:[], updateList: [], removeList: []]
-		try {
-			existingItems?.each { existing ->
-				def matches = masterItems?.findAll { matchExistingToMasterFunc(existing, it) }
-				if(!matches && secondaryMatchExistingToMasterFunc != null) {
-					matches = masterItems?.findAll { secondaryMatchExistingToMasterFunc(existing, it) }
-				}
-				if(matches?.size() > 0) {
-					matches?.each { match ->
-						rtn.updateList << [existingItem:existing, masterItem:match]
-					}
-				} else {
-					rtn.removeList << existing
-				}
-			}
-			masterItems?.each { masterItem ->
-				def match = rtn?.updateList?.find {
-					it.masterItem == masterItem
-				}
-				if(!match) {
-					rtn.addList << masterItem
-				}
-			}
-		} catch(e) {
-			log.error "buildSyncLists error: ${e}", e
-		}
-		return rtn
 	}
 }

@@ -3,13 +3,7 @@ package com.morpheusdata.vmware.plugin.sync
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
 import com.morpheusdata.vmware.plugin.utils.*
-import com.morpheusdata.model.Account
-import com.morpheusdata.model.Cloud
-import com.morpheusdata.model.ComputeZonePool
-import com.morpheusdata.model.Datastore
-import com.morpheusdata.model.VirtualImage
-import com.morpheusdata.model.VirtualImageLocation
-import com.morpheusdata.model.ImageType
+import com.morpheusdata.model.*
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.core.*
@@ -107,6 +101,7 @@ class TemplatesSync {
 		def regionCode = VmwareCloudProvider.getRegionCode(cloud)
 		def adds = []
 		def addNames = []
+		Map<String, ArrayList> imageRefVolumesMap = [:]
 		addList?.each {
 			addNames << it.name
 			def imageConfig = [
@@ -143,18 +138,9 @@ class TemplatesSync {
 //				newController.save()
 //				add.addToControllers(newController)
 //			}
-//			it.volumes?.eachWithIndex { volume, index ->
-//				def volumeConfig = [account:owner, name:volume.name, maxStorage:(volume.size * ComputeUtility.ONE_KILOBYTE),
-//				                    displayOrder:index, deviceName:(volume.deviceName ?: vmwareProvisionService.getDiskName(index)), type:StorageVolumeType.findByCode('vmware-disk'),
-//				                    unitNumber:"${volume.unitNumber}", externalId:volume.key, internalId:volume.fileName, rootVolume:(index == 0),
-//				                    zoneId:zone?.id, uniqueId:"vmware.vsphere.volume.${zone.id}.${it.ref}.${volume.key}"]
-//				if(volume.controllerKey)
-//					volumeConfig.controller = add.controllers?.find{ controller -> controller.controllerKey == "${volume.controllerKey}"}
-//				def newVolume = new StorageVolume(volumeConfig)
-//				newVolume.save()
-//				add.addToVolumes(newVolume)
-//			}
+			
 			def add = new VirtualImage(imageConfig)
+			imageRefVolumesMap[add.externalId] = it.volumes
 			adds << add
 		}
 
@@ -162,14 +148,48 @@ class TemplatesSync {
 		log.debug "About to create ${adds.size()} virtualImages"
 		morpheusContext.virtualImage.create(adds, cloud).blockingGet()
 
-		// Now add the locations
-		def locationAdds = []
 		// Fetch the images that we just created
 		def imageMap = [:]
 		morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { VirtualImageIdentityProjection proj ->
 			addNames.contains(proj.name)
 		}.blockingSubscribe { imageMap[it.externalId] = it }
+		
+		// Now add the volumes
+		imageRefVolumesMap?.each { externalId, volumes ->
+			VirtualImageIdentityProjection proj = imageMap[externalId]
+			if (proj) {
+				def volumesToAdd = []
+				volumes?.eachWithIndex { volume, index ->
+					def volumeConfig = [
+							account     : account,
+							name        : volume.name,
+							maxStorage  : (volume.size * ComputeUtility.ONE_KILOBYTE),
+							displayOrder: index,
+							diskIndex   : index,
+							type        : new StorageVolumeType(code: 'vmware-disk'), // TODO : Seed StorageVolumeType
+							unitNumber  : "${volume.unitNumber}",
+							externalId  : volume.key,
+							internalId  : volume.fileName,
+							rootVolume  : (index == 0),
+							uniqueId    : "vmware.vsphere.volume.${cloud.id}.${externalId}.${volume.key}"
+					]
+					//				if(volume.controllerKey)
+					//					volumeConfig.controller = add.controllers?.find{ controller -> controller.controllerKey == "${volume.controllerKey}"}
 
+					def newVolume = new StorageVolume(volumeConfig)
+					volumesToAdd << newVolume
+				}
+				if (volumesToAdd) {
+					log.debug "Adding ${volumesToAdd?.size()} volumes to ${proj.externalId} in cloud ${cloud.id}"
+					morpheusContext.storageVolume.create(volumesToAdd, proj).blockingGet()
+				}
+			} else {
+				log.warn "Could not find VirtualImage that was just created with externalId ${externalId} in cloud ${cloud.id}"
+			}
+		}
+
+		// Now add the locations
+		def locationAdds = []
 		adds?.each { add ->
 			log.debug "Adding location for ${add.externalId}"
 			def virtualImage = imageMap[add.externalId]
@@ -244,6 +264,7 @@ class TemplatesSync {
 		//dedupe
 		VmwareSyncUtils.deDupeVirtualImages(existingItems, existingLocations, cloud, morpheusContext)
 
+		Map<VirtualImageLocation, ArrayList> locationVolumesMap = [:]
 		//updates
 		updateList?.each { update ->
 			def matchedTemplate = update.masterItem
@@ -281,12 +302,9 @@ class TemplatesSync {
 //					if(changed == true)
 //						save = true
 //				}
-//				if(matchedTemplate.volumes) {
-//					def start = new Date()
-//					def changed = vmwareProvisionService.syncVolumes(zone, imageLocation, matchedTemplate.volumes)
-//					if(changed == true)
-//						save = true
-//				}
+				if(matchedTemplate.volumes) {
+					locationVolumesMap[imageLocation] = matchedTemplate.volumes
+				}
 //				if(imageLocation.virtualImage.deleted) {
 //					imageLocation.virtualImage.deleted = false
 //					saveImage = true
@@ -341,6 +359,12 @@ class TemplatesSync {
 
 			}
 		}
+
+		// Sync the volumes for each
+		locationVolumesMap?.each { VirtualImageLocation location, volumes ->
+			VmwareSyncUtils.syncVolumes(location, volumes, cloud, morpheusContext)
+		}
+
 	}
 
 	private removeDuplicates() {

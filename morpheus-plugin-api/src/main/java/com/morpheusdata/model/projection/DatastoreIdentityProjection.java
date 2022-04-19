@@ -15,6 +15,16 @@ public class DatastoreIdentityProjection extends MorpheusModel {
 	protected String internalId;
 	protected String name;
 	protected String externalId;
+	protected Long cloudId;
+
+	public DatastoreIdentityProjection() {
+
+	}
+
+	public DatastoreIdentityProjection(Long cloudId, String externalId) {
+		this.cloudId = cloudId;
+		this.externalId = externalId;
+	}
 
 	public String getType() {
 		return type;
@@ -50,5 +60,14 @@ public class DatastoreIdentityProjection extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
+	}
+
+	public Long getCloudId() {
+		return cloudId;
+	}
+
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
+		markDirty("cloudId", cloudId);
 	}
 }

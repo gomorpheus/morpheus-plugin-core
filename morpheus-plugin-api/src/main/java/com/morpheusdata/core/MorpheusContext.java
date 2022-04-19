@@ -155,6 +155,13 @@ public interface MorpheusContext {
 	MorpheusMetadataTagService getMetadataTag();
 
 	/**
+	 * Returns the StorageVolume Service
+	 *
+	 * @return An instance of the StorageVolume Service
+	 */
+	MorpheusStorageVolumeService getStorageVolume();
+
+	/**
 	 * Returns a json encoded string of the settings for the plugin requested. The settings are defined
 	 * by getSettings() on Plugin
 	 * @param plugin the Plugin to fetch the settings for

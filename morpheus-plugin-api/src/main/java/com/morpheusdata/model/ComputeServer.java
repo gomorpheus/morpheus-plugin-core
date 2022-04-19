@@ -436,6 +436,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("interfaces", interfaces);
 	}
 
+	/**
+	 * NOTE: To modify the list of volumes associated with this ComputeServer, utilize MorpheusStorageVolumeService
+	 * @param volumes
+	 */
 	public void setVolumes(List<StorageVolume> volumes) {
 		this.volumes = volumes;
 		markDirty("volumes", volumes);

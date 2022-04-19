@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -33,6 +34,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isCloudInit;
 	protected Boolean virtioSupported;
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
+	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -166,6 +168,23 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	 */
 	public void setImageLocations(List<VirtualImageLocation> imageLocations) {
 		this.imageLocations = imageLocations;
+	}
+
+	/**
+	 * Retrieve the list of StorageVolumeIdentityProjections for the VirtualImage.
+	 * @return volumes
+	 */
+	public List<StorageVolumeIdentityProjection> getStorageVolumes() {
+		return volumes;
+	}
+
+	/**
+	 * Set the list of StorageVolumeIdentityProjections for the VirtualImage
+	 * NOTE: To modify the list of volumes associated with this VirtualImage, utilize MorpheusStorageVolumeService
+	 * @param volumes
+	 */
+	public void setVolumes(List<StorageVolumeIdentityProjection> volumes) {
+		this.volumes = volumes;
 	}
 
 	public Long getMinRam() {
