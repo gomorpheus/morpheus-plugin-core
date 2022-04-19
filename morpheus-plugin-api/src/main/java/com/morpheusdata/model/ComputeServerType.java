@@ -33,6 +33,7 @@ public class ComputeServerType  extends MorpheusModel {
 
 	protected AgentType agentType = AgentType.guest;
 	protected String computeTypeCode; //dynamic option set there are some common ones though
+	protected String provisionTypeCode;
 
 	protected ClusterType clusterType = ClusterType.none;
 
@@ -231,6 +232,14 @@ public class ComputeServerType  extends MorpheusModel {
 
 	public void setManagedServerType(String managedServerType) {
 		this.managedServerType = managedServerType;
+	}
+
+	public String getProvisionTypeCode() {
+		return provisionTypeCode;
+	}
+
+	public void setProvisionTypeCode(String provisionTypeCode) {
+		this.provisionTypeCode = provisionTypeCode;
 	}
 
 

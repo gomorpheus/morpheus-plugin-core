@@ -343,7 +343,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	Boolean hasDatastores() {
-		false
+		true
 	}
 
 	@Override

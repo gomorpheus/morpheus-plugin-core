@@ -39,6 +39,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Long maxStorage;
 	protected Long maxMemory;
 	protected Long maxCores;
+	protected Long usedMemory;
+	protected Long usedStorage;
+	protected Float usedCpu;
 	protected Long coresPerSocket;
 	protected Boolean managed;
 	protected ComputeServerType computeServerType;
@@ -293,6 +296,30 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	}
 
 	public List<MetadataTag> getMetadata() { return metadata;}
+
+	public Long getUsedMemory() {
+		return usedMemory;
+	}
+
+	public void setUsedMemory(Long usedMemory) {
+		this.usedMemory = usedMemory;
+	}
+
+	public Long getUsedStorage() {
+		return usedStorage;
+	}
+
+	public void setUsedStorage(Long usedStorage) {
+		this.usedStorage = usedStorage;
+	}
+
+	public Float getUsedCpu() {
+		return usedCpu;
+	}
+
+	public void setUsedCpu(Float usedCpu) {
+		this.usedCpu = usedCpu;
+	}
 
 	public enum PowerState {
 		on,

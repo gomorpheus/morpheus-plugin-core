@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
+import java.math.*;
 import java.util.*;
 import javax.json.*;
 
@@ -146,6 +146,10 @@ public class MorpheusModel {
 					builder.add(key, (Long) val);
 				} else if(val instanceof Boolean) {
 					builder.add(key, (Boolean) val);
+				} else if(val instanceof Short) {
+					builder.add(key, (Short) val);
+				} else if(val instanceof Float) {
+					builder.add(key, (Float) val);
 				} else {
 					builder.add(key, (BigDecimal) val);
 				}

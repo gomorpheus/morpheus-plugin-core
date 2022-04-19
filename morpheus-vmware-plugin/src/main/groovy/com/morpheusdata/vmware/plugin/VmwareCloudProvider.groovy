@@ -135,6 +135,7 @@ class VmwareCloudProvider implements CloudProvider {
 		hypervisorType.agentType = ComputeServerType.AgentType.none
 		hypervisorType.platform = PlatformType.esxi
 		hypervisorType.managed = false
+		hypervisorType.provisionTypeCode = 'vmware-provision-provider-plugin'
 
 		ComputeServerType serverType = new ComputeServerType()
 		serverType.name = 'Vmware Plugin Server'
@@ -145,6 +146,7 @@ class VmwareCloudProvider implements CloudProvider {
 		serverType.supportsConsoleKeymap = true
 		serverType.platform = PlatformType.none
 		serverType.managed = false
+		serverType.provisionTypeCode = 'vmware-provision-provider-plugin'
 
 		return [hypervisorType, serverType]
 	}
