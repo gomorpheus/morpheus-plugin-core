@@ -290,12 +290,11 @@ class VmwareCloudProvider implements CloudProvider {
 
 	@Override
 	void refreshDaily(Cloud cloudInfo) {
-		// TODO : implement
+		//nothing daily
 	}
 
 	@Override
 	ServiceResponse deleteCloud(Cloud cloudInfo) {
-		// TODO : implement
 		return new ServiceResponse(success: true)
 	}
 
