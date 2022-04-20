@@ -23,8 +23,8 @@ class DatastoresSync {
 		this.morpheusContext = morpheusContext
 	}
 
-	def execute() {
-		log.debug "cacheDatastores: ${cloud}"
+	def blockingExecute() {
+		log.debug "blockingExecute DatastoresSync: ${cloud}"
 
 		try {
 			def clusters = []
@@ -116,7 +116,7 @@ class DatastoresSync {
 						}
 					}.onDelete { removeItems ->
 						morpheusContext.cloud.datastore.remove(removeItems, cluster).blockingGet()
-					}.start()
+					}.blockingStart()
 
 
 				}

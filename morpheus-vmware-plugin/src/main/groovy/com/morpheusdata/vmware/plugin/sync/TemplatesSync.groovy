@@ -21,8 +21,8 @@ class TemplatesSync {
 		this.morpheusContext = morpheusContext
 	}
 
-	def execute() {
-		log.debug "cacheTemplates: ${cloud}"
+	def blockingExecute() {
+		log.debug "blockingExecute TemplatesSync: ${cloud}"
 
 		try {
 	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
@@ -49,7 +49,7 @@ class TemplatesSync {
 					updateMatchedVirtualImages(updateItems)
 				}.onDelete { removeItems ->
 					removeMissingVirtualImages(removeItems)
-				}.start()
+				}.blockingStart()
 			}
 		} catch(e) {
 			log.error "Error in execute of TemplatesSync: ${e}", e

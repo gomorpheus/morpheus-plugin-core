@@ -1,13 +1,17 @@
 package com.morpheusdata.core.util;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observables.ConnectableObservable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,16 +55,17 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<>();
 	private OnDeleteFunction<Projection> onDeleteFunction;
-	private final ConnectableObservable<Projection> domainRecords;
+	private final Observable<Projection> domainRecords;
 	private Integer bufferSize = 50;
+	private Boolean blocking = false;
 	private final Collection<ApiItem> apiItems;
 	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction;
 	private OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
 
 	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
-		this.domainRecords = domainRecords.publish();
-		this.apiItems = apiItems;
+		this.domainRecords = domainRecords.publish().autoConnect(2);
+		this.apiItems = Collections.synchronizedCollection(apiItems);
 	}
 
 	public SyncTask<Projection, ApiItem, Model> addMatchFunction(MatchFunction<Projection, ApiItem> matchFunction) {
@@ -139,9 +144,13 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 	private Boolean matchesExisting(Projection domainMatch) {
 		for (MatchFunction<Projection,ApiItem> matchFunction : matchFunctions) {
-			for (ApiItem apiItem : apiItems) {
-				if (matchFunction.method(domainMatch, apiItem)) {
-					return true;
+			synchronized (apiItems) {
+				Iterator<ApiItem> iterator = apiItems.iterator();
+				while (iterator.hasNext()) {
+					ApiItem apiItem = iterator.next();
+					if (matchFunction.method(domainMatch, apiItem)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -150,18 +159,27 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 
 	private UpdateItemDto<Projection, ApiItem> buildUpdateItemDto(Projection domainMatch) {
+		ApiItem foundApiItem = null;
 		for (MatchFunction<Projection,ApiItem> matchFunction : matchFunctions) {
-			for (ApiItem apiItem : apiItems) {
-				if (matchFunction.method(domainMatch, apiItem)) {
-					UpdateItemDto<Projection, ApiItem> updateItem = new UpdateItemDto<Projection, ApiItem>();
-					updateItem.existingItem = domainMatch;
-					updateItem.masterItem = apiItem;
-					apiItems.remove(apiItem); //clear the list out
-					return updateItem;
+			synchronized (apiItems) {
+				for (ApiItem apiItem : apiItems) {
+					if (foundApiItem == null && matchFunction.method(domainMatch, apiItem)) {
+						foundApiItem = apiItem;
+					}
 				}
 			}
 		}
-		return new UpdateItemDto<Projection, ApiItem>();
+		if(foundApiItem != null) {
+			apiItems.remove(foundApiItem); //clear the list out
+
+			UpdateItemDto<Projection, ApiItem> updateItem = new UpdateItemDto<Projection, ApiItem>();
+			updateItem.existingItem = domainMatch;
+			updateItem.masterItem = foundApiItem;
+
+			return updateItem;
+		} else {
+			return new UpdateItemDto<Projection, ApiItem>();
+		}
 	}
 
 	private void addMissing(Collection<ApiItem> addItems) {
@@ -187,23 +205,47 @@ public class SyncTask<Projection, ApiItem, Model> {
 	public void start() {
 		//do all the subscribe crapola;
 		//delete missing
-		domainRecords.filter((Projection domainMatch) -> {
-			return !matchesExisting(domainMatch);
-		}).buffer(bufferSize).subscribe((List<Projection> itemsToDelete) -> {
-			this.onDeleteFunction.method(itemsToDelete);
-		});
+		Completable deleteCompletable = Completable.fromObservable(domainRecords.subscribeOn(Schedulers.io())
+			.observeOn(Schedulers.computation())
+			.filter((Projection domainMatch) -> {
+				return !matchesExisting(domainMatch);
+			})
+			.buffer(bufferSize)
+			.observeOn(Schedulers.io())
+			.doOnNext((List<Projection> itemsToDelete) -> {
+				this.onDeleteFunction.method(itemsToDelete);
+			})
+		);
 
-		domainRecords.filter(this::matchesExisting).map(this::buildUpdateItemDto).buffer(bufferSize).flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
-			return onLoadObjectDetailsFunction.method(mapItems).buffer(bufferSize);
-		}).doOnComplete( ()-> {
-			addMissing(apiItems);
-		}).doOnError( (Throwable t) -> {
-			//log.error;
-		}).subscribe( (updateItems) -> {
-			onUpdateFunction.method(updateItems);
-		});
+		Completable updateCompletable = Completable.fromObservable(domainRecords.subscribeOn(Schedulers.io())
+			.observeOn(Schedulers.computation())
+			.filter(this::matchesExisting)
+			.map(this::buildUpdateItemDto)
+			.buffer(bufferSize)
+			.observeOn(Schedulers.io())
+			.flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
+				return onLoadObjectDetailsFunction.method(mapItems).buffer(bufferSize);
+			})
+			.doOnNext( (updateItems) -> {
+				onUpdateFunction.method(updateItems);
+			})
+			.doOnComplete( ()-> {
+				addMissing(apiItems);
+			}).doOnError( (Throwable t) -> {
+				//log.error;
+			})
+		);
 
-		domainRecords.connect();
+		if(this.blocking == true) {
+			Completable.mergeArray(deleteCompletable, updateCompletable).blockingAwait();
+		} else {
+			Completable.mergeArray(deleteCompletable, updateCompletable).subscribe();
+		}
+	}
+
+	public void blockingStart() {
+		blocking = true;
+		start();
 	}
 
 	public Observable<Boolean> observe() {
@@ -212,7 +254,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 			@Override
 			public void subscribe(@NonNull ObservableEmitter<Boolean> emitter) throws Exception {
 				try {
-					start();
+					blockingStart();
 					emitter.onNext(true);
 					emitter.onComplete();
 				} catch(Exception e) {

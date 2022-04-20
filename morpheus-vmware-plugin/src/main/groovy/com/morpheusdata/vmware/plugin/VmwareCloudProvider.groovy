@@ -393,23 +393,26 @@ class VmwareCloudProvider implements CloudProvider {
 					checkZoneConfig(cloud)
 					checkCluster(cloud)
 
-					(new ResourcePoolsSync(cloud, morpheusContext)).execute()
+					(new ResourcePoolsSync(cloud, morpheusContext)).blockingExecute()
 					(new FoldersSync(cloud, morpheusContext)).execute()
-					(new DatastoresSync(cloud, morpheusContext)).execute()
-					(new TemplatesSync(cloud, morpheusContext)).execute()
-					(new ContentLibrarySync(cloud, morpheusContext, client)).execute()  // Doesn't have to be synchronous
-					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
-					(new HostsSync(cloud, morpheusContext)).execute()
-					(new StoragePodsSync(cloud, morpheusContext)).execute()
-					(new IPPoolsSync(cloud, morpheusContext)).execute()
 					(new CustomSpecSync(cloud, morpheusContext)).execute()
+					(new IPPoolsSync(cloud, morpheusContext)).execute()
 					(new AlarmsSync(cloud, morpheusContext)).execute()
+
+					(new DatastoresSync(cloud, morpheusContext)).blockingExecute()
+					(new StoragePodsSync(cloud, morpheusContext)).execute()
+
+					(new TemplatesSync(cloud, morpheusContext)).blockingExecute()
+					(new ContentLibrarySync(cloud, morpheusContext, client)).blockingExecute()
+					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).blockingExecute()
+					(new HostsSync(cloud, morpheusContext)).blockingExecute()
+
 //					cacheEvents([zone:zone]).get() // TODO : OperationEvents don't seem to be used.. skipping
-					(new DatacentersSync(cloud, morpheusContext)).execute()
+					(new DatacentersSync(cloud, morpheusContext)).blockingExecute()
 					//vms
 					if(apiVersion && apiVersion != '6.0') {
-						(new CategoriesSync(cloud, morpheusContext, client)).execute()
-						(new TagsSync(cloud, morpheusContext, client)).execute()
+						(new CategoriesSync(cloud, morpheusContext, client)).blockingExecute()
+						(new TagsSync(cloud, morpheusContext, client)).blockingExecute()
 					}
 //					def doInventory = zone.getConfigProperty('importExisting')
 					Boolean createNew = true
@@ -418,7 +421,7 @@ class VmwareCloudProvider implements CloudProvider {
 //					}
 //
 					//Returning Promise Chain now
-					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
+					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).blockingExecute()
 //					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
 //						refreshZoneVms(zone, [:], syncDate)
 //						return true

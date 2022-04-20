@@ -36,8 +36,8 @@ class VirtualMachineSync {
 		this.client = client
 	}
 
-	def execute() {
-		log.debug "cacheVirtualMachines: ${cloud}"
+	def blockingExecute() {
+		log.debug "blockingExecute VirtualMachineSync: ${cloud}"
 
 		try {
 			def queryResults = [:]
@@ -104,7 +104,7 @@ class VirtualMachineSync {
 			}.onDelete { removeItems ->
 				removeMissingVirtualMachines(cloud, removeItems, queryResults.blackListedNames)
 //				morpheusContext.computeServer.remove(removeItems).blockingGet()
-			}.start()
+			}.blockingStart()
 		} catch(e) {
 			log.error("cacheVirtualMachines error: ${e}", e)
 		}
