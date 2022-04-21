@@ -1,5 +1,7 @@
 package com.morpheusdata.vmware.plugin.sync
 
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
 import com.morpheusdata.model.Cloud
@@ -61,6 +63,8 @@ class StoragePodsSync {
 
 		def datastores = []
 
+		def servers = loadServers()
+
 		storagePods.each { storagePod ->
 			try {
 				def datastoreConfig = [
@@ -82,20 +86,14 @@ class StoragePodsSync {
 					datastore.online = datastore.online || accessible
 				}
 
-				if (datastore.online) {
-					// TODO : Handles volumes on virtual machines
-//					def serversFound = ComputeServer.createCriteria().count {
-//						createAlias('volumes', 'volumes')
-//						zone {
-//							eq('id', opts.zone.id)
-//						}
-//						eq('category', "vmware.vsphere.host.${opts.zone.id}")
-//						inList('volumes.externalId', storagePod.datastoreRefs)
-//					}
-//					if (!serversFound) {
-//						datastore.online = false
-//						datastore.active = false
-//					}
+				if (datastore.online && servers?.size() > 0) {
+					def serversFound = servers.find { ComputeServer server ->
+						server.volumes?.find { it.externalId in storagePod.datastoreRefs }
+					}
+					if (!serversFound) {
+						datastore.online = false
+						datastore.active = false
+					}
 				}
 
 				datastores << datastore
@@ -117,6 +115,8 @@ class StoragePodsSync {
 
 		def datastores = []
 
+		def servers = loadServers()
+
 		for(storagePod in storagePods) {
 			try {
 				Datastore existingItem = storagePod.existingItem
@@ -132,24 +132,22 @@ class StoragePodsSync {
 					}
 
 					if(matchOnline) {
-						// TODO : Handle volumes for compute server
-//						def serversFound = ComputeServer.createCriteria().count {
-//							createAlias('volumes','volumes')
-//							zone {
-//								eq('id', opts.zone.id)
-//							}
-//							eq('category', "vmware.vsphere.host.${opts.zone.id}")
-//							inList('volumes.externalId',masterItem.datastoreRefs)
-//						}
-//						if(!serversFound) {
-//							matchOnline = false
-//						}
+						println "BOBW : StoragePodsSync.groovy:135 : masterItem.datastoreRefs"
+						def serversFound = servers.find { ComputeServer server ->
+							server.volumes?.find { it.externalId in masterItem.datastoreRefs }
+						}
+
+						println "BOBW : StoragePodsSync.groovy:140 : seversfoud ${serversFound}"
+
+						if(!serversFound) {
+							matchOnline = false
+						}
 					}
 
-//					if(existingItem.online != matchOnline) {
-//						existingItem.online = matchOnline
-//						save = true
-//					}
+					if(existingItem.online != matchOnline) {
+						existingItem.online = matchOnline
+						save = true
+					}
 					if(existingItem.freeSpace != masterItem.freeSpace) {
 						existingItem.freeSpace = masterItem.freeSpace
 						save = true
@@ -253,5 +251,15 @@ class StoragePodsSync {
 		} catch(e) {
 			log.error "Error syncing storagepods: ${e}", e
 		}
+	}
+
+	private loadServers() {
+		def projs = []
+		morpheusContext.computeServer.listSyncProjections(cloud.id).filter { ComputeServerIdentityProjection proj ->
+			proj.category == "vmware.vsphere.host.${cloud.id}"
+		}.blockingSubscribe { projs << it }
+		def servers = []
+		morpheusContext.computeServer.listById(projs.collect {it.id}).blockingSubscribe { servers << it }
+		servers
 	}
 }
