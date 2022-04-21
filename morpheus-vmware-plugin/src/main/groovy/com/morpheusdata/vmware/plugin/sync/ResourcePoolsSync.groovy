@@ -41,14 +41,9 @@ class ResourcePoolsSync {
 				}
 				if (clusters && (clusterRef != clusters?.first()?.ref || clusterScope != clusters?.first()?.name)) {
 					//fix zone config
-//					Promises.task {
-//						ComputeZone.withNewTransaction {
-//							ComputeZone tmpZone = ComputeZone.get(opts.zone.id)
-//							tmpZone.setConfigProperty('cluster', clusters.first().name)
-//							tmpZone.setConfigProperty('clusterRef', clusters.first().ref)
-//							tmpZone.save(flush:true)
-//						}
-//					}
+					cloud.setConfigProperty('cluster', clusters.first().name)
+					cloud.setConfigProperty('clusterRef', clusters.first().ref)
+					morpheusContext.cloud.save(cloud).blockingGet()
 				}
 			} else {
 				clusters = tmpClusterResults
@@ -109,43 +104,19 @@ class ResourcePoolsSync {
 						addMissingResourcePools(clusterName, queryResults.clusters[clusterName] as String, itemsToAdd)
 					}.onUpdate { List<SyncTask.UpdateItem<ComputeZonePool, Map>> updateItems ->
 						def nameChanges = updateMatchedResourcePools(clusterName, queryResults.clusters[clusterName] as String, updateItems)
-//						if(nameChanges) {
-//							propagateResourcePoolTreeNameChanges(nameChanges)
-//						}
+						if(nameChanges) {
+							propagateResourcePoolTreeNameChanges(nameChanges)
+						}
 					}.onDelete { removeItems ->
-						removeMissingResourcePools(clusterName, queryResults.clusters[clusterName] as String, removeItems)
-					}.start()
-
-
+						removeMissingResourcePools(clusterName, removeItems)
+					}.observe().blockingSubscribe {completed ->
+						if(completed && cloud.owner.masterAccount == false) {
+							chooseOwnerPoolDefaults()
+							purgeOldClusters(queryResults.clusters)
+						}
+					}
 				}
-//				if(cloud.owner.masterAccount == false) {
-//					zonePoolService.chooseOwnerPoolDefaults(opts.zone.owner, opts.zone)
-//				}
 			}
-			def clusteredSyncLists = [clusters: queryResults.clusters]
-
-//			ComputeZonePool.withNewSession{ session ->
-//				def clusterNames = clusteredSyncLists.clusters.keySet()
-//				// purge old clusters
-//				if(clusterNames) {
-//					def oldPools = ComputeZonePool.withCriteria {
-//						not {
-//							inList('internalId', clusterNames)
-//						}
-//						eq('refType', 'ComputeZone')
-//						eq('refId', opts.zone.id)
-//					}
-//
-//					for(tmpPool in oldPools) {
-//						ComputeZonePool.withNewTransaction { tx ->
-//							tmpPool.attach()
-//							zonePoolService.internalDeleteComputeZonePool(tmpPool)
-//						}
-//
-//					}
-//				}
-//			}
-
 		} catch(e) {
 			log.error "Error in execute ResourcePoolsSync: ${e}", e
 		}
@@ -191,8 +162,6 @@ class ResourcePoolsSync {
 				add.uniqueId = clusterRef
 			}
 			adds << add
-//			def resourcePerm = new ResourcePermission(morpheusResourceType:'ComputeZonePool', morpheusResourceId:add.id, account:zone.account)
-//			resourcePerm.save(flush:true)
 		}
 		if(adds) {
 			morpheusContext.cloud.pool.create(adds).blockingGet()
@@ -201,7 +170,6 @@ class ResourcePoolsSync {
 
 	private updateMatchedResourcePools(String clusterName, String clusterRef, List updateList) {
 		log.debug "updateMatchedResourcePools: ${cloud} ${clusterName} ${clusterRef} ${updateList.size()}"
-//		def matchedResourcePools = ComputeZonePool.where{zone.id == currentZone.id && (internalId == clusterName || internalId == null) && externalId in updateList.collect{ul -> ul.existingItem[1]}}.list()?.collectEntries{[(it.externalId):it]}
 		List<Long> propagateTreeNameChanges = []
 		def updates = []
 
@@ -247,18 +215,21 @@ class ResourcePoolsSync {
 				}
 
 				if(existingStore && existingStore.parent?.externalId != matchItem.parentId) {
-					if(matchItem.parentType == 'ResourcePool') {
+					if (matchItem.parentType == 'ResourcePool') {
 						def parentPool = parentPools[matchItem.parentId]
-						if(parentPool) {
+						if (parentPool) {
 							existingStore.parent = new ComputeZonePool(id: parentPool.id, name: parentPool.name)
 						}
 					} else {
 						existingStore.parent = null
 						existingStore.type = 'Cluster'
 					}
-					existingStore.treeName = nameForPool(existingStore)
-					propagateTreeNameChanges << existingStore.id
-					save = true
+					def newTreeName = nameForPool(existingStore)
+					if (existingStore.treeName != newTreeName) {
+						existingStore.treeName = newTreeName
+						propagateTreeNameChanges << existingStore.id
+						save = true
+					}
 				}
 				if(existingStore.parent == null && existingStore.name != clusterName) {
 					existingStore.name = clusterName
@@ -282,18 +253,35 @@ class ResourcePoolsSync {
 		return propagateTreeNameChanges?.unique()
 	}
 
-	private removeMissingResourcePools(String clusterName, String clusterRef, List removeList) {
-//		def removeItems = ComputeZonePool.where{zone.id == currentZone.id && (internalId == clusterName || internalId == null) && externalId in removeList.collect{it[1]}}.list()
-//		removeItems?.toArray()?.each { removeItem ->
-//		removeList?.each { removeItem ->
-//			log.info("Removing Pool ${removeItem.name}")
-//			removeItems.findAll{ existing -> existing.parent?.id == removeItem.id}.each { prnt ->
-//				prnt.parent = null
-//				prnt.save(flush:true)
-//			}
-//			zonePoolService.internalDeleteComputeZonePool(removeItem)
-//		}
-		morpheusContext.cloud.pool.remove(removeList).blockingGet()
+	private removeMissingResourcePools(String clusterName, List<ComputeZonePoolIdentityProjection> removeList) {
+		log.debug "removeMissingResourcePools: ${clusterName} ${removeList?.size}"
+
+		// Must disconnect children of these resource pools
+
+		// Load all the pools
+		List<ComputeZonePoolIdentityProjection> removeItemProjs = []
+		def externalIdsToRemove = removeList.collect { it.externalId }
+		morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { it ->
+			(it.internalId == clusterName || it.internalId == null) && it.externalId in externalIdsToRemove
+		}.blockingSubscribe { removeItemProjs << it }
+		List<ComputeZonePool> removeItems = []
+		morpheusContext.cloud.pool.listById( removeItemProjs.collect { it.id }).blockingSubscribe{ removeItems << it }
+
+		List<ComputeZonePool> childrenToUpdate = []
+		removeItems?.each { ComputeZonePool removeItem ->
+			log.info("Removing Pool ${removeItem.name}")
+			removeItems.findAll{ existing -> existing.parent?.id == removeItem.id}.each { prnt ->
+				log.debug "Updating ${prnt.name}'s parent to null as we are deleting ${removeItem.name}"
+				prnt.parent = null
+				childrenToUpdate << prnt
+			}
+		}
+
+		if(childrenToUpdate?.size() > 0) {
+			log.debug "Found ${childrenToUpdate.size()} pools to update"
+			morpheusContext.cloud.pool.save(childrenToUpdate).blockingGet()
+		}
+		morpheusContext.cloud.pool.remove(removeItems).blockingGet()
 	}
 
 	private nameForPool(pool) {
@@ -304,5 +292,92 @@ class ResourcePoolsSync {
 			currentPool = currentPool.parent
 		}
 		return nameElements.join(' / ')
+	}
+
+	private propagateResourcePoolTreeNameChanges(poolIds) {
+		log.debug "propagateResourcePoolTreeNameChanges: ${poolIds}"
+		def pools = []
+		morpheusContext.cloud.pool.listById(poolIds).blockingSubscribe{pools << it }
+
+		def nameChanges = []
+		pools.each { pool ->
+			nameChanges << pool.id
+			pool.treeName = nameForPool(pool)
+		}
+		morpheusContext.cloud.pool.save(pools).blockingGet()
+
+		if(nameChanges) {
+			def projs = []
+			morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe{ projs << it}
+			pools = []
+			morpheusContext.cloud.pool.listById( projs.collect { it.id } ).blockingSubscribe{ pools << it}
+
+			while (nameChanges) {
+				def poolsToUpdate = pools?.findAll { it.parent?.id in nameChanges }
+				println "BOBW : ResourcePoolsSync.groovy:327 :  poolsToUpdate ${poolsToUpdate}"
+				nameChanges = []
+				poolsToUpdate?.each { pool ->
+					nameChanges << pool.id
+					pool.treeName = nameForPool(pool)
+				}
+				morpheusContext.cloud.pool.save(poolsToUpdate).blockingGet()
+			}
+		}
+	}
+
+	private chooseOwnerPoolDefaults() {
+		log.debug "chooseOwnerPoolDefaults"
+		Account currentAccount = cloud.owner
+
+		//check for default store and set if not
+		List<ComputeZonePool> pools = loadPools()
+		ComputeZonePool pool = pools?.find { it.defaultPool == true }
+		if(pool && pool.readOnly == true) {
+			pool.defaultPool = false
+			morpheusContext.cloud.pool.save([pool]).blockingGet()
+			pool = null
+		}
+		if(!pool) {
+			pools = loadPools()
+			pool = pools?.findAll { it.owner.id == currentAccount.id && it.defaultPool == false && it.readOnly != true }?.sort { ComputeZonePool a, ComputeZonePool b ->
+				def val = a.parent?.id <=> b.parent?.id
+				if(val == 0) {
+					val = a.name <=> b.name
+				}
+				val
+			}?.getAt(0)
+			if(pool) {
+				pool.defaultPool = true
+				morpheusContext.cloud.pool.save([pool]).blockingGet()
+			}
+		}
+	}
+
+	private purgeOldClusters(clusters) {
+		log.debug "purgeOldClusters"
+		try {
+			def clusterNames = clusters.keySet()
+			if (clusterNames) {
+				List<ComputeZonePoolIdentityProjection> oldPools = []
+				morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').filter { it ->
+					!(it.internalId in clusterNames)
+				}.blockingSubscribe{ oldPools << it}
+
+				if(oldPools?.size() > 0) {
+					log.debug "Purging old clusters ${oldPools}"
+					morpheusContext.cloud.pool.remove(oldPools).blockingGet()
+				}
+			}
+		} catch(e) {
+			log.error "Error in purgeOldClusters: ${e}", e
+		}
+	}
+
+	private loadPools() {
+		def projs = []
+		morpheusContext.cloud.pool.listSyncProjections(cloud.id, '').blockingSubscribe {projs << it }
+		def pools = []
+		morpheusContext.cloud.pool.listById(projs.collect { it.id }).blockingSubscribe { pools << it}
+		pools
 	}
 }
