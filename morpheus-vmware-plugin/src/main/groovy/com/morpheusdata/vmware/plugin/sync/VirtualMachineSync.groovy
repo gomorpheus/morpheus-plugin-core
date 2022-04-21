@@ -335,17 +335,17 @@ class VirtualMachineSync {
 //							}
 //						}
 						def volumeInfoChanged = false
-//						if(matchedServer.volumes) {
-//							if(currentServer.status != 'resizing') {
-//								def changed = vmwareProvisionService.syncVolumes(cloud, currentServer, matchedServer.volumes, currentServer.account)
-//								if(changed == true) {
-//									currentServer.maxStorage = currentServer.volumes ? (currentServer.volumes?.sum{it.maxStorage} as Long) : 0L
-//									planInfoChanged = true
-//									volumeInfoChanged = true
-//									save = true
-//								}
-//							}
-//						}
+						if(matchedServer.volumes) {
+							if(currentServer.status != 'resizing') {
+								def results = VmwareSyncUtils.syncVolumes(currentServer, matchedServer.volumes, cloud, morpheusContext)
+								if(results.changed == true) {
+									currentServer.maxStorage = results.maxStorage
+									planInfoChanged = true
+									volumeInfoChanged = true
+									save = true
+								}
+							}
+						}
 						//check networks
 						if(matchedServer.networks) {
 							if(currentServer.status != 'resizing') {
@@ -472,7 +472,7 @@ class VirtualMachineSync {
 							save = true
 						}
 
-//						syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot)
+//						rtn.updatedSnapshotIds = syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot)
 						Boolean tagChanges = false
 						if(tagAssociations && tagAssociations.success) {
 							def associatedTags = tagAssociations ? tagAssociations.associations[currentServer.externalId] : null
@@ -616,7 +616,6 @@ class VirtualMachineSync {
 			}
 		}
 		ServicePlan fallbackPlan = availablePlans.find {it.code == 'plugin-internal-custom-vmware'}
-//		def addedServers = []
 		for(cloudItem in addList) {
 			//if we have extra zones - try to find the vm in that zone first
 			def vmUuid = cloudItem.config.uuid
@@ -699,8 +698,8 @@ class VirtualMachineSync {
 //					}
 //					//sync controllers
 //					vmwareProvisionService.syncControllers(cloud, add, cloudItem.controllers, add.account)
-//					//sync volumes
-//					vmwareProvisionService.syncVolumes(cloud, add, cloudItem.volumes, add.account)
+					//sync volumes
+					VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
 					syncInterfaces(cloud, savedServer, cloudItem.networks, serverIps.ipList, savedServer.account, systemNetworks)
 				} else {
 					add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
@@ -708,14 +707,12 @@ class VirtualMachineSync {
 						log.error "Error in creating server ${add}"
 					}
 				}
-//				syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
+//				rtn.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
 //				if(add.consolePort) {
 //					def computePort = new ComputePort(parentType:'ComputeZone', parentId:cloud.id, regionCode: cloud.regionCode, port:add.consolePort, portCount:1,
 //							portType:'vnc', refType:'ComputeServer', refId:add.id)
 //					computePort.save(flush:true)
 //				}
-//				addedServers << add
-//				initializeServerUsage(add)
 			}
 		}
 //		tagCompliancePolicyService.checkTagComplianceForServers(cloud,addedServers)

@@ -93,8 +93,8 @@ class VmwareSyncUtils {
 
 	static syncVolumes(locationOrServer, ArrayList externalVolumes, Cloud cloud, MorpheusContext morpheusContext, opts=[:] ) {
 		log.debug "syncVolumes for ${locationOrServer} ${externalVolumes?.size} ${cloud}"
+		def rtn = [changed: false, maxStorage: 0l]
 		try {
-
 			def serverVolumes = locationOrServer.volumes?.sort{it.displayOrder}
 
 			def matchFunction = { morpheusItem, Map cloudItem ->
@@ -110,6 +110,7 @@ class VmwareSyncUtils {
 				def volume = updateMap.masterItem
 
 				volume.maxStorage = volume.size * ComputeUtility.ONE_KILOBYTE
+				rtn.maxStorage += volume.maxStorage
 				def save = false
 				if(existingVolume.maxStorage != volume.maxStorage) {
 					//update it
@@ -140,23 +141,28 @@ class VmwareSyncUtils {
 			}
 
 			if(saveList) {
+				rtn.changed = true
 				log.debug "Found ${saveList?.size()} volumes to update"
 				morpheusContext.storageVolume.save(saveList).blockingGet()
 			}
 
 			// The removes
 			if(syncLists.removeList) {
+				rtn.changed = true
 				morpheusContext.storageVolume.remove(syncLists.removeList, locationOrServer).blockingGet()
 			}
 
 			// The adds
 			def newVolumes = buildNewStorageVolumes(syncLists.addList, cloud, locationOrServer, null, opts)
 			if(newVolumes) {
+				rtn.changed = true
+				newVolumes?.each { rtn.maxStorage += it.maxStorage }
 				morpheusContext.storageVolume.create(newVolumes, locationOrServer).blockingGet()
 			}
 		} catch(e) {
 			log.error "Error in syncVolumes: ${e}", e
 		}
+		rtn
 	}
 
 	static buildNewStorageVolumes(volumes, cloud, locationOrServer, account, opts = [:]) {
@@ -219,6 +225,7 @@ class VmwareSyncUtils {
 			storageVolume.internalId = volume.internalId
 		if(volume.unitNumber)
 			storageVolume.unitNumber = volume.unitNumber
+		storageVolume.rootVolume = volume.rootVolume
 		storageVolume.removable = storageVolume.rootVolume != true
 		storageVolume.displayOrder = volume.displayOrder ?: server?.volumes?.size() ?: 0
 		storageVolume.diskIndex = index
