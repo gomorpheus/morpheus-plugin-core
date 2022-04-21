@@ -492,15 +492,15 @@ class VmwareComputeUtility {
 					                     controllerKey:"${virtualDevice.getKey()}", externalId:"${virtualDevice.getKey()}", key:virtualDevice.getKey(),
 					                     unitNumber:virtualDevice.getUnitNumber(), busNumber:virtualDevice.getBusNumber()]
 					if(virtualDevice instanceof VirtualIDEController)
-						newController.type = 'vmware-ide'
+						newController.type = 'vmware-plugin-ide'
 					else if(virtualDevice instanceof VirtualBusLogicController)
-						newController.type = 'vmware-busLogic'
+						newController.type = 'vmware-plugin-busLogic'
 					else if(virtualDevice instanceof VirtualLsiLogicController)
-						newController.type = 'vmware-lsiLogic'
+						newController.type = 'vmware-plugin-lsiLogic'
 					else if(virtualDevice instanceof VirtualLsiLogicSASController)
-						newController.type = 'vmware-lsiLogicSas'
+						newController.type = 'vmware-plugin-lsiLogicSas'
 					else if(virtualDevice instanceof ParaVirtualSCSIController)
-						newController.type = 'vmware-paravirtual'
+						newController.type = 'vmware-plugin-paravirtual'
 					if(newController.type)
 						rtn << newController
 				}

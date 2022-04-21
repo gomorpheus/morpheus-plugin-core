@@ -193,7 +193,7 @@ class FoldersSync {
 				}
 				def save = false
 				if (existingFolder.parent?.id != parent?.id) {
-					existingFolder.parent = parent
+					existingFolder.parent = new ComputeZoneFolder(id: parent.id)
 					save = true
 				}
 				if (existingFolder.readOnly != update.masterItem.readOnly) {

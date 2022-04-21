@@ -14,7 +14,7 @@ import io.reactivex.*
 class VmwareSyncUtils {
 
 	static buildSyncLists(existingItems, masterItems, matchExistingToMasterFunc, secondaryMatchExistingToMasterFunc=null) {
-		log.info "buildSyncLists: ${existingItems}, ${masterItems}"
+		log.debug "buildSyncLists: ${existingItems}, ${masterItems}"
 		def rtn = [addList:[], updateList: [], removeList: []]
 		try {
 			existingItems?.each { existing ->
@@ -192,11 +192,10 @@ class VmwareSyncUtils {
 
 			def newVolume = buildStorageVolume(account ?: cloud.account, locationOrServer, volumeConfig, newCounter)
 
-			// TODO : Handle controllers
-//			def matchController = matchStorageVolumeController(locationOrServer, volume)
-//			if (matchController) {
-//				newVolume.controller = matchController
-//			}
+			def matchController = matchStorageVolumeController(locationOrServer, volume)
+			if (matchController) {
+				newVolume.controller = matchController
+			}
 
 			if (opts.setDisplayOrder) {
 				newVolume.displayOrder = (index + newIndex)
@@ -232,4 +231,184 @@ class VmwareSyncUtils {
 		return storageVolume
 	}
 
+	static Boolean syncInterfaces(ComputeServer server, List networks, List ipList, Map systemNetworks, Collection<ComputeServerInterfaceType> netTypes, MorpheusContext morpheusContext) {
+		def rtn = false
+		try {
+			def serverInterfaces = server.interfaces
+			def missingInterfaces = []
+			def newInterfaces = []
+			Boolean primaryInterfaceExists = serverInterfaces?.any{it.primaryInterface}
+			networks.eachWithIndex { netEntry, index ->
+				def ipAddress = ipList.find{ it.mode == 'ipv4' && it.macAddress == netEntry.macAddress}?.ipAddress
+				def ipv6Address = ipList.find{ it.mode == 'ipv6' && it.macAddress == netEntry.macAddress}?.ipAddress
+				def netType = netTypes.find{it.externalId == netEntry.type}
+				def net = systemNetworks["${netEntry.switchUuid ?:''}:${netEntry.networkId}".toString()]
+				def matchedInterface = serverInterfaces?.find{ it.externalId == netEntry.key.toString()}
+				if(!matchedInterface) {
+					matchedInterface = serverInterfaces?.find{!it.externalId}
+				}
+				if(!matchedInterface) {
+					def newInterface = new ComputeServerInterface(externalId: netEntry.key, type: netType, macAddress: netEntry.macAddress, name: netEntry.name, ipAddress: ipAddress, ipv6Address: ipv6Address, network:net, displayOrder:netEntry.row)
+					if(!serverInterfaces) {
+						newInterface.primaryInterface = true
+					} else {
+						newInterface.primaryInterface = false
+					}
+					newInterfaces << newInterface
+				} else {
+					def primaryInterface = netEntry.row?.toInteger() == 0
+					def save = false
+					if(!primaryInterfaceExists) {
+						if(matchedInterface.primaryInterface != primaryInterface) {
+							matchedInterface.primaryInterface = primaryInterface
+							save = true
+						}
+					}
+					if(net && matchedInterface.network?.code != net.code) {
+						matchedInterface.network = net
+						save = true
+					}
+					if(matchedInterface.ipAddress != ipAddress) {
+						matchedInterface.ipAddress = ipAddress
+						save = true
+					}
+					if(matchedInterface.ipv6Address != ipv6Address) {
+						matchedInterface.ipv6Address = ipv6Address
+						save = true
+					}
+					if(matchedInterface.macAddress != netEntry.macAddress) {
+						matchedInterface.macAddress = netEntry.macAddress
+						save = true
+					}
+					if(matchedInterface.externalId != netEntry.key.toString()) {
+						matchedInterface.externalId = netEntry.key.toString()
+						save = true
+					}
+					if(matchedInterface.type?.code != netType.code) {
+						matchedInterface.type = netType
+						save = true
+					}
+					if(matchedInterface.displayOrder != netEntry.row) {
+						matchedInterface.displayOrder = netEntry.row
+						save = true
+					}
+					if(save) {
+						morpheusContext.computeServer.computeServerInterface.save([matchedInterface]).blockingGet()
+						rtn = true
+					}
+				}
+			}
+
+			server.interfaces?.each { iface ->
+				def found = networks.find{it.key.toString() == iface.externalId}
+				if(!found) {
+					missingInterfaces << iface
+				}
+			}
+			if(missingInterfaces) {
+				morpheusContext.computeServer.computeServerInterface.remove(missingInterfaces, server).blockingGet()
+				rtn = true
+			}
+			if(newInterfaces?.size() > 0) {
+				morpheusContext.computeServer.computeServerInterface.create(newInterfaces, server).blockingGet()
+				rtn = true
+			}
+		} catch(e) {
+			log.error("syncInterfaces error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static Boolean syncControllers(Cloud cloud, ComputeServer server, List externalControllers, Boolean checkContainer = true, Account account = null, MorpheusContext morpheusContext) {
+		def rtn = false //returns if there are changes to be saved
+		log.debug("controllers: {}", externalControllers)
+		try {
+			def serverControllers = server.controllers?.sort{it.id}
+			def missingControllers = []
+			def matchedControllers = []
+			def matchContainer = null //checkContainer ? (server.id ? Container.findByServer(server) : null) : null
+			externalControllers?.eachWithIndex { controller, index ->
+				def match = serverControllers.find { it.busNumber == "${controller.busNumber}" && it.type?.code == controller.type }
+				if (match) {
+					if (match.controllerKey == null || match.controllerKey != controller.controllerKey) {
+						match.controllerKey = controller.controllerKey
+						match.externalId = controller.externalId
+					}
+					matchedControllers << match
+				} else {
+					missingControllers << controller
+				}
+			}
+			//update all matched controllers
+			if(matchedControllers.size() > 0) {
+				morpheusContext.storageController.save(matchedControllers).blockingGet()
+			}
+			def newControllers = []
+			//we are missing all volumes on our side
+			missingControllers.eachWithIndex { controller, index ->
+				def newIndex = matchedControllers.size() + index
+				def newController = buildStorageController(controller, newIndex)
+				if(matchContainer)
+					newController.uniqueId = "morpheus-controller-${matchContainer.instance?.id}-${matchContainer.id}-${newIndex}"
+				else
+					newController.uniqueId = java.util.UUID.randomUUID()
+				newControllers << newController
+			}
+			//save new stuff
+			if(newControllers?.size() > 0) {
+				def success = morpheusContext.storageController.create(newControllers, server).blockingGet()
+				println "AC Log - VmwareSyncUtils:syncControllers - ${success}"
+			}
+			def removeControllers = []
+			serverControllers.each { serverController ->
+				//find a match
+				def match = externalControllers.find{serverController.busNumber == "${it.busNumber}" && serverController.type?.code == it.type}
+				if(match == null) {
+					//this was removed
+					removeControllers << serverController
+				}
+			}
+			//remove removes
+			removeControllers.each { removeController ->
+				//only if not resizing
+				if(!(server instanceof ComputeServer) || server.status != 'resizing') {
+					morpheusContext.storageController.remove(removeControllers, server).blockingGet()
+				}
+			}
+		} catch(e) {
+			log.error("syncControllers error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static StorageController buildStorageController(controller, index) {
+		def storageController = new StorageController()
+		storageController.name = controller.name
+		storageController.description = controller.description
+		storageController.controllerKey = controller.controllerKey
+		storageController.unitNumber = controller.unitNumber
+		storageController.busNumber = controller.busNumber
+		storageController.displayOrder = index
+		if(controller.type) {
+			if(controller.type instanceof StorageControllerType)
+				storageController.type = new StorageControllerType(id: controller.type?.id?.toLong())
+			else
+				storageController.type = new StorageControllerType(code: controller.type)
+		} else if(controller.typeId && controller.typeId.toString().isLong()) {
+			storageController.type = new StorageControllerType(id: controller.typeId?.toLong())
+		} else if(controller.typeCode) {
+			storageController.type = new StorageControllerType(code: controller.typeCode)
+		} else {
+			storageController.type = new StorageControllerType(code: 'vmware-plugin-standard')
+		}
+		if(controller.externalId)
+			storageController.externalId = controller.externalId
+		if(controller.internalId)
+			storageController.internalId = controller.internalId
+		return storageController
+	}
+
+	static StorageController matchStorageVolumeController(server, volume) {
+		return server.controllers.sort{it.id}?.find{it.controllerKey == volume.controllerKey}
+	}
 }

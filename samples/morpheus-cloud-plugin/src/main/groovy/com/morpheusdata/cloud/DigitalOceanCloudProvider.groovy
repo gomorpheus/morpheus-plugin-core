@@ -187,6 +187,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<StorageControllerType> getStorageControllerTypes() {
+		return null
+	}
+
+	@Override
 	ServiceResponse validate(Cloud zoneInfo) {
 		log.debug "validating Cloud: ${zoneInfo.code}"
 		if (!zoneInfo.configMap.datacenter) {

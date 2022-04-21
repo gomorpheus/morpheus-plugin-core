@@ -102,6 +102,7 @@ class TemplatesSync {
 		def adds = []
 		def addNames = []
 		Map<String, ArrayList> imageRefVolumesMap = [:]
+		Map<String, ArrayList> imageRefControllersMap = [:]
 		addList?.each {
 			addNames << it.name
 			def imageConfig = [
@@ -141,6 +142,7 @@ class TemplatesSync {
 			
 			def add = new VirtualImage(imageConfig)
 			imageRefVolumesMap[add.externalId] = it.volumes
+			imageRefControllersMap[add.externalId] = it.controllers
 			adds << add
 		}
 
@@ -153,7 +155,38 @@ class TemplatesSync {
 		morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { VirtualImageIdentityProjection proj ->
 			addNames.contains(proj.name)
 		}.blockingSubscribe { imageMap[it.externalId] = it }
-		
+
+		def addedControllers = []
+		//add the controllers
+		imageRefControllersMap?.each { externalId, controllers ->
+			VirtualImageIdentityProjection proj = imageMap[externalId]
+			if (proj) {
+				def controllersToAdd = []
+				controllers?.eachWithIndex { controller, index ->
+					def controllerConfig = [
+							name:controller.name,
+							description:controller.description,
+							controllerKey:"${controller.key}",
+							type: new StorageControllerType(code: controller.type),
+							unitNumber:"${controller.unitNumber}",
+							busNumber:"${controller.busNumber}",
+							uniqueId:"vmware.vsphere.controller.${cloud.id}.${externalId}.${controller.key}"
+					]
+
+
+					def newController = new StorageController(controllerConfig)
+					controllersToAdd << newController
+					addedControllers << newController
+				}
+				if (controllersToAdd) {
+					log.debug "Adding ${controllersToAdd?.size()} volumes to ${proj.externalId} in cloud ${cloud.id}"
+					morpheusContext.storageController.create(controllersToAdd, proj).blockingGet()
+				}
+			} else {
+				log.warn "Could not find VirtualImage that was just created with externalId ${externalId} in cloud ${cloud.id}"
+			}
+		}
+
 		// Now add the volumes
 		imageRefVolumesMap?.each { externalId, volumes ->
 			VirtualImageIdentityProjection proj = imageMap[externalId]
@@ -173,8 +206,8 @@ class TemplatesSync {
 							rootVolume  : (index == 0),
 							uniqueId    : "vmware.vsphere.volume.${cloud.id}.${externalId}.${volume.key}"
 					]
-					//				if(volume.controllerKey)
-					//					volumeConfig.controller = add.controllers?.find{ controller -> controller.controllerKey == "${volume.controllerKey}"}
+					if(volume.controllerKey)
+						volumeConfig.controller = addedControllers.find{ controller -> controller.controllerKey == "${volume.controllerKey}"}
 
 					def newVolume = new StorageVolume(volumeConfig)
 					volumesToAdd << newVolume

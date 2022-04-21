@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,7 +22,7 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected String uuid;
 	protected Datastore datastore;
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
-//	protected List<StorageController> controllers = new ArrayList<>();
+	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
 
 	public String getCode() {
 		return code;
@@ -83,4 +84,17 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	public void setVolumes(List<StorageVolumeIdentityProjection> volumes) {
 		this.volumes = volumes;
 	}
+
+	/**
+	 * Retrieve the list of StorageControllerIdentityProjections for the VirtualImageLocation.
+	 * @return controllers
+	 */
+	public List<StorageControllerIdentityProjection> getControllers() { return controllers; }
+
+	/**
+	 * Set the list of StorageControllerIdentityProjections for the VirtualImageLocation
+	 * NOTE: To modify the list of controllers associated with this VirtualImageLocation, utilize MorpheusStorageControllerService
+	 * @param controllers
+	 */
+	public void setControllers(List<StorageControllerIdentityProjection> controllers) { this.controllers = controllers; }
 }

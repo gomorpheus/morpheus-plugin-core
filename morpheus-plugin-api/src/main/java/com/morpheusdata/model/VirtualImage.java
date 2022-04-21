@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -35,6 +36,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean virtioSupported;
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
+	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -186,6 +188,19 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setVolumes(List<StorageVolumeIdentityProjection> volumes) {
 		this.volumes = volumes;
 	}
+
+	/**
+	 * Retrieve the list of StorageControllerIdentityProjections for the VirtualImage.
+	 * @return controllers
+	 */
+	public List<StorageControllerIdentityProjection> getControllers() { return controllers; }
+
+	/**
+	 * Set the list of StorageControllerIdentityProjections for the VirtualImage
+	 * NOTE: To modify the list of controllers associated with this VirtualImage, utilize MorpheusStorageControllerService
+	 * @param controllers
+	 */
+	public void setControllers(List<StorageControllerIdentityProjection> controllers) { this.controllers = controllers; }
 
 	public Long getMinRam() {
 		return minRam;

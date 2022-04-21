@@ -8,6 +8,7 @@ import com.morpheusdata.model.NetworkType;
 import com.morpheusdata.model.Network;
 import com.morpheusdata.model.ComputeZoneFolder;
 import com.morpheusdata.model.StorageVolumeType;
+import com.morpheusdata.model.StorageControllerType;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.ComputeZonePool;
 
@@ -74,6 +75,12 @@ public interface CloudProvider extends PluginProvider {
 	 * @return Collection of StorageVolumeType
 	 */
 	Collection<StorageVolumeType> getStorageVolumeTypes();
+
+	/**
+	 * Provides a Collection of {@link StorageControllerType} related to this CloudProvider
+	 * @return Collection of StorageControllerType
+	 */
+	Collection<StorageControllerType> getStorageControllerTypes();
 
 	/**
 	 * Validates the submitted cloud information to make sure it is functioning correctly.

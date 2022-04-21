@@ -1,5 +1,6 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusWikiPageService
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
@@ -48,7 +49,8 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusOperationNotificationService operationNotification
 	protected MorpheusMetadataTagService tagService
 	protected MorpheusStorageVolumeService storageVolumeContext
-	protected MorpheusWikiPageService wikiPageService
+	protected MorpheusStorageControllerService storageControllerContext
+	protected MorpheusWikiPageService wikiPageContext
 
 
     MorpheusContextImpl() {
@@ -63,7 +65,8 @@ class MorpheusContextImpl implements MorpheusContext {
 	    operationNotification = new MorpheusOperationNotificationServiceImpl()
 	    tagService = new MorpheusMetadataTagServiceImpl()
 		storageVolumeContext = new MorpheusStorageVolumeServiceImpl()
-		wikiPageService = new MorpheusWikiPageServiceImpl()
+		storageControllerContext = new MorpheusStorageControllerServiceImpl()
+		wikiPageContext = new MorpheusWikiPageServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -79,6 +82,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	}
 
 	@Override
+	MorpheusStorageControllerService getStorageController() {
+		return storageControllerContext
+	}
+
+	@Override
 	MorpheusOperationNotificationService getOperationNotification() {
 		return operationNotification
 	}
@@ -90,7 +98,7 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusWikiPageService getWikiPage() {
-		return wikiPageService
+		return wikiPageContext
 	}
 
     @Override

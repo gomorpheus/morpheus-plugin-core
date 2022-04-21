@@ -169,6 +169,13 @@ public interface MorpheusContext {
 	MorpheusStorageVolumeService getStorageVolume();
 
 	/**
+	 * Returns the StorageController Service
+	 *
+	 * @return An instance of the StorageController Service
+	 */
+	MorpheusStorageControllerService getStorageController();
+
+	/**
 	 * Returns a json encoded string of the settings for the plugin requested. The settings are defined
 	 * by getSettings() on Plugin
 	 * @param plugin the Plugin to fetch the settings for

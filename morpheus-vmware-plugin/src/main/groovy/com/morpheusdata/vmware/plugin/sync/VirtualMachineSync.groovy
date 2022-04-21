@@ -326,14 +326,15 @@ class VirtualMachineSync {
 							planInfoChanged = true
 							save = true
 						}
+
 						//check storage
-//						if(matchedServer.controllers) {
-//							if(currentServer.status != 'resizing') {
-//								def changed = vmwareProvisionService.syncControllers(cloud, currentServer, matchedServer.controllers, currentServer.account)
-//								if(changed == true)
-//									save = true
-//							}
-//						}
+						if(matchedServer.controllers) {
+							if(currentServer.status != 'resizing') {
+								def changed = VmwareSyncUtils.syncControllers(cloud, currentServer, matchedServer.controllers, false, currentServer.account, morpheusContext)
+								if(changed == true)
+									save = true
+							}
+						}
 						def volumeInfoChanged = false
 						if(matchedServer.volumes) {
 							if(currentServer.status != 'resizing') {
@@ -349,7 +350,7 @@ class VirtualMachineSync {
 						//check networks
 						if(matchedServer.networks) {
 							if(currentServer.status != 'resizing') {
-								def changed = syncInterfaces(cloud, currentServer, matchedServer.networks, serverIps.ipList, currentServer.account, systemNetworks)
+								def changed = VmwareSyncUtils.syncInterfaces(currentServer, matchedServer.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
 								if(changed)
 									save = true
 							}
@@ -488,7 +489,7 @@ class VirtualMachineSync {
 							def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
 								morpheusItem?.id == matchedMetadata?.id
 							}
-							def tagSyncLists = buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
+							def tagSyncLists = VmwareSyncUtils.buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
 							tagSyncLists.addList?.each { tag ->
 								def createdTag = morpheusContext.metadataTag.create(tag).blockingGet()
 								currentServer.metadata += createdTag
@@ -697,10 +698,10 @@ class VirtualMachineSync {
 //						computeService.saveNotes(add,cloudItem.summary.config.annotation,false,false)
 //					}
 //					//sync controllers
-//					vmwareProvisionService.syncControllers(cloud, add, cloudItem.controllers, add.account)
-					//sync volumes
+					VmwareSyncUtils.syncControllers(cloud, savedServer, cloudItem.controllers, false, add.account, morpheusContext)
+//					//sync volumes
 					VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
-					syncInterfaces(cloud, savedServer, cloudItem.networks, serverIps.ipList, savedServer.account, systemNetworks)
+					VmwareSyncUtils.syncInterfaces(savedServer, cloudItem.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
 				} else {
 					add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
 					if (!morpheusContext.computeServer.create([add]).blockingGet()) {
@@ -860,124 +861,6 @@ class VirtualMachineSync {
 		}
 	}
 
-	Boolean syncInterfaces(zone, server, networks, ipList, account, systemNetworks) {
-		def rtn = false
-		log.debug("ipList: ${ipList}")
-		try {
-			def serverInterfaces = server.interfaces
-			def missingInterfaces = []
-			def newInterfaces = []
-			Boolean primaryInterfaceExists = serverInterfaces?.any{it.primaryInterface}
-			networks.eachWithIndex { netEntry, index ->
-				def ipAddress = ipList.find{ it.mode == 'ipv4' && it.macAddress == netEntry.macAddress}?.ipAddress
-				def ipv6Address = ipList.find{ it.mode == 'ipv6' && it.macAddress == netEntry.macAddress}?.ipAddress
-				def netType = netTypes.find{it.externalId == netEntry.type}
-				def net = systemNetworks["${netEntry.switchUuid ?:''}:${netEntry.networkId}".toString()]//.find{it.externalId == netEntry.networkId && it.internalId == netEntry.switchUuid}
-				def matchedInterface = serverInterfaces?.find{ it.externalId == netEntry.key.toString()}
-				if(!matchedInterface) {
-					matchedInterface = serverInterfaces?.find{!it.externalId}
-				}
-				if(!matchedInterface) {
-					def newInterface = new ComputeServerInterface(externalId: netEntry.key, type: netType, macAddress: netEntry.macAddress, name: netEntry.name, ipAddress: ipAddress, ipv6Address: ipv6Address, network:net, displayOrder:netEntry.row)
-					if(!serverInterfaces) {
-						newInterface.primaryInterface = true
-					} else {
-						newInterface.primaryInterface = false
-					}
-					newInterfaces << newInterface
-				} else {
-					def primaryInterface = netEntry.row?.toInteger() == 0
-					def save = false
-					if(!primaryInterfaceExists) {
-						if(matchedInterface.primaryInterface != primaryInterface) {
-							matchedInterface.primaryInterface = primaryInterface
-							save = true
-						}
-					}
-					if(net && matchedInterface.network?.code != net.code) {
-						matchedInterface.network = net
-						save = true
-					}
-					if(matchedInterface.ipAddress != ipAddress) {
-						matchedInterface.ipAddress = ipAddress
-						save = true
-					}
-					if(matchedInterface.ipv6Address != ipv6Address) {
-						matchedInterface.ipv6Address = ipv6Address
-						save = true
-					}
-					if(matchedInterface.macAddress != netEntry.macAddress) {
-						matchedInterface.macAddress = netEntry.macAddress
-						save = true
-					}
-					if(matchedInterface.externalId != netEntry.key.toString()) {
-						matchedInterface.externalId = netEntry.key.toString()
-						save = true
-					}
-					if(matchedInterface.type?.code != netType.code) {
-						matchedInterface.type = netType
-						save = true
-					}
-					if(matchedInterface.displayOrder != netEntry.row) {
-						matchedInterface.displayOrder = netEntry.row
-						save = true
-					}
-					if(save) {
-						morpheusContext.computeServer.computeServerInterface.save([matchedInterface]).blockingGet()
-						rtn = true
-					}
-				}
-			}
-
-			server.interfaces?.each { iface ->
-				def found = networks.find{it.key.toString() == iface.externalId}
-				if(!found) {
-					missingInterfaces << iface
-				}
-			}
-			if(missingInterfaces) {
-				morpheusContext.computeServer.computeServerInterface.remove(missingInterfaces, server).blockingGet()
-				rtn = true
-			}
-			if(newInterfaces?.size() > 0) {
-				morpheusContext.computeServer.computeServerInterface.create(newInterfaces, server).blockingGet()
-				rtn = true
-			}
-		} catch(e) {
-			log.error("syncInterfaces error: ${e}", e)
-		}
-		return rtn
-	}
-
-	static buildSyncLists(existingItems, masterItems, matchExistingToMasterFunc, secondaryMatchExistingToMasterFunc=null) {
-		def rtn = [addList:[], updateList: [], removeList: []]
-		try {
-			existingItems?.each { existing ->
-				def matches = masterItems?.findAll { matchExistingToMasterFunc(existing, it) }
-				if(!matches && secondaryMatchExistingToMasterFunc != null) {
-					matches = masterItems?.findAll { secondaryMatchExistingToMasterFunc(existing, it) }
-				}
-				if(matches?.size() > 0) {
-					matches?.each { match ->
-						rtn.updateList << [existingItem:existing, masterItem:match]
-					}
-				} else {
-					rtn.removeList << existing
-				}
-			}
-			masterItems?.each { masterItem ->
-				def match = rtn?.updateList?.find {
-					it.masterItem == masterItem
-				}
-				if(!match) {
-					rtn.addList << masterItem
-				}
-			}
-		} catch(e) {
-			log.error "buildSyncLists error: ${e}", e
-		}
-		return rtn
-	}
 
 	Collection<MetadataTag> getAllTags(String refType, Long refId) {
 		log.debug "getAllTags: ${cloud}"

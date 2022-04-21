@@ -13,6 +13,7 @@ import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkProxy
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.StorageControllerType
 import com.morpheusdata.model.StorageVolumeType
 import com.morpheusdata.model.OsType
 import com.morpheusdata.model.PlatformType
@@ -247,6 +248,41 @@ class VmwareCloudProvider implements CloudProvider {
 		])
 
 		return [datastoreVolumeType, diskVolumeType]
+	}
+
+	@Override
+	Collection<StorageControllerType> getStorageControllerTypes() {
+		def standardType = new StorageControllerType([
+		        code: 'vmware-plugin-standard',
+				name: 'Vwmare Plugin Standard',
+		])
+
+		def ideType = new StorageControllerType([
+				code: 'vmware-plugin-ide',
+				name: 'Vwmare Plugin IDE',
+		])
+
+		def busLogicType = new StorageControllerType([
+				code: 'vmware-plugin-busLogic',
+				name: 'Vwmare Plugin SCSI BusLogic Parallel',
+		])
+
+		def lsiType = new StorageControllerType([
+				code: 'vmware-plugin-lsiLogic',
+				name: 'Vwmare Plugin SCSI LSI Logic Parallel',
+		])
+
+		def lsiSasType = new StorageControllerType([
+				code: 'vmware-plugin-lsiLogicSas',
+				name: 'Vwmare Plugin SCSI LSI Logic SAS',
+		])
+
+		def paravirtualType = new StorageControllerType([
+				code: 'vmware-plugin-paravirtual',
+				name: 'Vwmare Plugin SCSI VMware Paravirtual',
+		])
+
+		return [standardType, ideType, busLogicType, lsiType, lsiSasType, paravirtualType]
 	}
 
 	@Override

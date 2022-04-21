@@ -57,6 +57,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String externalFqdn;
 	protected String apiKey;
 	protected List<StorageVolume> volumes = new ArrayList<>();
+	protected List<StorageController> controllers = new ArrayList<>();
 	protected String osDevice = "/dev/sda";
 	protected String dataDevice = "/dev/sda";
 	protected Boolean lvmEnabled = true;
@@ -295,6 +296,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return volumes;
 	}
 
+	public List<StorageController> getControllers() {
+		return controllers;
+	}
+
 	public List<MetadataTag> getMetadata() { return metadata;}
 
 	public Long getUsedMemory() {
@@ -458,6 +463,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("sshHost", sshHost);
 	}
 
+	/**
+	 * NOTE: To modify the list of interfaces associated with this ComputeServer, utilize MorpheusComputeServerInterfaceService
+	 * @param interfaces
+	 */
 	public void setInterfaces(List<ComputeServerInterface> interfaces) {
 		this.interfaces = interfaces;
 		markDirty("interfaces", interfaces);
@@ -470,6 +479,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setVolumes(List<StorageVolume> volumes) {
 		this.volumes = volumes;
 		markDirty("volumes", volumes);
+	}
+
+	/**
+	 * NOTE: To modify the list of controllers associated with this ComputeServer, utilize MorpheusStorageControllerService
+	 * @param controllers
+	 */
+	public void setControllers(List<StorageController> controllers) {
+		this.controllers = controllers;
+		markDirty("controllers", controllers);
 	}
 
 	public String getOsDevice() {

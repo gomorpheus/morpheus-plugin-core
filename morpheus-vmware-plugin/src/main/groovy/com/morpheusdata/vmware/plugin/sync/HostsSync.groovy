@@ -102,7 +102,7 @@ class HostsSync {
 				def save = false
 				def clusterObj = zoneClusters?.find { pool -> pool.internalId == update.masterItem.cluster }
 				if(currentServer.resourcePool?.id != clusterObj.id) {
-					currentServer.resourcePool = clusterObj
+					currentServer.resourcePool = new ComputeZonePool(id: clusterObj.id)
 					save = true
 				}
 				def hostUuid = matchedServer.uuid
@@ -111,7 +111,7 @@ class HostsSync {
 					save = true
 				}
 				if(save) {
-					morpheusContext.computeServer.save(currentServer).blockingGet()
+					morpheusContext.computeServer.save([currentServer]).blockingGet()
 				}
 				syncHostDatastoreVolumes(currentServer, matchedServer, volumeType)
 				updateHostStats(currentServer, matchedServer)
