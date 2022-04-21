@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin.sync
 
+import com.morpheusdata.model.Account
 import groovy.util.logging.Slf4j
 import com.morpheusdata.model.ComputeZoneFolder
 import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection
@@ -19,6 +20,11 @@ class FoldersSync {
 	public FoldersSync(Cloud cloud, MorpheusContext morpheusContext) {
 		this.cloud = cloud
 		this.morpheusContext = morpheusContext
+	}
+
+	enum DEFAULT_TYPE{
+		FOLDER,
+		STORE
 	}
 
 	def execute() {
@@ -79,11 +85,11 @@ class FoldersSync {
 					updateMatchedFolders(morpheusRootFolder, updateItems)
 				}.onDelete { removeItems ->
 					removeMissingFolders(removeItems)
-				}.start()
-
-	//				if (cloud.owner.masterAccount == false) {
-	//					zoneFolderService.chooseOwnerFolderDefaults(cloud.owner, cloud)
-	//				}
+				}.observe().blockingSubscribe {completed ->
+					if(completed && cloud.owner.masterAccount == false) {
+						chooseOwnerFolderDefaults()
+					}
+				}
 			}
 		} catch(e) {
 			log.error "Error in execute of FoldersSync: ${e}", e
@@ -135,7 +141,6 @@ class FoldersSync {
 					folderList.remove(cloudItem)
 				}
 			}
-//			parentFolder.save(flush: true)
 			addList?.each { ComputeZoneFolderIdentityProjection add ->
 				addFolderChildren(cloud, add, folderList)
 			}
@@ -270,65 +275,87 @@ class FoldersSync {
 		return addList
 	}
 
-//	private chooseOwnerFolderDefaults(Account currentAccount, ComputeZone zone) {
-//		//check for default store and set if not
-//		def folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
-//			eq('owner', currentAccount)
-//			eq('refType', 'ComputeZone')
-//			eq('refId', zone.id)
-//			eq('defaultStore', true)
-//			maxResults(1)
-//		}
-//		if(folder && folder.readOnly == true) {
-//			folder.defaultStore = false
-//			folder.save(flush:true)
-//			folder = null
-//		}
-//		if(!folder) {
-//			folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
-//				eq('owner', currentAccount)
-//				eq('refType', 'ComputeZone')
-//				eq('refId', zone.id)
-//				eq('defaultStore', false)
-//				ne('readOnly', true)
-//				order('parent')
-//				order('name')
-//				maxResults(1)
-//			}
-//			if(folder) {
-//				folder.defaultStore = true
-//				folder.save(flush:true)
-//			}
-//		}
-//		//check for default store and set if not
-//		folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
-//			eq('owner', currentAccount)
-//			eq('refType', 'ComputeZone')
-//			eq('refId', zone.id)
-//			eq('defaultFolder', true)
-//			ne('readOnly', true)
-//			maxResults(1)
-//		}
-//		if(folder && folder.readOnly == true) {
-//			folder.defaultFolder = false
-//			folder.save(flush:true)
-//			folder = null
-//		}
-//		if(!folder) {
-//			folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
-//				eq('owner', currentAccount)
-//				eq('refType', 'ComputeZone')
-//				eq('refId', zone.id)
-//				eq('defaultFolder', false)
-//				ne('readOnly', true)
-//				order('parent')
-//				order('name')
-//				maxResults(1)
-//			}
-//			if(folder) {
-//				folder.defaultFolder = true
-//				folder.save(flush:true)
-//			}
-//		}
-//	}
+	private chooseOwnerFolderDefaults() {
+		log.debug "chooseOwnerFolderDefaults"
+
+		Account currentAccount = cloud.owner
+
+		ensureFolderDefault(currentAccount, DEFAULT_TYPE.STORE)
+		ensureFolderDefault(currentAccount, DEFAULT_TYPE.FOLDER)
+	}
+
+	private fetchFolders() {
+		List<ComputeZoneFolderIdentityProjection> projs = []
+		morpheusContext.cloud.folder.listSyncProjections(cloud.id).blockingSubscribe { projs << it}
+		List<ComputeZoneFolder> folders = []
+		morpheusContext.cloud.folder.listById(projs.collect { it.id }).blockingSubscribe {folders << it }
+		folders
+	}
+
+	private ensureFolderDefault(Account currentAccount, DEFAULT_TYPE type) {
+
+		def folders = fetchFolders()
+		def folder = folders?.find {
+			def ret
+			ret = it.owner.id == currentAccount.id && it.readOnly != true
+			if(ret) {
+				switch(type) {
+					case DEFAULT_TYPE.FOLDER:
+						ret = it.defaultFolder == true
+						break
+					case DEFAULT_TYPE.STORE:
+						ret = it.defaultStore == true
+						break
+				}
+			}
+			ret
+		}
+		if(folder && folder.readOnly == true) {
+			switch(type) {
+				case DEFAULT_TYPE.FOLDER:
+					folder.defaultFolder = false
+					break
+				case DEFAULT_TYPE.STORE:
+					folder.defaultStore = false
+					break
+			}
+			morpheusContext.cloud.folder.save([folder]).blockingGet()
+			folder = null
+		}
+		if(!folder) {
+			folders = fetchFolders()
+			folder = folders?.findAll {
+				def ret = it.owner.id == currentAccount.id && it.readOnly != true
+					if(ret) {
+						switch(type) {
+							case DEFAULT_TYPE.FOLDER:
+								ret = it.defaultFolder == false
+								break
+							case DEFAULT_TYPE.STORE:
+								ret = it.defaultStore == false
+								break
+						}
+					}
+				 ret
+			}?.sort {ComputeZoneFolder a, ComputeZoneFolder b ->
+				def val = a.parent?.id <=> b.parent?.id
+				if(val == 0) {
+					val = a.name <=> b.name
+				}
+				val
+			}?.getAt(0)
+
+			if(folder) {
+				switch(type) {
+					case DEFAULT_TYPE.FOLDER:
+						folder.defaultFolder = true
+						break
+					case DEFAULT_TYPE.STORE:
+						folder.defaultStore = true
+						break
+				}
+				morpheusContext.cloud.folder.save([folder]).blockingGet()
+			}
+		}
+	}
 }
