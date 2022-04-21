@@ -10,7 +10,7 @@ import spock.lang.Specification
 @Slf4j
 class SyncTaskSpec extends Specification {
 
-	void "add-update-remove with Strings"() {
+	void "add-update-remove with Strings - async"() {
 		given:
 		List itemsAdded = []
 		List itemsUpdated = []
@@ -61,7 +61,7 @@ class SyncTaskSpec extends Specification {
 				.withLoadObjectDetails { loadDetailsObservable}
 				.onUpdate {itemsUpdated += it}
 				.onDelete {itemsRemoved += it}
-				.start()
+				.startAsync()
 		sleep(2000)
 
 		then:
@@ -123,7 +123,7 @@ class SyncTaskSpec extends Specification {
 				.withLoadObjectDetails { loadDetailsObservable}
 				.onUpdate {itemsUpdated += it}
 				.onDelete {itemsRemoved += it}
-				.blockingStart()
+				.start()
 
 		then:
 		itemsRemoved == ['def']

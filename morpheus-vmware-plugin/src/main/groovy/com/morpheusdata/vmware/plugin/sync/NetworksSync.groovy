@@ -28,8 +28,8 @@ class NetworksSync {
 		this.networkTypes = networkTypes
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute NetworksSync: ${cloud}"
+	def execute() {
+		log.debug "execute NetworksSync: ${cloud}"
 
 		try {
 			def clusters = []
@@ -137,7 +137,7 @@ class NetworksSync {
 
 				}.onDelete { removeItems ->
 					morpheusContext.cloud.network.remove(removeItems).blockingGet()
-				}.blockingStart()
+				}.start()
 			}
 
 		} catch(e) {

@@ -23,8 +23,8 @@ class HostsSync {
 		this.morpheusContext = morpheusContext
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute HostsSync: ${cloud}"
+	def execute() {
+		log.debug "execute HostsSync: ${cloud}"
 
 		try {
 			def queryResults = [:]
@@ -71,7 +71,7 @@ class HostsSync {
 					updateMatchedHosts(cloud, queryResults.clusters, updateItems)
 				}.onDelete { removeItems ->
 					removeMissingHosts(cloud, removeItems)
-				}.blockingStart()
+				}.start()
 			}
 		} catch(e) {
 			log.error "Error in execute : ${e}", e

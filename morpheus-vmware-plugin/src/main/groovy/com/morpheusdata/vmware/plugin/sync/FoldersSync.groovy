@@ -80,7 +80,7 @@ class FoldersSync {
 				}.onDelete { removeItems ->
 					removeMissingFolders(removeItems)
 				}.start()
-	
+
 	//				if (cloud.owner.masterAccount == false) {
 	//					zoneFolderService.chooseOwnerFolderDefaults(cloud.owner, cloud)
 	//				}
@@ -269,4 +269,66 @@ class FoldersSync {
 		}
 		return addList
 	}
+
+//	private chooseOwnerFolderDefaults(Account currentAccount, ComputeZone zone) {
+//		//check for default store and set if not
+//		def folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
+//			eq('owner', currentAccount)
+//			eq('refType', 'ComputeZone')
+//			eq('refId', zone.id)
+//			eq('defaultStore', true)
+//			maxResults(1)
+//		}
+//		if(folder && folder.readOnly == true) {
+//			folder.defaultStore = false
+//			folder.save(flush:true)
+//			folder = null
+//		}
+//		if(!folder) {
+//			folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
+//				eq('owner', currentAccount)
+//				eq('refType', 'ComputeZone')
+//				eq('refId', zone.id)
+//				eq('defaultStore', false)
+//				ne('readOnly', true)
+//				order('parent')
+//				order('name')
+//				maxResults(1)
+//			}
+//			if(folder) {
+//				folder.defaultStore = true
+//				folder.save(flush:true)
+//			}
+//		}
+//		//check for default store and set if not
+//		folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
+//			eq('owner', currentAccount)
+//			eq('refType', 'ComputeZone')
+//			eq('refId', zone.id)
+//			eq('defaultFolder', true)
+//			ne('readOnly', true)
+//			maxResults(1)
+//		}
+//		if(folder && folder.readOnly == true) {
+//			folder.defaultFolder = false
+//			folder.save(flush:true)
+//			folder = null
+//		}
+//		if(!folder) {
+//			folder = ComputeZoneFolder.withCriteria(uniqueResult: true) {
+//				eq('owner', currentAccount)
+//				eq('refType', 'ComputeZone')
+//				eq('refId', zone.id)
+//				eq('defaultFolder', false)
+//				ne('readOnly', true)
+//				order('parent')
+//				order('name')
+//				maxResults(1)
+//			}
+//			if(folder) {
+//				folder.defaultFolder = true
+//				folder.save(flush:true)
+//			}
+//		}
+//	}
 }

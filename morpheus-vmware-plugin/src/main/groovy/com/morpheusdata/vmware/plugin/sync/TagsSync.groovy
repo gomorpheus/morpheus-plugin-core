@@ -24,8 +24,8 @@ class TagsSync {
 		this.client = client
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute TagsSync: ${cloud}"
+	def execute() {
+		log.debug "blockexecuteingExecute TagsSync: ${cloud}"
 		try {
 			def opts = [:]
 			def listResults = listTags(client, [:])
@@ -49,7 +49,7 @@ class TagsSync {
 						SyncTask.UpdateItemDto<MetadataTag, Map> matchItem = updateItemMap[tag.id]
 						return new SyncTask.UpdateItem<MetadataTag,Map>(existingItem:tag, masterItem:matchItem.masterItem)
 					}
-				}.blockingStart()
+				}.start()
 			}
 		} catch(e) {
 			log.error "Error in execute : ${e}", e

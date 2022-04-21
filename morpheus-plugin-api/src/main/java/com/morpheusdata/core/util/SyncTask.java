@@ -202,7 +202,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 		}
 	}
 
-	public void start() {
+	public void startAsync() {
 		//do all the subscribe crapola;
 		//delete missing
 		Completable deleteCompletable = Completable.fromObservable(domainRecords.subscribeOn(Schedulers.io())
@@ -243,9 +243,9 @@ public class SyncTask<Projection, ApiItem, Model> {
 		}
 	}
 
-	public void blockingStart() {
+	public void start() {
 		blocking = true;
-		start();
+		startAsync();
 	}
 
 	public Observable<Boolean> observe() {
@@ -254,7 +254,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 			@Override
 			public void subscribe(@NonNull ObservableEmitter<Boolean> emitter) throws Exception {
 				try {
-					blockingStart();
+					start();
 					emitter.onNext(true);
 					emitter.onComplete();
 				} catch(Exception e) {

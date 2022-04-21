@@ -23,8 +23,8 @@ class ResourcePoolsSync {
 		this.morpheusContext = morpheusContext
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute ResourcePoolsSync: ${cloud}"
+	def execute() {
+		log.debug "execute ResourcePoolsSync: ${cloud}"
 		try {
 			// Load the cloud based data
 			String clusterScope = cloud.getConfigProperty('cluster') as String
@@ -114,7 +114,7 @@ class ResourcePoolsSync {
 //						}
 					}.onDelete { removeItems ->
 						removeMissingResourcePools(clusterName, queryResults.clusters[clusterName] as String, removeItems)
-					}.blockingStart()
+					}.start()
 
 
 				}

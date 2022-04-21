@@ -23,8 +23,8 @@ class ContentLibrarySync {
 		this.client = client
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute: ${cloud}"
+	def execute() {
+		log.debug "execute: ${cloud}"
 		try {
 			// First pass through.. dedupe logic
 			removeDuplicates()
@@ -58,7 +58,7 @@ class ContentLibrarySync {
 						SyncTask.UpdateItemDto<VirtualImageLocation, Map> matchItem = updateItemMap[virtualImageLocation.id]
 						return new SyncTask.UpdateItem<VirtualImageLocation,Map>(existingItem:virtualImageLocation, masterItem:matchItem.masterItem)
 					}
-				}.blockingStart()
+				}.start()
 			}
 		} catch(e) {
 			log.error "Error in execute : ${e}", e

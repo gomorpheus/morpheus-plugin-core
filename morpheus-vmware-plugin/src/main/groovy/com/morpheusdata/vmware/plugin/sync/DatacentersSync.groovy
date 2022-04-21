@@ -21,8 +21,8 @@ class DatacentersSync {
 		this.morpheusContext = morpheusContext
 	}
 
-	def blockingExecute() {
-		log.debug "blockingExecute DatacentersSync: ${cloud}"
+	def execute() {
+		log.debug "execute DatacentersSync: ${cloud}"
 		try {
 			def listResults = listDatacenters(cloud)
 			if(listResults.success) {
@@ -44,7 +44,7 @@ class DatacentersSync {
 						SyncTask.UpdateItemDto<ComputeZonePool, Map> matchItem = updateItemMap[zonePool.id]
 						return new SyncTask.UpdateItem<ComputeZonePool,Map>(existingItem:zonePool, masterItem:matchItem.masterItem)
 					}
-				}.blockingStart()
+				}.start()
 			}
 		} catch(e) {
 			log.error "Error in execute : ${e}", e
