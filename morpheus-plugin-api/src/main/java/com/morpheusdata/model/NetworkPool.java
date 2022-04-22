@@ -391,7 +391,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	protected String gateway;
 	protected String netmask;
 	protected String dnsSearchPath;
-	protected String dhcpServer;
+	protected Boolean dhcpServer;
 	protected String subnetAddress;
 	protected Integer ipCount = 0;
 	protected Integer ipFreeCount = 0;
@@ -447,11 +447,11 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 		markDirty("dnsSearchPath",id);
 	}
 
-	public String getDhcpServer() {
+	public Boolean getDhcpServer() {
 		return dhcpServer;
 	}
 
-	public void setDhcpServer(String dhcpServer) {
+	public void setDhcpServer(Boolean dhcpServer) {
 		this.dhcpServer = dhcpServer;
 		markDirty("dhcpServer",id);
 	}

@@ -473,7 +473,7 @@ class VirtualMachineSync {
 							save = true
 						}
 
-//						rtn.updatedSnapshotIds = syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot)
+//						rtn.updatedSnapshotIds = syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot) // TODO: handle snapshot updates
 						Boolean tagChanges = false
 						if(tagAssociations && tagAssociations.success) {
 							def associatedTags = tagAssociations ? tagAssociations.associations[currentServer.externalId] : null
