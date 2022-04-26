@@ -11,6 +11,7 @@ import com.morpheusdata.model.MorpheusModel;
 public class StorageControllerIdentityProjection extends MorpheusModel {
 	protected String externalId;
 	protected String name;
+	protected String controllerKey;
 
 	public String getExternalId() {
 		return externalId;
@@ -28,5 +29,14 @@ public class StorageControllerIdentityProjection extends MorpheusModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getControllerKey() {
+		return controllerKey;
+	}
+
+	public void setControllerKey(String controllerKey) {
+		this.controllerKey = controllerKey;
+		markDirty("controllerKey", controllerKey);
 	}
 }

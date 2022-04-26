@@ -420,16 +420,12 @@ class VirtualMachineSync {
 								morpheusItem?.id == matchedMetadata?.id
 							}
 							def tagSyncLists = VmwareSyncUtils.buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
-							tagSyncLists.addList?.each { tag ->
-								def createdTag = morpheusContext.metadataTag.create(tag).blockingGet()
-								currentServer.metadata += createdTag
-								save = true
+							if(tagSyncLists.addList.size() > 0) {
+								morpheusContext.metadataTag.create(tagSyncLists.addList, currentServer).blockingGet()
 								tagChanges = true
 							}
-							tagSyncLists.removeList?.each { tagRemove ->
-								morpheusContext.metadataTag.remove([tagRemove]).blockingGet()
-								currentServer.metadata.remove(tagRemove)
-								save = true
+							if(tagSyncLists.removeList.size() > 0) {
+								morpheusContext.metadataTag.remove(tagSyncLists.removeList, currentServer).blockingGet()
 								tagChanges = true
 							}
 							//TODO?: tags on instances?

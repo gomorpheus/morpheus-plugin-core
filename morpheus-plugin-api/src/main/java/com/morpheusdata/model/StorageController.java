@@ -84,23 +84,6 @@ public class StorageController extends StorageControllerIdentityProjection {
 	}
 
 	/**
-	 * The controller key
-	 * @return controllerKey
-	 */
-	public String getControllerKey() {
-		return controllerKey;
-	}
-
-	/**
-	 * The controller key
-	 * @param controllerKey controllerKey
-	 */
-	public void setControllerKey(String controllerKey) {
-		this.controllerKey = controllerKey;
-		markDirty("controllerKey", controllerKey);
-	}
-
-	/**
 	 * The unit number
 	 * @return unitNumber
 	 */

@@ -1,10 +1,9 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.MetadataTag;
 import com.morpheusdata.model.MetadataTagType;
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.MetadataTagIdentityProjection;
-import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -59,11 +58,20 @@ public interface MorpheusMetadataTagService {
 	Single<Boolean> create(List<MetadataTag> metadataTags);
 
 	/**
+	 * Create new MetadataTags in Morpheus associated with a ComputeServer
+	 * @param addList new MetadataTags to persist
+	 * @return success
+	 */
+	Single<Boolean> create(List<MetadataTag> addList, ComputeServerIdentityProjection computeServerProj);
+
+
+	/**
 	 * Create and return a new MetadataTag in Morpheus
 	 * @param metadataTag new MetadataTag to persist
 	 * @return the tag
 	 */
 	Single<Boolean> create(MetadataTag metadataTag);
+
 
 	/**
 	 * Remove persisted MetadataTags from Morpheus
@@ -71,4 +79,12 @@ public interface MorpheusMetadataTagService {
 	 * @return success
 	 */
 	Single<Boolean> remove(List<MetadataTagIdentityProjection> metadataTags);
+
+	/**
+	 * Remove persisted MetadataTags associated with a ComputeServer from Morpheus
+	 * @param metadataTags MetadataTags to delete
+	 * @return success
+	 */
+	Single<Boolean> remove(List<MetadataTagIdentityProjection> metadataTags, ComputeServerIdentityProjection serverProj);
+
 }

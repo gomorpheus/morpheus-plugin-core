@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.DatastoreIdentityProjection;
+import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -26,6 +27,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Boolean removable = false;
 	protected Integer diskIndex;
 	protected String uniqueId;
+	protected StorageControllerIdentityProjection controller;
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -200,5 +202,13 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	 */
 	public String getUniqueId() {
 		return uniqueId;
+	}
+
+	public StorageControllerIdentityProjection getControllerKey() {
+		return controller;
+	}
+
+	public void setControllerKey(StorageControllerIdentityProjection controller) {
+		this.controller = controller;
 	}
 }

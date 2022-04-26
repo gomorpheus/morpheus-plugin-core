@@ -357,7 +357,6 @@ class VmwareSyncUtils {
 			//save new stuff
 			if(newControllers?.size() > 0) {
 				def success = morpheusContext.storageController.create(newControllers, server).blockingGet()
-				println "AC Log - VmwareSyncUtils:syncControllers - ${success}"
 			}
 			def removeControllers = []
 			serverControllers.each { serverController ->

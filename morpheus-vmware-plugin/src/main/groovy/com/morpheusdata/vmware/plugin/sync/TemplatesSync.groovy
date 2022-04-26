@@ -206,8 +206,8 @@ class TemplatesSync {
 							rootVolume  : (index == 0),
 							uniqueId    : "vmware.vsphere.volume.${cloud.id}.${externalId}.${volume.key}"
 					]
-					if(volume.controllerKey)
-						volumeConfig.controller = addedControllers.find{ controller -> controller.controllerKey == "${volume.controllerKey}"}
+					if(volume.controllerKey && addedControllers.find{ controller -> controller.controllerKey == "${volume.controllerKey}"})
+						volumeConfig.controllerKey = volume.controllerKey
 
 					def newVolume = new StorageVolume(volumeConfig)
 					volumesToAdd << newVolume
