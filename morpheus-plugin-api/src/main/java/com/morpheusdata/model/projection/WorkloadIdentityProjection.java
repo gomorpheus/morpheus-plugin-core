@@ -13,6 +13,7 @@ import com.morpheusdata.model.MorpheusModel;
 public class WorkloadIdentityProjection extends MorpheusModel {
 	protected String name;
 	protected String externalId;
+	protected Long serverId;
 
 	public String getName() {
 		return name;
@@ -30,5 +31,14 @@ public class WorkloadIdentityProjection extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
+	}
+
+	public Long getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(Long serverId) {
+		this.serverId = serverId;
+		markDirty("serverId", serverId);
 	}
 }

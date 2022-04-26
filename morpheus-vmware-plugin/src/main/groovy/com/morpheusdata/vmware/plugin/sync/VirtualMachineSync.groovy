@@ -83,6 +83,7 @@ class VirtualMachineSync {
 			def resourcePools = getAllResourcePools(cloud)
 			def folders = getAllFolders(cloud)
 			def networks = getAllNetworks(cloud)
+			def usageLists = [restartUsageIds: [], stopUsageIds: [], startUsageIds: [], updatedSnapshotIds: []]
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, syncData.cloudItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map cloudItem ->
 				domainObject.uniqueId && (domainObject.uniqueId == cloudItem?.config.uuid)
@@ -96,15 +97,18 @@ class VirtualMachineSync {
 				}
 			}.onAdd { itemsToAdd ->
 				if (createNew) {
-					addMissingVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, itemsToAdd, defaultServerType, queryResults.blackListedNames)
+					addMissingVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, itemsToAdd, defaultServerType, queryResults.blackListedNames, usageLists)
 				}
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
-				updateMatchedVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, updateItems)
-//				updateServerUsages(usageLists.startUsageIds, usageLists.stopUsageIds, usageLists.restartUsageIds)
+				updateMatchedVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, updateItems, usageLists)
 			}.onDelete { removeItems ->
 				removeMissingVirtualMachines(cloud, removeItems, queryResults.blackListedNames)
-//				morpheusContext.computeServer.remove(removeItems).blockingGet()
-			}.start()
+			}.observe().blockingSubscribe {completed ->
+				log.debug "sending usage start/stop/restarts: ${usageLists}"
+				morpheusContext.usage.startServerUsage(usageLists.startUsageIds).blockingGet()
+				morpheusContext.usage.stopServerUsage(usageLists.stopUsageIds).blockingGet()
+				morpheusContext.usage.restartServerUsage(usageLists.restartUsageIds).blockingGet()
+			}
 		} catch(e) {
 			log.error("cacheVirtualMachines error: ${e}", e)
 		}
@@ -115,29 +119,22 @@ class VirtualMachineSync {
 		log.debug "removeMissingVirtualMachines: ${cloud} ${removeList.size}"
 		for(ComputeServerIdentityProjection removeItem in removeList) {
 			try {
-//				ComputeServer tmpServer = ComputeServer.where{ id == removeItem.id}.join('computeServerType').join('volumes').join('controllers').join('interfaces').join('metadata').list()?.first()
-
 				def doDelete = true
 				if(blackListedNames?.contains(removeItem.name))
 					doDelete = false
 				if(doDelete) {
 					log.info("remove vm: ${removeItem}")
 					morpheusContext.computeServer.remove([removeItem]).blockingGet()
-//					if(!tmpServer.computeServerType.managed) {
-//						deleteUnmanagedServer(tmpServer)
-//					} else if(tmpServer.status != 'provisioning' ) {
-//						disableRemovedManagedServer(tmpServer)
-//					}
 				}
 			} catch(e) {
+				log.error "Error removing virtual machine: ${e}", e
 				log.warn("Unable to remove Server from inventory, Perhaps it is associated with an instance currently... ${removeItem.name} - ID: ${removeItem.id}")
 			}
 		}
 	}
 
-	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List updateList) {
+	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List updateList, Map usageLists) {
 		log.debug "updateMatchedVirtualMachines: ${cloud} ${updateList?.size()}"
-		def rtn = [restartUsageIds: [], stopUsageIds: [], startUsageIds: []]
 
 		Map<String,Network> systemNetworks
 		def networkIds = updateList.collect{it.masterItem.networks.collect{it.networkId}}.flatten().unique()
@@ -154,11 +151,15 @@ class VirtualMachineSync {
 
 		List<ComputeServer> matchedServers = getAllServersByUpdateList(cloud, updateList)
 
-//		def managedServerIds = matchedServers?.findAll{it.computeServerType?.managed}?.collect{it.id}
-//		def tmpContainers = [:]
-//		if(managedServerIds) {
-//			tmpContainers = Container.where{server.id in managedServerIds}.join('containerType').list(readOnly:true).groupBy{it.serverId}
-//		}
+		// Gather up all the Workloads that may pertains to the servers we are sync'ing
+		def managedServerIds = matchedServers?.findAll{it.computeServerType?.managed}?.collect{it.id}
+		Map<Long, WorkloadIdentityProjection> tmpWorkloads = [:]
+		if(managedServerIds) {
+			morpheusContext.cloud.listCloudWorkloadProjections(cloud.id).filter {
+				it.serverId in managedServerIds
+			}.blockingSubscribe { tmpWorkloads[it.serverId] = it}
+		}
+
 		//lets look for duplicate discovered vms in the result set and delete if unmanaged
 		def serversGroupedByUniqueId = matchedServers.groupBy{it.uniqueId}
 		serversGroupedByUniqueId?.each { tmpUniqueId, svList ->
@@ -184,7 +185,7 @@ class VirtualMachineSync {
 			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 			tagAssociations = VmwareComputeUtility.listTagAssociationsForVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [vmIds: vmIds])
 		}
-//		def statsData = []
+		def statsData = []
 //		def updateServers = []
 
 		for(update in updateList) {
@@ -394,83 +395,12 @@ class VirtualMachineSync {
 //							}
 							save = true
 						}
+
 						if(powerState != currentServer.powerState) {
-							def previousState = currentServer.powerState
 							currentServer.powerState = powerState
 							if(currentServer.computeServerType?.guestVm) {
-								if(currentServer.powerState == ComputeServer.PowerState.on) {
-//									Container.where {
-//										server == currentServer && status != Container.Status.deploying && status != Container.Status.failed
-//									}.updateAll(userStatus: Container.Status.running, status: Container.Status.running)
-//									rtn.startUsageIds << currentServer.id
-//									def instanceIds = Container.withCriteria {
-//										createAlias('instance', 'instance')
-//										createAlias('server','server')
-//										ne('status', Container.Status.failed)
-//										ne('status', Container.Status.deploying)
-//										not {
-//											inList('instance.status', [Instance.Status.pendingReconfigureApproval, Instance.Status.pendingDeleteApproval, Instance.Status.removing,Instance.Status.restarting,Instance.Status.finishing,Instance.Status.resizing,Instance.Status.failed])
-//										}
-//										eq('server.id', currentServer.id)
-//										projections {
-//											property('instance.id')
-//										}
-//									}?.flatten()?.unique()
-//									if(instanceIds) {
-//										com.morpheus.Instance.where { id in instanceIds }.updateAll(status: com.morpheus.Instance.Status.running)
-//									}
-								} else if(currentServer.powerState == ComputeServer.PowerState.paused) {
-//									Container.where {
-//										server == currentServer && status != Container.Status.deploying && status != Container.Status.failed
-//									}.updateAll(userStatus: Container.Status.suspended, status: Container.Status.suspended)
-//									if(previousState != 'on') {
-//										rtn.startUsageIds << currentServer.id
-//									}
-//
-//									def instanceIds = Container.withCriteria {
-//										createAlias('instance', 'instance')
-//										createAlias('server','server')
-//										ne('status', Container.Status.failed)
-//										ne('status', Container.Status.deploying)
-//										not {
-//											inList('instance.status', [Instance.Status.pendingReconfigureApproval, Instance.Status.pendingDeleteApproval, Instance.Status.removing,Instance.Status.restarting,Instance.Status.finishing,Instance.Status.resizing,Instance.Status.failed])
-//										}
-//										eq('server.id', currentServer.id)
-//										projections {
-//											property('instance.id')
-//										}
-//									}?.flatten()?.unique()
-//									if(instanceIds) {
-//										com.morpheus.Instance.where { id in instanceIds }.updateAll(status: com.morpheus.Instance.Status.suspended)
-//									}
-								} else {
-//									def containerStatus = currentServer.powerState == ComputeServer.PowerState.paused ? Container.Status.suspended : Container.Status.stopped
-//									def instanceStatus = currentServer.powerState == ComputeServer.PowerState.paused ? com.morpheus.Instance.Status.suspended : com.morpheus.Instance.Status.stopped
-//									Container.where {
-//										server == currentServer && status != Container.Status.deploying
-//									}.updateAll(status:containerStatus)
-//									rtn.stopUsageIds << currentServer.id
-//									def instanceIds = Container.withCriteria {
-//										createAlias('instance', 'instance')
-//										createAlias('server', 'server')
-//										ne('status', Container.Status.failed)
-//										ne('status', Container.Status.deploying)
-//										not {
-//											inList('instance.status', [Instance.Status.removing, Instance.Status.restarting, Instance.Status.finishing, Instance.Status.resizing, Instance.Status.stopping, Instance.Status.starting])
-//										}
-//										eq('server.id', currentServer.id)
-//										projections {
-//											property('instance.id')
-//										}
-//									}?.flatten()?.unique()
-//									if(instanceIds) {
-//										com.morpheus.Instance.where {
-//											id in instanceIds
-//										}.updateAll(status: instanceStatus)
-//									}
-								}
+								morpheusContext.computeServer.updatePowerState(currentServer.id, currentServer.powerState).blockingGet()
 							}
-							save = true
 						}
 
 //						rtn.updatedSnapshotIds = syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot) // TODO: handle snapshot updates
@@ -519,8 +449,8 @@ class VirtualMachineSync {
 						}
 						//check for restart usage records
 						if(planInfoChanged || volumeInfoChanged || tagChanges) {
-//							if(!rtn.stopUsageIds.contains(currentServer.id) && !rtn.startUsageIds.contains(currentServer.id))
-//								rtn.restartUsageIds << currentServer.id
+							if(!usageLists.stopUsageIds.contains(currentServer.id) && !usageLists.startUsageIds.contains(currentServer.id))
+								usageLists.restartUsageIds << currentServer.id
 						}
 //						def privateIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
 //						def publicIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
@@ -578,33 +508,35 @@ class VirtualMachineSync {
 							save = true
 						}
 
+						if((currentServer.agentInstalled == false || currentServer.powerState == ComputeServer.PowerState.off || currentServer.powerState == ComputeServer.PowerState.paused) && currentServer.status != 'provisioning') {
+							// Simulate stats update
+							statsData += updateVirtualMachineStats(currentServer, matchedServer, tmpWorkloads)
+						}
+
 						if(save) {
 							morpheusContext.computeServer.save([currentServer]).blockingGet()
 						}
-//						if((currentServer.agentInstalled == false || currentServer.powerState == 'off' || currentServer.powerState == 'suspended') && currentServer.status != 'provisioning') {
-//							// def agentlessContainers = Container.where { currentServer.id in }
-//							statsData += updateVirtualMachineStats(currentServer, matchedServer,tmpContainers)
-//						}
+
 					} catch(ex) {
 						log.warn("Error Updating Virtual Machine ${currentServer?.name} - ${currentServer.externalId} - ${ex}", ex)
 					}
 				}
 			}
 		}
-//		if(statsData) {
-//			containerService.updateContainerStats(statsData)
-//			def msg = [refId:1, jobType:'statsUpdate', data:statsData]
-//			sendRabbitMessage('main', '', ApplianceJobService.applianceMonitorQueue, msg)
-//		}
+		if(statsData) {
+			for(statData in statsData) {
+				morpheusContext.stats.updateWorkloadStats(new WorkloadIdentityProjection(id: statData.workload.id), statData.maxMemory, statData.maxUsedMemory, statData.maxStorage, statData.maxUsedStorage, statData.cpuPercent, statData.running)
+			}
+		}
+
 //		if(updateServers) {
 		//TODO?: Tag Compliance?
 //			tagCompliancePolicyService.checkTagComplianceForServers(cloud, updateServers)
 //		}
-		return rtn
 	}
 
 
-	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[]) {
+	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[], Map usageLists) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
 
 		Map<String,Network> systemNetworks
@@ -702,19 +634,27 @@ class VirtualMachineSync {
 //					//sync volumes
 					VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
 					VmwareSyncUtils.syncInterfaces(savedServer, cloudItem.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
-				} else {
-					add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
-					if (!morpheusContext.computeServer.create([add]).blockingGet()) {
-						log.error "Error in creating server ${add}"
-					}
 				}
+
+				add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
+				if (!morpheusContext.computeServer.create([add]).blockingGet()) {
+					log.error "Error in creating server ${add}"
+				}
+
 //				rtn.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
 //				if(add.consolePort) {
 //					def computePort = new ComputePort(parentType:'ComputeZone', parentId:cloud.id, regionCode: cloud.regionCode, port:add.consolePort, portCount:1,
 //							portType:'vnc', refType:'ComputeServer', refId:add.id)
 //					computePort.save(flush:true)
 //				}
+				if(add.powerState == ComputeServer.PowerState.on) {
+					usageLists.startUsageIds << add.id
+				} else {
+					usageLists.stopUsageIds << add.id
+				}
 			}
+
+
 		}
 //		tagCompliancePolicyService.checkTagComplianceForServers(cloud,addedServers)
 
@@ -871,5 +811,83 @@ class VirtualMachineSync {
 			tags << it
 		}
 		tags
+	}
+
+	private def updateVirtualMachineStats(server, vmMap, Map<Long, WorkloadIdentityProjection> workloads = [:]) {
+		def statsData = []
+		try {
+			def vm = vmMap
+			def disks = vm.config?.hardware?.device
+			def maxStorage = 0
+			def maxUsedStorage = 0
+			disks?.each { disk ->
+				if (disk instanceof VirtualDisk && !(disk instanceof VirtualCdrom)) {
+					maxStorage += disk.getCapacityInBytes() ?: 0
+					def backing = disk.getBacking()
+					if (backing instanceof VirtualDiskSparseVer1BackingInfo || backing instanceof VirtualDiskSparseVer2BackingInfo)
+						maxUsedStorage += (backing.getSpaceUsedInKB() ?: 0) * ComputeUtility.ONE_KILOBYTE
+				}
+			}
+			def runtime = vm.runtime
+			def quickStats = vm.summary?.quickStats
+			//cpu
+			def cpuCores = vm.summary?.config?.numCpu ?: 1
+			def maxCpu = runtime?.maxCpuUsage
+			def maxUsedCpu = quickStats?.getOverallCpuUsage()
+			def cpuPercent = 0
+			//memory
+			def maxMemory = (vm.summary?.config?.memorySizeMB ?: 0) * ComputeUtility.ONE_MEGABYTE
+			def maxUsedMemory = (quickStats.getGuestMemoryUsage() ?: 0) * ComputeUtility.ONE_MEGABYTE
+			//power state
+			def power = runtime.powerState
+			def powerState = 'unknown'
+			if (power == VirtualMachinePowerState.poweredOn) {
+				powerState = 'on'
+			} else if (power == VirtualMachinePowerState.poweredOff)
+				powerState = 'off'
+			else if (power == VirtualMachinePowerState.suspended)
+				powerState = 'paused'
+			//save it all
+
+			def capacityInfo = server.capacityInfo ?: new ComputeCapacityInfo(maxMemory: maxMemory, maxStorage: maxStorage)
+			if (maxMemory > server.maxMemory) {
+				server.maxMemory = maxMemory
+				capacityInfo.maxMemory = maxMemory
+			}
+			if (maxStorage > server.maxStorage) {
+				server.maxStorage = maxStorage
+			}
+			if (server.agentInstalled && server.usedStorage) {
+				maxUsedStorage = server.usedStorage
+			}
+			if (maxCpu && maxUsedCpu) {
+				if (maxCpu > 0 && maxUsedCpu > 0) {
+					cpuPercent = maxUsedCpu.div(maxCpu) * 100
+					if (cpuPercent > 100.0)
+						cpuPercent = 100.0
+				} else {
+					cpuPercent = 0.0
+				}
+			} else {
+				cpuPercent = 0.0
+			}
+
+			def workload = workloads[server.id]?.first()
+			if (workload) {
+				statsData << [
+						workload      : workload,
+						maxUsedMemory : maxUsedMemory,
+						maxMemory     : maxMemory,
+						maxStorage    : maxStorage,
+						maxUsedStorage: maxUsedStorage,
+						cpuPercent    : cpuPercent,
+						running       : powerState == 'on' ? true : false
+				]
+			}
+		} catch (e) {
+			log.warn("error updating vm stats: ${e}", e)
+			return []
+		}
+		return statsData
 	}
 }

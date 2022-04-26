@@ -5,6 +5,7 @@ import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
+import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Date;
@@ -20,6 +21,8 @@ import java.util.Map;
  * @since 0.8.0
  */
 public interface MorpheusCloudService {
+
+	Observable<WorkloadIdentityProjection> listCloudWorkloadProjections(Long cloudId);
 
 	MorpheusComputeZonePoolService getPool();
 

@@ -1,6 +1,8 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
+import com.morpheusdata.core.MorpheusUsageService
 import com.morpheusdata.core.MorpheusWikiPageService
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
@@ -51,6 +53,8 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusStorageVolumeService storageVolumeContext
 	protected MorpheusStorageControllerService storageControllerContext
 	protected MorpheusWikiPageService wikiPageContext
+	protected MorpheusUsageService usageContext
+	protected MorpheusStatsService statsContext
 
 
     MorpheusContextImpl() {
@@ -67,6 +71,8 @@ class MorpheusContextImpl implements MorpheusContext {
 		storageVolumeContext = new MorpheusStorageVolumeServiceImpl()
 		storageControllerContext = new MorpheusStorageControllerServiceImpl()
 		wikiPageContext = new MorpheusWikiPageServiceImpl()
+	    usageContext = new MorpheusUsageServiceImpl()
+	    statsContext = new MorpheusStatsServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -84,6 +90,16 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusStorageControllerService getStorageController() {
 		return storageControllerContext
+	}
+
+	@Override
+	MorpheusUsageService getUsage() {
+		return usageContext
+	}
+
+	@Override
+	MorpheusStatsService getStats() {
+		return statsContext
 	}
 
 	@Override
