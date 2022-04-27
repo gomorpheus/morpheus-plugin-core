@@ -449,22 +449,22 @@ class VirtualMachineSync {
 							if(!usageLists.stopUsageIds.contains(currentServer.id) && !usageLists.startUsageIds.contains(currentServer.id))
 								usageLists.restartUsageIds << currentServer.id
 						}
-//						def privateIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
-//						def publicIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
-//						if(publicIp != currentServer.externalIp) {
-//							if(currentServer.externalIp == currentServer.sshHost) {
-//								currentServer.sshHost = publicIp
-//							}
-//							currentServer.externalIp = publicIp
-//							save = true
-//						}
-//						if(privateIp != currentServer.internalIp) {
-//							if(currentServer.internalIp == currentServer.sshHost) {
-//								currentServer.sshHost = privateIp
-//							}
-//							currentServer.internalIp = privateIp
-//							save = true
-//						}
+						def privateIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
+						def publicIp = currentServer.interfaces.find { it.primaryInterface }?.ipAddress ?: serverIps.ipAddress
+						if(publicIp != currentServer.externalIp) {
+							if(currentServer.externalIp == currentServer.sshHost) {
+								currentServer.sshHost = publicIp
+							}
+							currentServer.externalIp = publicIp
+							save = true
+						}
+						if(privateIp != currentServer.internalIp) {
+							if(currentServer.internalIp == currentServer.sshHost) {
+								currentServer.sshHost = privateIp
+							}
+							currentServer.internalIp = privateIp
+							save = true
+						}
 						if(hotResize != currentServer.hotResize) {
 							currentServer.hotResize = hotResize
 							save = true
