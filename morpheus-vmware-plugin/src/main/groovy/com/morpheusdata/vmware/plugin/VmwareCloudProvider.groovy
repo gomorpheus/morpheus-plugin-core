@@ -15,17 +15,13 @@ import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.StorageControllerType
 import com.morpheusdata.model.StorageVolumeType
-import com.morpheusdata.model.OsType
 import com.morpheusdata.model.PlatformType
-import com.morpheusdata.model.projection.*
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.vmware.plugin.sync.*
 import groovy.util.logging.Slf4j
-import com.vmware.vim25.*
 import com.morpheusdata.core.util.ConnectionUtils
 import java.security.MessageDigest
-import io.reactivex.*
 
 @Slf4j
 class VmwareCloudProvider implements CloudProvider {
@@ -150,7 +146,35 @@ class VmwareCloudProvider implements CloudProvider {
 		serverType.managed = false
 		serverType.provisionTypeCode = 'vmware-provision-provider-plugin'
 
-		return [hypervisorType, serverType]
+		ComputeServerType vmwareWindows = new ComputeServerType()
+		vmwareWindows.name = 'VMware Windows Node'
+		vmwareWindows.code = 'vmware-plugin-windows-node'
+		vmwareWindows.description = ''
+		vmwareWindows.reconfigureSupported = true
+		vmwareWindows.hasAutomation = true
+		vmwareWindows.supportsConsoleKeymap = true
+		vmwareWindows.controlEjectCd = true
+		vmwareWindows.guestVm = true
+		vmwareWindows.controlSuspend = true
+		vmwareWindows.platform = PlatformType.windows
+		vmwareWindows.managed = true
+		vmwareWindows.provisionTypeCode = 'vmware-provision-provider-plugin'
+
+		ComputeServerType vmwareVm = new ComputeServerType()
+		vmwareVm.name = 'Vmware Linux VM'
+		vmwareVm.code = 'vmware-plugin-vm'
+		vmwareVm.description = ''
+		vmwareWindows.controlEjectCd = true
+		vmwareWindows.guestVm = true
+		vmwareWindows.controlSuspend = true
+		vmwareVm.reconfigureSupported = false
+		vmwareVm.hasAutomation = true
+		vmwareVm.supportsConsoleKeymap = true
+		vmwareVm.platform = PlatformType.linux
+		vmwareVm.managed = true
+		vmwareVm.provisionTypeCode = 'vmware-provision-provider-plugin'
+
+		return [hypervisorType, serverType, vmwareWindows, vmwareVm]
 	}
 
 	@Override

@@ -21,6 +21,7 @@ public class ComputeServerType  extends MorpheusModel {
 	protected Boolean managed = true;
 	protected Boolean controlPower = true;
 	protected Boolean controlSuspend = false;
+	protected Boolean controlEjectCd = false;
 	protected Boolean enabled = true;
 	protected Boolean selectable = false;
 	protected Boolean creatable = false;
@@ -240,6 +241,14 @@ public class ComputeServerType  extends MorpheusModel {
 
 	public void setProvisionTypeCode(String provisionTypeCode) {
 		this.provisionTypeCode = provisionTypeCode;
+	}
+
+	public Boolean getControlEjectCd() {
+		return controlEjectCd;
+	}
+
+	public void setControlEjectCd(Boolean controlEjectCd) {
+		this.controlEjectCd = controlEjectCd;
 	}
 
 

@@ -230,15 +230,14 @@ class VirtualMachineSync {
 							currentServer.internalId = instanceUuid
 							save = true
 						}
-						// TODO : Fix up computeServerType for windows
-//						if(osType && osTypeCode != 'other.64' && ['windows','linux'].contains(osType.platform) && currentServer.computeServerType.managed &&  currentServer.computeServerType.platform != osType.platform ) {
-//							if(osType.platform == 'windows') {
-//								currentServer.computeServerType = ComputeServerType.findByCode('vmwareWindows')
-//							} else {
-//								currentServer.computeServerType = ComputeServerType.findByCode('vmwareVm')
-//							}
-//							save = true
-//						}
+						if(osType && osTypeCode != 'other.64' && ['windows','linux'].contains(osType.platform) && currentServer.computeServerType.managed &&  currentServer.computeServerType.platform != osType.platform ) {
+							if(osType.platform == 'windows') {
+								currentServer.computeServerType = new ComputeServerType(code: 'vmware-plugin-windows-node')
+							} else {
+								currentServer.computeServerType = new ComputeServerType(code: 'vmware-plugin-vm')
+							}
+							save = true
+						}
 						if(currentServer.status != 'provisioning' && osType && osType?.code != currentServer.serverOs?.code && osTypeCode && osTypeCode != 'other.64') {
 							currentServer.serverOs = osType
 							currentServer.osType = osType.platform
