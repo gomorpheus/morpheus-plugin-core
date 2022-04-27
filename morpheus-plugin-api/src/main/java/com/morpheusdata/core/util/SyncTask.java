@@ -7,6 +7,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observables.ConnectableObservable;
+import org.apache.commons.collections.collection.SynchronizedCollection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +60,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 	private Integer bufferSize = 50;
 	private Boolean blocking = false;
 	private final Collection<ApiItem> apiItems;
+	private final Collection<ApiItem> foundApiItems;
 	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction;
 	private OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
@@ -66,6 +68,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
 		this.domainRecords = domainRecords.publish().autoConnect(2);
 		this.apiItems = Collections.synchronizedCollection(apiItems);
+		this.foundApiItems = Collections.synchronizedCollection(new ArrayList<>());
 	}
 
 	public SyncTask<Projection, ApiItem, Model> addMatchFunction(MatchFunction<Projection, ApiItem> matchFunction) {
@@ -170,7 +173,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 			}
 		}
 		if(foundApiItem != null) {
-			apiItems.remove(foundApiItem); //clear the list out
+			foundApiItems.add(foundApiItem);
 
 			UpdateItemDto<Projection, ApiItem> updateItem = new UpdateItemDto<Projection, ApiItem>();
 			updateItem.existingItem = domainMatch;
@@ -182,18 +185,21 @@ public class SyncTask<Projection, ApiItem, Model> {
 		}
 	}
 
-	private void addMissing(Collection<ApiItem> addItems) {
+	private void addMissing() {
 		ArrayList<ApiItem> chunkedAddItems = new ArrayList<>();
 		int bufferCounter=0;
-		for(ApiItem addItem : addItems) {
-			if(bufferCounter < bufferSize) {
-				chunkedAddItems.add(addItem);
-				bufferCounter++;
-			} else {
-				onAddFunction.method(chunkedAddItems);
-				chunkedAddItems = new ArrayList<>();
-				chunkedAddItems.add(addItem);
-				bufferCounter = 1;
+
+		for(ApiItem item : apiItems) {
+			if(foundApiItems.contains(item) == false) {
+				if (bufferCounter < bufferSize) {
+					chunkedAddItems.add(item);
+					bufferCounter++;
+				} else {
+					onAddFunction.method(chunkedAddItems);
+					chunkedAddItems = new ArrayList<>();
+					chunkedAddItems.add(item);
+					bufferCounter = 1;
+				}
 			}
 		}
 
@@ -230,7 +236,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 				onUpdateFunction.method(updateItems);
 			})
 			.doOnComplete( ()-> {
-				addMissing(apiItems);
+				addMissing();
 			}).doOnError( (Throwable t) -> {
 				//log.error;
 			})
