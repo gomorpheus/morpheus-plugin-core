@@ -64,6 +64,14 @@ public interface MorpheusCloudService {
 	Single<Void> updateKeyPair(KeyPair keyPair, Cloud cloud);
 
 	Single<Workload> getWorkloadById(Long id);
+
+	/**
+	 * Saves a workload
+	 * @param workload
+	 * @return boolean
+	 */
+	Single<Boolean> saveWorkload(Workload workload);
+
 	Observable<Workload> getWorkload(ComputeServer server);
 
 	Single<Cloud> getCloudById(Long id);

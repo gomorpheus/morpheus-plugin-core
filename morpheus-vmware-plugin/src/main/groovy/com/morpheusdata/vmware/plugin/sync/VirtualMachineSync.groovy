@@ -268,16 +268,18 @@ class VirtualMachineSync {
 							currentServer.folder = folder
 							save = true
 						}
-//						if(currentServer.computeServerType == null) {
-//							currentServer.computeServerType = serverType
-//							save = true
-//						}
 						if(vmwareHost && currentServer.hostname != vmwareHost) {
 							currentServer.hostname = vmwareHost
 							//managed guest virtual machine that is not a container host
-//							if(currentServer.computeServerType?.guestVm && !currentServer.computeServerType?.containerHypervisor && currentServer.computeServerType?.managed) {
-//								Container.where{server == currentServer}.updateAll(hostname:  vmwareHost)
-//							}
+							if(currentServer.computeServerType?.guestVm && !currentServer.computeServerType?.containerHypervisor && currentServer.computeServerType?.managed) {
+								def projs = []
+								morpheusContext.cloud.listCloudWorkloadProjections(cloud.id).filter { it.serverId == currentServer.id }.blockingSubscribe { projs << it }
+								for(proj in projs) {
+									Workload workload = morpheusContext.cloud.getWorkloadById(proj.id).blockingGet()
+									workload.hostname = vmwareHost
+									morpheusContext.cloud.saveWorkload(workload).blockingGet()
+								}
+							}
 							save = true
 						}
 						if(matchedServer.runtime?.host?.getVal()?.toString() != currentServer.parentServer?.externalId) {
