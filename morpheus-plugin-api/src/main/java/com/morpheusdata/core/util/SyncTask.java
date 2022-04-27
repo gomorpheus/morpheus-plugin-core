@@ -7,7 +7,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observables.ConnectableObservable;
-import org.apache.commons.collections.collection.SynchronizedCollection;
 
 import java.util.ArrayList;
 import java.util.Collection;
