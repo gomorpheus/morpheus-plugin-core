@@ -11,6 +11,7 @@ import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.policy.MorpheusPolicyService;
 import com.morpheusdata.core.MorpheusOperationNotificationService;
 import com.morpheusdata.core.backup.MorpheusBackupService;
+import com.morpheusdata.core.backup.MorpheusBackupJobService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 import java.util.Collection;
@@ -223,6 +224,14 @@ public interface MorpheusContext {
 	 * @return an instance of the Backup Context
 	 */
 	MorpheusBackupService getBackup();
+
+	/**
+	 * Returns the Backup Job Context for sync, executing and restoring backup jobs
+	 * Typically this would be called by a {@link BackupProvider}.
+	 *
+	 * @return an instance of the Backup Job Context
+	 */
+	MorpheusBackupJobService getBackupJob();
 
 
 	//Common methods used across various contexts

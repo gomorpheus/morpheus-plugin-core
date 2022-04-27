@@ -1,12 +1,17 @@
 package com.morpheusdata.core.backup;
 
-import com.morpheusdata.core.BackupProvider;
-import com.morpheusdata.model.*;
+import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.Backup;
+import com.morpheusdata.model.BackupJob;
+import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.BackupResult;
+import com.morpheusdata.model.BackupType;
+import com.morpheusdata.model.Replication;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -33,14 +38,21 @@ public interface MorpheusBackupService {
 	 */
 	MorpheusBackupTypeService getType();
 
+	/**
+	 * Returns the MorpheusReplicationContext used for performing updates/queries on {@link Replication} related assets
+	 * within Morpheus.
+	 * @return An instance of the MorpheusReplicationContext to be used for calls by various backup providers
+	 */
+	MorpheusReplicationService getReplication();
+
 	//ORM Object Methods
 	/**
-	 * Lists all backup projection objects for a specified integration id.
+	 * Lists all backup projection objects for a specified backup provider id.
 	 * The projection is a subset of the properties on a full {@link Backup} object for sync matching.
-	 * @param accountIntegration the {@link AccountIntegration} identifier associated to the networks to be listed.
+	 * @param backupProvider the {@link com.morpheusdata.core.BackupProvider} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<BackupIdentityProjection> listIdentityProjections(AccountIntegration accountIntegration);
+	Observable<BackupIdentityProjection> listIdentityProjections(BackupProvider backupProvider);
 
 	/**
 	 * Lists all backup projection objects for a specified cloud.
@@ -72,7 +84,7 @@ public interface MorpheusBackupService {
 	/**
 	 * Creates new Backup Domains from cache / sync implementations
 	 * @param addList List of new {@link Backup} objects to be inserted into the database
-	 * @return notification of completion if someone really cares about it
+	 * @return notification of completion
 	 */
 	Single<Boolean> create(List<Backup> addList);
 

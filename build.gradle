@@ -81,15 +81,18 @@ subprojects { project ->
         }
     }
 
-	// tasks.register('copyToMorpheus', Copy) {
-	// 	from(layout.buildDirectory.dir('packages'))
-	// 	// includes
-	// 	if(project.hasProperty("includePattern")) {
-	// 		include includePattern
-	// 	}
-	// 	into(layout.projectDirectory.dir(morpheusSeedFolder))
-	// }
-    
+	// Copying plugin jar to plugins folder will make the plugin available to the morpheus appliance
+	tasks.register('copyToMorpheus', Copy) {
+		from("${layout.projectDirectory.dir("./build/libs")}/${project.name}-${version}.jar")
+		into(layout.projectDirectory.dir("../plugins"))
+	}
+
+	// Runs assemble and copyToMorpheus
+	tasks.register('publishToMorpheus') {
+		dependsOn 'assemble'
+		dependsOn 'copyToMorpheus'
+		tasks.findByName('copyToMorpheus').mustRunAfter 'assemble'
+	}
 }
 
 repositories {
@@ -108,6 +111,21 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
+}
+
+tasks.register('copyToMorpheus', Copy) {
+	from(layout.buildDirectory.dir('builds'))
+	// includes
+	if(project.hasProperty("includePattern")) {
+		include includePattern
+	}
+	into(layout.projectDirectory.dir(morpheusSeedFolder))
+}
+
+tasks.register('publishToMorpheus') {
+	dependsOn 'assemble'
+	dependsOn 'copyToMorpheus'
+	tasks.findByName('copyToMorpheus').mustRunAfter 'assemble'
 }
 
 tasks.withType(JavaExec) {

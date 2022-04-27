@@ -14,7 +14,10 @@ import java.util.Map;
  * @author Dustin DeYoung
  */
 public interface BackupProvider extends PluginProvider {
-	
+	// Should these sections go into sub providers?
+	// 		BackupJobProvider, BackupExectionProvider,
+	// 		BackupRestoreProvider, BackupReplicationProvider
+
 	// Backup Jobs
 	ServiceResponse configureBackupJob();
 	ServiceResponse validateBackupJob();
@@ -47,5 +50,7 @@ public interface BackupProvider extends PluginProvider {
 	ServiceResponse prepareRestoreBackup();
 	ServiceResponse restoreBackup();
 	ServiceResponse finalizeRestore();
+
+	// Replication Operations
 
 }

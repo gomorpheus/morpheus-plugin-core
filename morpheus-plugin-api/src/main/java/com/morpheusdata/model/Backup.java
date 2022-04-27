@@ -1,18 +1,25 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.BackupProvider;
-
 import java.util.Date;
 
 public class Backup extends MorpheusModel {
+
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected User createdBy;
 	protected String name;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupProvider backupProvider;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupType backupType;
+	// TODO: create storage bucket model
 	// protected StorageBucket storageProvider;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupRepository backupRepository;
-	
+
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupJob backupJob;
 	protected String backupSetId;
 	protected Boolean active = true;
@@ -22,9 +29,11 @@ public class Backup extends MorpheusModel {
 	protected String cronExpression;
 	protected Date lastExecution;
 	protected String lastBackupResultId; //going away with ES out
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupResult lastResult;
 	protected String lastStatus;
 	protected Date nextFire;
+
 	//source
 	protected Long containerId;
 	protected Long instanceId;
@@ -36,6 +45,7 @@ public class Backup extends MorpheusModel {
 	protected Long zoneId;
 	protected Long siteId;
 	protected Long sourceProviderId;
+
 	//target
 	protected String targetHost;
 	protected Integer targetPort;
@@ -46,11 +56,13 @@ public class Backup extends MorpheusModel {
 	protected Boolean targetSlave;
 	protected Boolean targetIncremental;
 	protected Boolean targetAll = true;
+
 	//executor
 	protected String sshHost;
 	protected Integer sshPort;
 	protected String sshUsername;
 	protected String sshPassword;
+
 	//stats
 	protected Long targetSize;
 	protected Long backupSize;
@@ -61,6 +73,7 @@ public class Backup extends MorpheusModel {
 	protected String targetArchive;
 	protected Boolean compressed = false;
 	protected Boolean copyToStore = true;
+
 	//general
 	protected String internalId;
 	protected String externalId;
@@ -69,8 +82,9 @@ public class Backup extends MorpheusModel {
 	protected String dateDay;
 	protected Integer retentionCount;
 	protected Date dateCreated;
-
 	protected Date lastUpdated;
+	protected String statusMessage;
+	protected String errorMessage;
 
 	public Account getAccount() {
 		return account;
@@ -583,6 +597,25 @@ public class Backup extends MorpheusModel {
 	public void setLastUpdated(Date lastUpdated) {
 		markDirty("lastUpdated", lastUpdated, this.lastUpdated);
 		this.lastUpdated = lastUpdated;
+	}
+
+
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		markDirty("statusMessage", statusMessage, this.statusMessage);
+		this.statusMessage = statusMessage;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		markDirty("errorMessage", errorMessage, this.errorMessage);
+		this.errorMessage = errorMessage;
 	}
 	
 }

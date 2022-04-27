@@ -1,20 +1,26 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.model.MorpheusModel;
-import com.morpheusdata.model.BackupType;
+import com.morpheusdata.model.ReplicationSite;
+import com.morpheusdata.core.backup.MorpheusReplicationService;
 
-public class BackupTypeIdentityProjection extends MorpheusModel {
+/**
+ * Provides a subset of properties from the {@link ReplicationSite} object for doing a sync match
+ * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
+ * @see MorpheusReplicationService
+ * @author Dustin DeYoung
+ */
+public class ReplicationSiteIdentityProjection extends MorpheusModel {
 	protected String externalId;
 	protected String name;
-	protected String code;
 
-	public BackupTypeIdentityProjection() {}
+	public ReplicationSiteIdentityProjection() {
+	}
 
-	public BackupTypeIdentityProjection(Long id, String externalId, String name, String code) {
+	public ReplicationSiteIdentityProjection(Long id, String externalId, String name) {
 		this.id = id;
 		this.name = name;
 		this.externalId = externalId;
-		this.code = code;
 	}
 
 	/**
@@ -49,14 +55,6 @@ public class BackupTypeIdentityProjection extends MorpheusModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
-	}
-
-	/**
-	 * The {@link BackupType#getCode()} is mapped here in the identity projection for quick filter search.
-	 * @return the associated {@link BackupType#getCode()}
-	 */
-	public String getCode() {
-		return code;
 	}
 
 }

@@ -15,14 +15,14 @@ public class BackupIdentityProjection extends MorpheusModel {
 	protected String name;
 	protected String typeCode;
 
+	public BackupIdentityProjection() {
+	}
+
 	public BackupIdentityProjection(Long id, String externalId, String name, String typeCode) {
 		this.id = id;
 		this.name = name;
 		this.externalId = externalId;
 		this.typeCode = typeCode;
-	}
-
-	public BackupIdentityProjection() {
 	}
 
 	/**
