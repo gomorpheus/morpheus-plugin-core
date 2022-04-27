@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin.sync
 
+import com.morpheusdata.model.projection.StorageControllerIdentityProjection
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
 import com.morpheusdata.vmware.plugin.utils.*
@@ -207,7 +208,7 @@ class TemplatesSync {
 							uniqueId    : "vmware.vsphere.volume.${cloud.id}.${externalId}.${volume.key}"
 					]
 					if(volume.controllerKey && addedControllers.find{ controller -> controller.controllerKey == "${volume.controllerKey}"})
-						volumeConfig.controllerKey = volume.controllerKey
+						volumeConfig.controller = new StorageControllerIdentityProjection([controllerKey:  volume.controllerKey])
 
 					def newVolume = new StorageVolume(volumeConfig)
 					volumesToAdd << newVolume
