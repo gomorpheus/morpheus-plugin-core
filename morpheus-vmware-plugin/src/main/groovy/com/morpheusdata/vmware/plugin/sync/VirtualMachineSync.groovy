@@ -535,8 +535,6 @@ class VirtualMachineSync {
 			if(blackListedNames?.contains(cloudItem.name)) {
 				doCreate = false
 			}
-			// TODO : Handle workload limit
-//			if(doCreate == true && !applianceLicenseService.getWorkloadUsage().limitReached) {
 			if(doCreate == true) {
 				def serverIps = VmwareComputeUtility.getServerIps(cloudItem.guest.net)
 				if(!serverIps.ipAddress && cloudItem.guest.ipAddress) {
@@ -597,38 +595,35 @@ class VirtualMachineSync {
 					def savedServer = morpheusContext.computeServer.create(add).blockingGet()
 					if(!savedServer){
 						log.error "Error in creating server ${add}"
+					} else {
+//					    if(cloudItem.summary.config.annotation) {
+//						    computeService.saveNotes(add,cloudItem.summary.config.annotation,false,false)
+//					    }
+						//sync controllers
+						VmwareSyncUtils.syncControllers(cloud, savedServer, cloudItem.controllers, false, add.account, morpheusContext)
+						//sync volumes
+						VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
+						VmwareSyncUtils.syncInterfaces(savedServer, cloudItem.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
 					}
-
-
-//					if(cloudItem.summary.config.annotation) {
-//						computeService.saveNotes(add,cloudItem.summary.config.annotation,false,false)
-//					}
-//					//sync controllers
-					VmwareSyncUtils.syncControllers(cloud, savedServer, cloudItem.controllers, false, add.account, morpheusContext)
-//					//sync volumes
-					VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
-					VmwareSyncUtils.syncInterfaces(savedServer, cloudItem.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
 				}
 
 				add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
 				if (!morpheusContext.computeServer.create([add]).blockingGet()) {
 					log.error "Error in creating server ${add}"
-				}
-
+				} else {
 //				rtn.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
 //				if(add.consolePort) {
 //					def computePort = new ComputePort(parentType:'ComputeZone', parentId:cloud.id, regionCode: cloud.regionCode, port:add.consolePort, portCount:1,
 //							portType:'vnc', refType:'ComputeServer', refId:add.id)
 //					computePort.save(flush:true)
 //				}
-				if(add.powerState == ComputeServer.PowerState.on) {
-					usageLists.startUsageIds << add.id
-				} else {
-					usageLists.stopUsageIds << add.id
+					if (add.powerState == ComputeServer.PowerState.on) {
+						usageLists.startUsageIds << add.id
+					} else {
+						usageLists.stopUsageIds << add.id
+					}
 				}
 			}
-
-
 		}
 //		tagCompliancePolicyService.checkTagComplianceForServers(cloud,addedServers)
 
