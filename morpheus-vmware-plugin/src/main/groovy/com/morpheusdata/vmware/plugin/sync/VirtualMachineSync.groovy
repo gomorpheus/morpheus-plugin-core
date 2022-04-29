@@ -457,20 +457,26 @@ class VirtualMachineSync {
 								currentServer.consolePort = consolePort
 								currentServer.consoleType = 'vnc'
 								currentServer.consolePassword = consolePassword
-//								ComputePort.where {
-//									refType == 'ComputeServer' && refId == currentServer.id && portType == 'vnc'
-//								}.deleteAll()
-//								def computePort = new ComputePort(parentType: 'ComputeZone', parentId: cloud.id, port: currentServer.consolePort, portCount: 1,
-//										portType: 'vnc', refType: 'ComputeServer', regionCode: cloud.regionCode, refId: currentServer.id)
-//								computePort.save(flush: true)
+								def computePorts = []
+								morpheusContext.computeServer.computePort.listByRef('ComputeServer', currentServer.id, 'vnc').blockingSubscribe { computePorts << it }
+								morpheusContext.computeServer.computePort.remove(computePorts).blockingGet()
+								morpheusContext.computeServer.computePort.create([new ComputePort([
+										parentType: 'ComputeZone',
+										parentId  : cloud.id,
+										port      : currentServer.consolePort,
+										portType  : 'vnc',
+										refType   : 'ComputeServer',
+										regionCode: cloud.regionCode,
+										refId     : currentServer.id])
+								]).blockingGet()
 							} else {
 								currentServer.consoleHost = null
 								currentServer.consolePort = null
 								currentServer.consoleType = null
 								currentServer.consolePassword = null
-//								ComputePort.where {
-//									refType == 'ComputeServer' && refId == currentServer.id
-//								}.deleteAll()
+								def computePorts = []
+								morpheusContext.computeServer.computePort.listByRef('ComputeServer', currentServer.id, '').blockingSubscribe { computePorts << it }
+								morpheusContext.computeServer.computePort.remove(computePorts).blockingGet()
 							}
 						}
 						if(currentServer.consolePassword != consolePassword) {
@@ -612,11 +618,18 @@ class VirtualMachineSync {
 					log.error "Error in creating server ${add}"
 				} else {
 //				rtn.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
-//				if(add.consolePort) {
-//					def computePort = new ComputePort(parentType:'ComputeZone', parentId:cloud.id, regionCode: cloud.regionCode, port:add.consolePort, portCount:1,
-//							portType:'vnc', refType:'ComputeServer', refId:add.id)
-//					computePort.save(flush:true)
-//				}
+					if(add.consolePort) {
+						def computePorts = []
+						morpheusContext.computeServer.computePort.create([new ComputePort([
+								parentType: 'ComputeZone',
+								parentId  : cloud.id,
+								port      : add.consolePort,
+								portType  : 'vnc',
+								refType   : 'ComputeServer',
+								regionCode: cloud.regionCode,
+								refId     : add.id])
+						]).blockingGet()
+					}
 					if (add.powerState == ComputeServer.PowerState.on) {
 						usageLists.startUsageIds << add.id
 					} else {

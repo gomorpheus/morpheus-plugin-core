@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
-import com.morpheusdata.model.NetworkDomain;
+import com.morpheusdata.model.ComputePort;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
 import io.reactivex.Observable;
@@ -81,5 +81,11 @@ public interface MorpheusComputeServerService {
 	 * @return An instance of the ComputeServerInterface Context
 	 */
 	MorpheusComputeServerInterfaceService getComputeServerInterface();
+
+	/**
+	 * Returns the ComputePort context used for performing sync operations on {@link ComputePort} related assets within Morpheus.
+	 * @return An instance of the ComputePort context
+	 */
+	MorpheusComputePortService getComputePort();
 
 }
