@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * Representation of a Morpheus ComputeServer database object within the Morpheus platform. Not all data is provided
@@ -15,23 +16,29 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 public class ComputeServer extends ComputeServerIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String uuid;
 	protected String displayName;
 	protected String uniqueId;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ServicePlan plan;
 	protected String internalName;
 	protected String status = "provisioning";
 	protected String hostname;
 	protected Long provisionSiteId;
 	protected OsType serverOs;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected VirtualImage sourceImage;
 	protected String osType = "linux"; //linux, windows, unmanaged
 	protected String platform;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZonePool resourcePool;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZoneFolder folder;
 	protected String serverType;
 	protected String consoleHost;
@@ -81,6 +88,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String consoleType;
 	protected Integer consolePort;
 	protected String consolePassword;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServer parentServer;
 	protected ComputeStats computeStats;
 	protected List<MetadataTag> metadata;

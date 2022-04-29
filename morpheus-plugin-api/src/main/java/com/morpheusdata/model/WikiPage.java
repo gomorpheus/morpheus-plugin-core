@@ -2,12 +2,13 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.WikiPageIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
 
 public class WikiPage extends WikiPageIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	Account account;
 	String name;
 	String urlName;

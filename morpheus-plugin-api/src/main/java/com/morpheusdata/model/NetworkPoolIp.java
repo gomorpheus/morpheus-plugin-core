@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
 
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolRange networkPoolRange;

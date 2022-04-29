@@ -3,13 +3,14 @@ package com.morpheusdata.model;
 import java.util.Date;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  *	Integrations or connections to public, private, hybrid clouds, or bare metal servers
  */
 public class Cloud extends MorpheusModel {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 
 	protected String name;
@@ -39,8 +40,11 @@ public class Cloud extends MorpheusModel {
 	protected String autoCapacityConfig; //form json map of settings
 	protected String autoCapacityPrefix; //name
 	protected Integer autoCapacityThreshold;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkProxy apiProxy;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkProxy provisioningProxy;
 	protected Boolean applianceUrlProxyBypass = true;
 	protected String authRealm;

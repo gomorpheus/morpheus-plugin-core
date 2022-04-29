@@ -1,5 +1,6 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusUsageService
@@ -55,6 +56,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusWikiPageService wikiPageContext
 	protected MorpheusUsageService usageContext
 	protected MorpheusStatsService statsContext
+	protected MorpheusInstanceService instanceService
 
 
     MorpheusContextImpl() {
@@ -73,6 +75,7 @@ class MorpheusContextImpl implements MorpheusContext {
 		wikiPageContext = new MorpheusWikiPageServiceImpl()
 	    usageContext = new MorpheusUsageServiceImpl()
 	    statsContext = new MorpheusStatsServiceImpl()
+	    instanceService = new MorpheusInstanceServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -290,5 +293,10 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	Single<String> getSettings(Plugin plugin) {
 		return null
+	}
+
+	@Override
+	MorpheusInstanceService getInstance() {
+		return instanceService
 	}
 }

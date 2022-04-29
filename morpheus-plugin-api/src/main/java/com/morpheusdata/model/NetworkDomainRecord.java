@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.NetworkDomainRecordIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
     protected String name;
@@ -20,7 +21,7 @@ public class NetworkDomainRecord extends NetworkDomainRecordIdentityProjection {
     protected Long instanceId;
     protected String status;
     protected String statusMessage;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPoolIp networkPoolIp;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;

@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * This is a Model Representation of a Network Domain. It contains information related to any DNS Cloud that may be synced
@@ -14,7 +15,7 @@ import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
  */
 public class NetworkDomain extends NetworkDomainIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;

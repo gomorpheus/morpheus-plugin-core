@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ public class Account extends MorpheusModel {
 	protected Date lastUpdated;
 	protected String subdomain;
 	protected String apiKey;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account parentAccount;
 	protected String masterPassword;
 	protected Boolean active = true;

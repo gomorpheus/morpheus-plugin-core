@@ -1,11 +1,16 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Date;
 
 public class NetworkSecurityServer {
 	public String name;
 	public NetworkSecurityServerType type;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public NetworkServer networkServer; //if its a network and security server link;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public AccountIntegration integration;
 	public Account account;
 	public String visibility = "public"; //['public', 'private'];

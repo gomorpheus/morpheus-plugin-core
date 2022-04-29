@@ -4,10 +4,11 @@ import com.morpheusdata.model.projection.DatastoreIdentityProjection;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class Datastore extends DatastoreIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account owner;
 	protected String visibility="private";
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)

@@ -1,9 +1,9 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
-import java.util.List;
 
 public class NetworkPoolRange extends MorpheusModel {
 
@@ -19,7 +19,7 @@ public class NetworkPoolRange extends MorpheusModel {
 	protected Boolean readOnly = false;
 	protected String cidr;
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
 
 	protected Integer reservationCount;

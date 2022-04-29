@@ -197,6 +197,13 @@ public interface MorpheusContext {
 	 */
 	Single<String> getSettings(Plugin plugin);
 
+	/**
+	 * Returns the Instance Service
+	 *
+	 * @return An instance of the Instance Service
+	 */
+	MorpheusInstanceService getInstance();
+
 	//Common methods used across various contexts
 
 	/**

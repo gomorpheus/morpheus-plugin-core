@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * Represents a NetworkSubnet that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Bob Whiton
  */
 public class NetworkSubnet extends NetworkSubnetIdentityProjection {
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Account account;
 	public String code;
 	public String category;
@@ -36,6 +37,7 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected String subnetAddress;
 	protected String tftpServer;
 	protected String bootFile;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool pool;
 	protected Integer prefixLength;
 	protected String vswitchName;
@@ -49,7 +51,9 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected String dhcpRange;
 	protected String statusMessage;
 	protected String availabilityZone;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkProxy networkProxy;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
 	protected Boolean active = true;
 	protected Boolean defaultNetwork = false;

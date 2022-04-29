@@ -4,16 +4,19 @@ import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class ComputeZoneFolder extends ComputeZoneFolderIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account owner;
 	protected String visibility = "private";
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
 	protected String code;
 	protected String refType;
 	protected Long refId;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZoneFolder parent;
 	protected List<ComputeZoneFolder> folders = new ArrayList<>();
 	protected Boolean readOnly = false;

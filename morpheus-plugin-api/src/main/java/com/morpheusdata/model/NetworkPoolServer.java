@@ -1,9 +1,9 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Represents an instance of an IPAM integration server. This integration type contains status fields, connection information
@@ -39,7 +39,6 @@ public class NetworkPoolServer extends MorpheusModel {
 	protected Date statusDate;
 	protected Date dateCreated;
 	protected Date lastUpdated;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolServerType type;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected AccountIntegration integration;

@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.AccountInventoryIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * Represents ansible inventory files. This also represents synced inventories from external integrations such as
@@ -13,7 +14,7 @@ import com.morpheusdata.model.projection.AccountInventoryIdentityProjection;
 public class AccountInventory extends AccountInventoryIdentityProjection {
 
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account owner;
 	protected String name;
 	protected String description;

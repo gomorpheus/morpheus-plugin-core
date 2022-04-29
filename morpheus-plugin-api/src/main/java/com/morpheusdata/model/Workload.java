@@ -2,9 +2,9 @@ package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Represents a workload running in morpheus. This is also known internally to morpheus as a Container object but due
@@ -16,14 +16,18 @@ import java.util.List;
  */
 public class Workload extends WorkloadIdentityProjection {
 	protected String uuid;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServer server;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ServicePlan plan;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZonePool computeZonePool;
 	protected Boolean privateNetworking;
 	protected String userData;
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Instance instance;
 	protected String internalName;
 	protected String displayName;
@@ -56,6 +60,7 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Long usedMemory;
 	protected Float usedCpu;
 	protected Long provisionTime = 0L;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Network network;
 	protected String configGroup;
 	protected String configId;

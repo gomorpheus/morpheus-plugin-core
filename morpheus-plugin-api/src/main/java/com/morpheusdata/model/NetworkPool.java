@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -400,7 +401,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	protected String refId;
 	protected String configuration;
 	protected String cidr;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public NetworkPoolServer poolServer;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account account;

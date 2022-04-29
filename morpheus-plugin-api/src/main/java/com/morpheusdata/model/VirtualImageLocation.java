@@ -5,6 +5,8 @@ import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.ArrayList;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected String imageRegion;
 	protected String imageFolder;
 	protected String uuid;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Datastore datastore;
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();

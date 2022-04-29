@@ -4,6 +4,7 @@ import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * existing images between your cloud provider and Morpheus.
  */
 public class VirtualImage extends VirtualImageIdentityProjection {
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String code;
 	protected String description;

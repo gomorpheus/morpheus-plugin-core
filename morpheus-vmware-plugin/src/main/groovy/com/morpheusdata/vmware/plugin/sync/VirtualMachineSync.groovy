@@ -272,10 +272,8 @@ class VirtualMachineSync {
 							currentServer.hostname = vmwareHost
 							//managed guest virtual machine that is not a container host
 							if(currentServer.computeServerType?.guestVm && !currentServer.computeServerType?.containerHypervisor && currentServer.computeServerType?.managed) {
-								def projs = []
-								morpheusContext.cloud.listCloudWorkloadProjections(cloud.id).filter { it.serverId == currentServer.id }.blockingSubscribe { projs << it }
-								for(proj in projs) {
-									Workload workload = morpheusContext.cloud.getWorkloadById(proj.id).blockingGet()
+								def workloads = getWorkloadsForServer(currentServer)
+								for(Workload workload in workloads) {
 									workload.hostname = vmwareHost
 									morpheusContext.cloud.saveWorkload(workload).blockingGet()
 								}
@@ -357,21 +355,9 @@ class VirtualMachineSync {
 									save = true
 							}
 						}
-//						if(planInfoChanged && currentServer.computeServerType?.guestVm) {
-//							Container.where{server == currentServer}.updateAll(plan:  plan, maxCores: currentServer.maxCores, maxMemory: currentServer.maxMemory, coresPerSocket: currentServer.coresPerSocket, maxStorage: currentServer.maxStorage)
-//							Instance.where{ containers.server.id == currentServer.id}.join('containers').list(cache:false)?.each { instance ->
-//								//Only update if instance contains containers with the same plan or if instance is 1:1 mapping to server
-//								if(instance.containers.every{cnt -> (cnt.plan.id == currentServer.plan.id && cnt.maxMemory == currentServer.maxMemory && cnt.maxCores == currentServer.maxCores && cnt.coresPerSocket == currentServer.coresPerSocket) || cnt.server.id == currentServer.id}) {
-//									//log.info("Changing Instance Plan To : ${plan.name} - memory: ${currentServer.maxMemory} for ${instance.name} - ${instance.id}")
-//									instance.plan = plan
-//									instance.maxCores = currentServer.maxCores
-//									instance.maxMemory = currentServer.maxMemory
-//									instance.maxStorage = currentServer.maxStorage
-//									instance.coresPerSocket = currentServer.coresPerSocket
-//									instance.save(flush:true)
-//								}
-//							}
-//						}
+						if(planInfoChanged && currentServer.computeServerType?.guestVm) {
+							updateServerContainersAndInstances(currentServer, plan)
+						}
 						def notesPage = serverNotes[currentServer.id]
 						if((notesPage != null && matchedServer.summary.config.annotation != notesPage?.content) || (notesPage == null && matchedServer.summary.config.annotation)) {
 							if(notesPage == null) {
@@ -420,6 +406,7 @@ class VirtualMachineSync {
 							def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
 								morpheusItem?.id == matchedMetadata?.id
 							}
+
 							def tagSyncLists = VmwareSyncUtils.buildSyncLists(currentServer.metadata, tags, tagMatchFunction)
 							if(tagSyncLists.addList.size() > 0) {
 								morpheusContext.metadataTag.create(tagSyncLists.addList, currentServer).blockingGet()
@@ -429,20 +416,10 @@ class VirtualMachineSync {
 								morpheusContext.metadataTag.remove(tagSyncLists.removeList, currentServer).blockingGet()
 								tagChanges = true
 							}
-							//TODO?: tags on instances?
-//							if(tagChanges && currentServer.computeServerType?.containerHypervisor == false && currentServer.computeServerType?.vmHypervisor == false) {
-//								def instances = Container.where{server == currentServer && instance != null}.join('instance').list()?.collect{ct -> ct.instance}
-//								instances?.each { instance ->
-//									tagSyncLists = ComputeUtility.buildSyncLists(instance.metadata, tags, tagMatchFunction)
-//									tagSyncLists.addList?.each { tag ->
-//										instance.addToMetadata(tag)
-//									}
-//									tagSyncLists.removeList?.each { tagRemove ->
-//										instance.removeFromMetadata(tagRemove)
-//									}
-//									instance.save(flush:true)
-//								}
-//							}
+
+							if(tagChanges && currentServer.computeServerType?.containerHypervisor == false && currentServer.computeServerType?.vmHypervisor == false) {
+								updateServerInstanceTags(currentServer, tags)
+							}
 						}
 						//check for restart usage records
 						if(planInfoChanged || volumeInfoChanged || tagChanges) {
@@ -886,5 +863,90 @@ class VirtualMachineSync {
 			return []
 		}
 		return statsData
+	}
+
+	private updateServerContainersAndInstances(currentServer, ServicePlan plan) {
+		log.debug "updateServerContainersAndInstances: ${currentServer}"
+		try {
+			// Save the workloads
+			def instanceIds = []
+			def workloads = getWorkloadsForServer(currentServer)
+			for(Workload workload in workloads) {
+				workload.plan = plan
+				workload.maxCores = currentServer.maxCores
+				workload.maxMemory = currentServer.maxMemory
+				workload.coresPerSocket = currentServer.coresPerSocket
+				workload.maxStorage = currentServer.maxStorage
+				def instanceId = workload.instance?.id
+				morpheusContext.cloud.saveWorkload(workload).blockingGet()
+
+				if(instanceId) {
+					instanceIds << instanceId
+				}
+			}
+
+			if(instanceIds) {
+				def instances = []
+				def instancesToSave = []
+				morpheusContext.instance.listById(instanceIds).blockingSubscribe { instances << it }
+				instances.each { Instance instance ->
+					if (instance.containers.every { cnt -> (cnt.plan.id == currentServer.plan.id && cnt.maxMemory == currentServer.maxMemory && cnt.maxCores == currentServer.maxCores && cnt.coresPerSocket == currentServer.coresPerSocket) || cnt.server.id == currentServer.id }) {
+						log.debug("Changing Instance Plan To : ${plan.name} - memory: ${currentServer.maxMemory} for ${instance.name} - ${instance.id}")
+						instance.plan = plan
+						instance.maxCores = currentServer.maxCores
+						instance.maxMemory = currentServer.maxMemory
+						instance.maxStorage = currentServer.maxStorage
+						instance.coresPerSocket = currentServer.coresPerSocket
+						instancesToSave << instance
+					}
+				}
+				if(instancesToSave.size() > 0) {
+					morpheusContext.instance.save(instancesToSave).blockingGet()
+				}
+			}
+		} catch(e) {
+			log.error "Error in updateServerContainersAndInstances: ${e}", e
+		}
+	}
+
+	private updateServerInstanceTags(ComputeServer currentServer, tags) {
+		log.debug "updateServerInstanceTags: ${currentServer}"
+		try {
+			def workloads = getWorkloadsForServer(currentServer)
+			def instanceIds = [] as Set
+			for(Workload workload in workloads) {
+				if(workload.instance?.id) {
+					instanceIds << workload.instance.id
+				}
+			}
+			List<Instance> instances = []
+			morpheusContext.instance.listById(instanceIds).blockingSubscribe{ instances << it }
+
+			def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
+				morpheusItem?.id == matchedMetadata?.id
+			}
+
+			instances?.each { Instance instance ->
+				def tagSyncLists = VmwareSyncUtils.buildSyncLists(instance.metadata, tags, tagMatchFunction)
+				if(tagSyncLists.addList.size() > 0) {
+					morpheusContext.metadataTag.create(tagSyncLists.addList, instance).blockingGet()
+				}
+				if(tagSyncLists.removeList.size() > 0) {
+					morpheusContext.metadataTag.remove(tagSyncLists.removeList, instance).blockingGet()
+				}
+			}
+		} catch(e) {
+			log.error "error in updateServerInstanceTags: ${e}", e
+		}
+	}
+
+	private getWorkloadsForServer(ComputeServer currentServer) {
+		def workloads = []
+		def projs = []
+		morpheusContext.cloud.listCloudWorkloadProjections(cloud.id).filter { it.serverId == currentServer.id }.blockingSubscribe { projs << it }
+		for(proj in projs) {
+			workloads << morpheusContext.cloud.getWorkloadById(proj.id).blockingGet()
+		}
+		workloads
 	}
 }

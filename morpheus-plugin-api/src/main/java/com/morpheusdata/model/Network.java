@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
  * @author David Estes
  */
 public class Network extends NetworkIdentityProjection {
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Cloud cloud;
 	protected Long zonePoolId;
 	protected NetworkType type;
@@ -54,15 +56,18 @@ public class Network extends NetworkIdentityProjection {
 	protected String status;
 	protected String statusMessage;
 	protected String availabilityZone;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool pool;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkProxy networkProxy;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
 	protected Integer prefixLength;
 	protected Boolean active = true;
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
 	public NetworkServer networkServer;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Account owner;
 	public String category;
 	public String code;

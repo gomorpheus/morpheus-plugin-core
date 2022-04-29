@@ -4,10 +4,11 @@ import com.morpheusdata.core.BackupProvider;
 
 import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class ComputeSite extends MorpheusModel {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String visibility = "private"; //['public', 'private'];
 	protected String code;
@@ -27,9 +28,12 @@ public class ComputeSite extends MorpheusModel {
 	protected Date dateCreated;
 	protected Date lastUpdated;
 	protected String securityMode = "off"; //host firewall.. off or internal;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkSecurityServer securityServer; //integrated security service;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkServer networkServer; //virtual or physical network provider;
 	protected String backupMode = "internal"; //if backups are off,run by morpheus or a provider;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected BackupProvider backupProvider; //integrated backup provider;
 	protected String uuid = java.util.UUID.randomUUID().toString();
 

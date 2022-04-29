@@ -1,6 +1,9 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +20,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String layoutName;
 	public String instanceVersion;
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public ServicePlan plan;
 	public String displayName;
 	public String environmentPrefix;
@@ -38,6 +42,7 @@ public class Instance extends InstanceIdentityProjection {
 	public Long maxStorage;
 	public Long maxMemory;
 	public Long maxCores;
+	public Long coresPerSocket;
 	public Long configId;
 	public String configGroup;
 	public String configRole;
@@ -45,14 +50,18 @@ public class Instance extends InstanceIdentityProjection {
 	public String serviceUsername;
 	public String servicePassword;
 	public Long provisionZoneId;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public ComputeZonePool resourcePool;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public InstanceTypeLayout layout;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	public Collection<Workload> containers;
 	public NetworkDomain networkDomain;
 	public ComputeSite site;
 	public UserGroup userGroup;
 	protected User createdBy;
 	public List<UserGroup> userGroups;
+	protected List<MetadataTag> metadata;
 
 	public User getCreatedBy() {
 		return createdBy;
@@ -282,6 +291,12 @@ public class Instance extends InstanceIdentityProjection {
 		this.maxCores = maxCores;
 	}
 
+	public Long getCoresPerSocket() { return coresPerSocket; }
+
+	public void setCoresPerSocket(Long coresPerSocket) {
+		this.coresPerSocket = coresPerSocket;
+	}
+
 	public Long getConfigId() {
 		return configId;
 	}
@@ -320,6 +335,12 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setServicePassword(String servicePassword) {
 		this.servicePassword = servicePassword;
+	}
+
+	public List<MetadataTag> getMetadata() { return metadata;}
+
+	public void setMetadata(List<MetadataTag> metadata) {
+		this.metadata = metadata;
 	}
 
 	public enum Status {

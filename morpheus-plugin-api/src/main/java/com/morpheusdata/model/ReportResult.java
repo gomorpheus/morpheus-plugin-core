@@ -1,8 +1,8 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Map;
  * @since 0.8.0
  */
 public class ReportResult extends MorpheusModel {
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected User createdBy;

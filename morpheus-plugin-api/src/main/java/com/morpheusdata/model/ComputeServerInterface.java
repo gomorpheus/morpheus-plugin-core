@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.UUID;
 
 /**
@@ -27,12 +30,16 @@ public class ComputeServerInterface extends MorpheusModel {
 	protected Boolean active = true;
 	protected Boolean poolAssigned = false;
 	protected Boolean primaryInterface = true;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Network network;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkSubnet subnet;
 //	public NetworkGroup networkGroup;
 protected String networkPosition;
 	protected Integer displayOrder = 0;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
 	public ComputeServerInterfaceType type;
 protected String ipMode; //dhcp/static/pool

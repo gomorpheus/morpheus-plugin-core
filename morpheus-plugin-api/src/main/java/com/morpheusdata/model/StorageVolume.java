@@ -4,6 +4,7 @@ import com.morpheusdata.model.projection.DatastoreIdentityProjection;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * Representation of a Morpheus StorageVolume database object within the Morpheus platform. Not all data is provided
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 public class StorageVolume extends StorageVolumeIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String deviceName;
 	protected Long maxStorage;

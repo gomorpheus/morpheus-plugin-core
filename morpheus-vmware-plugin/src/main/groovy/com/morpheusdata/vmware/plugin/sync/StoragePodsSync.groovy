@@ -132,13 +132,9 @@ class StoragePodsSync {
 					}
 
 					if(matchOnline) {
-						println "BOBW : StoragePodsSync.groovy:135 : masterItem.datastoreRefs"
 						def serversFound = servers.find { ComputeServer server ->
 							server.volumes?.find { it.externalId in masterItem.datastoreRefs }
 						}
-
-						println "BOBW : StoragePodsSync.groovy:140 : seversfoud ${serversFound}"
-
 						if(!serversFound) {
 							matchOnline = false
 						}

@@ -3,10 +3,11 @@ package com.morpheusdata.model;
 import java.util.Date;
 import com.morpheusdata.model.projection.OperationNotificationIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class OperationNotification extends OperationNotificationIdentityProjection {
 
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String category;
 	protected String eventKey;

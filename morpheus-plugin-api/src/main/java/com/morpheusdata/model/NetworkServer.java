@@ -2,13 +2,14 @@ package com.morpheusdata.model;
 
 import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class NetworkServer extends MorpheusModel {
 
 	protected String name;
 	protected NetworkServerType type;
 	protected AccountIntegration integration;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String visibility = "public"; //['public', 'private']
 	protected String description;
