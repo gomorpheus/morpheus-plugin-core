@@ -186,7 +186,6 @@ class VirtualMachineSync {
 			tagAssociations = VmwareComputeUtility.listTagAssociationsForVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [vmIds: vmIds])
 		}
 		def statsData = []
-//		def updateServers = []
 
 		for(update in updateList) {
 			ComputeServer currentServer = update.existingItem ? matchedServersByUniqueId[update.existingItem] : null
@@ -195,7 +194,6 @@ class VirtualMachineSync {
 				currentServer = matchedServersByExternalId[update.existingItem.externalId]
 			}
 			if(currentServer) {
-//				updateServers << currentServer
 				//update view ?
 				if(currentServer && currentServer.status != 'provisioning') {
 					try {
@@ -509,11 +507,6 @@ class VirtualMachineSync {
 				morpheusContext.stats.updateWorkloadStats(new WorkloadIdentityProjection(id: statData.workload.id), statData.maxMemory, statData.maxUsedMemory, statData.maxStorage, statData.maxUsedStorage, statData.cpuPercent, statData.running)
 			}
 		}
-
-//		if(updateServers) {
-		//TODO?: Tag Compliance?
-//			tagCompliancePolicyService.checkTagComplianceForServers(cloud, updateServers)
-//		}
 	}
 
 
@@ -639,8 +632,6 @@ class VirtualMachineSync {
 				}
 			}
 		}
-//		tagCompliancePolicyService.checkTagComplianceForServers(cloud,addedServers)
-
 	}
 
 	private getAllHosts(Cloud cloud) {

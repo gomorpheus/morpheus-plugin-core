@@ -121,10 +121,7 @@ class IPPoolsSync {
 	private updateIPPools(updateMaps) {
 		log.debug "updateIPPools: ${updateMaps}"
 
-		// TODO : Implement an IPAMProvider for vmware that mimics vmwareNetworkPoolService.
-		// Within the provider we would register a new NetworkPoolType via getNetworkPoolTypes()
-		// For now.. just utilize the existing NetworkPoolType for vmware
-		def poolType = new NetworkPoolType(code: 'vmware')
+		def poolType = new NetworkPoolType(code: 'vmware-plugin')
 
 		def itemsToSave = []
 
