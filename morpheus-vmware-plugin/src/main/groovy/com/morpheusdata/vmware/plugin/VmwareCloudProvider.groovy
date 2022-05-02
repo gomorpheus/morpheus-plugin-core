@@ -116,7 +116,18 @@ class VmwareCloudProvider implements CloudProvider {
 				optionSource: 'vmwarePluginResourcePool'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool]
+		OptionType inventoryInstances = new OptionType(
+				name: 'Inventory Existing Instances',
+				code: 'vmware-plugin-import-existing',
+				fieldName: 'importExisting',
+				displayOrder: 7,
+				fieldLabel: 'Inventory Existing Instances',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config'
+		)
+
+		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances]
 	}
 
 	@Override
@@ -464,35 +475,19 @@ class VmwareCloudProvider implements CloudProvider {
 					(new ContentLibrarySync(cloud, morpheusContext, client)).execute()
 					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
 					(new HostsSync(cloud, morpheusContext)).execute()
-
-//					cacheEvents([zone:zone]).get() // TODO : OperationEvents don't seem to be used.. skipping
 					(new DatacentersSync(cloud, morpheusContext)).execute()
 					//vms
 					if(apiVersion && apiVersion != '6.0') {
 						(new CategoriesSync(cloud, morpheusContext, client)).execute()
 						(new TagsSync(cloud, morpheusContext, client)).execute()
 					}
-//					def doInventory = zone.getConfigProperty('importExisting')
-					Boolean createNew = true
-//					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
-//						createNew = true
-//					}
-//
-					//Returning Promise Chain now
+					def doInventory = cloud.getConfigProperty('importExisting')
+					Boolean createNew = false
+					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
+						createNew = true
+					}
 					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
-//					cacheVirtualMachines(cloud, createNew, proxySettings, apiVersion)//.then {
-//						refreshZoneVms(zone, [:], syncDate)
-//						return true
-//					}.then {
-						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
-//						newSessionClearZoneAlarm(zone.id)
-//						log.debug("Cached Virtual Machines in ${new Date().time - now.time}ms")
-//						return true
-//					}.onError { Exception ex ->
-//						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
-//						newSessionClearZoneAlarm(zone.id)
-//						log.debug("Cached Virtual Machines in ${new Date().time - now.time}ms")
-//					}
+					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				}
 				else {
 					if (testResults.invalidLogin == true) {
@@ -501,7 +496,6 @@ class VmwareCloudProvider implements CloudProvider {
 						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'error connecting', syncDate)
 					}
 				}
-
 			} else {
 				morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.offline, 'vmware is not reachable', syncDate)
 			}

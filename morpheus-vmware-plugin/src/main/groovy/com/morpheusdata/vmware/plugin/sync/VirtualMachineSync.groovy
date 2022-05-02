@@ -36,7 +36,7 @@ class VirtualMachineSync {
 	}
 
 	def execute() {
-		log.debug "execute VirtualMachineSync: ${cloud}"
+		log.debug "execute VirtualMachineSync: ${cloud} ${createNew} ${proxySettings} ${apiVersion}"
 
 		try {
 			def queryResults = [:]
