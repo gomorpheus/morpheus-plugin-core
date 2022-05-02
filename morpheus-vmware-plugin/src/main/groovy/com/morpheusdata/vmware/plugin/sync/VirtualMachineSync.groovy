@@ -3,7 +3,6 @@ package com.morpheusdata.vmware.plugin.sync
 import com.morpheusdata.core.util.HttpApiClient
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
-import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.projection.*
 import com.morpheusdata.core.*
 import com.morpheusdata.model.*
@@ -108,6 +107,7 @@ class VirtualMachineSync {
 				morpheusContext.usage.startServerUsage(usageLists.startUsageIds).blockingGet()
 				morpheusContext.usage.stopServerUsage(usageLists.stopUsageIds).blockingGet()
 				morpheusContext.usage.restartServerUsage(usageLists.restartUsageIds).blockingGet()
+				morpheusContext.usage.restartSnapshotUsage(usageLists.updatedSnapshotIds).blockingGet()
 			}
 		} catch(e) {
 			log.error("cacheVirtualMachines error: ${e}", e)
@@ -390,7 +390,8 @@ class VirtualMachineSync {
 							}
 						}
 
-//						rtn.updatedSnapshotIds = syncSnapshotsForServer(currentServer,matchedServer.snapshots,matchedServer.currentSnapshot) // TODO: handle snapshot updates
+						usageLists.updatedSnapshotIds = syncSnapshotsForServer(currentServer, matchedServer.snapshots, matchedServer.currentSnapshot)
+
 						Boolean tagChanges = false
 						if(tagAssociations && tagAssociations.success) {
 							def associatedTags = tagAssociations ? tagAssociations.associations[currentServer.externalId] : null
@@ -617,7 +618,7 @@ class VirtualMachineSync {
 				if (!morpheusContext.computeServer.create([add]).blockingGet()) {
 					log.error "Error in creating server ${add}"
 				} else {
-//				rtn.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
+				usageLists.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
 					if(add.consolePort) {
 						def computePorts = []
 						morpheusContext.computeServer.computePort.create([new ComputePort([
@@ -956,5 +957,118 @@ class VirtualMachineSync {
 			workloads << morpheusContext.cloud.getWorkloadById(proj.id).blockingGet()
 		}
 		workloads
+	}
+
+	private syncSnapshotsForServer(ComputeServer server, rootSnapshots, currentSnapshot) {
+		log.debug "syncSnapshotsForServer: ${server}"
+		def rtn = [] //snapshot ids being added
+		try {
+			def serverSnapshotProjs = server.snapshots
+			def snapshotsList = []
+			rootSnapshots?.getVirtualMachineSnapshotTree()?.each { snap ->
+				def snapRecord = [id: snap.snapshot.val.toString(), name: snap.name, description: snap.description, snapshotCreated: snap.getCreateTime()?.getTime(), state: snap.state]
+				snapshotsList << snapRecord
+				def childSnapshots= snap.childSnapshotList ? snap.childSnapshotList : []
+				if(childSnapshots.size() > 0) {
+					appendSnapshot(snapshotsList,childSnapshots,snapRecord)
+				}
+			}
+
+			def matchFunction = { SnapshotIdentityProjection morpheusItem, Map snapRecord ->
+				morpheusItem?.externalId == snapRecord?.id
+			}
+			def syncLists = VmwareSyncUtils.buildSyncLists(serverSnapshotProjs, snapshotsList, matchFunction)
+			if(currentSnapshot) {
+				def currentSnapshotRow = snapshotsList.find{it.id == currentSnapshot.val.toString()}
+				if(currentSnapshotRow) {
+					currentSnapshotRow.currentlyActive = true
+				}
+			}
+			syncLists?.addList?.each { Map cloudItem ->
+				def snapshot = new Snapshot([
+						account        : server.account,
+						cloud          : server.cloud,
+						externalId     : cloudItem.id,
+						description    : cloudItem.description,
+						name           : cloudItem.name,
+						snapshotCreated: cloudItem.snapshotCreated,
+						currentlyActive: cloudItem.currentlyActive ? true : false
+				])
+				if(cloudItem.parentId) {
+					def parentSnap = server.snapshots?.find{sna -> sna.externalId == cloudItem.parentId}
+					snapshot.parentSnapshot = parentSnap
+				}
+
+				Snapshot createdSnapshot = morpheusContext.snapshot.create(snapshot).blockingGet()
+
+				morpheusContext.snapshot.addSnapshot(createdSnapshot, server).blockingGet()
+
+				for(StorageVolume v in server.volumes) {
+					morpheusContext.snapshot.addSnapshot(createdSnapshot, v).blockingGet()
+				}
+
+				log.info("Snapshot add triggered!")
+				rtn << createdSnapshot.id
+			}
+			//update list
+			if(syncLists.updateList) {
+				Map<Long, Snapshot> idToSnapshotMap = [:]
+				morpheusContext.snapshot.listByIds(syncLists.updateList.collect { it.existingItem.id }).blockingSubscribe { idToSnapshotMap[it.id] = it }
+
+				syncLists.updateList?.each { update ->
+					def save = false
+					Snapshot snapshot = idToSnapshotMap[update.existingItem.id]
+					if(snapshot) {
+						Boolean currentlyActive = update.masterItem.currentlyActive ? true : false
+						if (snapshot.currentlyActive != currentlyActive) {
+							snapshot.currentlyActive = currentlyActive
+							save = true
+						}
+						if (snapshot.cloud == null) {
+							snapshot.cloud = server.cloud
+							save = true
+						}
+
+						// Need to make sure the snapshot is associated to each volume
+						def volumesChanged = false
+						for (StorageVolume v in server.volumes) {
+							if (!v.snapshots?.find { it.externalId == snapshot.externalId }) {
+								morpheusContext.snapshot.addSnapshot(snapshot, v).blockingGet()
+								volumesChanged = true
+							}
+						}
+
+						if (save || volumesChanged) {
+							morpheusContext.snapshot.save(snapshot).blockingGet()
+						}
+
+						if (volumesChanged) {
+							rtn << snapshot.id
+							log.info("Snapshot update triggered!")
+						}
+					} else {
+						log.error "Could not find snapshot for id ${update.existingItem.id}"
+					}
+				}
+			}
+
+			//removes
+			morpheusContext.snapshot.removeSnapshots(syncLists.removeList).blockingGet()
+		} catch(ex) {
+			log.error("Error Saving Snapshot to Server: ${server.name} {}",ex,ex)
+		}
+
+		return rtn
+	}
+
+	protected appendSnapshot(snapshotsList,childSnapshots, parentSnapshot) {
+		childSnapshots.each { snap ->
+			def snapRecord = [id: snap.snapshot.val.toString(), name: snap.name, description: snap.description, snapshotCreated: snap.getCreateTime()?.getTime(), parentId: parentSnapshot.id, state: snap.state]
+			snapshotsList << snapRecord
+			def subChildSnapshots = snap.childSnapshotList ? snap.childSnapshotList : []
+			if(subChildSnapshots.size() > 0) {
+				appendSnapshot(snapshotsList,subChildSnapshots,snapRecord)
+			}
+		}
 	}
 }

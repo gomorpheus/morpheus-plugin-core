@@ -314,7 +314,6 @@ class ResourcePoolsSync {
 
 			while (nameChanges) {
 				def poolsToUpdate = pools?.findAll { it.parent?.id in nameChanges }
-				println "BOBW : ResourcePoolsSync.groovy:327 :  poolsToUpdate ${poolsToUpdate}"
 				nameChanges = []
 				poolsToUpdate?.each { pool ->
 					nameChanges << pool.id

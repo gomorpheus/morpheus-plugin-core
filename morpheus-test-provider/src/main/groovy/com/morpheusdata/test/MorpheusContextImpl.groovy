@@ -1,6 +1,7 @@
 package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusInstanceService
+import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusUsageService
@@ -57,6 +58,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusUsageService usageContext
 	protected MorpheusStatsService statsContext
 	protected MorpheusInstanceService instanceService
+	protected MorpheusSnapshotService snapshotService
 
 
     MorpheusContextImpl() {
@@ -76,6 +78,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    usageContext = new MorpheusUsageServiceImpl()
 	    statsContext = new MorpheusStatsServiceImpl()
 	    instanceService = new MorpheusInstanceServiceImpl()
+	    snapshotService = new MorpheusSnapshotServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -298,5 +301,10 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusInstanceService getInstance() {
 		return instanceService
+	}
+
+	@Override
+	MorpheusSnapshotService getSnapshot() {
+		return snapshotService
 	}
 }

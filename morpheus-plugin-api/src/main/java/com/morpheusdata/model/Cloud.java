@@ -3,19 +3,16 @@ package com.morpheusdata.model;
 import java.util.Date;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  *	Integrations or connections to public, private, hybrid clouds, or bare metal servers
  */
-public class Cloud extends MorpheusModel {
+public class Cloud extends CloudIdentityProjection {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-
-	protected String name;
-
-	protected String code;
 
 	protected String description;
 
@@ -100,22 +97,6 @@ public class Cloud extends MorpheusModel {
 	 */
 	public Account getAccount() {
 		return account;
-	}
-
-	/**
-	 * Cloud name
-	 * @return String the name of the Cloud
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Unique code
-	 * @return String the unique code
-	 */
-	public String getCode() {
-		return code;
 	}
 
 	/**
@@ -385,16 +366,6 @@ public class Cloud extends MorpheusModel {
 	public void setAccount(Account account) {
 		this.account = account;
 		markDirty("account", account);
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-		markDirty("code", code);
 	}
 
 	public void setDescription(String description) {

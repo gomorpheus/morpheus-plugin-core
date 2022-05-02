@@ -204,6 +204,12 @@ public interface MorpheusContext {
 	 */
 	MorpheusInstanceService getInstance();
 
+	/**
+	 * Returns the Snapshot service
+	 * @return An instance of the Snapshot Service
+	 */
+	MorpheusSnapshotService getSnapshot();
+
 	//Common methods used across various contexts
 
 	/**

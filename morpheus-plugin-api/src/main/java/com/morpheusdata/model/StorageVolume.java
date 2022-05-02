@@ -1,10 +1,15 @@
 package com.morpheusdata.model;
 
 import com.morpheusdata.model.projection.DatastoreIdentityProjection;
+import com.morpheusdata.model.projection.SnapshotIdentityProjection;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representation of a Morpheus StorageVolume database object within the Morpheus platform. Not all data is provided
@@ -29,6 +34,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Integer diskIndex;
 	protected String uniqueId;
 	protected StorageControllerIdentityProjection controller;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -211,5 +218,18 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public void setControllerKey(StorageControllerIdentityProjection controller) {
 		this.controller = controller;
+	}
+
+	public List<SnapshotIdentityProjection> getSnapshots() {
+		return snapshots;
+	}
+
+	/**
+	 * NOTE: To modify the list of snapshots associated with this StorageVolume, utilize MorpheusSnapshotService
+	 * @param snapshots
+	 */
+	public void setSnapshots(List<SnapshotIdentityProjection> snapshots) {
+		this.snapshots = snapshots;
+		markDirty("snapshots", snapshots);
 	}
 }

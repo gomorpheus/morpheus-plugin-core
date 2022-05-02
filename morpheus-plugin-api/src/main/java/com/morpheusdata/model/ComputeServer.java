@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.SnapshotIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
 /**
  * Representation of a Morpheus ComputeServer database object within the Morpheus platform. Not all data is provided
@@ -65,6 +67,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String apiKey;
 	protected List<StorageVolume> volumes = new ArrayList<>();
 	protected List<StorageController> controllers = new ArrayList<>();
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
 	protected String osDevice = "/dev/sda";
 	protected String dataDevice = "/dev/sda";
 	protected Boolean lvmEnabled = true;
@@ -308,6 +312,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return controllers;
 	}
 
+	public List<SnapshotIdentityProjection> getSnapshots() {
+		return snapshots;
+	}
+
 	public List<MetadataTag> getMetadata() { return metadata;}
 
 	public Long getUsedMemory() {
@@ -496,6 +504,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setControllers(List<StorageController> controllers) {
 		this.controllers = controllers;
 		markDirty("controllers", controllers);
+	}
+
+	/**
+	 * NOTE: To modify the list of snapshots associated with this ComputeServer, utilize MorpheusSnapshotService
+	 * @param snapshots
+	 */
+	public void setSnapshots(List<SnapshotIdentityProjection> snapshots) {
+		this.snapshots = snapshots;
+		markDirty("snapshots", snapshots);
 	}
 
 	public String getOsDevice() {

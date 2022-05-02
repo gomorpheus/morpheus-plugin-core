@@ -38,8 +38,19 @@ public interface MorpheusUsageService {
 	 * an endDate will be closed off (their endDate set to now) for the servers specified and new usage records with the
 	 * same status will be recreated.
 	 * Any containers associated with the servers are also restarted.
-	 * @param serverIds servers to stop
+	 * @param serverIds servers to restart
 	 * @return success
 	 */
 	Single<Boolean> restartServerUsage(List<Long> serverIds);
+
+	/**
+	 * Request that usage records be restarted for the given snapshots. This is often desired to recalculate pricing.
+	 * If it is detected that restarting the usage records will result in identical usage records, then
+	 * no action is performed. Otherwise, any existing usage records that do not have
+	 * an endDate will be closed off (their endDate set to now) for the snapshots specified and new usage records with the
+	 * same status will be recreated.
+	 * @param snapshotIds snapshots to restart
+	 * @return success
+	 */
+	Single<Boolean> restartSnapshotUsage(List<Long> snapshotIds);
 }
