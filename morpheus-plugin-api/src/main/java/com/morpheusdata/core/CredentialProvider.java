@@ -17,6 +17,11 @@ import java.util.Map;
  * @author David Estes
  */
 public interface CredentialProvider extends PluginProvider {
+
+	/**
+	 * Periodically called to test the status of the credential provider.
+	 * @param integration the referenced integration object to be loaded
+	 */
 	void refresh(AccountIntegration integration);
 
 	/**
@@ -26,7 +31,7 @@ public interface CredentialProvider extends PluginProvider {
 	 * @param opts any custom options such as proxySettings if necessary (future use)
 	 * @return
 	 */
-	ServiceResponse loadCredentialData(AccountIntegration integration, AccountCredential credential, Map opts);
+	ServiceResponse<Map> loadCredentialData(AccountIntegration integration, AccountCredential credential, Map opts);
 
 	/**
 	 * Deletes the credential on the remote integration.
@@ -35,7 +40,7 @@ public interface CredentialProvider extends PluginProvider {
 	 * @param opts any custom options such as proxySettings if necessary (future use)
 	 * @return
 	 */
-	ServiceResponse deleteCredential(AccountIntegration integration, AccountCredential credential, Map opts);
+	ServiceResponse<AccountCredential> deleteCredential(AccountIntegration integration, AccountCredential credential, Map opts);
 
 	/**
 	 * Creates the credential on the remote integration.
@@ -44,7 +49,7 @@ public interface CredentialProvider extends PluginProvider {
 	 * @param opts any custom options such as proxySettings if necessary (future use)
 	 * @return
 	 */
-	ServiceResponse createCredential(AccountIntegration integration, AccountCredential credential, Map opts);
+	ServiceResponse<AccountCredential> createCredential(AccountIntegration integration, AccountCredential credential, Map opts);
 
 	/**
 	 * Updates the credential on the remote integration.
@@ -53,7 +58,7 @@ public interface CredentialProvider extends PluginProvider {
 	 * @param opts any custom options such as proxySettings if necessary (future use)
 	 * @return
 	 */
-	ServiceResponse updateCredential(AccountIntegration integration, AccountCredential credential, Map opts);
+	ServiceResponse<AccountCredential> updateCredential(AccountIntegration integration, AccountCredential credential, Map opts);
 
 	/**
 	 * Validation Method used to validate all inputs applied to the integration of an Credential Provider upon save.
@@ -65,7 +70,7 @@ public interface CredentialProvider extends PluginProvider {
 	 * @param opts any custom payload submission options may exist here
 	 * @return A response is returned depending on if the inputs are valid or not.
 	 */
-	ServiceResponse verify(AccountIntegration integration, Map opts);
+	ServiceResponse<Map> verify(AccountIntegration integration, Map opts);
 
 
 	/**
