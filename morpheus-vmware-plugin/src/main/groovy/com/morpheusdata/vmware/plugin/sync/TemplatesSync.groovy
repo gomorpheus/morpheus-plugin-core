@@ -131,15 +131,6 @@ class TemplatesSync {
 				imageConfig.isCloudInit = false
 			}
 			imageConfig.virtioSupported = false
-
-//			it.controllers?.each { controller ->
-//				def controllerConfig = [name:controller.name, description:controller.description, controllerKey:"${controller.key}",
-//				                        type:StorageControllerType.findByCode(controller.type), unitNumber:"${controller.unitNumber}", busNumber:"${controller.busNumber}",
-//				                        uniqueId:"vmware.vsphere.controller.${zone.id}.${it.ref}.${controller.key}"]
-//				def newController = new StorageController(controllerConfig)
-//				newController.save()
-//				add.addToControllers(newController)
-//			}
 			
 			def add = new VirtualImage(imageConfig)
 			imageRefVolumesMap[add.externalId] = it.volumes
