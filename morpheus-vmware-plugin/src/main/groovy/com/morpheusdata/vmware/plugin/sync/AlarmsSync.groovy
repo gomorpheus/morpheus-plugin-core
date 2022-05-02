@@ -71,7 +71,7 @@ class AlarmsSync {
 					uniqueId          : cloudItem.key
 			]
 			//lookup ref type and id?
-			def refMatch = VmwareCloudProvider.findManagedObject(morpheusContext, cloud, cloudItem.entity?.type, cloudItem.entity?.id)
+			def refMatch = findManagedObject(cloudItem.entity?.type, cloudItem.entity?.id)
 			if(refMatch && refMatch.refType && refMatch.refId) {
 				alarmConfig.refType = refMatch.refType
 				alarmConfig.refId = refMatch.refId
@@ -94,7 +94,7 @@ class AlarmsSync {
 			def doSave = false
 			if(existingItem) {
 				if(existingItem.refType == null) {
-					def refMatch = VmwareCloudProvider.findManagedObject(morpheusContext, cloud, masterItem.entity?.type, masterItem.entity?.id)
+					def refMatch = findManagedObject(masterItem.entity?.type, masterItem.entity?.id)
 					if(refMatch && refMatch.refType && refMatch.refId) {
 						existingItem.refType = refMatch.refType
 						existingItem.refId = refMatch.refId
@@ -146,6 +146,59 @@ class AlarmsSync {
 			rtn = 'ok'
 		else
 			rtn = 'unknown'
+		return rtn
+	}
+
+	private findManagedObject(String type, String id) {
+		//find the matching item in our db
+		def rtn = [refType:null, refId:null]
+		if(type && id) {
+			def assignToZone = false
+			switch(type) {
+				case 'StoragePod':
+					def match
+					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
+							.filter { it.externalId == id && it.type == 'cluster' }
+							.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'datastore'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+				case 'Datastore':
+					def match
+					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
+							.filter { it.externalId == id && it.type != 'cluster' }
+							.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'datastore'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+				case 'VirtualMachine':
+				case 'HostSystem':
+					def match
+					morpheusContext.computeServer.listSyncProjections(cloud.id)
+							.filter { it.externalId == id }
+							.blockingSubscribe { match == it }
+					if(match) {
+						rtn.refType = 'computeServer'
+						rtn.refId = match.id
+					} else {
+						assignToZone = true
+					}
+					break
+			}
+			//fallback to zone
+			if(assignToZone) {
+				rtn.refType = 'computeZone'
+				rtn.refId = cloud.id
+			}
+		}
 		return rtn
 	}
 }

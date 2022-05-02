@@ -458,6 +458,12 @@ class VmwareCloudProvider implements CloudProvider {
 				if(testResults.success == true) {
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 
+					def doInventory = cloud.getConfigProperty('importExisting')
+					Boolean createNew = false
+					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
+						createNew = true
+					}
+
 					client = new HttpApiClient()
 					client.networkProxy = proxySettings
 
@@ -476,17 +482,12 @@ class VmwareCloudProvider implements CloudProvider {
 					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
 					(new HostsSync(cloud, morpheusContext)).execute()
 					(new DatacentersSync(cloud, morpheusContext)).execute()
-					//vms
 					if(apiVersion && apiVersion != '6.0') {
 						(new CategoriesSync(cloud, morpheusContext, client)).execute()
 						(new TagsSync(cloud, morpheusContext, client)).execute()
 					}
-					def doInventory = cloud.getConfigProperty('importExisting')
-					Boolean createNew = false
-					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
-						createNew = true
-					}
 					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
+					
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				}
 				else {
@@ -701,59 +702,6 @@ class VmwareCloudProvider implements CloudProvider {
 		rtn.cluster = cloud?.getConfigProperty('cluster')
 		rtn.resourcePool = cloud?.getConfigProperty('resourcePoolId')
 		rtn.proxySettings = cloud.apiProxy
-		return rtn
-	}
-
-	static findManagedObject(morpheusContext, Cloud cloud, String type, String id) {
-		//find the matching item in our db
-		def rtn = [refType:null, refId:null]
-		if(type && id) {
-			def assignToZone = false
-			switch(type) {
-				case 'StoragePod':
-					def match
-					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
-						.filter { it.externalId == id && it.type == 'cluster' }
-						.blockingSubscribe { match == it }
-					if(match) {
-						rtn.refType = 'datastore'
-						rtn.refId = match.id
-					} else {
-						assignToZone = true
-					}
-					break
-				case 'Datastore':
-					def match
-					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
-							.filter { it.externalId == id && it.type != 'cluster' }
-							.blockingSubscribe { match == it }
-					if(match) {
-						rtn.refType = 'datastore'
-						rtn.refId = match.id
-					} else {
-						assignToZone = true
-					}
-					break
-				case 'VirtualMachine':
-				case 'HostSystem':
-					def match
-					morpheusContext.computeServer.listSyncProjections(cloud.id)
-							.filter { it.externalId == id }
-							.blockingSubscribe { match == it }
-					if(match) {
-						rtn.refType = 'computeServer'
-						rtn.refId = match.id
-					} else {
-						assignToZone = true
-					}
-					break
-			}
-			//fallback to zone
-			if(assignToZone) {
-				rtn.refType = 'computeZone'
-				rtn.refId = cloud.id
-			}
-		}
 		return rtn
 	}
 
