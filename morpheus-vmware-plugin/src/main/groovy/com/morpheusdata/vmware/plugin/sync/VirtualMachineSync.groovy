@@ -372,12 +372,9 @@ class VirtualMachineSync {
 								notesPage.content = matchedServer.summary.config.annotation
 								morpheusContext.wikiPage.save([notesPage]).blockingGet()
 							}
-//							if(!(currentServer.computeServerType?.containerHypervisor) && !(currentServer.computeServerType?.vmHypervisor)) {
-//								Instance.where { containers.server == currentServer}.list()?.each { instance ->
-//									def page = wikiPageService.findOrCreateReferencePage(instance.account, 'Instance', instance.id)
-//									wikiPageService.updatePage(page, [name:instance.displayName ?: instance.name, category:'instances', content:matchedServer.summary.config.annotation], null,false)
-//								}
-//							}
+							if(!(currentServer.computeServerType?.containerHypervisor) && !(currentServer.computeServerType?.vmHypervisor)) {
+								updateServerInstanceWiki(currentServer, matchedServer)
+							}
 							save = true
 						}
 
@@ -596,9 +593,17 @@ class VirtualMachineSync {
 					if(!savedServer){
 						log.error "Error in creating server ${add}"
 					} else {
-//					    if(cloudItem.summary.config.annotation) {
-//						    computeService.saveNotes(add,cloudItem.summary.config.annotation,false,false)
-//					    }
+					    if(cloudItem.summary.config.annotation) {
+						    WikiPage newPage = new WikiPage([
+								    name    : savedServer.displayName ?: savedServer.name,
+								    category: 'servers',
+								    account : savedServer.account,
+								    refType : 'ComputeServer',
+								    refId   : savedServer.id,
+								    content : cloudItem.summary.config.annotation
+						    ])
+						    morpheusContext.wikiPage.create(newPage).blockingGet()
+					    }
 						//sync controllers
 						VmwareSyncUtils.syncControllers(cloud, savedServer, cloudItem.controllers, false, add.account, morpheusContext)
 						//sync volumes
@@ -705,6 +710,19 @@ class VirtualMachineSync {
 			wikiPages << it
 		}
 		wikiPages
+	}
+
+	private getWikiPageForInstance(Cloud cloud, Instance instance) {
+		log.debug "getWikiPageForInstance: ${cloud}"
+		def wikiProjections = []
+		morpheusContext.wikiPage.listSyncProjections('Instance', instance.id).blockingSubscribe { wikiProjections << it }
+		WikiPage wikiPage
+		morpheusContext.wikiPage.listById(wikiProjections.collect { it.id }).blockingSubscribe {
+			if(it.account.id == instance.account.id) {
+				wikiPage = it
+			}
+		}
+		wikiPage
 	}
 
 	private getAllServersByUpdateList(Cloud cloud, List<SyncTask.UpdateItem> updateList) {
@@ -912,15 +930,7 @@ class VirtualMachineSync {
 	private updateServerInstanceTags(ComputeServer currentServer, tags) {
 		log.debug "updateServerInstanceTags: ${currentServer}"
 		try {
-			def workloads = getWorkloadsForServer(currentServer)
-			def instanceIds = [] as Set
-			for(Workload workload in workloads) {
-				if(workload.instance?.id) {
-					instanceIds << workload.instance.id
-				}
-			}
-			List<Instance> instances = []
-			morpheusContext.instance.listById(instanceIds).blockingSubscribe{ instances << it }
+			List<Instance> instances = getInstancesForServer(currentServer)
 
 			def tagMatchFunction = { MetadataTag morpheusItem, MetadataTag matchedMetadata ->
 				morpheusItem?.id == matchedMetadata?.id
@@ -938,6 +948,41 @@ class VirtualMachineSync {
 		} catch(e) {
 			log.error "error in updateServerInstanceTags: ${e}", e
 		}
+	}
+
+	private updateServerInstanceWiki(ComputeServer currentServer, matchedServer) {
+		log.debug "updateServerInstanceWiki: ${currentServer}"
+		try {
+			List<Instance> instances = getInstancesForServer(currentServer)
+
+			instances?.each { instance ->
+				WikiPage wikiPage = getWikiPageForInstance(cloud, instance)
+				if(wikiPage) {
+					wikiPage.name = instance.displayName ?: instance.name
+					wikiPage.category = 'instances'
+					wikiPage.content = matchedServer.summary.config.annotation
+					morpheusContext.wikiPage.save(wikiPage).blockingGet()
+				} else {
+					log.warn "No wikipage found for instance:${instance?.id} for server:${currentServer.id}"
+				}
+			}
+
+		} catch(e) {
+			log.error "error in updateServerInstanceWiki: ${e}", e
+		}
+	}
+
+	private getInstancesForServer(ComputeServer currentServer) {
+		def workloads = getWorkloadsForServer(currentServer)
+		def instanceIds = [] as Set
+		for(Workload workload in workloads) {
+			if(workload.instance?.id) {
+				instanceIds << workload.instance.id
+			}
+		}
+		List<Instance> instances = []
+		morpheusContext.instance.listById(instanceIds).blockingSubscribe{ instances << it }
+		instances
 	}
 
 	private getWorkloadsForServer(ComputeServer currentServer) {

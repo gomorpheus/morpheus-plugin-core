@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 public class Instance extends InstanceIdentityProjection {
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
 	private String uuid;
 	private String description;
 	public String instanceTypeName;
@@ -341,6 +343,14 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public enum Status {
