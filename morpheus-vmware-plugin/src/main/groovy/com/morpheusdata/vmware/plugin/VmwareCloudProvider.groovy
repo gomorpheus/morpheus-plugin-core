@@ -487,7 +487,7 @@ class VmwareCloudProvider implements CloudProvider {
 						(new TagsSync(cloud, morpheusContext, client)).execute()
 					}
 					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
-					
+
 					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
 				}
 				else {

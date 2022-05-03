@@ -303,18 +303,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		log.info("images: $images")
 		images.each {
 			Map props = [
-					name      : "${it.distribution} ${it.name}",
-					externalId: it.id,
-					code      : "${imageCodeBase}.${cloudInfo.code}.${it.id}",
-					category  : "${imageCodeBase}.${cloudInfo.code}",
-					imageType : ImageType.qcow2,
-					platform  : it.distribution,
-					isPublic  : it.public,
-					minDisk   : it.min_disk_size,
-					locations : it.regions,
-					account   : cloudInfo.account,
-					refId     : cloudInfo.id,
-					refType   : 'ComputeZone'
+					name       : "${it.distribution} ${it.name}",
+					externalId : it.id,
+					code       : "${imageCodeBase}.${cloudInfo.code}.${it.id}",
+					category   : "${imageCodeBase}.${cloudInfo.code}",
+					imageType  : ImageType.qcow2,
+					platform   : it.distribution,
+					isPublic   : it.public,
+					minDisk    : it.min_disk_size,
+					locations  : it.regions,
+					account    : cloudInfo.account,
+					refId      : cloudInfo.id,
+					refType    : 'ComputeZone',
+					isCloudInit: true,
+					isPublic   : true
 			]
 			virtualImages << new VirtualImage(props)
 		}
@@ -353,7 +355,29 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	void updateMatchedImages(List<SyncTask.UpdateItem<VirtualImage,Map>> updateItems, Cloud cloud) {
-		List<VirtualImage> imagesToUpdate = updateItems.collect { it.existingItem }
+		List<VirtualImage> imagesToUpdate = []
+
+		updateItems.each {it ->
+			def masterItem = it.masterItem
+			VirtualImage existingItem = it.existingItem
+
+			def save = false
+
+			if(existingItem.isCloudInit != masterItem.isCloudInit) {
+				existingItem.isCloudInit = masterItem.isCloudInit
+				save = true
+			}
+
+			if(existingItem.public != masterItem.public) {
+				existingItem.public = masterItem.public
+				save = true
+			}
+
+			if(save) {
+				imagesToUpdate << existingItem
+			}
+		}
+
 		morpheusContext.virtualImage.save(imagesToUpdate, cloud).blockingGet()
 	}
 

@@ -151,7 +151,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		return isCloudInit;
 	}
 
-	public void setRefType(Boolean isCloudInit) {
+	public void setIsCloudInit(Boolean isCloudInit) {
 		this.isCloudInit = isCloudInit;
 		markDirty("isCloudInit", isCloudInit);
 	}
