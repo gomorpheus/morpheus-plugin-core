@@ -44,15 +44,6 @@ public interface MorpheusProvisionService {
 	Single<UsersConfiguration> getUserConfig(Workload workload, VirtualImage virtualImage, Map<String,Object> opts);
 
 	/**
-	 * Generates a map representation of the network configuration for a server being provisioned with a virtual image
-	 * @param workload the Workload object we are working with
-	 * @param virtualImage the Virtual Image being provisioned
-	 * @param opts additional options like hostname, fqdn, lease options
-	 * @return NetworkConfiguration generated
-	 */
-	Single<NetworkConfiguration> getNetworkConfig(Workload workload, VirtualImage virtualImage, Map<String,Object> opts);
-
-	/**
 	 * Generates Cloud Configuration Options for Passing into User-Data Generation or Unattend Generation Depending on Platform
 	 * @param cloud the current Cloud the server is being provisioned into
 	 * @param server the server instance being provisioned

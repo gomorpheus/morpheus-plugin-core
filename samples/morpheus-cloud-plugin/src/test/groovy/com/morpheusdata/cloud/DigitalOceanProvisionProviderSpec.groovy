@@ -228,7 +228,6 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 202]], json: createServerJson]
 		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
 		1 * provisionService.getUserConfig(_,_,_) >> Single.just(new UsersConfiguration())
-		1 * provisionService.getNetworkConfig(*_) >> Single.just(new NetworkConfiguration())
 
 		resp.success == true
 		resp.data.externalId == "3164494"
@@ -252,7 +251,6 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 
 		then:
 		1 * computeServerContext.save(*_) >> Single.just(true)
-		1 * provisionService.getNetworkConfig(*_) >> Single.just(new NetworkConfiguration())
 		1 * provisionService.getUserConfig(_,_,_) >> Single.just(new UsersConfiguration())
 		1 * apiService.makeApiCall(_, _) >> [resp: [statusLine: [statusCode: 400]], json: createServerJson]
 		1 * cloudContext.findOrGenerateKeyPair(_) >> Single.just(new KeyPair(id: 789, externalId: 'key1'))
