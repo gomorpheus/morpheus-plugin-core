@@ -492,17 +492,24 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts){
 		log.debug "removeWorkload ${workload} ${opts}"
+		return removeServer(workload.server)
+	}
+
+	ServiceResponse removeServer(ComputeServer server, Map opts){
+		log.debug "removeServer ${server} ${opts}"
 		def rtn = [success:false]
 		try {
 			//release it
-			rtn = releaseServer(workload.server, opts)
+			rtn = releaseServer(server, opts)
 			//done
 		} catch(e) {
-			log.error("removeWorkload error: {}", e)
+			log.error("removeServer error: {}", e)
 			rtn.msg = e.message
 		}
 		return new ServiceResponse([success: rtn.success, msg: rtn.msg])
 	}
+
+
 
 	def releaseServer(ComputeServer server, Map opts) {
 		def rtn = [success:false]

@@ -140,6 +140,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	ServiceResponse deleteServer(ComputeServer computeServer) {
+		return ServiceResponse.success()
+	}
+
+	@Override
 	ProvisioningProvider getProvisioningProvider(String providerCode) {
 		return getAvailableProvisioningProviders()?.find { it.code == providerCode }
 	}

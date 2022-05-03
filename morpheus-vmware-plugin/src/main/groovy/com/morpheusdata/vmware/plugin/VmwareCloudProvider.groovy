@@ -436,6 +436,12 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	ServiceResponse deleteServer(ComputeServer computeServer) {
+		// TODO : Implement
+		return ServiceResponse.success()
+	}
+
+	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
 		log.info "Initializing Cloud: ${cloud.code}"

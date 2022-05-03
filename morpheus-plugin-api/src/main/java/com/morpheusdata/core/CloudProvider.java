@@ -156,4 +156,11 @@ public interface CloudProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse stopServer(ComputeServer computeServer);
+
+	/**
+	 * Called when a server should be deleted from the Cloud.
+	 * @param computeServer server to delete
+	 * @return ServiceResponse
+	 */
+	ServiceResponse deleteServer(ComputeServer computeServer);
 }

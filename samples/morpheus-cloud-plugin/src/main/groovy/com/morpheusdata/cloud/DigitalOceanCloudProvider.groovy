@@ -12,6 +12,7 @@ import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -22,7 +23,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
-
+	
 	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
@@ -112,20 +113,20 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		//digital ocean
 		def serverTypes = [
 				new ComputeServerType(code: 'digitalOceanWindows2', name: 'DigitalOcean Windows Node', description: '', platform: PlatformType.windows, agentType: ComputeServerType.AgentType.host,
-						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
-						displayOrder: 17, hasAutomation: true, reconfigureSupported: true,
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: null,
+						displayOrder: 17, hasAutomation: true, reconfigureSupported: true, provisionTypeCode: 'do-provider',
 						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, guestVm: true,
 				),
 
 				new ComputeServerType(code: 'digitalOceanVm2', name: 'DigitalOcean VM Instance', description: '', platform: PlatformType.linux,
-						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
-						displayOrder: 0, hasAutomation: true, reconfigureSupported: true,
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: false, computeService: null,
+						displayOrder: 0, hasAutomation: true, reconfigureSupported: true, provisionTypeCode: 'do-provider',
 						containerHypervisor: false, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.guest, guestVm: true,
 				),
 
 				//docker
 				new ComputeServerType(code: 'digitalOceanLinux2', name: 'DigitalOcean Docker Host', description: '', platform: PlatformType.linux,
-						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: true, computeService: 'digitalOceanComputeService',
+						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: true, computeService: null,
 						displayOrder: 16, hasAutomation: true, reconfigureSupported: true,
 						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,
 						computeTypeCode: 'docker-host',
@@ -134,7 +135,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				//kubernetes
 				new ComputeServerType(code: 'digitalOceanKubeMaster2', name: 'Digital Ocean Kubernetes Master', description: '', platform: PlatformType.linux,
 						reconfigureSupported: true, enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: true, creatable: true,
-						supportsConsoleKeymap: true, computeService: 'digitalOceanComputeService', displayOrder: 10,
+						supportsConsoleKeymap: true, computeService: null, displayOrder: 10,
 						hasAutomation: true, containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
 						computeTypeCode: 'kube-master',
 						optionTypes: [
@@ -143,7 +144,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				),
 				new ComputeServerType(code: 'digitalOceanKubeWorker2', name: 'Digital Ocean Kubernetes Worker', description: '', platform: PlatformType.linux,
 						reconfigureSupported: true, enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: true, creatable: true,
-						supportsConsoleKeymap: true, computeService: 'digitalOceanComputeService', displayOrder: 10,
+						supportsConsoleKeymap: true, computeService: null, displayOrder: 10,
 						hasAutomation: true, containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.kubernetes,
 						computeTypeCode: 'kube-worker',
 						optionTypes: [
@@ -152,8 +153,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				),
 				//unmanaged discovered type
 				new ComputeServerType(code: 'digitalOceanUnmanaged', name: 'Digital Ocean VM', description: 'Digital Ocean VM', platform: PlatformType.none, agentType: ComputeServerType.AgentType.guest,
-						enabled: true, selectable: false, externalDelete: true, managed: false, controlPower: true, controlSuspend: false, creatable: false, computeService: 'digitalOceanComputeService',
-						displayOrder: 99, hasAutomation: false,
+						enabled: true, selectable: false, externalDelete: true, managed: false, controlPower: true, controlSuspend: false, creatable: false, computeService: null,
+						displayOrder: 99, hasAutomation: false, provisionTypeCode: 'do-provider',
 						containerHypervisor: false, bareMetalHost: false, vmHypervisor: false, managedServerType: 'digitalOceanVm2', guestVm: true, supportsConsoleKeymap: true
 				)
 		]
@@ -284,6 +285,23 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		}
 		def body = ['type': 'shutdown']
 		apiService.performDropletAction(dropletId, body, apiKey)
+	}
+
+	@Override
+	ServiceResponse deleteServer(ComputeServer computeServer) {
+		String dropletId = computeServer.externalId
+		log.debug "deleteServer for server: ${dropletId}"
+		if (!dropletId) {
+			log.debug "no Droplet ID provided"
+			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
+		}
+		HttpDelete httpDelete = new HttpDelete("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
+		Map respMap = apiService.makeApiCall(httpDelete, computeServer.cloud.configMap.doApiKey)
+		if (respMap?.resp?.statusLine?.statusCode == 204) {
+			return new ServiceResponse(success: true)
+		} else {
+			return new ServiceResponse(success: false, content: respMap?.json, msg: respMap?.resp?.statusLine?.statusCode, error: respMap?.json)
+		}
 	}
 
 	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {

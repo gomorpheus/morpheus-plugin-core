@@ -215,6 +215,12 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	ServiceResponse deleteServer(ComputeServer computeServer) {
+		log.debug "deleteServer: ${computeServer}.. looking for 'maas-provision-provider-plugin' provisionProvider"
+		return getProvisioningProvider('maas-provision-provider-plugin').removeServer(computeServer)
+	}
+
+	@Override
 	ServiceResponse initializeCloud(Cloud cloud) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
 		log.info "Initializing Cloud: ${cloud.code}"
