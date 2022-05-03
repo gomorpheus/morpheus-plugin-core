@@ -10,6 +10,7 @@ import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
+import com.morpheusdata.model.Icon
 import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
@@ -172,6 +173,11 @@ class MaasCloudProvider implements CloudProvider {
 	@Override
 	Plugin getPlugin() {
 		return this.plugin
+	}
+
+	@Override
+	Icon getIcon() {
+		return null
 	}
 
 	@Override

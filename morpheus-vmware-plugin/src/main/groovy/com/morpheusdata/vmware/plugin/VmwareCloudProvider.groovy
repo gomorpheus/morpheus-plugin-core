@@ -9,6 +9,7 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
+import com.morpheusdata.model.Icon
 import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkProxy
 import com.morpheusdata.model.NetworkType
@@ -382,6 +383,11 @@ class VmwareCloudProvider implements CloudProvider {
 	@Override
 	String getCode() {
 		return 'vmware-plugin-cloud'
+	}
+
+	@Override
+	Icon getIcon() {
+		return null
 	}
 
 	@Override

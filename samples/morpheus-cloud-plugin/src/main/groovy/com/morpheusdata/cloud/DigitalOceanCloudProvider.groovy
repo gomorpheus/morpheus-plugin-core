@@ -23,7 +23,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
-	
+
 	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
@@ -38,6 +38,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	Plugin getPlugin() {
 		return this.plugin
+	}
+
+	@Override
+	Icon getIcon() {
+		return new Icon(path:"digital-ocean-plugin.svg", darkPath: "digital-ocean-plugin.svg")
 	}
 
 	@Override

@@ -1,16 +1,7 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServerType;
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.NetworkType;
-import com.morpheusdata.model.Network;
-import com.morpheusdata.model.ComputeZoneFolder;
-import com.morpheusdata.model.StorageVolumeType;
-import com.morpheusdata.model.StorageControllerType;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
-import com.morpheusdata.model.ComputeZonePool;
 
 import java.util.Collection;
 
@@ -30,6 +21,13 @@ public interface CloudProvider extends PluginProvider {
 	 * @return String
 	 */
 	String getDescription();
+
+	/**
+	 * Returns the Cloud logo for display when a user needs to view or add this cloud. SVGs are preferred.
+	 * @since 0.13.0
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	Icon getIcon();
 
 	/**
 	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration

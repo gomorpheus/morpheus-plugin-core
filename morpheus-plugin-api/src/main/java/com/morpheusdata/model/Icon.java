@@ -7,6 +7,7 @@ package com.morpheusdata.model;
  * @see com.morpheusdata.core.IPAMProvider
  * @see com.morpheusdata.core.TaskProvider
  * @see com.morpheusdata.core.DNSProvider
+ * @see com.morpheusdata.core.CloudProvider
  */
 public class Icon {
 	protected String path;
