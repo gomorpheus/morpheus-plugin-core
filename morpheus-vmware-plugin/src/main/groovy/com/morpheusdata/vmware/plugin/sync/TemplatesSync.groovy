@@ -276,11 +276,11 @@ class TemplatesSync {
 		if(imageIds && externalIds) {
 			def tmpImgProjs = []
 			morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { img ->
-				!img.systemImage && img.externalId != null && img.externalId in externalIds
+				img.id in imageIds || (!img.systemImage && img.externalId != null && img.externalId in externalIds)
 			}.blockingSubscribe { tmpImgProjs << it }
 			if(tmpImgProjs) {
 				morpheusContext.virtualImage.listById(tmpImgProjs.collect { it.id }).filter { img ->
-					img.imageLocations.size() == 0
+					img.id in imageIds || img.imageLocations.size() == 0
 				}.blockingSubscribe { existingItems << it }
 			}
 		} else if(imageIds) {
@@ -289,7 +289,15 @@ class TemplatesSync {
 		//dedupe
 		VmwareSyncUtils.deDupeVirtualImages(existingItems, existingLocations, cloud, morpheusContext)
 
+		//Get volumes and controllers
+		def allVolumesAndControllers = getVolumesAndControllersForLocations(existingLocations)
+
 		Map<VirtualImageLocation, ArrayList> locationVolumesMap = [:]
+
+		List<VirtualImageLocation> locationsToCreate = []
+		List<VirtualImageLocation> locationsToUpdate = []
+		List<VirtualImage> imagesToUpdate = []
+		List<StorageVolume> volumesToUpdate = []
 		//updates
 		updateList?.each { update ->
 			def matchedTemplate = update.masterItem
@@ -297,12 +305,14 @@ class TemplatesSync {
 			if(imageLocation) {
 				def save = false
 				def saveImage = false
+				def image = existingItems.find {it.id == imageLocation.virtualImage.id}
 				if(imageLocation.imageName != matchedTemplate.name) {
 					imageLocation.imageName = matchedTemplate.name
-//					if(imageLocation.virtualImage.refId == imageLocation.refId.toString()) {
-//						imageLocation.virtualImage.name = matchedTemplate.name
-//						imageLocation.virtualImage.save()
-//					}
+					if(image && (image.refId == imageLocation.refId.toString())) {
+						image.name = matchedTemplate.name
+						imagesToUpdate << image
+						saveImage = true
+					}
 					save = true
 				}
 				if(imageLocation.imageRegion != regionCode) {
@@ -321,43 +331,44 @@ class TemplatesSync {
 					imageLocation.internalId = matchedTemplate.config.uuid
 					save = true
 				}
-//				if(matchedTemplate.controllers) {
-//					def start = new Date()
-//					def changed = vmwareProvisionService.syncControllers(zone, imageLocation, matchedTemplate.controllers, false)
-//					if(changed == true)
-//						save = true
-//				}
+				if(matchedTemplate.controllers) {
+					def changed = VmwareSyncUtils.syncControllers(cloud, imageLocation, matchedTemplate.controllers, false, image?.account, morpheusContext)
+					if(changed == true)
+						save = true
+				}
 				if(matchedTemplate.volumes) {
 					locationVolumesMap[imageLocation] = matchedTemplate.volumes
 				}
-//				if(imageLocation.virtualImage.deleted) {
-//					imageLocation.virtualImage.deleted = false
-//					saveImage = true
-//				} else {
-//					//this would mean we need to fix the display order. if there is more than one volume AND they all have the same display order
-//					if(imageLocation?.volumes?.size() > 1 && imageLocation?.volumes?.every({vol -> vol.displayOrder == 0})) {
-//						imageLocation.volumes.sort {a, b ->
-//							if (a.rootVolume) {
-//								return -1
-//							}
-//							return a.controllerMountPoint <=> b.controllerMountPoint TODO: Need controller support for this
-//						}.eachWithIndex { vol, index ->
-//							vol.displayOrder = index;
-//							vol.save()
-//						}
-//					}
-//				}
-//				if(imageLocation.virtualImage?.isPublic != isPublicImage) {
-//					imageLocation.virtualImage.isPublic = isPublicImage
-//					imageLocation.isPublic = isPublicImage
-//					saveImage = true
-//					save = true
-//				}
+				if(image.deleted) {
+					image.deleted = false
+					saveImage = true
+				} else if(imageLocation?.volumes?.size() > 1) {
+					//this would mean we need to fix the display order. if there is more than one volume AND they all have the same display order
+					def volumeIds = imageLocation?.volumes.collect { it.id}
+					def currentVolumes = allVolumesAndControllers.volumes.findAll {it.id in volumeIds}
+					if(currentVolumes?.every { vol -> vol.displayOrder == 0}) {
+						currentVolumes.sort {a, b ->
+							if (a.rootVolume) {
+								return -1
+							}
+							def aController = allVolumesAndControllers.controllers.find{ it.id == a.controller?.id}
+							def bController = allVolumesAndControllers.controllers.find{ it.id == b.controller?.id}
+							return VmwareSyncUtils.getControllerMountPoint(a, aController) <=> VmwareSyncUtils.getControllerMountPoint(b, bController)
+						}.eachWithIndex { vol, index ->
+							vol.displayOrder = index
+							volumesToUpdate << vol
+						}
+					}
+				}
+				if(image && (image.getPublic() != isPublicImage)) {
+					image.setPublic(isPublicImage)
+					saveImage = true
+				}
 				if(save) {
-					morpheusContext.virtualImage.location.save([imageLocation], cloud).blockingGet() // TODO: Save these in a batch
+					locationsToUpdate << imageLocation
 				}
 				if(saveImage) {
-//					imageLocation.virtualImage?.save(flush:true)
+					imagesToUpdate << image
 				}
 			} else {
 				VirtualImage image = existingItems?.find { it.externalId == matchedTemplate.ref || it.name == matchedTemplate.name }
@@ -372,19 +383,30 @@ class TemplatesSync {
 							virtualImage: new VirtualImageIdentityProjection(id: image.id)
 					]
 					def addLocation = new VirtualImageLocation(locationConfig)
-					morpheusContext.virtualImage.location.save([addLocation], cloud).blockingGet()
+					locationsToCreate << addLocation
 
 					//tmp fix
 					if(!image.owner && !image.systemImage)
 						image.ownerId = cloud.owner.id
-//					image.deleted = false
-					image.isPublic = isPublicImage
-					morpheusContext.virtualImage.save([image], cloud).blockingGet()  // TODO: Save these in a batch
+					image.deleted = false
+					image.setPublic(isPublicImage)
+					imagesToUpdate << image
 				}
-
 			}
-		}
 
+		}
+		if(locationsToCreate.size() > 0 ) {
+			morpheusContext.virtualImage.location.create(locationsToCreate, cloud).blockingGet()
+		}
+		if(locationsToUpdate.size() > 0 ) {
+			morpheusContext.virtualImage.location.save(locationsToUpdate, cloud).blockingGet()
+		}
+		if(imagesToUpdate.size() > 0 ) {
+			morpheusContext.virtualImage.save(imagesToUpdate, cloud).blockingGet()
+		}
+		if(volumesToUpdate.size() > 0 ) {
+			morpheusContext.storageVolume.save(volumesToUpdate).blockingGet()
+		}
 		// Sync the volumes for each
 		locationVolumesMap?.each { VirtualImageLocation location, volumes ->
 			VmwareSyncUtils.syncVolumes(location, volumes, cloud, morpheusContext)
@@ -405,6 +427,21 @@ class TemplatesSync {
 		log.debug "removeMissingVirtualImages: ${removeList?.size()}"
 
 		morpheusContext.virtualImage.location.remove(removeList).blockingGet()
+	}
+
+	private getVolumesAndControllersForLocations(List<VirtualImageLocation> locationList) {
+		log.debug "getVolumesAndControllersForLocations: ${locationList.size()}"
+		def volumeIds = locationList.collect {it.volumes.id }.flatten()
+		def volumes = []
+		morpheusContext.storageVolume.listById(volumeIds).blockingSubscribe {
+			volumes << it
+		}
+		def controllers = []
+		def controllerIds = volumes.findAll {it.controller }.collect { it.controller.id }
+		morpheusContext.storageController.listById(controllerIds).blockingSubscribe {
+			controllers << it
+		}
+		["volumes": volumes, "controllers": controllers]
 	}
 
 }

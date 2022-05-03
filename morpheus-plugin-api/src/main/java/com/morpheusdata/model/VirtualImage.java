@@ -35,6 +35,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isForceCustomization;
 	protected Boolean isCloudInit;
 	protected Boolean virtioSupported;
+	protected Boolean deleted;
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
@@ -257,5 +258,16 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setImageRegion(String imageRegion) {
 		this.imageRegion = imageRegion;
+	}
+
+	@Override
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	@Override
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+		markDirty("deleted", deleted);
 	}
 }

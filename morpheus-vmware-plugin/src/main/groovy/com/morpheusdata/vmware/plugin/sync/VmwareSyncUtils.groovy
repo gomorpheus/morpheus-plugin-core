@@ -129,12 +129,11 @@ class VmwareSyncUtils {
 					existingVolume.datastore = new DatastoreIdentityProjection(cloud.id, volume.datastore)
 					save = true
 				}
-				// TODO : Controller
-//				def matchController = matchStorageVolumeController(server, volume)
-//				if(matchController?.id != existingVolume.controller?.id) {
-//					existingVolume.controller = matchController
-//					save = true
-//				}
+				def matchController = matchStorageVolumeController(locationOrServer, volume)
+				if(matchController?.id != existingVolume.controller?.id) {
+					existingVolume.controller = matchController
+					save = true
+				}
 				if(save) {
 					saveList << existingVolume
 				}
@@ -319,11 +318,11 @@ class VmwareSyncUtils {
 		return rtn
 	}
 
-	static Boolean syncControllers(Cloud cloud, ComputeServer server, List externalControllers, Boolean checkContainer = true, Account account = null, MorpheusContext morpheusContext) {
+	static Boolean syncControllers(Cloud cloud, serverOrLocation, List externalControllers, Boolean checkContainer = true, Account account = null, MorpheusContext morpheusContext) {
 		def rtn = false //returns if there are changes to be saved
 		log.debug("controllers: {}", externalControllers)
 		try {
-			def serverControllers = server.controllers?.sort{it.id}
+			def serverControllers = serverOrLocation.controllers?.sort{it.id}
 			def missingControllers = []
 			def matchedControllers = []
 			def matchContainer = null //checkContainer ? (server.id ? Container.findByServer(server) : null) : null
@@ -356,7 +355,7 @@ class VmwareSyncUtils {
 			}
 			//save new stuff
 			if(newControllers?.size() > 0) {
-				def success = morpheusContext.storageController.create(newControllers, server).blockingGet()
+				def success = morpheusContext.storageController.create(newControllers, serverOrLocation).blockingGet()
 			}
 			def removeControllers = []
 			serverControllers.each { serverController ->
@@ -370,8 +369,8 @@ class VmwareSyncUtils {
 			//remove removes
 			removeControllers.each { removeController ->
 				//only if not resizing
-				if(!(server instanceof ComputeServer) || server.status != 'resizing') {
-					morpheusContext.storageController.remove(removeControllers, server).blockingGet()
+				if(!(serverOrLocation instanceof ComputeServer) || serverOrLocation.status != 'resizing') {
+					morpheusContext.storageController.remove(removeControllers, serverOrLocation).blockingGet()
 				}
 			}
 		} catch(e) {
@@ -409,5 +408,13 @@ class VmwareSyncUtils {
 
 	static StorageController matchStorageVolumeController(server, volume) {
 		return server.controllers.sort{it.id}?.find{it.controllerKey == volume.controllerKey}
+	}
+
+	static String getControllerMountPoint(StorageVolume volume, StorageController controller) {
+		if(volume && controller) {
+			return "${controller.id}:${controller.busNumber}:${controller.type.id}:${volume.unitNumber ?: 0}"
+		} else {
+			return null
+		}
 	}
 }

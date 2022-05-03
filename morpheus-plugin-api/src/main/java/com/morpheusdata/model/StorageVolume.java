@@ -212,11 +212,11 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 		return uniqueId;
 	}
 
-	public StorageControllerIdentityProjection getControllerKey() {
+	public StorageControllerIdentityProjection getController() {
 		return controller;
 	}
 
-	public void setControllerKey(StorageControllerIdentityProjection controller) {
+	public void setController(StorageControllerIdentityProjection controller) {
 		this.controller = controller;
 	}
 
