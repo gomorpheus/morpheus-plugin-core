@@ -144,10 +144,6 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		server.sshPassword = usersConfiguration.sshPassword
 		morpheus.computeServer.save([server]).blockingGet()
 
-		// Not really used in DO provisioning (example only)
-		NetworkConfiguration networkConfiguration = morpheus.provision.getNetworkConfig(workload, virtualImage, opts).blockingGet()
-		log.debug "networkConfiguration ${networkConfiguration}"
-
 		def userData
 		if(virtualImage?.isCloudInit) {
 			// Utilize the morpheus build cloud-init methods
