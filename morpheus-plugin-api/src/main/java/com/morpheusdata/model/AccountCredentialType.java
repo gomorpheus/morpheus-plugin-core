@@ -1,5 +1,16 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.core.CredentialProvider;
+
+/**
+ * Represents the type of an {@link AccountCredential}. These types can be usernames/passwords or keypairs depending on
+ * the use. These are typically seeded in in the Morpheus Appliance and not yet customizable, however they could be in
+ * the not too distant future.
+ * @since 0.13.1
+ * @see AccountCredential
+ * @see CredentialProvider
+ * @author David Estes
+ */
 public class AccountCredentialType extends MorpheusModel {
 	protected String code;
 	protected String name;

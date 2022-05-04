@@ -1,18 +1,33 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.core.CredentialProvider;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Reference to a Remotely stored Credential. Most of the data is in the `data` property in a Map. A {@link CredentialProvider}
+ * implemented plugin would leverage the data property on this object to save a Map of values into a remote secret store such as a Vault or CyberArk.
+ * Optionally, an externalId can be stored on this object for future retrieval after creation.
+ * @see CredentialProvider
+ * @since 0.13.1
+ * @author David Estes
+ */
 public class AccountCredential extends MorpheusModel {
 	//ownership
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected User user;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected AccountIntegration integration;
 	//metadata
 	protected String name;
 	protected String code;
 	protected String category;
 	protected String description;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected AccountCredentialType type;
 	protected String typeName ;//saving type for a lookup domain if needed
 
@@ -30,7 +45,11 @@ public class AccountCredential extends MorpheusModel {
 	protected String itemSource = "user";
 	protected String storeType = "internal";
 	protected Date expireDate;
-	//transient to hold credential data
+
+	/**
+	 * This is the transient Map that holds the credential data. This is what needs to be saved remotely and also
+	 * recovered remotely
+	 */
 	protected Map data;
 
 	public Account getAccount() {
