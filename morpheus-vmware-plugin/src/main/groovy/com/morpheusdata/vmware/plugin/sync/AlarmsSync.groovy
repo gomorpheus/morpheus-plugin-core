@@ -159,7 +159,7 @@ class AlarmsSync {
 					def match
 					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
 							.filter { it.externalId == id && it.type == 'cluster' }
-							.blockingSubscribe { match == it }
+							.blockingSubscribe { match = it }
 					if(match) {
 						rtn.refType = 'datastore'
 						rtn.refId = match.id
@@ -171,7 +171,7 @@ class AlarmsSync {
 					def match
 					morpheusContext.cloud.datastore.listSyncProjections(cloud.id)
 							.filter { it.externalId == id && it.type != 'cluster' }
-							.blockingSubscribe { match == it }
+							.blockingSubscribe { match = it }
 					if(match) {
 						rtn.refType = 'datastore'
 						rtn.refId = match.id
@@ -184,7 +184,7 @@ class AlarmsSync {
 					def match
 					morpheusContext.computeServer.listSyncProjections(cloud.id)
 							.filter { it.externalId == id }
-							.blockingSubscribe { match == it }
+							.blockingSubscribe { match = it }
 					if(match) {
 						rtn.refType = 'computeServer'
 						rtn.refId = match.id
