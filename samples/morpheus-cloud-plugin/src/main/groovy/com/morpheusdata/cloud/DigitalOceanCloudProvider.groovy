@@ -100,7 +100,6 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		OptionType ot3 = new OptionType(
 				name: 'Datacenter',
 				code: 'do-datacenter',
-				fieldGroup: 'SomeFieldGroup',
 				fieldName: 'datacenter',
 				optionSource: 'datacenters',
 				displayOrder: 2,
