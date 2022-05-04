@@ -724,73 +724,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			morpheus.network.pool.save(poolsToUpdate).blockingGet()
 		}
 	}
-
-	/**
-	 * Called during provisioning to setup a DHCP Lease address by mac address. This can be used in some scenarios in the event the environment supports DHCP Reservations instead of strictly static
-	 * @param networkPoolServer
-	 * @param networkPool
-	 * @param network
-	 * @param assignedType
-	 * @param assignedId
-	 * @param subAssignedId
-	 * @param assignedHostname
-	 * @param opts
-	 * @return
-	 */
-	@Override
-	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts) {
-		def rtn = new ServiceResponse()
-		def lock
-		try {
-			if(networkPoolServer.serviceMode == 'dhcp') {
-				lock = morpheus.acquireLock(LOCK_NAME + ".${networkPool.id}", [timeout: 60l * 1000l]).blockingGet()
-				try {
-					def nextIp = reserveNextIpAddress(networkPoolServer, networkPool, assignedHostname, opts)
-					log.info("nextIp: {}", nextIp)
-					if(nextIp.success && nextIp?.results?.ipv4addrs?.size() > 0) {
-						def newIp = nextIp.results.ipv4addrs.first().ipv4addr
-						def networkPoolIp = morpheus.network.loadNetworkPoolIp(networkPool, newIp).blockingGet()
-						networkPoolIp = networkPoolIp ?: new NetworkPoolIp(networkPool:networkPool, ipAddress:newIp, staticIp:false)
-						def ipRange = networkPool.ipRanges?.size() > 0 ? networkPool.ipRanges.first() : null
-						networkPoolIp.networkPoolRange = ipRange
-						networkPoolIp.gatewayAddress = networkPool.gateway ?: network?.gateway
-						networkPoolIp.subnetMask = NetworkUtility.getNetworkSubnetMask(networkPool, network)
-						networkPoolIp.dnsServer = networkPool.dnsServers?.size() > 0 ? networkPool.dnsServers.first() : network?.dnsPrimary
-						networkPoolIp.interfaceName = network?.interfaceName ?: 'eth0'
-						networkPoolIp.startDate = new Date()
-						networkPoolIp.refType = assignedType
-						networkPoolIp.refId = assignedId
-						networkPoolIp.externalId = nextIp.results['_ref']
-						networkPoolIp.internalId = nextIp.data.aRecordRef
-						networkPoolIp.fqdn = assignedHostname
-						if(networkPoolIp.id) {
-							morpheus.network.pool.poolIp.save(networkPoolIp)
-						} else {
-							morpheus.network.pool.poolIp.create(networkPoolIp)
-						}
-
-
-						rtn.results.ipAddress = newIp
-						rtn.results.poolIp = networkPoolIp
-						rtn.results.poolType = 'dhcp'
-						rtn.success = true
-						log.debug "Reserving Infoblox Ip ${rtn}"
-						//have an ip - lets save it
-					}
-				} catch(e) {
-					log.error("reservePoolAddress error: ${e}", e)
-				}
-			} else {
-				rtn.success = true
-				rtn.results.poolType = 'static'
-			}
-		} finally {
-			if(lock) {
-				morpheus.releaseLock(LOCK_NAME + ".${networkPool.id}",[lock:lock]).blockingGet()
-			}
-		}
-		return rtn
-	}
+	
 
 	@Override
 	ServiceResponse<NetworkPoolIp> createHostRecord(NetworkPoolServer poolServer, NetworkPool networkPool, NetworkPoolIp networkPoolIp, NetworkDomain domain = null, Boolean createARecord = false, Boolean createPtrRecord = false) {
