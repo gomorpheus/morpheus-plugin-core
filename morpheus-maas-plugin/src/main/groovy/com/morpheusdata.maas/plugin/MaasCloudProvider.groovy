@@ -151,7 +151,7 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void refresh(Cloud cloudInfo) {
+	ServiceResponse refresh(Cloud cloudInfo) {
 		initializeCloud(cloudInfo)
 	}
 
@@ -247,7 +247,6 @@ class MaasCloudProvider implements CloudProvider {
 				def authConfig = MaasProvisionProvider.getAuthConfig(cloud)
 				def testResults = MaasComputeUtility.testConnection(authConfig, [:])
 				if (testResults.success) {
-					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
 					//cache stuff
 					def cacheOpts = [:]
 					cacheRegionControllers(cloud, cacheOpts)
@@ -257,18 +256,13 @@ class MaasCloudProvider implements CloudProvider {
 					cacheImages(cloud, cacheOpts)
 //					cacheFabrics(cloud, cacheOpts)
 					cacheSubnets(cloud, cacheOpts)
-					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
+					rtn = ServiceResponse.success()
 				} else {
-					if (testResults.invalidLogin == true) {
-						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'invalid credentials', syncDate)
-					} else {
-						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'error connecting', syncDate)
-					}
+					rtn = ServiceResponse.error(testResults.invalidLogin == true ? 'invalid credentials' : 'error connecting')
 				}
 			} else {
-				morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.offline, 'maas is not reachable', syncDate)
+				rtn = ServiceResponse.error('maas is not reachable', null, [status: Cloud.Status.offline])
 			}
-			rtn.success = true
 		} catch (e) {
 			log.error("refresh zone error: ${e}", e)
 		}

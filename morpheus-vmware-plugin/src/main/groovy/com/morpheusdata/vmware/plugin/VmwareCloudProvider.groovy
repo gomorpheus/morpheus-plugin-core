@@ -356,7 +356,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void refresh(Cloud cloudInfo) {
+	ServiceResponse refresh(Cloud cloudInfo) {
 		initializeCloud(cloudInfo)
 	}
 
@@ -456,7 +456,6 @@ class VmwareCloudProvider implements CloudProvider {
 		HttpApiClient client
 
 		try {
-			def syncDate = new Date()
 			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
 			def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 			def apiUrlObj = new URL(authConfig.apiUrl)
@@ -468,8 +467,6 @@ class VmwareCloudProvider implements CloudProvider {
 			if(hostOnline) {
 				def testResults = VmwareComputeUtility.testConnection(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
 				if(testResults.success == true) {
-					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.syncing, null, syncDate)
-
 					def doInventory = cloud.getConfigProperty('importExisting')
 					Boolean createNew = false
 					if(doInventory == 'on' || doInventory == 'true' || doInventory == true) {
@@ -499,20 +496,14 @@ class VmwareCloudProvider implements CloudProvider {
 						(new TagsSync(cloud, morpheusContext, client)).execute()
 					}
 					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
-
-					morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.ok, null, syncDate)
+					rtn = ServiceResponse.success()
 				}
 				else {
-					if (testResults.invalidLogin == true) {
-						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'invalid credentials', syncDate)
-					} else {
-						morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.error, 'error connecting', syncDate)
-					}
+					rtn = ServiceResponse.error(testResults.invalidLogin == true ? 'invalid credentials' : 'error connecting')
 				}
 			} else {
-				morpheusContext.cloud.updateZoneStatus(cloud, Cloud.Status.offline, 'vmware is not reachable', syncDate)
+				rtn = ServiceResponse.error('vmware is not reachable', null, [status: Cloud.Status.offline])
 			}
-			rtn.success = true
 		} catch (e) {
 			log.error("refresh cloud error: ${e}", e)
 		} finally {

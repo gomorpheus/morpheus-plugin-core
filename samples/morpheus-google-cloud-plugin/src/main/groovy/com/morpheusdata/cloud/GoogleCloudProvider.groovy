@@ -186,8 +186,9 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void refresh(Cloud cloudInfo) {
+	ServiceResponse refresh(Cloud cloudInfo) {
 		log.debug "cloud refresh has run for ${cloudInfo.code}"
+		ServiceResponse.success()
 	}
 
 	@Override

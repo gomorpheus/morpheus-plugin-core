@@ -46,11 +46,6 @@ class VmwareIPAMProvider implements IPAMProvider {
 	}
 
 	@Override
-	ServiceResponse reservePoolAddress(NetworkPoolServer networkPoolServer, NetworkPool networkPool, Network network, String assignedType, Long assignedId, Long subAssignedId, String assignedHostname, Map opts) {
-		return null
-	}
-
-	@Override
 	ServiceResponse initializeNetworkPoolServer(NetworkPoolServer poolServer, Map opts) {
 		return null
 	}

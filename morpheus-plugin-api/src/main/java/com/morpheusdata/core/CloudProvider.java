@@ -101,8 +101,11 @@ public interface CloudProvider extends PluginProvider {
 	 * Zones/Clouds are refreshed periodically by the Morpheus Environment. This includes things like caching of brownfield
 	 * environments and resources such as Networks, Datastores, Resource Pools, etc.
 	 * @param cloudInfo cloud
+	 * @return ServiceResponse. If ServiceResponse.success == true, then Cloud status will be set to Cloud.Status.ok. If
+	 * ServiceResponse.success == false, the Cloud status will be set to ServiceResponse.data['status'] or Cloud.Status.error
+	 * if not specified. So, to indicate that the Cloud is offline, return `ServiceResponse.error('cloud is not reachable', null, [status: Cloud.Status.offline])`
 	 */
-	void refresh(Cloud cloudInfo);
+	ServiceResponse refresh(Cloud cloudInfo);
 
 
 	/**

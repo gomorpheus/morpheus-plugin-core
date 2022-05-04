@@ -249,20 +249,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	void refresh(Cloud cloudInfo) {
+	ServiceResponse refresh(Cloud cloudInfo) {
 		log.debug "cloud refresh has run for ${cloudInfo.code}"
-		try {
-			def syncDate = new Date()
-			morpheusContext.cloud.updateZoneStatus(cloudInfo, Cloud.Status.syncing, null, syncDate)
-
-			cacheSizes(cloudInfo, cloudInfo.configMap.doApiKey)
-			cacheImages(cloudInfo)
-
-			morpheusContext.cloud.updateZoneStatus(cloudInfo, Cloud.Status.ok, null, syncDate)
-		} catch (e) {
-			log.error "Error in refresh of cloud: ${cloudInfo.code}, ${cloudInfo.id}, ${e}", e
-			morpheusContext.cloud.updateZoneStatus(cloudInfo, Cloud.Status.error, "Error during sync: ${e.message}", syncDate)
-		}
+		cacheSizes(cloudInfo, cloudInfo.configMap.doApiKey)
+		cacheImages(cloudInfo)
+		return ServiceResponse.success()
 	}
 
 	@Override
