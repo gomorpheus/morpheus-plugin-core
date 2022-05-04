@@ -94,7 +94,7 @@ public abstract class AbstractReportProvider implements ReportProvider {
 
 	@FunctionalInterface
 	public interface WithDbConnectionFunction{
-		Observable<Object> method(Connection connection);
+		Object method(Connection connection);
 	}
 
 }
