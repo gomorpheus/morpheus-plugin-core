@@ -137,6 +137,12 @@ class VmwareSyncUtils {
 				if(save) {
 					saveList << existingVolume
 				}
+				// Remove any duplicates
+				def matchedVolumes = serverVolumes?.findAll{ it.externalId == volume.key.toString()}
+				if(matchedVolumes?.size() > 1) {
+					def deleteVolumes = matchedVolumes.findAll { it.id != existingVolume.id }
+					morpheusContext.storageVolume.remove(deleteVolumes, locationOrServer).blockingGet()
+				}
 			}
 
 			if(saveList) {
