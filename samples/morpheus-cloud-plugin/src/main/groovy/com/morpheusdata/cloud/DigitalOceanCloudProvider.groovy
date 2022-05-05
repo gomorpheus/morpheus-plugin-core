@@ -1,14 +1,14 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.cloud.sync.DatacentersSync
+import com.morpheusdata.cloud.sync.ImagesSync
+import com.morpheusdata.cloud.sync.SizesSync
 import com.morpheusdata.core.BackupProvider
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.*
-import com.morpheusdata.model.projection.ServicePlanIdentityProjection
-import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
@@ -16,7 +16,6 @@ import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
-import io.reactivex.Observable
 
 @Slf4j
 class DigitalOceanCloudProvider implements CloudProvider {
@@ -231,8 +230,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-			cacheSizes(cloud, apiKey)
-			cacheImages(cloud)
+			(new DatacentersSync(cloud, morpheusContext, apiService)).execute()
+			(new SizesSync(cloud, morpheusContext, apiService)).execute()
+			(new ImagesSync(cloud, morpheusContext, apiService)).execute()
 
 			KeyPair keyPair = morpheusContext.cloud.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
@@ -249,10 +249,10 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse refresh(Cloud cloudInfo) {
-		log.debug "cloud refresh has run for ${cloudInfo.code}"
-		cacheSizes(cloudInfo, cloudInfo.configMap.doApiKey)
-		cacheImages(cloudInfo)
+	ServiceResponse refresh(Cloud cloud) {
+		log.debug "cloud refresh has run for ${cloud.code}"
+		(new SizesSync(cloud, morpheusContext, apiService)).execute()
+		(new ImagesSync(cloud, morpheusContext, apiService)).execute()
 		return ServiceResponse.success()
 	}
 
@@ -309,160 +309,6 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		}
 	}
 
-	List<VirtualImage> listImages(Cloud cloudInfo, Boolean userImages) {
-		log.debug "list ${userImages ? 'User' : 'OS'} Images"
-		List<VirtualImage> virtualImages = []
-
-		Map queryParams = [:]
-		if (userImages) {
-			queryParams.private = 'true'
-		} else {
-			queryParams.type = 'distribution'
-		}
-		List images = apiService.makePaginatedApiCall(cloudInfo.configMap.doApiKey, '/v2/images', 'images', queryParams)
-
-		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
-
-		log.info("images: $images")
-		images.each {
-			Map props = [
-					name       : "${it.distribution} ${it.name}",
-					externalId : it.id,
-					code       : "${imageCodeBase}.${cloudInfo.code}.${it.id}",
-					category   : "${imageCodeBase}.${cloudInfo.code}",
-					imageType  : ImageType.qcow2,
-					platform   : it.distribution,
-					isPublic   : it.public,
-					minDisk    : it.min_disk_size,
-					locations  : it.regions,
-					account    : cloudInfo.account,
-					refId      : cloudInfo.id,
-					refType    : 'ComputeZone',
-					isCloudInit: true,
-					isPublic   : true
-			]
-			virtualImages << new VirtualImage(props)
-		}
-		log.info("api images: $virtualImages")
-		virtualImages
-	}
-
-	def cacheImages(Cloud cloud) {
-		List<VirtualImage> apiImages = listImages(cloud, false)
-		apiImages += listImages(cloud, true)
-
-		Observable<VirtualImageIdentityProjection> domainImages = morpheusContext.virtualImage.listSyncProjections(cloud.id)
-		SyncTask<VirtualImageIdentityProjection, VirtualImage, VirtualImage> syncTask = new SyncTask(domainImages, apiImages)
-		syncTask.addMatchFunction { VirtualImageIdentityProjection projection, VirtualImage apiImage ->
-			projection.externalId == apiImage.externalId
-		}.onDelete { List<VirtualImageIdentityProjection> deleteList ->
-			morpheus.virtualImage.remove(deleteList)
-		}.onAdd { createList ->
-			log.info("Creating ${createList?.size()} new images")
-			while (createList.size() > 0) {
-				List chunkedList = createList.take(50)
-				createList = createList.drop(50)
-				morpheus.virtualImage.create(chunkedList, cloud).blockingGet()
-			}
-		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<VirtualImageIdentityProjection, VirtualImage>> updateItems ->
-
-			Map<Long, SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
-			morpheus.virtualImage.listById(updateItems.collect { it.existingItem.id } as Collection<Long>).map {VirtualImage virtualImage ->
-				SyncTask.UpdateItemDto<VirtualImageIdentityProjection, Map> matchItem = updateItemMap[virtualImage.id]
-				return new SyncTask.UpdateItem<VirtualImage,Map>(existingItem:virtualImage, masterItem:matchItem.masterItem)
-			}
-
-		}.onUpdate { updateList ->
-			updateMatchedImages(updateList, cloud)
-		}.start()
-	}
-
-	void updateMatchedImages(List<SyncTask.UpdateItem<VirtualImage,Map>> updateItems, Cloud cloud) {
-		List<VirtualImage> imagesToUpdate = []
-
-		updateItems.each {it ->
-			def masterItem = it.masterItem
-			VirtualImage existingItem = it.existingItem
-
-			def save = false
-
-			if(existingItem.isCloudInit != masterItem.isCloudInit) {
-				existingItem.isCloudInit = masterItem.isCloudInit
-				save = true
-			}
-
-			if(existingItem.public != masterItem.public) {
-				existingItem.public = masterItem.public
-				save = true
-			}
-
-			if(save) {
-				imagesToUpdate << existingItem
-			}
-		}
-
-		morpheusContext.virtualImage.save(imagesToUpdate, cloud).blockingGet()
-	}
-
-	def cacheSizes(Cloud cloud, String apiKey) {
-		log.info("cacheSizes")
-		HttpGet sizesGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
-		Map respMap = apiService.makeApiCall(sizesGet, apiKey)
-		List<ServicePlan> servicePlans = []
-		respMap.json?.sizes?.each {
-			def name = getNameForSize(it)
-			def servicePlan = new ServicePlan(
-					code: "doplugin.size.${it.slug}",
-					provisionTypeCode: 'do-provider',
-					description: name,
-					name: name,
-					editable: false,
-					externalId: it.slug,
-					maxCores: it.vcpus,
-					maxMemory: it.memory.toLong() * 1024l * 1024l, // MB
-					maxStorage: it.disk.toLong() * 1024l * 1024l * 1024l, //GB
-					sortOrder: it.disk.toLong(),
-					price_monthly: it.price_monthly,
-					price_hourly: it.price_hourly,
-					refType: 'ComputeZone',
-					refId: cloud.id
-			)
-			servicePlans << servicePlan
-		}
-		log.info("api service plans: $servicePlans")
-		if (servicePlans) {
-			Observable<ServicePlanIdentityProjection> domainPlans = morpheusContext.servicePlan.listSyncProjections(cloud.id)
-			SyncTask<ServicePlanIdentityProjection, ServicePlan, ServicePlan> syncTask = new SyncTask(domainPlans, servicePlans)
-			syncTask.addMatchFunction { ServicePlanIdentityProjection projection, ServicePlan apiPlan ->
-				projection.externalId == apiPlan.externalId
-			}.onDelete { List<ServicePlanIdentityProjection> deleteList ->
-				morpheus.servicePlan.remove(deleteList)
-			}.onAdd { createList ->
-				while (createList.size() > 0) {
-					List chunkedList = createList.take(50)
-					createList = createList.drop(50)
-					morpheus.servicePlan.create(chunkedList).blockingGet()
-				}
-			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ServicePlanIdentityProjection, ServicePlan>> updateItems ->
-
-				Map<Long, SyncTask.UpdateItemDto<ServicePlanIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it]}
-				morpheus.servicePlan.listById(updateItems.collect { it.existingItem.id } as Collection<Long>).map {ServicePlan servicePlan ->
-					SyncTask.UpdateItemDto<ServicePlanIdentityProjection, Map> matchItem = updateItemMap[servicePlan.id]
-					return new SyncTask.UpdateItem<ServicePlan,Map>(existingItem:servicePlan, masterItem:matchItem.masterItem)
-				}
-
-
-			}.onUpdate { updateList ->
-				updateMatchedPlans(updateList)
-			}.start()
-		}
-	}
-
-	def updateMatchedPlans(List<SyncTask.UpdateItem<ServicePlan,Map>> updateItems) {
-		List<ServicePlan> plansToUpdate = updateItems.collect { it.existingItem }
-		morpheusContext.servicePlan.save(plansToUpdate).blockingGet()
-	}
-
 	KeyPair findOrUploadKeypair(String apiKey, String publicKey, String keyName) {
 		keyName = keyName ?: 'morpheus_do_plugin_key'
 		log.debug "find or update keypair for key $keyName"
@@ -483,10 +329,5 @@ class DigitalOceanCloudProvider implements CloudProvider {
 			match = respMap.json
 		}
 		new KeyPair(name: match.name, externalId: match.id, publicKey: match.public_key, publicFingerprint: match.fingerprint)
-	}
-
-	private getNameForSize(sizeData) {
-		def memoryName = sizeData.memory < 1000 ? "${sizeData.memory} MB" : "${sizeData.memory.div(1024l)} GB"
-		"Plugin Droplet ${sizeData.vcpus} CPU, ${memoryName} Memory, ${sizeData.disk} GB Storage"
 	}
 }
