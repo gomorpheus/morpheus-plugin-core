@@ -417,4 +417,42 @@ class VmwareSyncUtils {
 			return null
 		}
 	}
+
+	static getVolumeDisplayOrderUpdates(MorpheusContext morpheusContext, VirtualImageLocation imageLocation, List <VirtualImageLocation> locationList) {
+		log.debug "getVolumeDisplayOrderUpdates: ${imageLocation?.id} ${locationList?.size()}"
+		def volumeIds = imageLocation?.volumes.collect { it.id}
+		def allVolumesAndControllers = getVolumesAndControllersForLocations(morpheusContext, locationList)
+		def currentVolumes = allVolumesAndControllers.volumes.findAll {it.id in volumeIds}
+		def volumesToUpdate = []
+		if(currentVolumes?.every { vol -> vol.displayOrder == 0}) {
+			//this would mean we need to fix the display order. if there is more than one volume AND they all have the same display order
+			currentVolumes.sort {a, b ->
+				if (a.rootVolume) {
+					return -1
+				}
+				def aController = allVolumesAndControllers.controllers.find{ it.id == a.controller?.id}
+				def bController = allVolumesAndControllers.controllers.find{ it.id == b.controller?.id}
+				return VmwareSyncUtils.getControllerMountPoint(a, aController) <=> VmwareSyncUtils.getControllerMountPoint(b, bController)
+			}.eachWithIndex { vol, index ->
+				vol.displayOrder = index
+				volumesToUpdate << vol
+			}
+		}
+		volumesToUpdate
+	}
+
+	private static getVolumesAndControllersForLocations(MorpheusContext morpheusContext, List <VirtualImageLocation> locationList) {
+		log.debug "getVolumesAndControllersForLocations: ${locationList.size()}"
+		def volumeIds = locationList.collect {it.volumes.id }.flatten()
+		def volumes = []
+		morpheusContext.storageVolume.listById(volumeIds).blockingSubscribe {
+			volumes << it
+		}
+		def controllers = []
+		def controllerIds = volumes.findAll {it.controller }.collect { it.controller.id }
+		morpheusContext.storageController.listById(controllerIds).blockingSubscribe {
+			controllers << it
+		}
+		["volumes": volumes, "controllers": controllers]
+	}
 }

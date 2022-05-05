@@ -219,6 +219,7 @@ class ContentLibrarySync {
 		//updates
 		def imagesToSave = []
 		def imageLocationsToSave = []
+		List<StorageVolume> volumesToUpdate = []
 
 		updateList?.each { update ->
 			log.debug "updating ${update.existingItem}"
@@ -275,20 +276,8 @@ class ContentLibrarySync {
 						tmpImage.deleted = false
 						saveImage = true
 					}
-				} else {
-					//this would mean we need to fix the display order. if there is more than one volume AND they all have the same display order
-					// TODO : Volumes
-//					if(imageLocation?.volumes?.size() > 1 && imageLocation?.volumes?.every({vol -> vol.displayOrder == 0})) {
-//						imageLocation.volumes.sort {a, b ->
-//							if (a.rootVolume) {
-//								return -1
-//							}
-//							return a.controllerMountPoint <=> b.controllerMountPoint // TODO : Need controller for this
-//						}.eachWithIndex { vol, index ->
-//							vol.displayOrder = index;
-//							vol.save()
-//						}
-//					}
+				} else if(imageLocation?.volumes?.size() > 1) {
+					volumesToUpdate += VmwareSyncUtils.getVolumeDisplayOrderUpdates(morpheusContext, imageLocation, existingLocations)
 				}
 				if(saveLocation) {
 					imageLocationsToSave << imageLocation
@@ -344,6 +333,9 @@ class ContentLibrarySync {
 		log.debug "VirtualImageLocations to save ${imageLocationsToSave?.size()}"
 		if(imageLocationsToSave) {
 			morpheusContext.virtualImage.location.save(imageLocationsToSave, cloud).blockingGet()
+		}
+		if(volumesToUpdate.size() > 0 ) {
+			morpheusContext.storageVolume.save(volumesToUpdate).blockingGet()
 		}
 	}
 

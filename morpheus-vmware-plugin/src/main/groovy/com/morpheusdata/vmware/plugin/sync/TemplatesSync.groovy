@@ -289,9 +289,6 @@ class TemplatesSync {
 		//dedupe
 		VmwareSyncUtils.deDupeVirtualImages(existingItems, existingLocations, cloud, morpheusContext)
 
-		//Get volumes and controllers
-		def allVolumesAndControllers = getVolumesAndControllersForLocations(existingLocations)
-
 		Map<VirtualImageLocation, ArrayList> locationVolumesMap = [:]
 
 		List<VirtualImageLocation> locationsToCreate = []
@@ -343,22 +340,7 @@ class TemplatesSync {
 					image.deleted = false
 					saveImage = true
 				} else if(imageLocation?.volumes?.size() > 1) {
-					//this would mean we need to fix the display order. if there is more than one volume AND they all have the same display order
-					def volumeIds = imageLocation?.volumes.collect { it.id}
-					def currentVolumes = allVolumesAndControllers.volumes.findAll {it.id in volumeIds}
-					if(currentVolumes?.every { vol -> vol.displayOrder == 0}) {
-						currentVolumes.sort {a, b ->
-							if (a.rootVolume) {
-								return -1
-							}
-							def aController = allVolumesAndControllers.controllers.find{ it.id == a.controller?.id}
-							def bController = allVolumesAndControllers.controllers.find{ it.id == b.controller?.id}
-							return VmwareSyncUtils.getControllerMountPoint(a, aController) <=> VmwareSyncUtils.getControllerMountPoint(b, bController)
-						}.eachWithIndex { vol, index ->
-							vol.displayOrder = index
-							volumesToUpdate << vol
-						}
-					}
+					volumesToUpdate += VmwareSyncUtils.getVolumeDisplayOrderUpdates(morpheusContext, imageLocation, existingLocations)
 				}
 				if(image && (image.getPublic() != isPublicImage)) {
 					image.setPublic(isPublicImage)
@@ -428,20 +410,4 @@ class TemplatesSync {
 
 		morpheusContext.virtualImage.location.remove(removeList).blockingGet()
 	}
-
-	private getVolumesAndControllersForLocations(List<VirtualImageLocation> locationList) {
-		log.debug "getVolumesAndControllersForLocations: ${locationList.size()}"
-		def volumeIds = locationList.collect {it.volumes.id }.flatten()
-		def volumes = []
-		morpheusContext.storageVolume.listById(volumeIds).blockingSubscribe {
-			volumes << it
-		}
-		def controllers = []
-		def controllerIds = volumes.findAll {it.controller }.collect { it.controller.id }
-		morpheusContext.storageController.listById(controllerIds).blockingSubscribe {
-			controllers << it
-		}
-		["volumes": volumes, "controllers": controllers]
-	}
-
 }
