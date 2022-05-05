@@ -246,10 +246,11 @@ class TemplatesSync {
 		def locationAdds = []
 		addItems?.each { add ->
 			VirtualImage virtualImage = add.existingItem
+			def masterItem = add.masterItem
 			def locationConfig = [
 					virtualImage: virtualImage,
-					code        : "vmware.vsphere.image.${cloud.id}.${virtualImage.externalId}",
-					externalId  : virtualImage.externalId,
+					code        : "vmware.vsphere.image.${cloud.id}.${masterItem.ref}",
+					externalId  : masterItem.ref,
 					imageName   : virtualImage.name,
 					imageRegion : regionCode,
 			]
