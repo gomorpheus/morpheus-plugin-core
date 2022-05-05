@@ -295,6 +295,12 @@ class VmwareSyncUtils {
 						morpheusContext.computeServer.computeServerInterface.save([matchedInterface]).blockingGet()
 						rtn = true
 					}
+					// Remove any duplicates
+					def matchedInterfaces = serverInterfaces?.findAll{ it.externalId == netEntry.key.toString()}
+					if(matchedInterfaces?.size() > 1) {
+						def deleteInterfaces = matchedInterfaces.findAll { it.id != matchedInterface.id }
+						morpheusContext.computeServer.computeServerInterface.remove(deleteInterfaces, server).blockingGet()
+					}
 				}
 			}
 
