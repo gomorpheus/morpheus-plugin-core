@@ -132,12 +132,13 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse removeWorkload(Workload workload, Map opts);
 
 	/**
-	 * Method called at different phases to get the current status of a ComputeServer.
-	 *
+	 * Method called after a successful call to runWorkload to obtain the details of the ComputeServer. Implementations
+	 * should not return until the server is successfully created in the underlying cloud or the server fails to
+	 * create.
 	 * @param server to check status
-	 * @return Response from API
+	 * @return Response from API. The publicIp and privateIp set on the WorkloadResponse will be utilized to update the ComputeServer
 	 */
-	ServiceResponse getServerDetails(ComputeServer server);
+	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server);
 
 	/**
 	 * Issues the remote calls to scale a workload element.
