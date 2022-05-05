@@ -232,7 +232,7 @@ class ContentLibrarySync {
 
 				def saveLocation = false
 				def saveImage = false
-				VirtualImage tmpImage
+				VirtualImage tmpImage = loadImage(imageLocation, imagesToSave)
 				Datastore datastore
 
 				matchedTemplate.storage_backings?.each { sbacking ->
@@ -246,7 +246,6 @@ class ContentLibrarySync {
 				}
 				if(imageLocation.imageName != matchedTemplate.name) {
 					imageLocation.imageName = matchedTemplate.name
-					tmpImage = loadImage(imageLocation, imagesToSave)
 					if(tmpImage && tmpImage.refId == imageLocation.refId.toString()) {
 						tmpImage.name = matchedTemplate.name
 						saveImage = true
@@ -269,9 +268,20 @@ class ContentLibrarySync {
 					imageLocation.externalId = matchedTemplate.externalId
 					saveLocation = true
 				}
+				if(tmpImage.internalId != matchedTemplate.id) {
+					tmpImage.internalId =  matchedTemplate.id
+					saveImage = true
+				}
+				if(tmpImage.imageRegion != regionCode) {
+					tmpImage.imageRegion = regionCode
+					saveImage = true
+				}
+				if(tmpImage.remotePath != matchedTemplate.library_id) {
+					tmpImage.remotePath = matchedTemplate.library_id
+					saveImage = true
+				}
 
 				if(imageLocation.virtualImage.deleted) {
-					tmpImage = tmpImage ?: loadImage(imageLocation, imagesToSave)
 					if(tmpImage) {
 						tmpImage.deleted = false
 						saveImage = true
@@ -328,7 +338,7 @@ class ContentLibrarySync {
 
 		log.debug "VirtualImage to save ${imagesToSave?.size()}"
 		if(imagesToSave) {
-			morpheusContext.virtualImage.save(imagesToSave).blockingGet()
+			morpheusContext.virtualImage.save(imagesToSave, cloud).blockingGet()
 		}
 		log.debug "VirtualImageLocations to save ${imageLocationsToSave?.size()}"
 		if(imageLocationsToSave) {
@@ -350,7 +360,7 @@ class ContentLibrarySync {
 			imagesToSave.find { it.id == location.virtualImage.id}
 		}
 		if(!tmpImage) {
-			morpheusContext.virtualImage.listByIds([location.virtualImage.id]).blockingSubscribe { tmpImage == it }
+			morpheusContext.virtualImage.listById([location.virtualImage.id]).blockingSubscribe { tmpImage = it }
 			return tmpImage
 		}
 	}

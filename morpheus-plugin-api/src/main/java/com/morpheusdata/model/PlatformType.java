@@ -6,7 +6,10 @@ package com.morpheusdata.model;
 public enum PlatformType {
 	windows,
 	linux,
-	mac,
+	osx,
+	other,
 	esxi,
-	none
+	none,
+	unknown,
+	solaris
 }

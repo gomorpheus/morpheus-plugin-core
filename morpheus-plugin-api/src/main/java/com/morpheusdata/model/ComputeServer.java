@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 
 import java.util.ArrayList;
@@ -60,12 +61,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String sshHost;
 	protected String sshUsername;
 	protected String sshPassword;
+	@JsonIgnore
 	protected List<ComputeServerInterface> interfaces = new ArrayList<>();
 	protected String externalHostname;
 	protected String externalDomain;
 	protected String externalFqdn;
 	protected String apiKey;
+	@JsonIgnore
 	protected List<StorageVolume> volumes = new ArrayList<>();
+	@JsonIgnore
 	protected List<StorageController> controllers = new ArrayList<>();
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
@@ -95,6 +99,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServer parentServer;
 	protected ComputeStats computeStats;
+	@JsonIgnore
 	protected List<MetadataTag> metadata;
 
 

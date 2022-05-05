@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
@@ -27,6 +28,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String internalId;
 	protected String remotePath;
 	protected String status;
+	@JsonIgnore
 	protected List<String> locations;
 	protected OsType osType;
 	protected String refId;
@@ -36,8 +38,11 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isCloudInit;
 	protected Boolean virtioSupported;
 	protected Boolean deleted;
+	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
+	@JsonIgnore
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
+	@JsonIgnore
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
 
 	public Account getAccount() {

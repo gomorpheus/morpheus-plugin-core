@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
@@ -24,7 +25,9 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected String uuid;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Datastore datastore;
+	@JsonIgnore
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
+	@JsonIgnore
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
 
 	public String getCode() {

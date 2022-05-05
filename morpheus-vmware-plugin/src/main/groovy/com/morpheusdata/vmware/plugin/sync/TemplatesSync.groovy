@@ -25,6 +25,9 @@ class TemplatesSync {
 	def execute() {
 		log.debug "execute TemplatesSync: ${cloud}"
 
+		def osTypes = []
+		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
+
 		try {
 	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
 			def listResults = VmwareCloudProvider.listTemplates(cloud)
@@ -45,9 +48,9 @@ class TemplatesSync {
 						return new SyncTask.UpdateItem<Datastore, Map>(existingItem: virtualImageLocation, masterItem: matchItem.masterItem)
 					}
 				}.onAdd { itemsToAdd ->
-					addMissingVirtualImageLocations(itemsToAdd)
+					addMissingVirtualImageLocations(itemsToAdd, osTypes)
 				}.onUpdate { List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateItems ->
-					updateMatchedVirtualImages(updateItems)
+					updateMatchedVirtualImages(updateItems, osTypes)
 				}.onDelete { removeItems ->
 					removeMissingVirtualImages(removeItems)
 				}.start()
@@ -57,15 +60,12 @@ class TemplatesSync {
 		}
 	}
 
-	def addMissingVirtualImageLocations(List objList) {
+	def addMissingVirtualImageLocations(List objList, List osTypes) {
 		log.debug "addMissingVirtualImageLocations: ${objList?.size()}"
 
 		def names = objList.collect{it.name}?.unique()
 		List<VirtualImageIdentityProjection> existingItems = []
 		def allowedImageTypes = [ImageType.ovf, ImageType.vmdk]
-
-		def osTypes = []
-		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
 
 		def uniqueIds = [] as Set
 		Observable domainRecords = morpheusContext.virtualImage.listSyncProjections(cloud.id).filter { VirtualImageIdentityProjection proj ->
@@ -92,7 +92,7 @@ class TemplatesSync {
 			addMissingVirtualImages(itemsToAdd, osTypes)
 		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 			// Found the VirtualImage for this location.. just need to create the location
-			addMissingVirtualImageLocationsForImages(updateItems)
+			addMissingVirtualImageLocationsForImages(updateItems, osTypes)
 		}.start()
 	}
 
@@ -117,7 +117,8 @@ class TemplatesSync {
 					remotePath : it.summary?.config?.vmPathName,
 					externalId : it.ref,
 					imageRegion: regionCode,
-					internalId : it.config?.uuid
+					internalId : it.config?.uuid,
+					isCloudInit: true
 			]
 			def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(it.config.guestId)
 			log.debug "cacheTemplates osTypeCode: ${osTypeCode}"
@@ -264,7 +265,7 @@ class TemplatesSync {
 		}
 	}
 
-	private updateMatchedVirtualImages(List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateList) {
+	private updateMatchedVirtualImages(List<SyncTask.UpdateItem<VirtualImageLocation, Map>> updateList, List osTypes) {
 		log.debug "updateMatchedVirtualImages: ${updateList?.size()}"
 
 		List<VirtualImageLocation> existingLocations = updateList?.collect { it.existingItem }
@@ -300,6 +301,9 @@ class TemplatesSync {
 		updateList?.each { update ->
 			def matchedTemplate = update.masterItem
 			VirtualImageLocation imageLocation = existingLocations?.find { it.id == update.existingItem.id }
+			def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedTemplate.config.guestId)
+			osTypeCode = osTypeCode ?: 'other'
+			def osType = osTypes.find { it.code == osTypeCode }
 			if(imageLocation) {
 				def save = false
 				def saveImage = false
@@ -316,6 +320,27 @@ class TemplatesSync {
 				if(imageLocation.imageRegion != regionCode) {
 					imageLocation.imageRegion = regionCode
 					save = true
+				}
+				if(image.remotePath != matchedTemplate.summary?.config?.vmPathName) {
+					image.remotePath =  matchedTemplate.summary?.config?.vmPathName
+					saveImage = true
+				}
+				if(image.imageRegion != regionCode) {
+					image.imageRegion = regionCode
+					saveImage = true
+				}
+				if(image.osType != osType) {
+					image.osType = osType
+					saveImage = true
+				}
+				if(image.platform != osType?.platform) {
+					image.platform = osType?.platform
+					image.isCloudInit = true
+					if(image.platform == 'windows') {
+						image.isForceCustomization = true
+						image.isCloudInit = false
+					}
+					saveImage = true
 				}
 				if(imageLocation.code == null) {
 					imageLocation.code = "vmware.vsphere.image.${cloud.id}.${matchedTemplate.ref}"
