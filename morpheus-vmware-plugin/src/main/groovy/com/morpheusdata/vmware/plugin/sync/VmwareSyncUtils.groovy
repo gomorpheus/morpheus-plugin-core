@@ -418,8 +418,8 @@ class VmwareSyncUtils {
 		return storageController
 	}
 
-	static StorageController matchStorageVolumeController(server, volume) {
-		return server.controllers.sort{it.id}?.find{it.controllerKey == volume.controllerKey}
+	static StorageController matchStorageVolumeController(locationOrServer, volume) {
+		return locationOrServer.controllers.sort{it.id}?.find{it.controllerKey == volume.controllerKey}
 	}
 
 	static String getControllerMountPoint(StorageVolume volume, StorageController controller) {

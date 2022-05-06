@@ -82,6 +82,8 @@ class VirtualMachineSync {
 			def resourcePools = getAllResourcePools(cloud)
 			def folders = getAllFolders(cloud)
 			def networks = getAllNetworks(cloud)
+			def osTypes = []
+			morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
 			def usageLists = [restartUsageIds: [], stopUsageIds: [], startUsageIds: [], updatedSnapshotIds: []]
 			SyncTask<ComputeServerIdentityProjection, Map, ComputeServer> syncTask = new SyncTask<>(domainRecords, syncData.cloudItems)
 			syncTask.addMatchFunction { ComputeServerIdentityProjection domainObject, Map cloudItem ->
@@ -96,10 +98,10 @@ class VirtualMachineSync {
 				}
 			}.onAdd { itemsToAdd ->
 				if (createNew) {
-					addMissingVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, itemsToAdd, defaultServerType, queryResults.blackListedNames, usageLists)
+					addMissingVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, osTypes, itemsToAdd, defaultServerType, queryResults.blackListedNames, usageLists)
 				}
 			}.onUpdate { List<SyncTask.UpdateItem<ComputeServer, Map>> updateItems ->
-				updateMatchedVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, updateItems, usageLists)
+				updateMatchedVirtualMachines(cloud, hosts, resourcePools, servicePlans, folders, networks, osTypes, updateItems, usageLists)
 			}.onDelete { removeItems ->
 				removeMissingVirtualMachines(cloud, removeItems, queryResults.blackListedNames)
 			}.observe().blockingSubscribe {completed ->
@@ -133,7 +135,7 @@ class VirtualMachineSync {
 		}
 	}
 
-	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List updateList, Map usageLists) {
+	protected updateMatchedVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List osTypes, List updateList, Map usageLists) {
 		log.debug "updateMatchedVirtualMachines: ${cloud} ${updateList?.size()}"
 
 		Map<String,Network> systemNetworks
@@ -202,8 +204,8 @@ class VirtualMachineSync {
 						if(!serverIps.ipAddress && matchedServer.guest.ipAddress) {
 							serverIps.ipAddress = matchedServer.guest.ipAddress
 						}
-						def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedServer.config.guestId)
-						def osType = new OsType(code: osTypeCode ?: 'other')
+						def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedServer.config.guestId) ?: 'other'
+						def osType = osTypes.find { it.code == osTypeCode }
 						def vmwareHost = matchedServer.guest?.hostName
 						def resourcePoolId = matchedServer.resourcePool?.getVal()
 						def resourcePool = resourcePools?.find{ pool -> pool.externalId == resourcePoolId }
@@ -236,7 +238,7 @@ class VirtualMachineSync {
 							}
 							save = true
 						}
-						if(currentServer.status != 'provisioning' && osType && osType?.code != currentServer.serverOs?.code && osTypeCode && osTypeCode != 'other.64') {
+						if(currentServer.status != 'provisioning' && osType && (osType?.code != currentServer.serverOs?.code || osType.platform != currentServer.osType) && osTypeCode && osTypeCode != 'other.64') {
 							currentServer.serverOs = osType
 							currentServer.osType = osType.platform
 							save = true
@@ -247,11 +249,6 @@ class VirtualMachineSync {
 						}
 						if(currentServer.name != matchedServer.name) {
 							currentServer.name = matchedServer.name
-							save = true
-						}
-						if(osType && osType?.code != currentServer.serverOs?.code && osTypeCode && osTypeCode != 'other.64') {
-							currentServer.serverOs = osType
-							currentServer.osType = osType.platform
 							save = true
 						}
 						if(currentServer.toolsInstalled != toolsInstalled) {
@@ -507,7 +504,7 @@ class VirtualMachineSync {
 	}
 
 
-	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List addList, ComputeServerType defaultServerType, List blackListedNames=[], Map usageLists) {
+	def addMissingVirtualMachines(Cloud cloud, List hosts, List resourcePools, List availablePlans, List zoneFolders, List networks, List osTypes, List addList, ComputeServerType defaultServerType, List blackListedNames=[], Map usageLists) {
 		log.debug "addMissingVirtualMachines ${cloud} ${addList?.size()} ${defaultServerType} ${blackListedNames}"
 
 		Map<String,Network> systemNetworks
@@ -569,8 +566,8 @@ class VirtualMachineSync {
 					add.maxCores = maxCores
 					add.coresPerSocket = coresPerSocket
 					add.plan = findServicePlanBySizing(availablePlans, add.maxMemory, add.maxCores, coresPerSocket, fallbackPlan,null,add.account)
-					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId)
-					def osType = new OsType(code: osTypeCode ?: 'other')
+					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId) ?: 'other'
+					def osType = osTypes.find { it.code == osTypeCode }
 					add.serverOs = osType
 					add.osType = osType?.platform?.toLowerCase()
 					if(add.osType == 'windows')
