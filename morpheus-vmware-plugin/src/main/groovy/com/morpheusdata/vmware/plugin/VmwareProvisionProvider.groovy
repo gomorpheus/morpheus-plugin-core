@@ -6,6 +6,7 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.ProvisionInstanceServers
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.util.*
+import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
@@ -63,8 +64,13 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts) {
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts) {
 		// TODO
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
 		return ServiceResponse.success()
 	}
 

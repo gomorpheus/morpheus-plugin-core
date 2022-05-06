@@ -14,6 +14,7 @@ import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.Workload
+import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
@@ -96,7 +97,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 	@Override
 	String getName() {
-		return 'Droplet Provider'
+		return 'DigitalOcean'
 	}
 
 	@Override
@@ -135,7 +136,18 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 
 		Map callbackOpts = [:]
 		ComputeServer server = workload.server
-		VirtualImage virtualImage = workload.server.sourceImage
+		VirtualImage virtualImage
+		if(opts.cloneContainerId && opts.backupSetId) {
+//			def snapshot = digitalOceanSnapshotBackupService.getSnapshotForBackupResult(opts.backupSetId, opts.cloneContainerId)
+//			def snapshotImageId = snapshot?.snapshotId
+//			if(snapshotImageId){
+//				log.info("creating server from snapshot image: ${snapshotImageId}")
+//				imageId = snapshotImageId
+//			}
+		} else {
+			virtualImage = workload.server.sourceImage
+		}
+
 		
 		// Grab the user configuration data (then update the server)
 		UsersConfiguration usersConfiguration = morpheus.provision.getUserConfig(workload, virtualImage, opts).blockingGet()
@@ -208,15 +220,35 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts) {
-		String apiKey = workload.server.cloud.configMap.doApiKey
-		String dropletId = workload.server.externalId
-		Map body = [
-				'type': 'resize',
-				'disk': true,
-				'size': plan.externalId
-		]
-		apiService.performDropletAction(dropletId, body, apiKey)
+	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
+		log.debug "resizeServer: ${server} ${resizeRequest} ${opts}"
+		internalResizeServer(server, resizeRequest)
+	}
+
+	@Override
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts) {
+		log.debug "resizeWorkload: ${instance} ${workload} ${resizeRequest} ${opts}"
+		internalResizeServer(workload.server, resizeRequest)
+	}
+
+	private ServiceResponse internalResizeServer(ComputeServer server, ResizeRequest resizeRequest) {
+		log.debug "internalResizeServer: ${server} ${resizeRequest}"
+		ServiceResponse rtn = ServiceResponse.success()
+		try {
+			String apiKey = server.cloud.configMap.doApiKey
+			String dropletId = server.externalId
+			Map body = [
+					'type': 'resize',
+					'disk': true,
+					'size': resizeRequest.plan.externalId
+			]
+			rtn = apiService.performDropletAction(dropletId, body, apiKey)
+		} catch(e) {
+			rtn.success = false
+			rtn.msg = e.message
+			log.error "Error in resizing server: ${e}", e
+		}
+		rtn
 	}
 
 	@Override

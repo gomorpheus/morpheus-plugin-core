@@ -7,6 +7,7 @@ import com.morpheusdata.core.ProvisionInstanceServers
 import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.util.*
 import com.morpheusdata.model.*
+import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.transform.AutoImplement
@@ -80,7 +81,12 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
-	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts) {
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts) {
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
 		return ServiceResponse.success()
 	}
 

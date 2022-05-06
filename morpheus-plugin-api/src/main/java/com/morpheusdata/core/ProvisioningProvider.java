@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
 
@@ -141,14 +142,35 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server);
 
 	/**
-	 * Issues the remote calls to scale a workload element.
+	 * Request to scale the size of the Workload. Most likely, the implementation will follow that of resizeServer
+	 * as the Workload usually references a ComputeServer. It is up to implementations to create the volumes, set the memory, etc
+	 * on the underlying ComputeServer in the cloud environment. In addition, implementations of this method should
+	 * add, remove, and update the StorageVolumes, StorageControllers, ComputeServerInterface in the cloud environment with the requested attributes
+	 * and then save these attributes on the models in Morpheus. This requires adding, removing, and saving the various
+	 * models to the ComputeServer using the appropriate contexts. The ServicePlan, memory, cores, coresPerSocket, maxStorage values
+	 * defined on ResizeRequest will be set on the Workload and ComputeServer upon return of a successful ServiceResponse
 	 * @param instance to resize
 	 * @param workload to resize
-	 * @param plan containing the new size
+	 * @param resizeRequest the resize requested parameters
 	 * @param opts additional options
 	 * @return Response from API
 	 */
-	ServiceResponse resizeWorkload(Instance instance, Workload workload, ServicePlan plan, Map opts);
+	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts);
+
+
+	/**
+	 * Request to scale the size of the ComputeServer. It is up to implementations to create the volumes, set the memory, etc
+	 * on the underlying ComputeServer in the cloud environment. In addition, implementations of this method should
+	 * add, remove, and update the StorageVolumes, StorageControllers, ComputeServerInterface in the cloud environment with the requested attributes
+	 * and then save these attributes on the models in Morpheus. This requires adding, removing, and saving the various
+	 * models to the ComputeServer using the appropriate contexts. The ServicePlan, memory, cores, coresPerSocket, maxStorage values
+	 * defined on ResizeRequest will be set on the ComputeServer upon return of a successful ServiceResponse
+	 * @param server to resize
+	 * @param resizeRequest the resize requested parameters
+	 * @param opts additional options
+	 * @return Response from the API
+	 */
+	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts);
 
 	/**
 	 * Method called before runWorkload to allow implementers to create resources required before runWorkload is called
