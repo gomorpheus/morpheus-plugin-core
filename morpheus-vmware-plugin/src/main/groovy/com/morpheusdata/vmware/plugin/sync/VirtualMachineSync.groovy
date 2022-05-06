@@ -204,7 +204,7 @@ class VirtualMachineSync {
 						if(!serverIps.ipAddress && matchedServer.guest.ipAddress) {
 							serverIps.ipAddress = matchedServer.guest.ipAddress
 						}
-						def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedServer.config.guestId) ?: 'other'
+						def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(matchedServer.config.guestId)
 						def osType = osTypes.find { it.code == osTypeCode }
 						def vmwareHost = matchedServer.guest?.hostName
 						def resourcePoolId = matchedServer.resourcePool?.getVal()
@@ -566,7 +566,7 @@ class VirtualMachineSync {
 					add.maxCores = maxCores
 					add.coresPerSocket = coresPerSocket
 					add.plan = findServicePlanBySizing(availablePlans, add.maxMemory, add.maxCores, coresPerSocket, fallbackPlan,null,add.account)
-					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId) ?: 'other'
+					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId)
 					def osType = osTypes.find { it.code == osTypeCode }
 					add.serverOs = osType
 					add.osType = osType?.platform?.toLowerCase()

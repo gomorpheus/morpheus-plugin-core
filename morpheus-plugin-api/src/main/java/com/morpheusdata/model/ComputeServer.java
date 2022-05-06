@@ -74,7 +74,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
 	protected String osDevice = "/dev/sda";
-	protected String dataDevice = "/dev/sda";
+	protected String dataDevice = "/dev/sdb";
 	protected Boolean lvmEnabled = true;
 	protected String internalId;
 	protected String serverVendor;
