@@ -569,7 +569,9 @@ class VirtualMachineSync {
 					def osTypeCode = VmwareComputeUtility.getMapVmwareOsType(cloudItem.config.guestId)
 					def osType = osTypes.find { it.code == osTypeCode }
 					add.serverOs = osType
-					add.osType = osType?.platform?.toLowerCase()
+					if(osType && osType?.platform) {
+						add.osType = osType?.platform?.toLowerCase()
+					}
 					if(add.osType == 'windows')
 						add.sshUsername = 'Administrator'
 					if(cloudItem.runtime?.host.getVal()) {
