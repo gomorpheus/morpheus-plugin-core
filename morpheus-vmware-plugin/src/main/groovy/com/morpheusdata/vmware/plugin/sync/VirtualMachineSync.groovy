@@ -484,6 +484,7 @@ class VirtualMachineSync {
 						if((currentServer.agentInstalled == false || currentServer.powerState == ComputeServer.PowerState.off || currentServer.powerState == ComputeServer.PowerState.paused) && currentServer.status != 'provisioning') {
 							// Simulate stats update
 							statsData += updateVirtualMachineStats(currentServer, matchedServer, tmpWorkloads)
+							save = true
 						}
 
 						if(save) {
@@ -807,6 +808,7 @@ class VirtualMachineSync {
 		try {
 			def vm = vmMap
 			def disks = vm.config?.hardware?.device
+
 			def maxStorage = 0
 			def maxUsedStorage = 0
 			disks?.each { disk ->
