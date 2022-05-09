@@ -183,7 +183,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	 * Retrieve the list of StorageVolumeIdentityProjections for the VirtualImage.
 	 * @return volumes
 	 */
-	public List<StorageVolumeIdentityProjection> getStorageVolumes() {
+	public List<StorageVolumeIdentityProjection> getVolumes() {
 		return volumes;
 	}
 

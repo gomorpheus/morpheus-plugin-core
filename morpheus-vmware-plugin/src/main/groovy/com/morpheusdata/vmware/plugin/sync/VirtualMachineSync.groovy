@@ -847,6 +847,7 @@ class VirtualMachineSync {
 			}
 			if (maxStorage > server.maxStorage) {
 				server.maxStorage = maxStorage
+				capacityInfo.maxStorage = maxStorage
 			}
 			if (server.agentInstalled && server.usedStorage) {
 				maxUsedStorage = server.usedStorage
@@ -1074,7 +1075,7 @@ class VirtualMachineSync {
 						}
 
 						if (save || volumesChanged) {
-							morpheusContext.snapshot.save(snapshot).blockingGet()
+							morpheusContext.snapshot.save([snapshot]).blockingGet()
 						}
 
 						if (volumesChanged) {

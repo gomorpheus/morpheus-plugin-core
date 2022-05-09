@@ -78,7 +78,7 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	 * Retrieve the list of StorageVolumeIdentityProjections for the VirtualImageLocation.
 	 * @return volumes
 	 */
-	public List<StorageVolumeIdentityProjection> getStorageVolumes() {
+	public List<StorageVolumeIdentityProjection> getVolumes() {
 		return volumes;
 	}
 

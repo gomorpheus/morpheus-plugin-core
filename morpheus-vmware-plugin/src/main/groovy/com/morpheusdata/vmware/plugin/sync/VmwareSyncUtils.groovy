@@ -173,10 +173,8 @@ class VmwareSyncUtils {
 	static buildNewStorageVolumes(volumes, cloud, locationOrServer, account, opts = [:]) {
 		log.debug "buildNewStorageVolumes: ${volumes?.size()} ${cloud} ${locationOrServer} ${account} ${opts}"
 		def rtn = []
-		def newCounter = 0
 		def existingVolumes = locationOrServer?.volumes
 		def newIndex = existingVolumes?.size() ?: 0
-		newCounter = newIndex
 
 		volumes?.eachWithIndex { volume, index ->
 			volume.maxStorage = volume.size * ComputeUtility.ONE_KILOBYTE
@@ -192,22 +190,18 @@ class VmwareSyncUtils {
 					externalId: volume.key,
 					internalId: volume.fileName,
 					unitNumber: "${volume.unitNumber}",
-					datastore : datastore
+					datastore : datastore,
+					displayOrder: (index + newIndex),
 			]
 
-			def newVolume = buildStorageVolume(account ?: cloud.account, locationOrServer, volumeConfig, newCounter)
+			def newVolume = buildStorageVolume(account ?: cloud.account, locationOrServer, volumeConfig, (index + newIndex))
 
 			def matchController = matchStorageVolumeController(locationOrServer, volume)
 			if (matchController) {
 				newVolume.controller = matchController
 			}
 
-			if (opts.setDisplayOrder) {
-				newVolume.displayOrder = (index + newIndex)
-			}
-
 			rtn << newVolume
-			newCounter++
 		}
 		return rtn
 	}
@@ -447,6 +441,7 @@ class VmwareSyncUtils {
 				return VmwareSyncUtils.getControllerMountPoint(a, aController) <=> VmwareSyncUtils.getControllerMountPoint(b, bController)
 			}.eachWithIndex { vol, index ->
 				vol.displayOrder = index
+				vol.diskIndex = index
 				volumesToUpdate << vol
 			}
 		}

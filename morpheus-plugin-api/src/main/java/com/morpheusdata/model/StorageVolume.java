@@ -178,7 +178,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	/**
 	 * Utilized during creation to set logical defaults for deviceName and deviceDisplayName if they are null.
 	 * Not stored in Morpheus or returned
-	 * For example: 0 may result in a diskName of vda
+	 * For example: 0 may result in a diskName of sda
 	 * @return diskIndex diskIndex
 	 */
 	public Integer getDiskIndex() {
@@ -188,7 +188,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	/**
 	 * Utilized during creation to set logical defaults for deviceName and deviceDisplayName if they are null.
 	 * Not stored in Morpheus or returned
-	 * For example: 0 may result in a diskName of vda
+	 * For example: 0 may result in a diskName of sda
 	 * @param diskIndex diskIndex
 	 */
 	public void setDiskIndex(Integer diskIndex) {
