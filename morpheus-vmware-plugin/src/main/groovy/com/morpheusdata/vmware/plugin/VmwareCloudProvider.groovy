@@ -387,7 +387,7 @@ class VmwareCloudProvider implements CloudProvider {
 
 	@Override
 	Icon getIcon() {
-		return null
+		return new Icon(path:"vmware-plugin.svg", darkPath: "vmware-plugin-dark.svg")
 	}
 
 	@Override

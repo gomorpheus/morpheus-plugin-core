@@ -6,7 +6,7 @@ buildscript {
 	}
 	dependencies {
 		//classpath "org.grails:grails-gradle-plugin:5.0.0"
-		// classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
 	}
 }
 
@@ -16,7 +16,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-// apply plugin: 'asset-pipeline'
+apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -152,6 +152,10 @@ test {
 
 tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 	destinationDirectory = file("$rootDir/plugins")
+}
+
+assets {
+	packagePlugin = false //set to true if this is a library
 }
 
 // tasks.assemble.dependsOn tasks.shadowJar
