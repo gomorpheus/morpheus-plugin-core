@@ -604,6 +604,7 @@ class VirtualMachineSync {
 					    }
 						//sync controllers
 						VmwareSyncUtils.syncControllers(cloud, savedServer, cloudItem.controllers, false, add.account, morpheusContext)
+						morpheusContext.computeServer.listById([savedServer.id]).blockingSubscribe {savedServer = it}
 						//sync volumes
 						VmwareSyncUtils.syncVolumes(savedServer, cloudItem.volumes, cloud, morpheusContext)
 						VmwareSyncUtils.syncInterfaces(savedServer, cloudItem.networks, serverIps.ipList, systemNetworks, netTypes, morpheusContext)
@@ -841,11 +842,11 @@ class VirtualMachineSync {
 			//save it all
 
 			def capacityInfo = server.capacityInfo ?: new ComputeCapacityInfo(maxMemory: maxMemory, maxStorage: maxStorage)
-			if (maxMemory > server.maxMemory) {
+			if (maxMemory > server.maxMemory || maxMemory > capacityInfo.maxMemory) {
 				server.maxMemory = maxMemory
 				capacityInfo.maxMemory = maxMemory
 			}
-			if (maxStorage > server.maxStorage) {
+			if (maxStorage > server.maxStorage || maxStorage > capacityInfo.maxStorage) {
 				server.maxStorage = maxStorage
 				capacityInfo.maxStorage = maxStorage
 			}

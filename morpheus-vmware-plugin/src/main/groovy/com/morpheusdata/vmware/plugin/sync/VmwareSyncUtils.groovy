@@ -329,56 +329,63 @@ class VmwareSyncUtils {
 		log.debug("controllers: {}", externalControllers)
 		try {
 			def serverControllers = serverOrLocation.controllers?.sort{it.id}
-			def missingControllers = []
-			def matchedControllers = []
 			def matchContainer = null //checkContainer ? (server.id ? Container.findByServer(server) : null) : null
-			externalControllers?.eachWithIndex { controller, index ->
-				def match = serverControllers.find { it.busNumber == "${controller.busNumber}" && it.type?.code == controller.type }
-				if (match) {
-					if (match.controllerKey == null || match.controllerKey != controller.controllerKey) {
-						match.controllerKey = controller.controllerKey
-						match.externalId = controller.externalId
-					}
-					matchedControllers << match
-				} else {
-					missingControllers << controller
+			def matchFunction = { existingController, cloudController ->
+				existingController.busNumber == "${cloudController.busNumber}" && existingController.type?.code == cloudController.type
+			}
+			def syncLists = buildSyncLists(serverControllers, externalControllers, matchFunction)
+
+			def saveList = []
+			syncLists.updateList?.each { updateMap ->
+				log.debug "Updating ${updateMap}"
+				StorageController existingController = updateMap.existingItem
+				def controller = updateMap.masterItem
+
+				def save = false
+				if (existingController.controllerKey == null || existingController.controllerKey != controller.controllerKey) {
+					existingController.controllerKey = controller.controllerKey
+					existingController.externalId = controller.externalId
+					save = true
+				}
+				if(save) {
+					saveList << existingController
+				}
+				// Remove any duplicates
+				def matchedControllers = serverControllers?.findAll{ it.externalId == controller.externalId}
+				if(matchedControllers?.size() > 1) {
+					def deleteControllers = matchedControllers.findAll { it.id != existingController.id }
+					morpheusContext.storageController.remove(deleteControllers, serverOrLocation).blockingGet()
 				}
 			}
-			//update all matched controllers
-			if(matchedControllers.size() > 0) {
-				morpheusContext.storageController.save(matchedControllers).blockingGet()
+
+			if(saveList) {
+				rtn = true
+				log.debug "Found ${saveList?.size()} controllers to update"
+				morpheusContext.storageController.save(saveList).blockingGet()
 			}
-			def newControllers = []
-			//we are missing all volumes on our side
-			missingControllers.eachWithIndex { controller, index ->
-				def newIndex = matchedControllers.size() + index
-				def newController = buildStorageController(controller, newIndex)
-				if(matchContainer)
-					newController.uniqueId = "morpheus-controller-${matchContainer.instance?.id}-${matchContainer.id}-${newIndex}"
-				else
-					newController.uniqueId = java.util.UUID.randomUUID()
-				newControllers << newController
+
+			// The removes
+			if(syncLists.removeList) {
+				rtn = true
+				morpheusContext.storageController.remove(syncLists.removeList, serverOrLocation).blockingGet()
 			}
-			//save new stuff
-			if(newControllers?.size() > 0) {
-				def success = morpheusContext.storageController.create(newControllers, serverOrLocation).blockingGet()
-			}
-			def removeControllers = []
-			serverControllers.each { serverController ->
-				//find a match
-				def match = externalControllers.find{serverController.busNumber == "${it.busNumber}" && serverController.type?.code == it.type}
-				if(match == null) {
-					//this was removed
-					removeControllers << serverController
+
+			// The adds
+			if(syncLists.addList) {
+				rtn = true
+				def newControllers = []
+				syncLists.addList.eachWithIndex { controller, index ->
+					def newIndex = syncLists.updateList.size() + index
+					def newController = buildStorageController(controller, newIndex)
+					if(matchContainer)
+						newController.uniqueId = "morpheus-controller-${matchContainer.instance?.id}-${matchContainer.id}-${newIndex}"
+					else
+						newController.uniqueId = java.util.UUID.randomUUID()
+					newControllers << newController
 				}
+				morpheusContext.storageController.create(newControllers, serverOrLocation).blockingGet()
 			}
-			//remove removes
-			removeControllers.each { removeController ->
-				//only if not resizing
-				if(!(serverOrLocation instanceof ComputeServer) || serverOrLocation.status != 'resizing') {
-					morpheusContext.storageController.remove(removeControllers, serverOrLocation).blockingGet()
-				}
-			}
+
 		} catch(e) {
 			log.error("syncControllers error: ${e}", e)
 		}

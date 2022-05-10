@@ -157,13 +157,13 @@ class TemplatesSync {
 				def controllersToAdd = []
 				controllers?.eachWithIndex { controller, index ->
 					def controllerConfig = [
-							name:controller.name,
-							description:controller.description,
-							controllerKey:"${controller.key}",
-							type: new StorageControllerType(code: controller.type),
-							unitNumber:"${controller.unitNumber}",
-							busNumber:"${controller.busNumber}",
-							uniqueId:"vmware.vsphere.controller.${cloud.id}.${externalId}.${controller.key}"
+							name         : controller.name,
+							description  : controller.description,
+							controllerKey: "${controller.key}",
+							type         : new StorageControllerType(code: controller.type),
+							unitNumber   : "${controller.unitNumber}",
+							busNumber    : "${controller.busNumber}",
+							uniqueId     : "vmware.vsphere.controller.${cloud.id}.${externalId}.${controller.key}"
 					]
 
 
