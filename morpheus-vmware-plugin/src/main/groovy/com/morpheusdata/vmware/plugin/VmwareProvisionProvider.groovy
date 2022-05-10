@@ -367,6 +367,16 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 		0
 	}
 
+	@Override
+	Collection<VirtualImage> getVirtualImages() {
+		return new ArrayList<VirtualImage>()
+	}
+
+	@Override
+	Collection<ComputeTypeLayout> getComputeTypeLayouts() {
+		return new ArrayList<ComputeTypeLayout>()
+	}
+
 	static getAuthConfig(Map options) {
 		log.debug "getAuthConfig: ${options}"
 

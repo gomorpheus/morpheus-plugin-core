@@ -185,4 +185,21 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return HostType
 	 */
 	HostType getHostType();
+
+	/**
+	 * Provides a Collection of {@link VirtualImage} related to this ProvisioningProvider. This provides a way to specify
+	 * known VirtualImages in the Cloud environment prior to a typical 'refresh' on a Cloud. These are often used in
+	 * predefined layouts. For example, when building up ComputeTypeLayouts via the {@link MorpheusComputeTypeLayoutFactoryService}
+	 * @return Collection of {@link VirtualImage}
+	 */
+	Collection<VirtualImage> getVirtualImages();
+
+	/**
+	 * Provides a Collection of {@link ComputeTypeLayout} related to this ProvisioningProvider. These define the types
+	 * of clusters that are exposed for this ProvisioningProvider. ComputeTypeLayouts have a collection of ComputeTypeSets,
+	 * which reference a ContainerType. When returning this structure from implementations, it is often helpful to start
+	 * with the ComputeTypeLayoutFactory to construct the default structure and modify fields as needed.
+	 * @return Collection of ComputeTypeLayout
+	 */
+	Collection<ComputeTypeLayout> getComputeTypeLayouts();
 }

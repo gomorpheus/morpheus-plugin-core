@@ -76,6 +76,16 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	Collection<VirtualImage> getVirtualImages() {
+		return new ArrayList<VirtualImage>()
+	}
+
+	@Override
+	Collection<ComputeTypeLayout> getComputeTypeLayouts() {
+		return new ArrayList<ComputeTypeLayout>()
+	}
+
+	@Override
 	ServiceResponse restartWorkload(Workload workload){
 		return ServiceResponse.success()
 	}

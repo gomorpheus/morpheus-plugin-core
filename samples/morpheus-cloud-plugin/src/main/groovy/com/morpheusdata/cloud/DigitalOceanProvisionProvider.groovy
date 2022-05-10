@@ -6,10 +6,13 @@ import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerInterfaceType
+import com.morpheusdata.model.ComputeTypeLayout
 import com.morpheusdata.model.HostType
+import com.morpheusdata.model.ImageType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.OsType
 import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.VirtualImage
@@ -31,6 +34,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	Plugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
+	private static final String UBUNTU_VIRTUAL_IMAGE_CODE = 'doplugin.image.os.digital-ocean-plugin.ubuntu.18.04'
 	DigitalOceanApiService apiService
 
 	DigitalOceanProvisionProvider(Plugin plugin, MorpheusContext context) {
@@ -57,6 +61,34 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	@Override
 	HostType getHostType() {
 		HostType.vm
+	}
+
+	@Override
+	Collection<VirtualImage> getVirtualImages() {
+		VirtualImage virtualImage = new VirtualImage(
+				code: UBUNTU_VIRTUAL_IMAGE_CODE,
+				category:'doplugin.image.os.digital-ocean-plugin',
+				name:'Ubuntu 18.04 LTS (Digital Ocean Marketplace)',
+				imageType: ImageType.qcow2,
+				systemImage:true,
+				isCloudInit:true,
+				externalId:'ubuntu-18-04-x64',
+				osType: new OsType(code: 'ubuntu.18.04.64')
+		)
+		[virtualImage]
+	}
+
+	@Override
+	Collection<ComputeTypeLayout> getComputeTypeLayouts() {
+		ComputeTypeLayout layout = this.context.getComputeTypeLayoutFactoryService().buildDockerLayout(
+				'doplugin-docker',
+				'18.04',
+				this.code,
+				DigitalOceanCloudProvider.LINUX_VIRTUAL_IMAGE_CODE,
+				UBUNTU_VIRTUAL_IMAGE_CODE
+		).blockingGet()
+
+		[layout]
 	}
 
 	@Override

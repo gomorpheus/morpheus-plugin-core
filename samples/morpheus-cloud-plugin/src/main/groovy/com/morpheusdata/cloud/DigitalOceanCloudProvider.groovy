@@ -23,6 +23,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
 
+	public static String LINUX_VIRTUAL_IMAGE_CODE = 'digitalOceanLinux2'
+
 	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
@@ -128,7 +130,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				),
 
 				//docker
-				new ComputeServerType(code: 'digitalOceanLinux2', name: 'DigitalOcean Docker Host', description: '', platform: PlatformType.linux,
+				new ComputeServerType(code: LINUX_VIRTUAL_IMAGE_CODE, name: 'DigitalOcean Docker Host', description: '', platform: PlatformType.linux,
 						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: true, computeService: null,
 						displayOrder: 16, hasAutomation: true, reconfigureSupported: true,
 						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,

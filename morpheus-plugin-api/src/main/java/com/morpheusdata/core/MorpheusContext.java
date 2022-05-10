@@ -9,7 +9,6 @@ import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.policy.MorpheusPolicyService;
-import com.morpheusdata.core.MorpheusOperationNotificationService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
 
@@ -209,6 +208,12 @@ public interface MorpheusContext {
 	 * @return An instance of the Snapshot Service
 	 */
 	MorpheusSnapshotService getSnapshot();
+
+	/**
+	 * Returns the factory for generating ComputeTypeLayouts
+	 * @return An instance of the ComputeTypeLayoutFactory
+	 */
+	MorpheusComputeTypeLayoutFactoryService getComputeTypeLayoutFactoryService();
 
 	//Common methods used across various contexts
 

@@ -1,5 +1,6 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
@@ -306,5 +307,10 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusSnapshotService getSnapshot() {
 		return snapshotService
+	}
+
+	@Override
+	MorpheusComputeTypeLayoutFactoryService getComputeTypeLayoutFactoryService() {
+		return null
 	}
 }
