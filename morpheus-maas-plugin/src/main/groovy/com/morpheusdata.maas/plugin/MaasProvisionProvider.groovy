@@ -128,6 +128,18 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	ServiceResponse validateInstance(Instance instance, Map opts) {
+		log.debug "validateInstance: ${instance} ${opts}"
+		return ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse validateDockerHost(ComputeServer server, Map opts) {
+		log.debug "validateDockerHost: ${server} ${opts}"
+		return ServiceResponse.success()
+	}
+
+	@Override
 	Collection<ComputeServer> getInstanceServers(Instance instance, ProvisionType provisionType, Map opts) {
 		log.debug "getInstanceServers ${instance} ${provisionType} ${opts}"
 		def rtn = new ArrayList<ComputeServer>()

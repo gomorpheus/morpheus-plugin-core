@@ -70,12 +70,30 @@ public interface ProvisioningProvider extends PluginProvider {
 
 
 	/**
-	 * Validates the provided provisioning options of a workload
+	 * Validates the provided provisioning options of a workload. A return of success = false will halt the
+	 * creation and display errors
 	 * @param opts options
 	 * @return Response from API
 	 */
 	ServiceResponse validateWorkload(Map opts);
 
+	/**
+	 * Validate the provided provisioning options for an Instance.  A return of success = false will halt the
+	 * creation and display errors
+	 * @param instance the Instance to validate
+	 * @param opts options
+	 * @return Response from API
+	 */
+	ServiceResponse validateInstance(Instance instance, Map opts);
+
+	/**
+	 * Validate the provided provisioning options for a Docker host server.  A return of success = false will halt the
+	 * creation and display errors
+	 * @param server the ComputeServer to validate
+	 * @param opts options
+	 * @return Response from API
+	 */
+	ServiceResponse validateDockerHost(ComputeServer server, Map opts);
 
 	/**
 	 * This method is a key entry point in provisioning a workload. This could be a vm, a container, or something else.
