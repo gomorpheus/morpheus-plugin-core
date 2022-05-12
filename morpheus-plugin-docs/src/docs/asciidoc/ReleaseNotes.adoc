@@ -1,7 +1,9 @@
 === Release Notes
 
-**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum.
+**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum. 5.5.x Morpheus versions use 0.13.x plugin-api
 
+* **0.13.1** - Added Credential Providers support as well as significant CloudProvider refactoring (more to follow)
+* **0.12.5** - Task Providers now have a hasResults flag for result variable chaining.
 * **0.12.4** - IPAM NetworkPoolType filters for handling multiple pool types in one integration. Deprecated reservePoolAddress from IPAMProvider as its no longer needed. Added typeCode to the `NetworkPoolIdentityProjection`. Added `{{nonce}}` helper to handlebars tab providers for injecting javascript safely within the Content Security Policies in place.
 * **0.12.3** - Simplification and Polish if IPAM/DNS Interface Implementations (need Morpheus 5.4.4+). Added new ReportProvider helper for easier management of db connection use `withDbConnection { connection -> }`.
 * **0.12.0** - Cloud Provider Plugin Critical Fixes (WIP). Added Plugin settings.
