@@ -17,6 +17,7 @@ public class ComputeServerIdentityProjection extends MorpheusModel {
 	protected String uniqueId;
 	protected String externalId;
 	protected String name;
+	protected String hostname;
 
 	public String getStatus() {
 		return status;
@@ -70,5 +71,14 @@ public class ComputeServerIdentityProjection extends MorpheusModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+		markDirty("hostname", hostname);
 	}
 }

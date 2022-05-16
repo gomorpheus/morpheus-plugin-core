@@ -38,6 +38,8 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isCloudInit;
 	protected Boolean virtioSupported;
 	protected Boolean deleted;
+	protected Boolean isSysprep;
+	protected Boolean vmToolsInstalled;
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -274,5 +276,21 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 		markDirty("deleted", deleted);
+	}
+
+	public Boolean getSysprep() {
+		return isSysprep;
+	}
+
+	public void setSysprep(Boolean sysprep) {
+		isSysprep = sysprep;
+	}
+
+	public Boolean getVmToolsInstalled() {
+		return vmToolsInstalled;
+	}
+
+	public void setVmToolsInstalled(Boolean vmToolsInstalled) {
+		this.vmToolsInstalled = vmToolsInstalled;
 	}
 }

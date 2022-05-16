@@ -29,6 +29,24 @@ public interface MorpheusComputeZoneFolderService {
 	Observable<ComputeZoneFolderIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
+	 * Get the default ComputeZoneFolder
+	 * @param cloudId The id of the cloud
+	 * @param accountId The id of the account
+	 * @param siteId The id of the site (optional)
+	 * @param servicePlanId The id of the ServicePlan (optional)
+	 * @return The default ComputeZoneFolder
+	 */
+	Single<ComputeZoneFolder> getDefaultFolderForAccount(Long cloudId, Long accountId, Long siteId, Long servicePlanId);
+
+	/**
+	 * Get the default image ComputeZoneFolder
+	 * @param cloudId The id of the cloud
+	 * @param accountId The id of the account
+	 * @return The default image ComputeZoneFolder
+	 */
+	Single<ComputeZoneFolder> getDefaultImageFolderForAccount(Long cloudId, Long accountId);
+
+	/**
 	 * Get a list of ComputeZoneFolder objects from a list of projection ids
 	 *
 	 * @param ids ComputeZoneFolder ids

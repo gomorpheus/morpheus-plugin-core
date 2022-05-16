@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.bertramlabs.plugins.karman.CloudFile;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.VirtualImage;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
@@ -88,4 +89,6 @@ public interface MorpheusVirtualImageService {
 	 * @return success
 	 */
 	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages);
+
+	Single<Collection<CloudFile>> getVirtualImageFiles(VirtualImage virtualImage);
 }

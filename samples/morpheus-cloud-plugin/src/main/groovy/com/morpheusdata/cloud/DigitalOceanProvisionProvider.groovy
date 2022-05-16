@@ -219,9 +219,9 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 			String metadata = morpheus.provision.buildCloudMetaData(com.morpheusdata.model.PlatformType.valueOf(server.osType), workload.instance?.id, 'somehostname', cloudConfigOptions).blockingGet()
 			log.debug "metadata: ${metadata}"
 
-			// Not really used in DO provisioning (example only)
-			String networkData = morpheus.provision.buildCloudNetworkData(com.morpheusdata.model.PlatformType.valueOf(server.osType), cloudConfigOptions).blockingGet()
-			log.debug "networkData: ${networkData}"
+//			// Not really used in DO provisioning (example only)
+//			String networkData = morpheus.provision.buildCloudNetworkData(com.morpheusdata.model.PlatformType.valueOf(server.osType), cloudConfigOptions).blockingGet()
+//			log.debug "networkData: ${networkData}"
 		} else {
 			// These users will be created by Morpheus after provisioning
 			callbackOpts.createUsers = usersConfiguration.createUsers

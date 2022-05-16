@@ -36,6 +36,8 @@ class ReverseTextTaskPlugin extends Plugin {
 		def model = new ViewModel<String>()
 		model.object = "Eric"
 
+		pluginProviders.get()
+
 		println this.getRenderer().renderTemplate('instanceTab', model).html
 	}
 

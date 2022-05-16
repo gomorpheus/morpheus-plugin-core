@@ -1,6 +1,7 @@
 package com.morpheusdata.core.provisioning;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.UsersConfiguration;
 import io.reactivex.Single;
 
 import java.util.Map;
@@ -52,16 +53,6 @@ public interface MorpheusProvisionService {
 	 * @return Map of cloud configuration options
 	 */
 	Single<Map<String,Object>> buildCloudConfigOptions(Cloud cloud, ComputeServer server, Boolean installAgent, Map<String,Object> opts);
-
-	/**
-	 * Typically this is called immediately following {@link #buildCloudConfigOptions(Cloud, ComputeServer, Boolean, Map)}
-	 * @param platform the platform being provisioned
-	 * @param virtualImage the Virtual Image being provisioned
-	 * @param cloudConfigOptions typically the return of buildCloudConfigOptions
-	 * @param networkConfiguration the network configuration to provision
-	 * @return Map of cloudConfigOptions with modifications for networking as needed. May include cloudNetworkInterfaces, staticNetwork, dhcpNetwork, and/or networkDomain
-	 */
-	Single<Map<String,Object>> buildCloudNetworkConfig(PlatformType platform, VirtualImage virtualImage, Map<String,Object> cloudConfigOptions, NetworkConfiguration networkConfiguration);
 
 	/**
 	 * Builds the userdata typically passed to cloud-init

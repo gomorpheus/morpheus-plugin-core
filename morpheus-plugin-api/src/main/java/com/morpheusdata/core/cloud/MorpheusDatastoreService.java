@@ -25,6 +25,14 @@ public interface MorpheusDatastoreService {
 	Observable<DatastoreIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
+	 * Get the default image Datastore
+	 * @param cloudId The id of the cloud
+	 * @param accountId The id of the account
+	 * @return The default image Datastore
+	 */
+	Single<Datastore> getDefaultImageDatastoreForAccount(Long cloudId, Long accountId);
+
+	/**
 	 * Get a list of Datastore objects from a list of projection ids
 	 *
 	 * @param ids Datastore ids

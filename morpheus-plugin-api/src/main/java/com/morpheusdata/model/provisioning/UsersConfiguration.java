@@ -1,4 +1,6 @@
-package com.morpheusdata.model;
+package com.morpheusdata.model.provisioning;
+
+import com.morpheusdata.model.KeyPair;
 
 import java.util.HashMap;
 import java.util.List;
