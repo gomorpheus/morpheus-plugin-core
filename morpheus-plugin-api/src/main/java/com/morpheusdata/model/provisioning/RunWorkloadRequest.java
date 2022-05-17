@@ -7,8 +7,8 @@ import com.morpheusdata.model.StorageVolume;
 public class RunWorkloadRequest {
 
 	public NetworkConfiguration networkConfiguration;
-	public Long rootSize;
-	public StorageVolume rootDisk;
+	public Long rootSize; // Move this to AbstractProvisionProvider
+	public StorageVolume rootDisk; // Move this to AbstractProvisionProvider
 	public ProxyConfiguration proxyConfiguration;
 
 }

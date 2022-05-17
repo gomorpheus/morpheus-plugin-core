@@ -28,7 +28,8 @@ public class WorkloadResponse {
 	public String status;
 
 	/**
-	 * Indicates if the agent should be installed on the server by Morpheus
+	 * Indicates if the agent should be installed on the server by Morpheus.
+	 * Agent may be installed via Cloudinit... doesn't necessarily mean that the agent won't be installed
 	 */
 	public Boolean installAgent;
 
@@ -42,10 +43,17 @@ public class WorkloadResponse {
 	public Boolean success = false;
 	public Boolean customized = false;
 
+	/**
+	 * Was the (windows) license applied during customization outside of normal flow. Not Morpheus license.. windows license
+	 */
 	public Boolean licenseApplied = false;
 
+	/**
+	 * Agent will not be installed in any way.. don't wait for it
+	 */
 	public Boolean noAgent = false;
 
+	// This should be removed
 	public Long poolId;
 
 	public String message; // error message

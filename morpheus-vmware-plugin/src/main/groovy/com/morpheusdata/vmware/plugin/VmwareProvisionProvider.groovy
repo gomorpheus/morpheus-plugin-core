@@ -587,6 +587,8 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 //					}
 //				}
 				//config is built
+				// TODO: Move this into RunWorkloadRequest.. developers shouldn't have to call this
+				// server.sourceImage should be set. If required (like for amazon), we should have a prepareWorkload method to set the virtualImage
 				UsersConfiguration usersConfiguration = morpheusContext.provision.getUserConfig(workload, virtualImage, opts + [
 						isCloudInit: virtualImage?.isCloudInit || (runConfig.platform == 'windows' && (virtualImage.isSysprep || virtualImage?.isForceCustomization || workloadRequest.networkConfiguration.doCustomizations == true))
 				]).blockingGet()
@@ -1120,6 +1122,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 				}
 
 
+				// TODO : Bad merge here? duplicated above
 				cloudConfigOpts.isSysprep = true
 				if(!virtualImage.isSysprep) {
 					cloudConfigOpts.synchronousCommands = ['C:\\sysprep\\guestcustutil.exe flagComplete',
@@ -1127,6 +1130,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 				}
 				// cloudConfigOpts.skipNetworkConfig = true //Let guest customization settings merge this into the xml
 				platformType = PlatformType.valueOf(runConfig.platform)
+				// TODO : Pass this in on RunWorkloadRequest (do work after prepareWorkload (so virtualimage is set) and before runWorkload)
 				runConfig.guestCustUnattend = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts)
 				runConfig.cloudConfigMeta = morpheusContext.provision.buildCloudMetaData(platformType, workload.instance?.id, cloudConfigOpts.hostname, cloudConfigOpts)
 				runConfig.cloudConfigNetwork = morpheusContext.provision.buildCloudNetworkData(platformType, cloudConfigOpts)
@@ -1152,6 +1156,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 			if(createResults.success == true && createResults.results?.server?.id) {
 				//update info
 				// TODO: Process step
+				// Add some sort of Process object on the RunWorkloadRequest and then new context to allow adding steps, etc
 //				opts.processStepMap = processService.nextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionResize',
 //						[status:'resizing vm', username:opts.processUser], null, [status:'resizing vm'])
 				server = morpheusContext.computeServer.get(server.id).blockingGet()
@@ -1462,6 +1467,9 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 			workloadResponse.setError('failed to run server: ' + e)
 		}
 	}
+
+	// How to handle finalizeContainer
+	// Add a postFinalize method... do all the finalizeWindows, finalizeLinux etc and then call postFinalize
 
 	private ComputeZonePoolIdentityProjection findHostByCloudAndExternalId(Cloud cloud, String externalId) {
 		log.debug "findHostByCloudAndExternalId ${cloud} ${externalId}"
