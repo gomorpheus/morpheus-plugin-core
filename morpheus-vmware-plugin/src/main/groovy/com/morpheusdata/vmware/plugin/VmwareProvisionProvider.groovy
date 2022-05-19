@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin
 
+import com.morpheusdata.core.AbstractProvisionProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
@@ -19,7 +20,7 @@ import com.vmware.vim25.OptionValue
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class VmwareProvisionProvider implements ProvisioningProvider {
+class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
@@ -320,7 +321,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 		if(coresPerSocket == 0) {
 			coresPerSocket = 1
 		}
-		def maxStorage = workloadRequest.rootSize
+		def maxStorage = this.getRootSize(workload)
 
 		ComputeServer vmHost = getVmwareHost(cloud, workload.getConfigProperty('hostId'))
 		def hostId = vmHost?.externalId
@@ -398,7 +399,7 @@ class VmwareProvisionProvider implements ProvisioningProvider {
 		if (domainName)
 			fqdn += '.' + domainName
 		//storage type
-		StorageVolume rootDisk = workloadRequest.rootDisk
+		StorageVolume rootDisk = this.getRootDisk(workload)
 		def storageType
 		if (rootDisk?.type?.code && rootDisk?.type?.code != 'standard') {
 			storageType = rootDisk.type.externalId //handle thin/thick clone
