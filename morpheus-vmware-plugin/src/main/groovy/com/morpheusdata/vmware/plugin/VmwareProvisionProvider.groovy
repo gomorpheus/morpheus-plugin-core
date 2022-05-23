@@ -808,13 +808,11 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				rtn = datastore
 			} else {
 
-//		        def datastoreIds = permissionService.resourcesAccessibleByAccount(account.id,'Datastore', siteId)
 				List<Long> datastoreIds = []
-				morpheusContext.permission.listAccessibleResources(account.id, ResourceType.Datastore, siteId).blockingSubscribe { datastoreIds << it }
+				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore, siteId).blockingSubscribe { datastoreIds << it }
 
-//		        def tenantDatastoreIds = permissionService.resourcesAccessibleByAccount(account.id,'Datastore')
 				List<Long> tenantDatastoreIds = []
-				morpheusContext.permission.listAccessibleResources(account.id, ResourceType.Datastore).blockingSubscribe { datastoreIds << it }
+				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore).blockingSubscribe { datastoreIds << it }
 
 				if (datastoreOption == 'auto' || !datastoreOption) {
 					// Fetch the Morpheus datastores
@@ -827,13 +825,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					morpheusContext.cloud.datastore.listById( tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
 						if(ds.online && ds.active && ds.freeSpace > size) {
 							def poolMatch = ds.zonePool?.id == null || ds.zonePool?.internalId == clusterId || ds.assignedZonePools?.find { it.internalId == clusterId}
-							if(poolMatch) {
-								if (datastoreIds && ds.id in datastoreIds) {
-									dsList << ds
-								}
-								if (tenantDatastoreIds && !(ds.id in tenantDatastoreIds) && (ds.visibility == 'public' || ds.owner.id == account.id)) {
-									dsList << ds
-								}
+							if(poolMatch && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
+								dsList << ds
 							}
 						}
 					}
@@ -858,13 +851,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 					List<Datastore> dsList = []
 					morpheusContext.cloud.datastore.listById( tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
-						if(ds.online && ds.freeSpace > size) {
-							if (datastoreIds && ds.id in datastoreIds) {
-								dsList << ds
-							}
-							if (tenantDatastoreIds && !(ds.id in tenantDatastoreIds) && (ds.visibility == 'public' || ds.owner.id == account.id)) {
-								dsList << ds
-							}
+						if(ds.online && ds.freeSpace > size && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
+							dsList << ds
 						}
 					}
 					dsList = dsList.sort { it.freeSpace * -1 }
@@ -1098,24 +1086,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				cloudConfigOpts.licenses = runConfig.licenses
 
 				opts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
-				cloudConfigOpts.isSysprep = true
-				if(!virtualImage.isSysprep) {
-					cloudConfigOpts.synchronousCommands = ['C:\\sysprep\\guestcustutil.exe flagComplete',
-					                                       'C:\\sysprep\\guestcustutil.exe restoreMountedDevices', 'C:\\sysprep\\guestcustutil.exe deleteContainingFolder']
-				}
-				// cloudConfigOpts.skipNetworkConfig = true //Let guest customization settings merge this into the xml
-				PlatformType platformType = PlatformType.valueOf(runConfig.platform)
-				runConfig.guestCustUnattend = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts)
-				runConfig.cloudConfigMeta = morpheusContext.provision.buildCloudMetaData(platformType, workload.instance?.id, cloudConfigOpts.hostname, cloudConfigOpts)
-				runConfig.cloudConfigNetwork = morpheusContext.provision.buildCloudNetworkData(platformType, cloudConfigOpts)
-				log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
-				workloadResponse.unattendCustomized = cloudConfigOpts.unattendCustomized
 				if(cloudConfigOpts.licenseApplied) {
 					workloadResponse.licenseApplied = true
 				}
 
-
-				// TODO : Bad merge here? duplicated above
 				cloudConfigOpts.isSysprep = true
 				if(!virtualImage.isSysprep) {
 					cloudConfigOpts.synchronousCommands = ['C:\\sysprep\\guestcustutil.exe flagComplete',
@@ -1811,6 +1785,16 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				rtn = newMaxStorage
 		}
 		return rtn
+	}
+
+	private Boolean matchesDatastores(Datastore ds, Account account, List<Long> datastoreIds, ArrayList<Long> tenantDatastoreIds) {
+		if (datastoreIds && ds.id in datastoreIds) {
+			return true
+		}
+		if (tenantDatastoreIds && !(ds.id in tenantDatastoreIds) && (ds.visibility == 'public' || ds.owner.id == account.id)) {
+			return true
+		}
+		return false
 	}
 
 	static getAuthConfig(Map options) {

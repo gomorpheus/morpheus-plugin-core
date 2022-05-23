@@ -221,6 +221,12 @@ public interface MorpheusContext {
 	 */
 	MorpheusProcessService getProcess();
 
+	/**
+	 * Returns the Permission Service
+	 * @return An instance of the MorpheusPermissionService
+	 */
+	MorpheusPermissionService getPermission();
+
 	//Common methods used across various contexts
 
 	/**
