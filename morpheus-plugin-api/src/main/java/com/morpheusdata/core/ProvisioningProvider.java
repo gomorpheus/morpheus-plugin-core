@@ -97,6 +97,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse validateDockerHost(ComputeServer server, Map opts);
 
 	/**
+	 * This method is called before runWorkload and provides an opportunity to perform action or obtain configuration
+	 * that will be needed in runWorkload.
+	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
+	 *                 how best to provision the workload
+	 * @param workloadRequest the RunWorkloadRequest object containing the various configurations that may be needed
+	 *                        in running the Workload
+	 * @param opts additional configuration options that may have been passed during provisioning
+	 * @return Response from API
+	 */
+	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+
+	/**
 	 * This method is a key entry point in provisioning a workload. This could be a vm, a container, or something else.
 	 * Information associated with the passed Workload object is used to kick off the workload provision request
 	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
@@ -106,7 +118,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-		ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.

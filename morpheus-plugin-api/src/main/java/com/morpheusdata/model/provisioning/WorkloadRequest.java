@@ -9,5 +9,5 @@ public class WorkloadRequest {
 	public Process process;
 	public NetworkConfiguration networkConfiguration;
 	public ProxyConfiguration proxyConfiguration;
-
+	public UsersConfiguration usersConfiguration;
 }

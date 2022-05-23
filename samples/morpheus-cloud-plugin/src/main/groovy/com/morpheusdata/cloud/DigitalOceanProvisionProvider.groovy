@@ -168,6 +168,11 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
+	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		ServiceResponse.success()
+	}
+
+	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
 		def containerConfig = new groovy.json.JsonSlurper().parseText(workload.configs ?: '{}')

@@ -224,6 +224,11 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
+	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		ServiceResponse.success()
+	}
+
+	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts = [:]) {
 		log.debug "Maas Provision Provider: runWorkload ${workload.configs} ${opts}"
 		ServiceResponse<WorkloadResponse> rtn = new ServiceResponse<>(success:false, inProgress: true)

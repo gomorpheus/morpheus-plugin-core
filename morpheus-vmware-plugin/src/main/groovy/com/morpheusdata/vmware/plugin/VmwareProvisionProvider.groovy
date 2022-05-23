@@ -588,12 +588,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 //					}
 //				}
 				//config is built
-				// TODO: Move this into RunWorkloadRequest.. developers shouldn't have to call this
-				// server.sourceImage should be set. If required (like for amazon), we should have a prepareWorkload method to set the virtualImage
-				UsersConfiguration usersConfiguration = morpheusContext.provision.getUserConfig(workload, virtualImage, opts + [
-						isCloudInit: virtualImage?.isCloudInit || (runConfig.platform == 'windows' && (virtualImage.isSysprep || virtualImage?.isForceCustomization || workloadRequest.networkConfiguration.doCustomizations == true))
-				]).blockingGet()
-				runConfig.userConfig = usersConfiguration
+				runConfig.userConfig = workloadRequest.usersConfiguration
 //				if (sourceServer) {
 //					runConfig.userConfig.sshUsername = sourceServer.sshUsername
 //					runConfig.userConfig.sshPassword = sourceServer.sshPassword

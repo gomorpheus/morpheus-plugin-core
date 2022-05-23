@@ -1,8 +1,17 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.provisioning.WorkloadRequest;
+import com.morpheusdata.response.ServiceResponse;
+
+import java.util.Map;
 
 public abstract class AbstractProvisionProvider implements ProvisioningProvider {
+
+	@Override
+	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		return ServiceResponse.success();
+	}
 
     public Long getRootSize(Workload workload) {
         StorageVolume rootDisk = getRootDisk(workload);
