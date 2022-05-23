@@ -1,7 +1,7 @@
 package com.morpheusdata.core.provisioning;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.UsersConfiguration;
+import com.morpheusdata.model.provisioning.UsersConfiguration;
 import io.reactivex.Single;
 
 import java.util.Map;

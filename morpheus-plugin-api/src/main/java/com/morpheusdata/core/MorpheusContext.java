@@ -215,6 +215,12 @@ public interface MorpheusContext {
 	 */
 	MorpheusComputeTypeLayoutFactoryService getComputeTypeLayoutFactoryService();
 
+	/**
+	 * Returns the Process Service
+	 * @return An instance of the MorpheusProcessService
+	 */
+	MorpheusProcessService getProcess();
+
 	//Common methods used across various contexts
 
 	/**

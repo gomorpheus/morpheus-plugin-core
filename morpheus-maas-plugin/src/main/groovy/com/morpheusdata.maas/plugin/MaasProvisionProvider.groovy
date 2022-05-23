@@ -4,13 +4,13 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.ProvisionInstanceServers
-import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.util.*
 import com.morpheusdata.model.*
+import com.morpheusdata.model.provisioning.WorkloadRequest
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
-import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -224,7 +224,7 @@ class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceSe
 	}
 
 	@Override
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts = [:]) {
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts = [:]) {
 		log.debug "Maas Provision Provider: runWorkload ${workload.configs} ${opts}"
 		ServiceResponse<WorkloadResponse> rtn = new ServiceResponse<>(success:false, inProgress: true)
 		ComputeServer server = workload.server

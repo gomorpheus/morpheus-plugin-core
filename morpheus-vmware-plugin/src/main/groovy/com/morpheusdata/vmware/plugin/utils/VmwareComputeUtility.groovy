@@ -1,6 +1,7 @@
 package com.morpheusdata.vmware.plugin.utils
 
 import com.morpheusdata.core.util.ComputeUtility
+import com.morpheusdata.core.util.SSLUtility
 import com.vmware.vim25.*
 import com.vmware.vim25.mo.*
 import com.vmware.vim25.VirtualEthernetCard
@@ -21,6 +22,7 @@ import org.apache.http.entity.InputStreamEntity
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.client.ProxyAuthenticationStrategy
+import com.bertramlabs.plugins.karman.CloudFile
 
 import javax.net.ssl.SSLSession
 import javax.net.ssl.SSLSocket
@@ -2356,13 +2358,14 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
-	static cloneVmFromContentLibrary(apiUrl, username, password, opts = [:]) {
+	static cloneVmFromContentLibrary(apiUrl, username, password, HttpApiClient client, opts = [:]) {
 		log.info("Launching VM From OVF Library!")
 		def rtn = [success:false, modified:false]
 		def serviceInstance
 
 		def sessionId
 		def apiResults
+		def url = privateGetSchemeHostAndPort(apiUrl)
 
 		try {
 			def vmName = opts.name
@@ -2378,14 +2381,10 @@ class VmwareComputeUtility {
 			sessionId = sessionResults.sessionId
 
 			//do deploy from rest
-			URIBuilder uriBuilder = new URIBuilder(apiUrl)
-			uriBuilder.path = "/rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}"
-			log.info("Deploy URL: /rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}")
 			Boolean thin = true
 			if(opts.storageType) {
 				thin = opts.storageType == 'thin'
 			}
-
 
 			def body = [
 					deployment_spec: [
@@ -2412,9 +2411,7 @@ class VmwareComputeUtility {
 			if(opts.hostId) {
 				body.target.host_id = opts.hostId
 			}
-
-
-			apiResults = ApiUtility.callJsonApi(uriBuilder.build().toString(),"/rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}",[headers: ["vmware-api-session-id": sessionId],query: ['~action':'deploy'],body:body,reuse:true, readTimeout: (60*60000).toInteger(), proxySettings: opts.proxySettings],'POST')
+			apiResults = client.callJsonApi(url,"/rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}",new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId],query: ['~action':'deploy'],body:body,reuse:true, readTimeout: (60*60000).toInteger(), proxySettings: opts.proxySettings]),'POST')
 			def cloneResults = apiResults.data.value
 			log.info("Clone Results: ${apiResults}")
 			if(cloneResults.succeeded) {
@@ -2517,11 +2514,8 @@ class VmwareComputeUtility {
 			rtn.msg = 'error creating vm'
 			log.error("cloneVm error: ${e}", e)
 		} finally {
-			if(apiResults?.httpClient) {
-				apiResults.httpClient.connectionManager.shutdown()
-			}
 			if(sessionId) {
-				logoutRestSessionId(apiUrl,sessionId,opts)
+				logoutRestSessionId(client, url, sessionId)
 			}
 			if(serviceInstance) {connectionPool.releaseConnection(apiUrl, username, password, serviceInstance)}
 		}
@@ -2898,8 +2892,8 @@ class VmwareComputeUtility {
 		ServiceInstance serviceInstance
 		try {
 			if(ignoreSsl) {
-				com.morpheus.util.SSLUtility.trustAllHostnames()
-				com.morpheus.util.SSLUtility.trustAllHttpsCertificates()
+				SSLUtility.trustAllHostnames()
+				SSLUtility.trustAllHttpsCertificates()
 			}
 			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
 			VirtualMachine vmManager = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
@@ -3126,47 +3120,6 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
-	static getServerIps(netList, networkMatch = null) throws ManagedObjectNotFound {
-		def rtn = [ipAddress:null, ipv6Ip:null, ipList:[]]
-		netList.each { net ->
-			def netNetwork = net.getNetwork()
-			net.getIpConfig()?.getIpAddress()?.each { ipAddr ->
-				def ip = ipAddr.getIpAddress()
-				if(ip.indexOf(':') > -1) {
-					//ipv6
-					if(netNetwork != null && (networkMatch == null || networkMatch == netNetwork) && rtn.ipv6Ip == null)
-						rtn.ipv6Ip = ip
-					rtn.ipList << [network:netNetwork, deviceConfigId: net.getDeviceConfigId(), ipAddress:ip, mode:'ipv6', macAddress:net.getMacAddress()]
-				} else if(ip.indexOf('.') > -1) {
-					//ipv4
-					if(netNetwork != null && (networkMatch == null || networkMatch == netNetwork) && rtn.ipAddress == null)
-						rtn.ipAddress = rtn.ipAddress ?: ip
-					rtn.ipList << [network:netNetwork, deviceConfigId: net.getDeviceConfigId(), ipAddress:ip, mode:'ipv4', macAddress:net.getMacAddress()]
-				}
-			}
-		}
-		if(!rtn.ipAddress) {
-			netList.each { net ->
-				def netNetwork = net.getNetwork()
-				net.getIpConfig()?.getIpAddress()?.each { ipAddr ->
-					def ip = ipAddr.getIpAddress()
-					if(ip.indexOf(':') > -1) {
-						//ipv6
-						if(net.getDeviceConfigId() != null && rtn.ipv6Ip == null)
-							rtn.ipv6Ip = rtn.ipv6Ip ?: ip
-						rtn.ipList << [network:netNetwork, deviceConfigId: net.getDeviceConfigId(), ipAddress:ip, mode:'ipv6', macAddress:net.getMacAddress()]
-					} else if(ip.indexOf('.') > -1) {
-						//ipv4
-						if(net.getDeviceConfigId() != null && rtn.ipAddress == null)
-							rtn.ipAddress = rtn.ipAddress ?: ip
-						rtn.ipList << [network:netNetwork, deviceConfigId: net.getDeviceConfigId(), ipAddress:ip, mode:'ipv4', macAddress:net.getMacAddress()]
-					}
-				}
-			}
-		}
-		return rtn
-	}
-
 	static createCloneDiskSpec(deviceList, long diskSize) {
 		def diskSpec
 		deviceList.each { device ->
@@ -3365,9 +3318,11 @@ class VmwareComputeUtility {
 			def cloudConfigNetwork = opts.cloudConfigNetwork
 			def cloudIsoOutputStream
 			if(opts.isSysprep) {
-				cloudIsoOutputStream = IsoUtility.buildAutoUnattendIso(cloudConfigUser)
+				// TODO : Call back to Morpheus to build the ISO
+//				cloudIsoOutputStream = IsoUtility.buildAutoUnattendIso(cloudConfigUser)
 			} else {
-				cloudIsoOutputStream = IsoUtility.buildCloudIso(opts.platform, cloudConfigMeta, cloudConfigUser, cloudConfigNetwork)
+				// TODO : Call back to Morpheus to build the ISO
+//				cloudIsoOutputStream = IsoUtility.buildCloudIso(opts.platform, cloudConfigMeta, cloudConfigUser, cloudConfigNetwork)
 			}
 
 			def isoOutput = cloudIsoOutputStream.toByteArray()

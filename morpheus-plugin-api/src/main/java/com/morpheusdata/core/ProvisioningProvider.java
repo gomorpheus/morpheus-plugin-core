@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
@@ -100,10 +101,12 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * Information associated with the passed Workload object is used to kick off the workload provision request
 	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
 	 *                 how best to provision the workload
+	 * @param workloadRequest the RunWorkloadRequest object containing the various configurations that may be needed
+	 *                        in running the Workload
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts);
+		ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.

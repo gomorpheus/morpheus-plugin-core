@@ -1,7 +1,6 @@
 package com.morpheusdata.response;
 
 import java.util.List;
-import com.morpheusdata.model.UserConfiguration;
 import com.morpheusdata.model.provisioning.UserConfiguration;
 
 /**
@@ -28,8 +27,8 @@ public class WorkloadResponse {
 	public String status;
 
 	/**
-	 * Indicates if the agent should be installed on the server by Morpheus.
-	 * Agent may be installed via Cloudinit... doesn't necessarily mean that the agent won't be installed
+	 * Indicates if the agent should be installed on the server by Morpheus. Setting this to false does not
+	 * necessarily mean that the agent will not be installed as it may be installed via cloudinit.
 	 */
 	public Boolean installAgent;
 
@@ -55,6 +54,8 @@ public class WorkloadResponse {
 
 	// This should be removed
 	public Long poolId;
+
+	public String hostname;
 
 	public String message; // error message
 
