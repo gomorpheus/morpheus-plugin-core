@@ -3,27 +3,24 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerInterfaceType
 import com.morpheusdata.model.ComputeTypeLayout
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.ImageType
 import com.morpheusdata.model.Instance
-import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.OsType
 import com.morpheusdata.model.ServicePlan
-import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.Workload
+import com.morpheusdata.model.provisioning.WorkloadRequest
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
-import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
-import io.reactivex.Single
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -171,7 +168,7 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
 		def containerConfig = new groovy.json.JsonSlurper().parseText(workload.configs ?: '{}')
 		String apiKey = workload.server.cloud.configMap.doApiKey

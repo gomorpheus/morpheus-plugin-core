@@ -1247,9 +1247,9 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 					log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
 					//future - config for morpheus to respond at 169.254.169.254 to bypass this
+					def isoData = morpheusContext.provision.buildIsoOutputStream(false, platformType, runConfig.cloudConfigMeta, runConfig.cloudConfigUser, runConfig.cloudConfigNetwork)
 					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
-							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId,
-							 cloudConfigUser:runConfig.cloudConfigUser, cloudConfigMeta:runConfig.cloudConfigMeta, cloudConfigNetwork:runConfig.cloudConfigNetwork])
+							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId])
 					log.debug("add cloud config: ${cloudConfigResults}")
 					def attachIsoResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso'])
@@ -1272,9 +1272,9 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					server.cloudConfigNetwork = runConfig.cloudConfigNetwork
 					server = saveAndGet(server)
 					//add the iso
-					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
-							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId,
-							 cloudConfigUser:runConfig.cloudConfigUser, cloudConfigMeta:runConfig.cloudConfigMeta, cloudConfigNetwork:runConfig.cloudConfigNetwork, isSysprep: true, proxySettings: workloadRequest.proxyConfiguration])
+					def isoData = morpheusContext.provision.buildIsoOutputStream(true, platformType, runConfig.cloudConfigMeta, runConfig.cloudConfigUser, runConfig.cloudConfigNetwork)
+					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, isoData,
+							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, proxySettings: workloadRequest.proxyConfiguration])
 					log.debug("add cloud config: ${cloudConfigResults}")
 					def attachIsoResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso', proxySettings: workloadRequest.proxyConfiguration])

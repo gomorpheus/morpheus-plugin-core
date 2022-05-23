@@ -82,5 +82,14 @@ public interface MorpheusProvisionService {
 	Single<String> buildCloudNetworkData(PlatformType platform, Map<String,Object> cloudConfigOptions);
 
 
-	
+	/**
+	 * Builds up the data for an iso image based on the given parameters
+	 * @param isSysPrep indicates if the iso is for a sysprep image
+	 * @param platform the platform (should be windows or linux)
+	 * @param metaData the metadata to embed in the iso
+	 * @param userData the userdata to embed in the iso
+	 * @param networkData the networkdata to embed in the iso (optional)
+	 * @return a byte array for the iso
+	 */
+	Single<Byte[]> buildIsoOutputStream(Boolean isSysPrep, PlatformType platform, String metaData, String userData, String networkData);
 }

@@ -3310,22 +3310,10 @@ class VmwareComputeUtility {
 		return nicSpecs ? nicSpecs : null
 	}
 
-	static addCloudInitIso(apiUrl, username, password, opts = [:]) {
+	static addCloudInitIso(apiUrl, username, password, Byte[] isoByteArray,  opts = [:]) {
 		def rtn = [success: false]
 		try {
-			def cloudConfigUser = opts.cloudConfigUser
-			def cloudConfigMeta = opts.cloudConfigMeta
-			def cloudConfigNetwork = opts.cloudConfigNetwork
-			def cloudIsoOutputStream
-			if(opts.isSysprep) {
-				// TODO : Call back to Morpheus to build the ISO
-//				cloudIsoOutputStream = IsoUtility.buildAutoUnattendIso(cloudConfigUser)
-			} else {
-				// TODO : Call back to Morpheus to build the ISO
-//				cloudIsoOutputStream = IsoUtility.buildCloudIso(opts.platform, cloudConfigMeta, cloudConfigUser, cloudConfigNetwork)
-			}
-
-			def isoOutput = cloudIsoOutputStream.toByteArray()
+			def isoOutput = isoByteArray
 			def cloudConfigInputStream = new ByteArrayInputStream(isoOutput) //cloudConfigData.createInputStream()
 			def cloudConfigInputLength = isoOutput.length //cloudConfigData.getLength()
 			rtn = addIso(apiUrl,username,password,opts + [inputStream: cloudConfigInputStream, contentLength: cloudConfigInputLength, isoName: 'config.iso', overwrite:true])
