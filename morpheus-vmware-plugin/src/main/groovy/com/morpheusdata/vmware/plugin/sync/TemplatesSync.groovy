@@ -92,7 +92,7 @@ class TemplatesSync {
 			addMissingVirtualImages(itemsToAdd, osTypes)
 		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 			// Found the VirtualImage for this location.. just need to create the location
-			addMissingVirtualImageLocationsForImages(updateItems, osTypes)
+			addMissingVirtualImageLocationsForImages(updateItems)
 		}.start()
 	}
 

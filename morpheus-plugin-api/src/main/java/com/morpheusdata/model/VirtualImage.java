@@ -35,11 +35,12 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String refType;
 	protected String imageRegion;
 	protected Boolean isForceCustomization;
-	protected Boolean isCloudInit;
-	protected Boolean virtioSupported;
-	protected Boolean deleted;
-	protected Boolean isSysprep;
-	protected Boolean vmToolsInstalled;
+	protected Boolean isCloudInit = true;
+	protected Boolean virtioSupported = true;
+	protected Boolean deleted = false;
+	protected Boolean isSysprep = false;
+	protected Boolean vmToolsInstalled = true;
+	protected Boolean installAgent = true;
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -292,5 +293,13 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setVmToolsInstalled(Boolean vmToolsInstalled) {
 		this.vmToolsInstalled = vmToolsInstalled;
+	}
+
+	public Boolean getInstallAgent() {
+		return installAgent;
+	}
+
+	public void setInstallAgent(Boolean installAgent) {
+		this.installAgent = installAgent;
 	}
 }

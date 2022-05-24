@@ -59,6 +59,11 @@ public class WorkloadResponse {
 
 	public String message; // error message
 
+	/**
+	 * Wait for the network to become active on the ComputeServer before finalizing
+	 */
+	public Boolean skipNetworkWait = false;
+
 	public void setError(String message) {
 		this.success = false;
 		this.message = message;

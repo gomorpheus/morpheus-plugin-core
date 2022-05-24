@@ -206,19 +206,18 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		def userData
 		if(virtualImage?.isCloudInit) {
 			// Utilize the morpheus build cloud-init methods
-			Map cloudConfigOptions = morpheus.provision.buildCloudConfigOptions(workload.server.cloud, server, opts.installAgent,
-					opts + [doPing: true, hostName: server.getExternalHostname(), hosts: server.getExternalHostname(), nativeProvider: true, timezone: containerConfig.timezone]).blockingGet()
+			Map cloudConfigOptions = workloadRequest.cloudConfigOpts
 			log.debug "cloudConfigOptions ${cloudConfigOptions}"
 
 			// Inform Morpheus to install the agent (or not) after the server is created
 			callbackOpts.installAgent = opts.installAgent && (cloudConfigOptions.installAgent != true)
 
-			def cloudConfigUser = morpheus.provision.buildCloudUserData(com.morpheusdata.model.PlatformType.valueOf(server.osType), usersConfiguration, cloudConfigOptions).blockingGet()
+			def cloudConfigUser = workloadRequest.cloudConfigUser
 			log.debug "cloudConfigUser: ${cloudConfigUser}"
 			userData = cloudConfigUser
 
 			// Not really used in DO provisioning (example only)
-			String metadata = morpheus.provision.buildCloudMetaData(com.morpheusdata.model.PlatformType.valueOf(server.osType), workload.instance?.id, 'somehostname', cloudConfigOptions).blockingGet()
+			String metadata = workloadRequest.cloudConfigMeta
 			log.debug "metadata: ${metadata}"
 
 //			// Not really used in DO provisioning (example only)

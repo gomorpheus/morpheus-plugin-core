@@ -98,11 +98,12 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * This method is called before runWorkload and provides an opportunity to perform action or obtain configuration
-	 * that will be needed in runWorkload.
+	 * that will be needed in runWorkload. At the end of this method, if deploying a ComputeServer with a VirtualImage,
+	 * the sourceImage on ComputeServer should be determined and saved.
 	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
 	 *                 how best to provision the workload
 	 * @param workloadRequest the RunWorkloadRequest object containing the various configurations that may be needed
-	 *                        in running the Workload
+	 *                        in running the Workload. This will be passed along into runWorkload
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */

@@ -12,6 +12,7 @@ public class ComputeServerType  extends MorpheusModel {
 
 	protected String name;
 	protected String code;
+	protected String nodeType;
 	protected String description;
 	protected String computeService;
 	protected Boolean vmHypervisor = false; //runs vms, ex: esxi hypervisor
@@ -66,6 +67,15 @@ public class ComputeServerType  extends MorpheusModel {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public String getNodeType() {
+		return nodeType;
+	}
+
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
+	}
+
 
 	public String getComputeService() {
 		return computeService;

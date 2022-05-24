@@ -343,7 +343,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		def datastore = getDatastoreOption(cloud, account, datacenterId, clusterId, hostId,
 				rootVolume?.datastore, rootVolume.datastoreOption, maxStorage, workload.instance.site?.id)
 		if(!datastore) {
-			log.error("runContainer error: Datastore option is invalid for selected host")
+			log.error("buildRunConfig error: Datastore option is invalid for selected host")
 			throw new Exception("There are no available datastores to use based on provisioning options for the target host.")
 		}
 		def datastoreId
@@ -440,7 +440,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				hostname: hostname,
 				domainName: domainName,
 				fqdn: fqdn,
-				storageType: storageType
+				storageType: storageType,
+				skipNetworkWait    : server.sourceImage?.imageType == ImageType.iso || !server.sourceImage?.vmToolsInstalled ? true : false
 //				networkRouterId   : networkRouter?.id,
 		]
 		return runConfig
@@ -495,7 +496,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		} else {
 			runConfig.fromContentLibrary = true
 		}
-		log.debug("runContainer imageId after findVirtualImageLocation: ${imageId}")
+		log.debug("appendVirtualImageRunConfig imageId after findVirtualImageLocation: ${imageId}")
 
 		runConfig.imageDatastoreId = imageDatastore?.externalId
 		runConfig.template = imageId
@@ -550,10 +551,11 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			Cloud cloud = server.cloud
 			def authConfig = getAuthConfig(cloud)
 			def runConfig = buildRunConfig(workload, workloadRequest)
+			workloadResponse.skipNetworkWait = runConfig.skipNetworkWait
 
 			VirtualImage virtualImage = server.sourceImage
 			if(virtualImage) {
-				log.debug("runContainer virtualImage: {}", virtualImage)
+				log.debug("runWorkload virtualImage: {}", virtualImage)
 				appendVirtualImageRunConfig(runConfig, workload, workloadRequest, virtualImage)
 
 				runConfig.name = VmwareComputeUtility.getUniqueVmName(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, server.name)
@@ -1028,7 +1030,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		log.debug "insertVm: ${runConfig} ${imageConfig}"
 
 		Map authConfig = getAuthConfig(cloud)
-		def cloudConfigOpts
 		Boolean needsCustomizations = false
 		try {
 			//prep for insert
@@ -1036,6 +1037,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 			ComputeServer server = morpheusContext.computeServer.get(runConfig.serverId).blockingGet()
 			Workload workload = morpheusContext.cloud.getWorkloadById(runConfig.workloadId).blockingGet()
+			PlatformType platformType = PlatformType.valueOf(runConfig.platform)
 			VirtualImage virtualImage
 			if(runConfig.virtualImageId) {
 				virtualImage = morpheusContext.virtualImage.get(runConfig.virtualImageId).blockingGet()
@@ -1043,9 +1045,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			runConfig.serverOs = server.serverOs ?: virtualImage?.osType
 			runConfig.osType = (runConfig.serverOs?.platform == PlatformType.windows ? 'windows' : 'linux') ?: virtualImage?.platform
 			runConfig.platform = runConfig.osType
-
-			// TODO : Should this be passed from Morpheus?
-//			setAgentInstallConfig(opts, virtualImage)
 
 			//update server
 			server.sshUsername = runConfig.userConfig.sshUsername
@@ -1058,8 +1057,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			if(resourcePool) {
 				server.resourcePool = new ComputeZonePool(id: server.resourcePool?.id)
 			}
-			// TODO : Turn this into call on morpheusContext.cloud
-			def newType = findVmNodeZoneType(server.zone.zoneType, server.osType,'vmware')
+
+			def newType = findVmNodeServerTypeForCloud(server.cloud.id, server.osType, 'vmware-provision-provider-plugin')
 			if(newType && server.computeServerType != newType) {
 				server.computeServerType = newType
 			}
@@ -1072,9 +1071,13 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 			morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionDeploy), 'deploying vm')
 
-			def workloadConfig = workload.getConfigMap()
-			cloudConfigOpts = morpheusContext.provision.buildCloudConfigOptions(workload.server.cloud, server, !workloadConfig.noAgent, [doPing:false, sendIp:true, hostname:server.getExternalHostname(),
-			                                                                          hosts:server.getExternalHostname(), disableCloudInit:true, timezone: workloadConfig?.timezone])
+			Map cloudConfigOpts = workloadRequest.cloudConfigOpts
+
+			// Inform Morpheus to not install the agent if we are doing it via cloudInit
+			workloadResponse.installAgent = runConfig.installAgent && (cloudConfigOpts.installAgent != true) && !runConfig.noAgent
+			workloadResponse.noAgent = runConfig.noAgent
+
+			log.debug "runConfig.installAgent = ${runConfig.installAgent}, runConfig.noAgent: ${runConfig.noAgent}, workloadResponse.installAgent: ${workloadResponse.installAgent}, workloadResponse.noAgent: ${workloadResponse.noAgent}"
 
 			// TODO: Thought this was passed in?! But the virtualImage might have changed here
 //			morpheusComputeService.buildCloudNetworkConfig(runConfig.platform, virtualImage, cloudConfigOpts, runConfig.networkConfig)
@@ -1084,30 +1087,22 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			}
 			if(runConfig.platform == 'windows' && virtualImage.vmToolsInstalled && (virtualImage.isForceCustomization || workloadRequest.networkConfiguration?.doCustomizations)) {
 				cloudConfigOpts.licenses = runConfig.licenses
-
-				opts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
 				if(cloudConfigOpts.licenseApplied) {
 					workloadResponse.licenseApplied = true
 				}
 
 				cloudConfigOpts.isSysprep = true
 				if(!virtualImage.isSysprep) {
+					// These get utilized by buildCloudUserData
 					cloudConfigOpts.synchronousCommands = ['C:\\sysprep\\guestcustutil.exe flagComplete',
 					                                       'C:\\sysprep\\guestcustutil.exe restoreMountedDevices', 'C:\\sysprep\\guestcustutil.exe deleteContainingFolder']
+					runConfig.guestCustUnattend = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts).blockingGet()
 				}
 				// cloudConfigOpts.skipNetworkConfig = true //Let guest customization settings merge this into the xml
-				platformType = PlatformType.valueOf(runConfig.platform)
-				// TODO : Pass this in on RunWorkloadRequest (do work after prepareWorkload (so virtualimage is set) and before runWorkload)
-				runConfig.guestCustUnattend = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts)
-				runConfig.cloudConfigMeta = morpheusContext.provision.buildCloudMetaData(platformType, workload.instance?.id, cloudConfigOpts.hostname, cloudConfigOpts)
-				runConfig.cloudConfigNetwork = morpheusContext.provision.buildCloudNetworkData(platformType, cloudConfigOpts)
-				log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
-				workloadResponse.unattendCustomized = cloudConfigOpts.unattendCustomized
 			}
 
-
-			log.debug("create server: ${runConfig}")
 			//main create or clone
+			log.debug("create server: ${runConfig}")
 			def createResults
 
 			HttpApiClient client = new HttpApiClient()
@@ -1124,10 +1119,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				createResults = VmwareComputeUtility.cloneVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, runConfig)
 			}
 			log.info("create server: ${createResults}")
+
 			//check success
 			if(createResults.success == true && createResults.results?.server?.id) {
 				//update info
-
 				morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionResize), 'resizing vm')
 
 				server = morpheusContext.computeServer.get(server.id).blockingGet()
@@ -1144,7 +1139,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				ComputeZonePoolIdentityProjection serverResourcePoolProj = findHostByCloudAndExternalId(cloud, runConfig.resourcePoolId ?: runConfig.resourcePool)
 				server.resourcePool = serverResourcePoolProj?.id ? new ComputeZonePool(id: serverResourcePoolProj.id) : null
 				server = saveAndGet(server)
-
 
 				// Apply Tags
 //				if(authConfig.apiVersion && authConfig.apiVersion != '6.0') {
@@ -1199,53 +1193,29 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				def cloudConfigResults = [success:true]
 				//build cloud init
 				if(virtualImage?.isCloudInit) {
-
+					log.debug "VirtualImage ${virtualImage} isCloudInit"
 					morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionCloudInit), 'adding cloud init')
 
-//					log.debug("Agent Install no: ${opts.noAgent} - yes: ${opts.installAgent}")
-//					if(!opts.cloneContainerId)
-//						opts.installAgent = opts.installAgent && (cloudConfigOpts.installAgent != true) && !opts.noAgent
-					PlatformType platformType = PlatformType.valueOf(runConfig.platform)
-					runConfig.cloudConfigUser = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts)
-					runConfig.cloudConfigMeta = morpheusContext.provision.buildCloudMetaData(platformType, workload.instance?.id, cloudConfigOpts.hostname, cloudConfigOpts)
-					runConfig.cloudConfigNetwork = morpheusContext.provision.buildCloudNetworkData(platformType, cloudConfigOpts)
-					server.cloudConfigUser = runConfig.cloudConfigUser
-					server.cloudConfigMeta = runConfig.cloudConfigMeta
-					server.cloudConfigNetwork = runConfig.cloudConfigNetwork
-					server = saveAndGet(server)
-
+//					if(!runConfig.cloneContainerId)
+//						runConfig.installAgent = runConfig.installAgent && (cloudConfigOpts.installAgent != true) && !runConfig.noAgent
 					log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
-					//future - config for morpheus to respond at 169.254.169.254 to bypass this
-					def isoData = morpheusContext.provision.buildIsoOutputStream(false, platformType, runConfig.cloudConfigMeta, runConfig.cloudConfigUser, runConfig.cloudConfigNetwork)
-					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+					def isoData = morpheusContext.provision.buildIsoOutputStream(false, platformType, server.cloudConfigMeta, server.cloudConfigUser, server.cloudConfigNetwork).blockingGet()
+					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, isoData,
 							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId])
 					log.debug("add cloud config: ${cloudConfigResults}")
-					def attachIsoResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+					VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, isoData,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso'])
 					log.debug("attach cloud config: ${cloudConfigResults}")
 				} else if(virtualImage?.isSysprep && !virtualImage.isForceCustomization && runConfig.platform == 'windows') {
-
+					log.debug "VirtualImage ${virtualImage} isSysprep"
 					morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionCloudInit), 'adding autounattend')
-
-					log.debug("Agent Install no: ${opts.noAgent} - yes: ${opts.installAgent}")
-					PlatformType platformType = PlatformType.valueOf(runConfig.platform)
-					runConfig.cloudConfigUser = morpheusContext.provision.buildCloudUserData(platformType, runConfig.userConfig, cloudConfigOpts)
-					runConfig.cloudConfigMeta = morpheusContext.provision.buildCloudMetaData(platformType, workload.instance?.id, cloudConfigOpts.hostname, cloudConfigOpts)
-					runConfig.cloudConfigNetwork = morpheusContext.provision.buildCloudNetworkData(platformType, cloudConfigOpts)
-					log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
-					workloadResponse.unattendCustomized = cloudConfigOpts.unattendCustomized
 					workloadResponse.createUsers = runConfig.userConfig.createUsers
-					//future - config for morpheus to respond at 169.254.169.254 to bypass this
-					server.cloudConfigUser = runConfig.cloudConfigUser
-					server.cloudConfigMeta = runConfig.cloudConfigMeta
-					server.cloudConfigNetwork = runConfig.cloudConfigNetwork
-					server = saveAndGet(server)
 					//add the iso
-					def isoData = morpheusContext.provision.buildIsoOutputStream(true, platformType, runConfig.cloudConfigMeta, runConfig.cloudConfigUser, runConfig.cloudConfigNetwork)
+					def isoData = morpheusContext.provision.buildIsoOutputStream(true, platformType, server.cloudConfigMeta, server.cloudConfigUser, server.cloudConfigNetwork).blockingGet()
 					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, isoData,
 							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, proxySettings: workloadRequest.proxyConfiguration])
 					log.debug("add cloud config: ${cloudConfigResults}")
-					def attachIsoResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+					cloudConfigResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso', proxySettings: workloadRequest.proxyConfiguration])
 					log.debug("attach cloud config: ${cloudConfigResults}")
 					workloadResponse.installAgent = workloadResponse.installAgent && (cloudConfigOpts.installAgent != true) && !workloadResponse.noAgent
@@ -1255,12 +1225,13 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					def cloudFiles = morpheusContext.virtualImage.getVirtualImageFiles(virtualImage).blockingGet()
 					def uploadIsoResults = VmwareComputeUtility.addIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, cloudFiles:cloudFiles, path:'ISO', proxySettings: workloadRequest.proxyConfiguration])
-					def attachIsoResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+					cloudConfigResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:uploadIsoResults.isoName, path: 'ISO', proxySettings: workloadRequest.proxyConfiguration])
 				} else {
 					log.debug "Setting Create User List: ${runConfig.userConfig.createUsers}"
 					workloadResponse.createUsers = runConfig.userConfig.createUsers
 				}
+				workloadResponse.unattendCustomized = platformType == PlatformType.windows && (cloudConfigOpts.unattendCustomized || cloudConfigOpts.isSysprep || virtualImage.isSysprep)
 				log.debug("create results volumes: ${createResults.results.volumes}")
 				// TODO : Handle clone
 //				def dataDisks = opts.cloneContainerId ? [] : getContainerDataDiskList(container)
@@ -1326,19 +1297,15 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					if(needsCustomizations) {
 						morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.guestCustomizations), 'running guest customizations')
 					} else {
-						// TODO : Pass in skipNetworkWait
-//						def status = opts.skipNetworkWait ? 'waiting for server status' : 'waiting for network'
-						morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionNetwork), 'waiting for network')
+						def status = workloadResponse.skipNetworkWait ? 'waiting for server status' : 'waiting for network'
+						morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionNetwork), status)
 					}
-					//new session
-
 					server = morpheusContext.computeServer.get(server.id).blockingGet()
 					server.powerState = 'on'
 					server.save(flush:true)
 					vmHost = runConfig.vmHostId ? morpheusContext.computeServer.get(runConfig.vmHostId.toLong()).blockingGet() : null
-					workload = morpheusContext.cloud.getWorkloadById(workload.id).blockingGet()
 
-					def serverDetail = checkServerReady([cloud:cloud, server:server, skipNetworkWait:opts.skipNetworkWait, externalId:server.externalId,
+					def serverDetail = checkServerReady(workloadRequest, workloadResponse, [cloud:cloud, server:server, externalId:server.externalId,
 					                                     modified:createResults.modified])
 					log.debug("serverDetail: ${serverDetail}")
 					if(serverDetail.error == true) {
@@ -1448,7 +1415,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		host
 	}
 
-	def checkServerReady(opts) {
+	def checkServerReady(WorkloadRequest workloadRequest, WorkloadResponse workloadResponse, opts) {
 		log.debug "checkServerReady: ${opts}"
 		def rtn = [success:false]
 		try {
@@ -1464,12 +1431,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					rtn.msg = 'vm customizations failed'
 					rtn.results = VmwareComputeUtility.getServerDetail(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, opts)?.results
 				}
-//				if(opts.processMap) {
-//					rtn.processStepMap = processService.newSessionNextProcessStep(opts.processMap?.process, opts.processStepMap?.process, 'provisionNetwork',
-//							[status:opts.skipNetworkWait ? 'waiting for server status' : 'waiting for network', username:opts.processUser], null, [status: opts.skipNetworkWait ? 'waiting for server status' : 'waiting for network'])
-//				}
-
-
+				if(workloadRequest.process) {
+					def status = workloadResponse.skipNetworkWait ? 'waiting for server status' : 'waiting for network'
+					morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionNetwork), status).blockingGet()
+				}
 			}
 			while(pending) {
 				sleep(1000l * 5l)
@@ -1483,7 +1448,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					rtn.success = true
 					rtn.msg = 'vm not found'
 					pending = false
-				}	else if(serverDetail.success == true && serverDetail.results.server.poweredOn == true && (checkIpv4Ip(serverDetail.results.server.ipAddress ?: sshHost) == true || opts.skipNetworkWait)) {
+				}	else if(serverDetail.success == true && serverDetail.results.server.poweredOn == true && (checkIpv4Ip(serverDetail.results.server.ipAddress ?: sshHost) == true || workloadResponse.skipNetworkWait)) {
 					if(serverDetail.results.server.poweredOn == true) {
 						log.info("vmware server detail: ${serverDetail}")
 						rtn.success = true
