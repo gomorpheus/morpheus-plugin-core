@@ -360,7 +360,7 @@ class ContentLibrarySync {
 			imagesToSave.find { it.id == location.virtualImage.id}
 		}
 		if(!tmpImage) {
-			morpheusContext.virtualImage.listById([location.virtualImage.id]).blockingSubscribe { tmpImage = it }
+			tmpImage = morpheusContext.virtualImage.get(location.virtualImage.id).blockingGet()
 			return tmpImage
 		}
 	}

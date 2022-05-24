@@ -39,6 +39,13 @@ public interface MorpheusVirtualImageService {
 	Observable<VirtualImageIdentityProjection> listSyncProjections(String provisionTypeCode);
 
 	/**
+	 * Get a VirtualImage object by id
+	 * @param id VirtualImage id
+	 * @return the VirtualImage
+	 */
+	Single<VirtualImage> get(Long id);
+
+	/**
 	 * Get a list of VirtualImage objects from a list of projection ids
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of VirtualImages

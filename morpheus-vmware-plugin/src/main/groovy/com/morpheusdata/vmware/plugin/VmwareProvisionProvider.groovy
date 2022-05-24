@@ -539,7 +539,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts = [:]) {
-		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
+		log.debug "runWorkload ${workload.configs} ${opts}"
 
 		def rtn = [success:false]
 
@@ -628,14 +628,13 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 //					runConfig.server.sshPassword = runConfig.userConfig.sshPassword
 //					//upload or insert image
 			} else {
-				//					//error - image not found
-//					setProvisionFailed(server, container, 'network config error', null, opts.callbackService, opts)
+				workloadResponse.setError('Virtual Image not set on ComputeServer')
+				return new ServiceResponse<WorkloadResponse>(success: false, msg: workloadResponse.message, data: workloadResponse)
 			}
 
 			// These users will be created by Morpheus after provisioning
 			workloadResponse.createUsers = runConfig.userConfig
 
-			//upload or insert image
 			runVirtualMachine(cloud, workloadRequest, runConfig, workloadResponse, opts)
 			log.info("runVirtualMachine results: ${workloadResponse}")
 			if (workloadResponse.success != true) {
@@ -949,11 +948,11 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 			VirtualImage virtualImage
 			if(runConfig.virtualImageId) {
-				morpheusContext.virtualImage.listById([runConfig.virtualImageId]).blockingSubscribe { virtualImage = it }
+				virtualImage = morpheusContext.virtualImage.get(runConfig.virtualImageId).blockingGet()
 			}
 			if(runConfig.imageId == null && virtualImage && virtualImage?.imageType != ImageType.iso) {
 				lock = morpheusContext.acquireLock("vmware.imageupload.${runConfig.regionCode}.${virtualImage.id}".toString(), [timeout:imageTimeout, ttl:imageTtl])
-
+				log.debug "Uploading image ${virtualImage.id}"
 				morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionImage), 'uploading')
 
 				Collection<CloudFile> cloudFiles = morpheusContext.virtualImage.getVirtualImageFiles(virtualImage).blockingGet()
@@ -994,7 +993,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 //				}
 
 				def imageResults = VmwareComputeUtility.insertContainerImage(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, imageConfig)
-				log.debug("runContainer imageResults: ${imageResults}")
+				log.debug("insertContainerImage imageResults: ${imageResults}")
 				if(imageResults.success == true) {
 					taskResults.imageId = imageResults.imageId
 					VirtualImageLocation virtualImageLocation = new VirtualImageLocation([
@@ -1006,9 +1005,11 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					morpheusContext.virtualImage.location.create([virtualImageLocation], cloud).blockingGet()
 				}
 			} else if(virtualImage?.imageType == ImageType.iso) {
+				log.debug "No upload required for ${virtualImage}... iso image"
 				taskResults.imageType = 'iso'
 				taskResults.success = true
 			} else {
+				log.debug "No upload required for ${virtualImage}"
 				taskResults.success = true
 			}
 			log.debug("imageUploadTask: ${taskResults}")
@@ -1036,9 +1037,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			ComputeServer server = morpheusContext.computeServer.get(runConfig.serverId).blockingGet()
 			Workload workload = morpheusContext.cloud.getWorkloadById(runConfig.workloadId).blockingGet()
 			VirtualImage virtualImage
-			//refresh the virtual image
 			if(runConfig.virtualImageId) {
-				morpheusContext.virtualImage.listById([runConfig.virtualImageId]).blockingSubscribe { virtualImage = it }
+				virtualImage = morpheusContext.virtualImage.get(runConfig.virtualImageId).blockingGet()
 			}
 			runConfig.serverOs = server.serverOs ?: virtualImage?.osType
 			runConfig.osType = (runConfig.serverOs?.platform == PlatformType.windows ? 'windows' : 'linux') ?: virtualImage?.platform
