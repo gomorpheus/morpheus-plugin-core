@@ -4,6 +4,7 @@ import com.morpheusdata.model.*;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.response.ServiceResponse;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,6 +13,46 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	@Override
 	public Boolean hasComputeZonePools() {
 		return false;
+	}
+
+	@Override
+	public Boolean canAddVolumes() {
+		return false;
+	}
+
+	@Override
+	public Boolean canCustomizeRootVolume() {
+		return false;
+	}
+
+	@Override
+	public Boolean canCustomizeDataVolumes() {
+		return false;
+	}
+
+	@Override
+	public Boolean hasStorageControllers() {
+		return false;
+	}
+
+	@Override
+	public Boolean supportsAutoDatastore() {
+		return true;
+	}
+
+	@Override
+	public Boolean networksScopedToPools() {
+		return false;
+	}
+
+	@Override
+	public Collection<StorageVolumeType> getRootVolumeStorageTypes() {
+		return new ArrayList<StorageVolumeType>();
+	}
+
+	@Override
+	public Collection<StorageVolumeType> getDataVolumeStorageTypes() {
+		return new ArrayList<StorageVolumeType>();
 	}
 
 	@Override

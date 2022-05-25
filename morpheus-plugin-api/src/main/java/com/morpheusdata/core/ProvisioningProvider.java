@@ -31,6 +31,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	public Collection<OptionType> getNodeOptionTypes();
 
+	/**
+	 * Provides a Collection of StorageVolumeTypes that are available for root StorageVolumes
+	 * @return Collection of StorageVolumeTypes
+	 */
+	public Collection<StorageVolumeType> getRootVolumeStorageTypes();
+
+	/**
+	 * Provides a Collection of StorageVolumeTypes that are available for data StorageVolumes
+	 * @return Collection of StorageVolumeTypes
+	 */
+	public Collection<StorageVolumeType> getDataVolumeStorageTypes();
+
 
 	/**
 	 * Provides a Collection of ${@link ServicePlan} related to this ProvisioningProvider
@@ -74,6 +86,42 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Boolean
 	 */
 	public Boolean computeZonePoolRequired();
+
+	/**
+	 * Indicates if volumes may be added during provisioning
+	 * @return Boolean
+	 */
+	public Boolean canAddVolumes();
+
+	/**
+	 * Indicates if the root volume may be customized during provisioning. For example, the size changed
+	 * @return Boolean
+	 */
+	public Boolean canCustomizeRootVolume();
+
+	/**
+	 * Indicates if data volumes may be customized during provisioning. For example, the size changed
+	 * @return Boolean
+	 */
+	public Boolean canCustomizeDataVolumes();
+
+	/**
+	 * Indicates if StorageControllers are utilized
+	 * @return Boolean
+	 */
+	public Boolean hasStorageControllers();
+
+	/**
+	 * Indicates if automatic Datastore selection is supported
+	 * @return Boolean
+	 */
+	public Boolean supportsAutoDatastore();
+
+	/**
+	 * Indicates if Network selection should be scoped to the ComputeZonePool selected during provisioning
+	 * @return Boolean
+	 */
+	public Boolean networksScopedToPools();
 
 	/**
 	 * Returns the maximum number of network interfaces that can be chosen when provisioning with this type

@@ -438,7 +438,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		//storage type
 		StorageVolume rootDisk = this.getRootDisk(workload)
 		def storageType
-		if (rootDisk?.type?.code && rootDisk?.type?.code != 'standard') {
+		if (rootDisk?.type?.code && rootDisk?.type?.code != 'vmware-plugin-standard') {
 			storageType = rootDisk.type.externalId //handle thin/thick clone
 		} else {
 			storageType = cloud.getConfigProperty('diskStorageType')
@@ -767,6 +767,87 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	Boolean hasComputeZonePools() {
 		true
+	}
+
+	@Override
+	Boolean canAddVolumes() {
+		true
+	}
+
+	@Override
+	Boolean canCustomizeRootVolume() {
+		true
+	}
+
+	@Override
+	Boolean canCustomizeDataVolumes() {
+		true
+	}
+
+	@Override
+	Boolean hasStorageControllers() {
+		true
+	}
+
+	@Override
+	Boolean supportsAutoDatastore() {
+		true
+	}
+
+	@Override
+	Boolean networksScopedToPools() {
+		true
+	}
+
+	@Override
+	Collection<StorageVolumeType> getRootVolumeStorageTypes() {
+		return storageVolumesTypes()
+	}
+
+	@Override
+	Collection<StorageVolumeType> getDataVolumeStorageTypes() {
+		return storageVolumesTypes()
+	}
+
+	private storageVolumesTypes() {
+		def standard = new StorageVolumeType([
+				code: 'vmware-plugin-standard',
+				name: 'Standard',
+				description: 'Standard',
+				displayName: 'Disk',
+				defaultType:true,
+				allowSearch: true
+		])
+
+		def thin = new StorageVolumeType([
+				code: 'vmware-plugin-thin',
+				name: 'Thin',
+				description: 'Thin disk provisioning',
+				displayName: 'Thin',
+				externalId: 'thin',
+				displayOrder: 2,
+				defaultType:true
+		])
+
+		def thick = new StorageVolumeType([
+				code: 'vmware-plugin-thick',
+				name: 'Thick (Lazy Zero)',
+				description: 'Thick disk provisioning',
+				displayName: 'Thick (Lazy Zero)',
+				externalId: 'thick',
+				displayOrder: 3,
+		])
+
+		def thickEager = new StorageVolumeType([
+				code: 'vmware-plugin-thick-eager',
+				name: 'Thick (eager)',
+				description: 'Eager thick disk provisioning',
+				displayName: 'Thick (eager)',
+				externalId: 'thickEager',
+				displayOrder: 4,
+		])
+
+		[standard, thin, thick, thickEager]
 	}
 
 	@Override
@@ -1294,13 +1375,13 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 							def addDiskConfig = [externalId:server.externalId, diskSize:(volume.maxStorage.div(ComputeUtility.ONE_MEGABYTE)),
 							                     diskName:getUniqueVolumeFileName(server.name,i+1,vmVolumes), type:volume.type?.externalId, diskIndex:(i + 1)]
 							addDiskConfig.datastoreId = getDatastoreExternalId(cloud, volume.datastore?.id)
-							if(!volume.type?.code || volume.type?.code == 'standard') {
+							if(!volume.type?.code || volume.type?.code == 'vmware-plugin-standard') {
 								addDiskConfig.type =  cloud.getConfigProperty('diskStorageType') ?: 'thin'
 							}
 
 							if(volume.controller) {
 								addDiskConfig += [busNumber:volume.controller.busNumber?.toInteger(), unitNumber:volume.unitNumber?.toInteger(),
-								                  controllerType:(volume.controller.type?.code && volume.controller.type?.code != 'standard' ? volume.controller.type?.code : 'vmware-lsiLogic')]
+								                  controllerType:(volume.controller.type?.code && volume.controller.type?.code != 'vmware-plugin-standard' ? volume.controller.type?.code : 'vmware-lsiLogic')]
 							}
 							def addDiskResults = VmwareComputeUtility.addVmDisk(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, addDiskConfig)
 							setControllerInfo(server.controllers, addDiskResults.controllers, addDiskResults.controller)
