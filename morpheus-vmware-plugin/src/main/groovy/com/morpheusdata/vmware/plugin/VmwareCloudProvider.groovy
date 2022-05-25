@@ -117,18 +117,29 @@ class VmwareCloudProvider implements CloudProvider {
 				optionSource: 'vmwarePluginResourcePool'
 		)
 
+		OptionType hideHostSelection = new OptionType(
+				name: 'Inventory Existing Instances',
+				code: 'vmware-plugin-hide-host-selection',
+				fieldName: 'hideHostSelection',
+				displayOrder: 7,
+				fieldLabel: 'Hide Host Selection from Users',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config'
+		)
+
 		OptionType inventoryInstances = new OptionType(
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-import-existing',
 				fieldName: 'importExisting',
-				displayOrder: 7,
+				displayOrder: 8,
 				fieldLabel: 'Inventory Existing Instances',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
 				fieldContext: 'config'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances]
+		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances, hideHostSelection]
 	}
 
 	@Override

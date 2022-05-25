@@ -1,5 +1,6 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.core.AbstractProvisionProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
@@ -27,7 +28,7 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
 @Slf4j
-class DigitalOceanProvisionProvider implements ProvisioningProvider {
+class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	Plugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'

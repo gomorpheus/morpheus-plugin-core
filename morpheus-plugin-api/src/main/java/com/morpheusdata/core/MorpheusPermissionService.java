@@ -10,7 +10,8 @@ public interface MorpheusPermissionService {
      * @param accountId the account ID to scope the search
      * @param resourceType the ResourceType
      * @param siteId (Optional)
+	 * @param planId (Optional)
      * @return list of ids
      */
-	Observable<Long> listAccessibleResources(Long accountId, Permission.ResourceType resourceType, Long siteId);
+	Observable<Long> listAccessibleResources(Long accountId, Permission.ResourceType resourceType, Long siteId, Long planId);
 }

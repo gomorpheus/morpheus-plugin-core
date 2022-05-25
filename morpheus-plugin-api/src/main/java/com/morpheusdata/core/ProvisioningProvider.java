@@ -64,6 +64,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean hasPlanTagMatch();
 
 	/**
+	 * Determines if this provision type has ComputeZonePools that can be selected or not.
+	 * @return Boolean representation of whether or not this provision type has ComputeZonePools
+	 */
+	public Boolean hasComputeZonePools();
+
+	/**
+	 * Indicates if a ComputeZonePool is required during provisioning
+	 * @return Boolean
+	 */
+	public Boolean computeZonePoolRequired();
+
+	/**
 	 * Returns the maximum number of network interfaces that can be chosen when provisioning with this type
 	 * @return maximum number of networks or 0,null if unlimited.
 	 */

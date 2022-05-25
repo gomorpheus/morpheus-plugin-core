@@ -1,5 +1,6 @@
 package com.morpheusdata.maas.plugin
 
+import com.morpheusdata.core.AbstractProvisionProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
@@ -14,7 +15,7 @@ import com.morpheusdata.response.WorkloadResponse
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class MaasProvisionProvider implements ProvisioningProvider, ProvisionInstanceServers {
+class MaasProvisionProvider extends AbstractProvisionProvider implements ProvisionInstanceServers {
 
 	Plugin plugin
 	MorpheusContext morpheusContext

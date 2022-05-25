@@ -62,8 +62,45 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	}
 
 	@Override
-	public Collection<OptionType> getOptionTypes(){
-		// TODO
+	@Override
+	Collection<OptionType> getOptionTypes() {
+		OptionType imageOption = new OptionType([
+				name : 'virtual image',
+				code : 'vmware-plugin-provision-image',
+				fieldName : 'virtualImageId',
+				fieldContext : 'config',
+				fieldLabel : 'Image',
+				inputType : OptionType.InputType.SELECT,
+				displayOrder : 100,
+				required : true,
+				optionSource : 'vmwarePluginImage'		
+		])
+
+		OptionType hostOption = new OptionType([
+				name : 'host',
+				code : 'vmware-plugin-provision-host',
+				fieldName : 'hostId',
+				fieldContext : 'config',
+				fieldLabel : 'Host',
+				inputType : OptionType.InputType.SELECT,
+				displayOrder : 150,
+				required : false,
+				optionSource : 'vmwarePluginHost'
+		])
+
+		OptionType folderOption = new OptionType([
+				name : 'vmwareFolderId',
+				code : 'vmware-plugin-provision-folder',
+				fieldName : 'vmwareFolderId',
+				fieldContext : 'config',
+				fieldLabel : 'Folder',
+				inputType : OptionType.InputType.SELECT,
+				displayOrder : 200,
+				required : false,
+				optionSource : 'vmwarePluginFolder'
+		])
+
+		[imageOption, hostOption, folderOption]
 	}
 
 	@Override
@@ -724,6 +761,16 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	Boolean hasPlanTagMatch() {
+		true
+	}
+
+	@Override
+	Boolean hasComputeZonePools() {
+		true
+	}
+
+	@Override
+	Boolean computeZonePoolRequired() {
 		true
 	}
 

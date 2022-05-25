@@ -10,6 +10,16 @@ import java.util.Map;
 public abstract class AbstractProvisionProvider implements ProvisioningProvider {
 
 	@Override
+	public Boolean hasComputeZonePools() {
+		return false;
+	}
+
+	@Override
+	public Boolean computeZonePoolRequired() {
+		return false;
+	}
+
+	@Override
 	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		return ServiceResponse.success();
 	}

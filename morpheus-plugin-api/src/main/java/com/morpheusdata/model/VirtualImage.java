@@ -38,6 +38,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isCloudInit = true;
 	protected Boolean virtioSupported = true;
 	protected Boolean deleted = false;
+	protected Boolean userUploaded = false;
 	protected Boolean isSysprep = false;
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
@@ -301,5 +302,13 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setInstallAgent(Boolean installAgent) {
 		this.installAgent = installAgent;
+	}
+
+	public Boolean getUserUploaded() {
+		return userUploaded;
+	}
+
+	public void setUserUploaded(Boolean userUploaded) {
+		this.userUploaded = userUploaded;
 	}
 }
