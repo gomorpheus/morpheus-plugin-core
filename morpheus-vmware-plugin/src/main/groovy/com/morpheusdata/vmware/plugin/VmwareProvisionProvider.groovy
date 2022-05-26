@@ -504,19 +504,16 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		Datastore imageDatastore = morpheusContext.cloud.datastore.getDefaultImageDatastoreForAccount(cloud.id, account.id).blockingGet()
 		def contentLibraryImages = virtualImage.imageLocations?.findAll { it.refType == 'ComputeZone' && it.refId == cloud.id && it.externalId != null && it.sharedStorage == true }
 		if (contentLibraryImages) { //we need to pick the best suited image
-
 			List<Long> tmpIds = []
 			morpheusContext.computeServer.listSyncProjections(cloud.id).filter { it ->
 				it.computeServerTypeCode == 'vmwareHypervisor'
 			}.blockingSubscribe { tmpIds << it.id }
-
 			List<ComputeServer> hosts = []
 			morpheusContext.computeServer.listById(tmpIds).blockingSubscribe { it ->
 				if(it.resourcePool.internalId == clusterId) {
 					hosts << it
 				}
 			}
-
 			def datastoresInCluster = hosts?.collect { it.volumes.collect { it.datastore } }.flatten().findAll { it != null }.unique()
 			def localImage = contentLibraryImages.find { loc -> datastoresInCluster.any { ds -> ds.id == loc.datastore?.id } }
 			if (localImage) {
@@ -573,6 +570,33 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			currentInterface.name = "Ethernet${idx + 1}"
 		}
 		server
+	}
+
+	@Override
+	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		log.debug "prepareWorkload: ${workload} ${workloadRequest} ${opts}"
+
+		def rtn = [success: false, msg: null]
+		try {
+			Long virtualImageId = workload.getConfigProperty('virtualImageId')?.toLong()
+			if(!virtualImageId) {
+				rtn.msg = "No virtual image selected"
+			} else {
+				VirtualImage virtualImage = morpheusContext.virtualImage.get(virtualImageId).blockingGet()
+				if(!virtualImage) {
+					rtn.msg = "No virtual image found for ${virtualImageId}"
+				} else {
+					workload.server.sourceImage = virtualImage
+					saveAndGet(workload.server)
+					rtn.success = true
+				}
+			}
+		} catch(e) {
+			rtn.msg = "Error in PrepareWorkload: ${e}"
+			log.error "${rtn.msg}, ${e}", e
+
+		}
+		new ServiceResponse(rtn.success, rtn.msg, null, null)
 	}
 
 	@Override
@@ -682,6 +706,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				return new ServiceResponse<WorkloadResponse>(success: true, data: workloadResponse)
 			}
 		} catch(e) {
+			log.error "runWorkload: ${e}", e
 			workloadResponse.setError(e.message)
 			return new ServiceResponse(success: false, msg: e.message, error: e.message, data: workloadResponse)
 		}
@@ -741,7 +766,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts){
-		// TODO
+		ServiceResponse.success()
 	}
 
 	@Override
@@ -927,21 +952,22 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	}
 
 	private Datastore getDatastoreOption(Cloud cloud, Account account, datacenterId, clusterId, hostId, Datastore datastore, String datastoreOption, Long size, Long siteId=null) {
+		log.debug "getDatastoreOption: ${cloud} ${account} ${datacenterId} ${clusterId} ${hostId} ${datastore} ${datastoreOption} ${size} ${siteId}"
 		def rtn
 
 		def lock
 		def lockId = "vmware.dsselect.${cloud.id}".toString()
 		try {
-			lock = morpheusContext.acquireLock(lockId, [timeout:30000L, ttl:30000L]).blockingGet()
-			if(datastore) {
+			lock = morpheusContext.acquireLock(lockId, [timeout: 30000L, ttl: 30000L]).blockingGet()
+			if (datastore) {
 				rtn = datastore
 			} else {
 
 				List<Long> datastoreIds = []
-				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore, siteId).blockingSubscribe { datastoreIds << it }
+				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore, siteId, null).blockingSubscribe { datastoreIds << it }
 
 				List<Long> tenantDatastoreIds = []
-				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore).blockingSubscribe { datastoreIds << it }
+				morpheusContext.permission.listAccessibleResources(account.id, Permission.ResourceType.Datastore, null, null).blockingSubscribe { datastoreIds << it }
 
 				if (datastoreOption == 'auto' || !datastoreOption) {
 					// Fetch the Morpheus datastores
@@ -951,10 +977,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					}.blockingSubscribe { tmpDatastores << it }
 
 					List<Datastore> dsList = []
-					morpheusContext.cloud.datastore.listById( tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
-						if(ds.online && ds.active && ds.freeSpace > size) {
-							def poolMatch = ds.zonePool?.id == null || ds.zonePool?.internalId == clusterId || ds.assignedZonePools?.find { it.internalId == clusterId}
-							if(poolMatch && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
+					morpheusContext.cloud.datastore.listById(tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
+						if (ds.online && ds.active && ds.freeSpace > size) {
+							def poolMatch = ds.zonePool?.id == null || ds.zonePool?.internalId == clusterId || ds.assignedZonePools?.find { it.internalId == clusterId }
+							if (poolMatch && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
 								dsList << ds
 							}
 						}
@@ -979,8 +1005,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					}.blockingSubscribe { tmpDatastores << it }
 
 					List<Datastore> dsList = []
-					morpheusContext.cloud.datastore.listById( tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
-						if(ds.online && ds.freeSpace > size && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
+					morpheusContext.cloud.datastore.listById(tmpDatastores?.collect { it.id }).blockingSubscribe { Datastore ds ->
+						if (ds.online && ds.freeSpace > size && matchesDatastores(ds, account, datastoreIds, tenantDatastoreIds)) {
 							dsList << ds
 						}
 					}
@@ -992,16 +1018,22 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 							return false
 						}
 
-						List<ComputeServer> serversFound = []
+						List<Long> serverIds = []
 						morpheusContext.computeServer.listSyncProjections(cloud.id).filter { ComputeServerIdentityProjection proj ->
 							proj.category == "vmware.vsphere.host.${cloud.id}"
-						}.blockingSubscribe{ ComputeServer tmpServer ->
-							if(tmpServer.volumes.find{it.externalId in dsIds } &&
-								(tmpServer.resourcePool?.id == null || tmpServer.resourcePool?.internalId == clusterId)
-							) {
-								serversFound << tmpServer
+						}.blockingSubscribe { serverIds << it.id }
+
+						List<ComputeServer> serversFound = []
+						if(serverIds.size() > 0) {
+							morpheusContext.computeServer.listById(serverIds).blockingSubscribe { ComputeServer tmpServer ->
+								if (tmpServer.volumes.find { it.externalId in dsIds } &&
+										(tmpServer.resourcePool?.id == null || tmpServer.resourcePool?.internalId == clusterId)
+								) {
+									serversFound << tmpServer
+								}
 							}
 						}
+
 						if (serversFound.size() > 0) {
 							return true
 						} else {
@@ -1016,6 +1048,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					morpheusContext.cloud.datastore.save([rtn]).blockingGet()
 				}
 			}
+		} catch(e) {
+			log.error "Error in getDatastoreOption: ${e}", e
 		} finally {
 			if(lock && lockId) {
 				morpheusContext.releaseLock(lockId, [lock:lock])

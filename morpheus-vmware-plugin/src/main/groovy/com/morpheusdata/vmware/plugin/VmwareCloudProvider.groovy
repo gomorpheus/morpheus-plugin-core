@@ -139,7 +139,57 @@ class VmwareCloudProvider implements CloudProvider {
 				fieldContext: 'config'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances, hideHostSelection]
+		// Advanced options
+		OptionType diskTypeSelection = new OptionType(
+				name: 'Enable Disk Type Selection',
+				code: 'vmware-plugin-disk-type-selection',
+				fieldName: 'enableDiskTypeSelection',
+				displayOrder: 9,
+				fieldLabel: 'Enable Disk Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType storageTypeSelection = new OptionType(
+				name: 'Enable Storage Type Selection',
+				code: 'vmware-plugin-storage-type-selection',
+				fieldName: 'enableStorageTypeSelection',
+				displayOrder: 10,
+				fieldLabel: 'Enable Storage Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType networkTypeSelection = new OptionType(
+				name: 'Enable Network Interface Type Selection',
+				code: 'vmware-plugin-network-type-selection',
+				fieldName: 'enableNetworkTypeSelection',
+				displayOrder: 11,
+				fieldLabel: 'Enable Network Interface Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType diskStorageType = new OptionType(
+				name: 'Storage Type',
+				code: 'vmware-plugin-disk-storage-selection',
+				fieldName: 'diskStorageType',
+				displayOrder: 12,
+				fieldLabel: 'Storage Type',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				optionSource: 'vmwarePluginDiskTypes',
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances, hideHostSelection, diskTypeSelection, storageTypeSelection, networkTypeSelection, diskStorageType]
 	}
 
 	@Override

@@ -42,7 +42,7 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC', 'vmwarePluginCluster', 'vmwarePluginResourcePool','vmwarePluginImage','vmwarePluginHost','vmwarePluginFolder'])
+		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC', 'vmwarePluginCluster', 'vmwarePluginResourcePool','vmwarePluginImage','vmwarePluginHost','vmwarePluginFolder', 'vmwarePluginDiskTypes'])
 	}
 
 	def vmwarePluginVersions(args) {
@@ -157,6 +157,11 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 		}?.sort{a,b -> a.root <=> b.root ?: a.name <=> b.name}
 
 		return rtn
+	}
+
+	def vmwarePluginDiskTypes(args) {
+		log.debug "vmwarePluginDiskTypes: ${args}"
+		return [[name:'Thin', value:'thin'], [name:'Thick (Lazy Zero)', value:'thick'], [name:'Thick (Eager)', value:'thickEager']]
 	}
 
 	private List<ComputeZoneFolder> selectableFolders(Long accountId, Long cloudId, Long siteId, Long planId, List<Long> scopedFolderIds = null) {
