@@ -35,6 +35,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String uniqueId;
 	protected String datastoreOption;
 	protected StorageControllerIdentityProjection controller;
+	protected String controllerKey;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
 
@@ -240,5 +241,13 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public void setDatastoreOption(String datastoreOption) {
 		this.datastoreOption = datastoreOption;
+	}
+
+	public String getControllerKey() {
+		return controllerKey;
+	}
+
+	public void setControllerKey(String controllerKey) {
+		this.controllerKey = controllerKey;
 	}
 }

@@ -91,5 +91,5 @@ public interface MorpheusProvisionService {
 	 * @param networkData the networkdata to embed in the iso (optional)
 	 * @return a byte array for the iso
 	 */
-	Single<Byte[]> buildIsoOutputStream(Boolean isSysPrep, PlatformType platform, String metaData, String userData, String networkData);
+	Single<byte[]> buildIsoOutputStream(Boolean isSysPrep, PlatformType platform, String metaData, String userData, String networkData);
 }

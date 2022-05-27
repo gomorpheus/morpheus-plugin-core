@@ -4,7 +4,7 @@ import com.morpheusdata.core.util.ComputeUtility
 import com.morpheusdata.core.util.SSLUtility
 import com.vmware.vim25.*
 import com.vmware.vim25.mo.*
-import com.vmware.vim25.VirtualEthernetCard
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import com.morpheusdata.core.util.HttpApiClient
 import org.apache.http.HttpHost
@@ -13,6 +13,7 @@ import org.apache.http.auth.NTCredentials
 import org.apache.http.client.CredentialsProvider
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpPut
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.conn.ssl.SSLContextBuilder
@@ -24,6 +25,8 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.client.ProxyAuthenticationStrategy
 import com.bertramlabs.plugins.karman.CloudFile
 
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLSession
 import javax.net.ssl.SSLSocket
 import java.security.cert.X509Certificate
@@ -38,6 +41,7 @@ class VmwareComputeUtility {
 	static VmwareLeaseProgressUpdater leaseUpdater
 	static morpheusExtensionId = 'com.morpheusdata.plugin.vmware.extension'
 	static final java.util.concurrent.ExecutorService monitorServiceExecutor = java.util.concurrent.Executors.newCachedThreadPool()
+	static final vmwareMutex = new Object()
 
 	static testConnection(apiUrl, username, password, opts = [:]) {
 		def rtn = [success:false, invalidLogin:false]
@@ -2673,12 +2677,13 @@ class VmwareComputeUtility {
 				def deviceChangeArray = []
 				if(opts.networkConfig?.primaryInterface?.network?.externalId) { //new style multi network
 					def primaryInterface = opts.networkConfig.primaryInterface
+					def primaryNetwork = opts.networkConfig.primaryInterface
 					def nicSpec
-					def networkBackingType = primaryInterface.network.externalType != 'string' ? primaryInterface.network.externalType : 'Network'
-					def vmNetwork = getManagedObject(serviceInstance, networkBackingType ?: 'Network', primaryInterface.network.externalId ?: primaryInterface.network.parentNetwork?.externalId)
+					def networkBackingType = primaryInterface.network.externalType != 'string' ? primaryNetwork.externalType : 'Network'
+					def vmNetwork = getManagedObject(serviceInstance, networkBackingType ?: 'Network', primaryNetwork.externalId ?: primaryNetwork.parentNetwork?.externalId)
 					if(vmNetwork)
 						nicSpec = createSetNetworkOnNicSpec(virtualDevices, vmNetwork, serviceInstance, primaryInterface, 0, false,
-								[switchUuid:primaryInterface.network.internalId ?: primaryInterface.network.parentNetwork?.internalId])
+								[switchUuid:primaryNetwork.internalId ?: primaryNetwork.parentNetwork?.internalId])
 					if(nicSpec)
 						deviceChangeArray << nicSpec
 					//additional nics
@@ -3310,20 +3315,20 @@ class VmwareComputeUtility {
 		return nicSpecs ? nicSpecs : null
 	}
 
-	static addCloudInitIso(apiUrl, username, password, Byte[] isoByteArray,  opts = [:]) {
+	static addCloudInitIso(apiUrl, username, password, isoByteArray, HttpApiClient client,  opts = [:]) {
 		def rtn = [success: false]
 		try {
 			def isoOutput = isoByteArray
 			def cloudConfigInputStream = new ByteArrayInputStream(isoOutput) //cloudConfigData.createInputStream()
 			def cloudConfigInputLength = isoOutput.length //cloudConfigData.getLength()
-			rtn = addIso(apiUrl,username,password,opts + [inputStream: cloudConfigInputStream, contentLength: cloudConfigInputLength, isoName: 'config.iso', overwrite:true])
+			rtn = addIso(apiUrl,username,password, client, opts + [inputStream: cloudConfigInputStream, contentLength: cloudConfigInputLength, isoName: 'config.iso', overwrite:true])
 		} catch(e) {
 			log.error("addCloudInitIso error: ${e}", e)
 		}
 		return rtn
 	}
 
-	static addIso(apiUrl, username, password, opts = [:]) {
+	static addIso(apiUrl, username, password, HttpApiClient client, opts = [:]) {
 		def rtn = [success: false]
 		def inputStream
 		def contentLength
@@ -3352,8 +3357,8 @@ class VmwareComputeUtility {
 			log.info("url: ${uploadUrl}")
 			def sessionManager = serviceInstance.getSessionManager()
 			def sessionId = sessionManager.getServerConnection().getVimService().getWsc().getCookie()
-			if(!fileExists(username,password,sessionId,uploadUrl, opts.proxySettings) || opts.overwrite) {
-				def uploadResults = uploadFile(username, password, sessionId, inputStream, contentLength, uploadUrl, opts.proxySettings)
+			if(!fileExists(username,password,client,sessionId,uploadUrl, opts.proxySettings) || opts.overwrite) {
+				def uploadResults = uploadFile(username, password, client, sessionId, inputStream, contentLength, uploadUrl, opts.proxySettings)
 				rtn.success = uploadResults.success
 			}
 
@@ -3679,4 +3684,1414 @@ class VmwareComputeUtility {
 		URIBuilder uriBuilder = new URIBuilder(apiUrl)
 		"${uriBuilder.scheme}://${uriBuilder.host}${uriBuilder.port != -1 ? ':' + uriBuilder.port : ''}"
 	}
+
+	static retryWaitForTask(vmTask) {
+		def attempts = 0
+		def results = null
+		def taskInfo
+		while(results == null && attempts < 20) {
+			try {
+				results = vmTask.waitForTask(1000, 5000)
+				taskInfo = vmTask.getTaskInfo()
+			} catch(MethodFault ex) {
+				log.error("Error detected waiting for task! ${ex}",ex)
+				results = logFaultError('error executing vmtask', ex)
+				break
+			} catch(e) {
+				log.warn("error waiting for vmtask: ${e}", e)
+				sleep(3000)
+			}
+			attempts++
+		}
+		if(results  != Task.SUCCESS) {
+			//task info
+			if(taskInfo.getError() != null) {
+				log.error("Task Error: ${taskInfo.getError().getLocalizedMessage()}")
+				results = taskInfo.getError().getLocalizedMessage()
+			} else {
+				log.error("Task Info: ${taskInfo.dump()}")
+			}
+
+		}
+		return results
+	}
+
+	static logFaultError(message, fault) {
+		def rtn = buildFaultMessage(message, fault)
+		log.error("${rtn}: ${fault}", fault)
+		return rtn
+	}
+
+	static buildFaultMessage(message, fault) {
+		def rtn = message
+		try {
+			def messages = fault.getFaultMessage()
+			messages?.each { msg ->
+				def localMsg = msg.getMessage()
+				if(localMsg)
+					rtn = rtn + ' - ' + localMsg
+			}
+		} catch(e) {
+			log.error("buildFaultMessage error: ${e}", e)
+		}
+		return rtn
+	}
+
+	static getVirtualMachineIdFromTask(Task vmTask) {
+		def rtn
+		def taskResult = vmTask?.getTaskInfo()?.getResult()
+		if (taskResult && taskResult instanceof ManagedObjectReference) {
+			if (taskResult?.getType() == "VirtualMachine") {
+				rtn = taskResult?.getVal() //vm id
+			}
+		}
+		return rtn
+	}
+
+	static addVmCustomizations(serviceInstance, apiUrl, username, password, opts) {
+		def rtn = [success:false, modified:false, ipAddressList:[]]
+		try {
+			def customSpec
+			//options
+			if(opts.vmToolsInstalled && !opts.isSysprep && (opts.customSpec || opts.networkConfig?.doCustomizations == true || opts.forceCustomizations == true)) {
+				log.debug("doing customizations")
+				//load the requested custom spec or create a new one
+				if(opts.customSpec) {
+					def customManager = serviceInstance.getCustomizationSpecManager()
+					def customSpecItem = customManager.getCustomizationSpec(opts.customSpec)
+					customSpec = customSpecItem.getSpec()
+				} else {
+					customSpec = new CustomizationSpec()
+				}
+				//naming and identity config
+				if(opts.platform == 'linux') {
+					def identitySettings = customSpec?.getIdentity() ?: new CustomizationLinuxPrep()
+					def customName = new CustomizationFixedName()
+					customName.setName(opts.hostname)
+					identitySettings.setHostName(customName)
+					identitySettings.setDomain(opts.domainName ?: 'localdomain')
+					customSpec.setIdentity(identitySettings)
+				} else if(opts.platform == 'windows' && opts.guestCustUnattend) {
+					CustomizationSysprepText identitySettings = new CustomizationSysprepText()
+					identitySettings.setValue(opts.guestCustUnattend)
+					customSpec.setIdentity(identitySettings)
+				} else {
+					CustomizationSysprep identitySettings = customSpec.getIdentity() ?: new CustomizationSysprep()
+					def guiUnattended = identitySettings.getGuiUnattended()
+					if(!guiUnattended) {
+						guiUnattended = new CustomizationGuiUnattended()
+						if(opts.runOnce) {
+							guiUnattended.setAutoLogon(true)
+							guiUnattended.setAutoLogonCount(1)
+						} else {
+							guiUnattended.setAutoLogon(false)
+							guiUnattended.setAutoLogonCount(0)
+						}
+
+						def vmTimezone = findVmwareTimezone(opts.timezone)
+						log.debug("Finding Timezone: ${vmTimezone.id ?: 20}")
+						guiUnattended.setTimeZone(vmTimezone.id ?: 20)
+					}
+					def guiPassword = guiUnattended.getPassword()
+					def adminUser = opts.userConfig?.userList?.find{it.username.toLowerCase() == 'administrator'}
+					if(!guiPassword && opts.userConfig.sshPassword) {
+						guiPassword = new CustomizationPassword()
+						guiPassword.setValue(opts.userConfig.sshPassword)
+						guiPassword.setPlainText(true)
+						guiUnattended.setPassword(guiPassword)
+					}
+					identitySettings.setGuiUnattended(guiUnattended)
+					def identification = identitySettings.getIdentification() ?: new CustomizationIdentification()
+					if(opts.networkConfig?.networkDomain?.domainController && !opts.networkConfig?.networkDomain?.dcServer && !opts.networkConfig?.networkDomain?.ouPath) {
+						identification.setDomainAdmin(opts.networkConfig.networkDomain.domainUsername)
+						identification.setJoinDomain(opts.networkConfig.networkDomain.name)
+						CustomizationPassword domainPassword = new CustomizationPassword()
+						domainPassword.setPlainText(true)
+						domainPassword.setValue(opts.networkConfig.networkDomain.domainPassword)
+						identification.setDomainAdminPassword(domainPassword)
+					}
+					identitySettings.setIdentification(identification)
+					def userData = identitySettings.getUserData() ?: new CustomizationUserData()
+					//def customName = userData.getComputerName() ?: new CustomizationFixedName()
+					def customName = new CustomizationFixedName()
+					customName.setName(opts.hostname?.replace('_','-'))
+					userData.setComputerName(customName)
+					def windowsLicense = opts.licenses?.find{lic -> lic.licenseType?.code == 'win'}
+					if(windowsLicense) {
+						userData.setProductId(windowsLicense.licenseKey)
+						userData.setFullName(windowsLicense.fullName ?: username)
+						userData.setOrgName(windowsLicense.orgName ?: username)
+					} else {
+						userData.setProductId('')
+						userData.setFullName(username)
+						userData.setOrgName(username)
+					}
+
+					identitySettings.setUserData(userData)
+					customSpec.setIdentity(identitySettings)
+					if(opts.runOnce) {
+						// Time to split the runOnce data up as its powershell
+						log.debug("Adding Agent Install Run Once Commands")
+						def windowsCommand = opts.runOnce.replace('\n','\r\n') + "\r\n"
+						def runOnceCommands = []
+						def clearCommand = "if (Test-Path C:\\installAgent.ps1) { [System.IO.File]::Delete('C:\\installAgent.ps1') }"
+						runOnceCommands <<  "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe \"${escapeWindowsCommand(clearCommand)}\""
+
+						while(windowsCommand) {
+							def chunk = windowsCommand.take(20)
+							def encodedLine = chunk.getBytes("UTF-16LE").encodeBase64().toString()
+
+							windowsCommand = windowsCommand.drop(20)
+							def command = "[System.IO.File]::AppendAllText('C:\\installAgent.ps1',[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('${encodedLine}')))"
+							runOnceCommands <<  "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe \"${escapeWindowsCommand(command)}\""
+
+						}
+						runOnceCommands << "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe -File C:\\installAgent.ps1"
+						//runOnceCommands << "logoff"
+						CustomizationGuiRunOnce guiRunOnce = new CustomizationGuiRunOnce()
+						guiRunOnce.setCommandList(runOnceCommands as String[])
+						identitySettings.setGuiRunOnce(guiRunOnce)
+						// powershellCommands << [command: "mkdir C:\\Windows\\Setup\\Scripts -Force"]
+						// powershellCommands << [command: "Add-Content C:\\Windows\\Setup\\Scripts\\SetupComplete.cmd 'powershell -File C:\\installAgent.ps1'"]
+					}
+				}
+				//network config
+				if(opts.networkConfig?.doCustomizations == true || opts.forceCustomizations == true) {
+					log.debug("setting network config: ${opts.networkConfig}")
+					//primary interface
+					def globalIpSettings = customSpec.getGlobalIPSettings() ?: new CustomizationGlobalIPSettings()
+					def dnsServers = opts.networkConfig.primaryInterface.dnsServers?.tokenize(', ') ?: []
+					opts.networkConfig.extraInterfaces?.each { networkInterface ->
+						if(networkInterface.dnsServers) {
+							dnsServers += networkInterface.dnsServers.tokenize(', ')
+						}
+					}
+					dnsServers = dnsServers?.flatten()?.findAll {dnsServer -> dnsServer}
+					if(dnsServers) {
+						globalIpSettings.setDnsServerList(dnsServers as String[])
+					}
+					customSpec.setGlobalIPSettings(globalIpSettings)
+					def currentAdapterMappings = customSpec.getNicSettingMap()
+					def adapterMappings = []
+					if(opts.networkConfig.primaryInterface) {
+						def networkResults = addVmNetworkCustomizations(apiUrl, username, password, currentAdapterMappings, opts.networkConfig.primaryInterface, 0, opts)
+						if(networkResults.success == true) {
+							adapterMappings << networkResults.adapterMapping
+							if(networkResults.ipAddress)
+								rtn.ipAddressList << [index:0, ipAddress:networkResults.ipAddress]
+						}
+					}
+					opts.networkConfig.extraInterfaces?.eachWithIndex { networkInterface, index ->
+						def networkResults = addVmNetworkCustomizations(apiUrl, username, password, currentAdapterMappings, networkInterface, index + 1, opts)
+						if(networkResults.success == true) {
+							adapterMappings << networkResults.adapterMapping
+							if(networkResults.ipAddress)
+								rtn.ipAddressList << [index:index + 1, ipAddress:networkResults.ipAddress]
+						}
+					}
+					customSpec.setNicSettingMap(adapterMappings as CustomizationAdapterMapping[])
+					rtn.modified = true
+					rtn.success = true
+				}
+			}
+			if(customSpec) {
+				rtn.modified = true
+				rtn.customSpec = customSpec
+			}
+		} catch(e) {
+			log.error("addVmCustomizations error ${e}", e)
+			throw e
+		}
+		return rtn
+	}
+
+	static addVmNetworkCustomizations(apiUrl, username, password, adapterMappings, networkConfig, index, opts) {
+		def rtn = [success:false]
+		def adapterMapping = adapterMappings?.size() > index ? adapterMappings[index] : new CustomizationAdapterMapping()
+		def customIPSettings = adapterMapping.getAdapter() ?: new CustomizationIPSettings()
+		if(networkConfig.doDhcp == true) {
+			def dhcpIp = new CustomizationDhcpIpGenerator()
+			customIPSettings.setIp(dhcpIp)
+			adapterMapping.setAdapter(customIPSettings)
+		} else if(networkConfig.doStatic == true && networkConfig.ipAddress) {
+			if(networkConfig.gateway)
+				customIPSettings.setGateway([networkConfig.gateway] as String[])
+			if(networkConfig.netmask)
+				customIPSettings.setSubnetMask(networkConfig.netmask)
+			if(networkConfig.dnsServers) {
+				def dnsServerList = networkConfig.dnsServers.tokenize(' ,')
+				dnsServerList = dnsServerList?.flatten()?.findAll {dnsServer -> dnsServer}
+				if(dnsServerList?.size() > 0)
+					customIPSettings.setDnsServerList(dnsServerList as String[])
+			}
+			def fixedIp = new CustomizationFixedIp()
+			fixedIp.setIpAddress(networkConfig.ipAddress)
+			customIPSettings.setIp(fixedIp)
+			adapterMapping.setAdapter(customIPSettings)
+		} else if(networkConfig.doPool && networkConfig.networkPool) { //todo - trigger for customizations
+			if(networkConfig.dnsServers?.size() > 0) {
+				def dnsServerList = networkConfig.networkPool.dnsServers.tokenize(' ,')
+				if(dnsServerList?.size() > 0)
+					customIPSettings.setDnsServerList(dnsServerList as String[])
+			}
+			if(networkConfig.gateway)
+				customIPSettings.setGateway([networkConfig.gateway] as String[])
+			if(networkConfig.dnsDomain)
+				customIPSettings.setDnsDomain(networkConfig.dnsDomain)
+			if(networkConfig.networkPool.netmask)
+				customIPSettings.setSubnetMask(networkConfig.netmask)
+			if(networkConfig.dnsServers) {
+				def dnsServerList = networkConfig.dnsServers.tokenize(' ,')
+				dnsServerList = dnsServerList?.flatten()?.findAll {dnsServer -> dnsServer}
+				if(dnsServerList?.size() > 0)
+					customIPSettings.setDnsServerList(dnsServerList as String[])
+			}
+			def ipResults = allocateIpv4Address(apiUrl, username, password, networkConfig.networkPool.externalId?.toInteger(), "morpheus${opts.server.id}", opts)
+			if(ipResults.success == true) {
+				rtn.ipAddress = ipResults.ipAddress
+				rtn.networkPoolId = networkConfig.networkPool.id
+				def fixedIp = new CustomizationFixedIp()
+				fixedIp.setIpAddress(ipResults.ipAddress)
+				customIPSettings.setIp(fixedIp)
+			} else {
+				throw new Exception('failed to allocate ip address from pool')
+			}
+		}
+		adapterMapping.setAdapter(customIPSettings)
+		rtn.adapterMapping = adapterMapping
+		rtn.success = true
+		return rtn
+	}
+
+	static allocateIpv4Address(apiUrl, username, password, poolId, allocationId, opts) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			synchronized(vmwareMutex) {
+				try {
+					def proxyUrl = 'https://sdkTunnel:8089/sdk'
+					def newUrl = apiUrl.replaceAll('https://', '')
+					newUrl = newUrl.replaceAll('/sdk', '')
+					log.debug("proxyTo: ${newUrl}")
+					System.setProperty("proxySet", 'true')
+					System.setProperty("proxyHost", newUrl)
+					System.setProperty("proxyPort", '80')
+					serviceInstance = connectionPool.getConnection(proxyUrl, username, password)
+					def serviceContent = serviceInstance.retrieveServiceContent()
+					def sessionManager = serviceInstance.getSessionManager()
+					def rootFolder = serviceInstance.getRootFolder()
+					def datacenter = opts.datacenter ? new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter) : null
+					sessionManager.logout()
+					serviceInstance.getServerConnection().getVimService().getWsc().cookie = null
+					log.debug("logging in cert")
+					sessionManager.loginExtensionByCertificate(morpheusExtensionId, 'en')
+					if(datacenter) {
+						def ipPoolManagerRef = serviceContent.getIpPoolManager()
+						def ipPoolManager = ipPoolManagerRef ? getManagedObject(serviceInstance, 'IpPoolManager', ipPoolManagerRef.getVal()) : null
+						def ipAddress = ipPoolManager.allocateIpv4Address(datacenter, poolId, allocationId)
+						log.info("allocate ipAddress: ${ipAddress}")
+						if(ipAddress) {
+							rtn.success = true
+							rtn.ipAddress = ipAddress
+						}
+					} else {
+						rtn.msg = 'no datacenter specified'
+					}
+				} catch(e2) {
+					log.error("proxy error: ${e2}", e2)
+				} finally {
+					System.setProperty("proxySet", "false")
+					System.clearProperty("proxyHost")
+					System.clearProperty("proxyPort")
+				}
+			}
+		} catch(e) {
+			log.error("allocateIpv4Address error ${e}", e)
+			throw e
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static releaseIpv4Address(apiUrl, username, password, poolId, allocationId, opts) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			synchronized(vmwareMutex) {
+				try {
+					def proxyUrl = 'https://sdkTunnel:8089/sdk'
+					def newUrl = apiUrl.replaceAll('https://', '')
+					newUrl = newUrl.replaceAll('/sdk', '')
+					log.debug("proxyTo: ${newUrl}")
+					System.setProperty("proxySet", 'true')
+					System.setProperty("proxyHost", newUrl)
+					System.setProperty("proxyPort", '80')
+					serviceInstance = connectionPool.getConnection(proxyUrl, username, password)
+					def serviceContent = serviceInstance.retrieveServiceContent()
+					def sessionManager = serviceInstance.getSessionManager()
+					def rootFolder = serviceInstance.getRootFolder()
+					def datacenter = opts.datacenter ? new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter) : null
+					sessionManager.logout()
+					serviceInstance.getServerConnection().getVimService().getWsc().cookie = null
+					log.debug("logging in cert")
+					sessionManager.loginExtensionByCertificate(morpheusExtensionId, 'en')
+					if(datacenter) {
+						def ipPoolManagerRef = serviceContent.getIpPoolManager()
+						def ipPoolManager = ipPoolManagerRef ? getManagedObject(serviceInstance, 'IpPoolManager', ipPoolManagerRef.getVal()) : null
+						ipPoolManager.releaseIpAllocation(datacenter, poolId, allocationId)
+						rtn.success = true
+					} else {
+						rtn.msg = 'no datacenter specified'
+					}
+				} catch(e2) {
+					log.error("proxy error: ${e2}", e2)
+				} finally {
+					System.setProperty("proxySet", "false")
+					System.clearProperty("proxyHost")
+					System.clearProperty("proxyPort")
+				}
+			}
+		} catch(e) {
+			log.error("releaseIpv4Address error ${e}", e)
+			throw e
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+		return rtn
+	}
+
+	static escapeWindowsCommand(String command) {
+		def rtn = command.replace('\"', "\"\"\"")
+		return rtn
+	}
+
+	static getDatacenterPath(ServiceInstance serviceInstance, Datacenter datacenter) {
+		def folderPath = ''
+
+		def parent = datacenter.getParent()
+		while(parent != null) {
+			if(parent.name == 'Datacenters') {
+				break
+			} else {
+				folderPath = "${parent.name}/" + folderPath
+				parent = parent.getParent()
+			}
+		}
+		return folderPath + datacenter.getName()
+	}
+
+	static fileExists(username,password,HttpApiClient client, token,tgtUrl, proxySettings = null) {
+		log.info("fileExists tgt: ${tgtUrl}")
+		def outboundClient
+		try {
+			def outboundSslBuilder = new SSLContextBuilder()
+			outboundSslBuilder.loadTrustMaterial(null, new TrustStrategy() {
+				@Override
+				boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					return true
+				}
+			})
+			def outboundSocketFactory = new SSLConnectionSocketFactory(outboundSslBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+			def clientBuilder = HttpClients.custom().setSSLSocketFactory(outboundSocketFactory)
+			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
+				boolean verify(String host, SSLSession sess) { return true }
+
+				void verify(String host, SSLSocket ssl) {}
+
+				void verify(String host, String[] cns, String[] subjectAlts) {}
+
+				void verify(String host, X509Certificate cert) {}
+			})
+			if(proxySettings) {
+				def proxyHost = proxySettings.proxyHost
+				def proxyPort = proxySettings.proxyPort
+				if(proxyHost && proxyPort) {
+					log.info "proxy detected for image upload ${proxyHost}:${proxyPort}"
+					def proxyUser = proxySettings.proxyUser
+					def proxyPassword = proxySettings.proxyPassword
+					def proxyWorkstation = proxySettings.proxyWorkstation ?: null
+					def proxyDomain = proxySettings.proxyDomain ?: null
+					clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort))
+					if(proxyUser) {
+						CredentialsProvider credsProvider = new BasicCredentialsProvider()
+						NTCredentials ntCreds = new NTCredentials(proxyUser, proxyPassword, proxyWorkstation, proxyDomain)
+						credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), ntCreds)
+						clientBuilder.setDefaultCredentialsProvider(credsProvider)
+						clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
+					}
+				}
+			}
+			outboundClient = clientBuilder.build()
+			def outboundPut = new HttpGet(tgtUrl)
+			outboundPut.addHeader('Connection', 'Keep-Alive')
+			outboundPut.addHeader('Content-Type', 'application/octet-stream')
+			outboundPut.addHeader('Authorization', 'Basic ' + (username + ':' + password).bytes.encodeBase64().toString())
+			outboundPut.addHeader('Cookie', 'vmware_cgi_ticket=' + token)
+
+			def responseBody = outboundClient.execute(outboundPut)
+			log.debug("Checking file Existence: ${responseBody.statusLine.statusCode}")
+			return responseBody.statusLine.statusCode < 400
+		} catch(e) {
+			log.error("fileExists error: ${e}", e)
+			return false
+		} finally {
+			outboundClient.close()
+		}
+	}
+
+	static uploadFile(username, password, HttpApiClient client, token, srcStream, contentLength, tgtUrl, proxySettings = null) {
+		log.info("uploadFile tgt: ${tgtUrl}")
+		def rtn = [success: false]
+		def outboundClient
+		try {
+			def outboundSslBuilder = new SSLContextBuilder()
+			outboundSslBuilder.loadTrustMaterial(null, new TrustStrategy() {
+				@Override
+				boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					return true
+				}
+			})
+			def outboundSocketFactory = new SSLConnectionSocketFactory(outboundSslBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+			def clientBuilder = HttpClients.custom().setSSLSocketFactory(outboundSocketFactory)
+			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
+				boolean verify(String host, SSLSession sess) { return true }
+
+				void verify(String host, SSLSocket ssl) {}
+
+				void verify(String host, String[] cns, String[] subjectAlts) {}
+
+				void verify(String host, X509Certificate cert) {}
+			})
+			if(proxySettings) {
+				def proxyHost = proxySettings.proxyHost
+				def proxyPort = proxySettings.proxyPort
+				if(proxyHost && proxyPort) {
+					log.info "proxy detected for image upload ${proxyHost}:${proxyPort}"
+					def proxyUser = proxySettings.proxyUser
+					def proxyPassword = proxySettings.proxyPassword
+					def proxyWorkstation = proxySettings.proxyWorkstation ?: null
+					def proxyDomain = proxySettings.proxyDomain ?: null
+					clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort))
+					if(proxyUser) {
+						CredentialsProvider credsProvider = new BasicCredentialsProvider()
+						NTCredentials ntCreds = new NTCredentials(proxyUser, proxyPassword, proxyWorkstation, proxyDomain)
+						credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), ntCreds)
+						clientBuilder.setDefaultCredentialsProvider(credsProvider)
+						clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
+					}
+				}
+			}
+			outboundClient = clientBuilder.build()
+			def outboundPut = new HttpPut(tgtUrl)
+			def inputEntity = new InputStreamEntity(srcStream, contentLength)
+			outboundPut.addHeader('Connection', 'Keep-Alive')
+			outboundPut.addHeader('Content-Type', 'application/octet-stream')
+			outboundPut.addHeader('Authorization', 'Basic ' + (username + ':' + password).bytes.encodeBase64().toString())
+			outboundPut.addHeader('Cookie', 'vmware_cgi_ticket=' + token)
+			outboundPut.setEntity(inputEntity)
+			def responseBody = outboundClient.execute(outboundPut)
+			log.debug("got: ${responseBody}")
+			rtn.success = true
+		} catch(e) {
+			log.error("uploadFile error: ${e}", e)
+		} finally {
+			outboundClient.close()
+		}
+		return rtn
+	}
+
+	static downloadImage(String srcUrl, OutputStream targetStream, String token, leaseUpdater, int totalFiles=1, int currentFile=0, proxySettings = null) {
+		log.info("downloadImage: src: ${srcUrl}")
+		def inboundClient
+		def rtn = [success: false]
+		try {
+			def inboundSslBuilder = new SSLContextBuilder()
+			inboundSslBuilder.loadTrustMaterial(null, new TrustStrategy() {
+				@Override
+				boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					return true
+				}
+			})
+			def inboundSocketFactory = new SSLConnectionSocketFactory(inboundSslBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+			def clientBuilder = HttpClients.custom().setSSLSocketFactory(inboundSocketFactory)
+			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
+				boolean verify(String host, SSLSession sess) { return true }
+
+				void verify(String host, SSLSocket ssl) {}
+
+				void verify(String host, String[] cns, String[] subjectAlts) {}
+
+				void verify(String host, X509Certificate cert) {}
+			})
+			if(proxySettings) {
+				def proxyHost = proxySettings.proxyHost
+				def proxyPort = proxySettings.proxyPort
+				if(proxyHost && proxyPort) {
+					log.info "proxy detected for image upload ${proxyHost}:${proxyPort}"
+					def proxyUser = proxySettings.proxyUser
+					def proxyPassword = proxySettings.proxyPassword
+					def proxyWorkstation = proxySettings.proxyWorkstation ?: null
+					def proxyDomain = proxySettings.proxyDomain ?: null
+					clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort))
+					if(proxyUser) {
+						CredentialsProvider credsProvider = new BasicCredentialsProvider()
+						NTCredentials ntCreds = new NTCredentials(proxyUser, proxyPassword, proxyWorkstation, proxyDomain)
+						credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), ntCreds)
+						clientBuilder.setDefaultCredentialsProvider(credsProvider)
+						clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
+					}
+				}
+			}
+			inboundClient = clientBuilder.build()
+			def inboundGet = new HttpGet(srcUrl)
+			inboundGet.addHeader('Cookie', 'vmware_cgi_ticket=' + token)
+			def responseBody = inboundClient.execute(inboundGet)
+			rtn.contentLength = responseBody.getEntity().getContentLength()
+			log.info("download image contentLength: ${rtn.contentLength}")
+			def vmInputStream = new VmwareLeaseProgressInputStream(new BufferedInputStream(responseBody.getEntity().getContent(), 16*1024), leaseUpdater, 0,totalFiles,currentFile)
+			BufferedOutputStream outStream = new BufferedOutputStream(targetStream,16*1024)
+			writeStreamToOut(vmInputStream,outStream)
+			// targetStream << vmInputStream
+			log.info("Image File ${srcUrl} Download Complete...Flushing")
+			outStream.flush()
+			// targetStream.flush()
+			// outStream.close()
+
+			rtn.success = true
+		} catch(e) {
+			log.error("downloadImage From Stream error: ${e}", e)
+		} finally {
+			inboundClient.close()
+		}
+		return rtn
+	}
+
+
+	@CompileStatic
+	static void writeStreamToOut(InputStream inputStream, OutputStream out) {
+		byte[] buffer = new byte[102400]
+		int len
+		while((len = inputStream.read(buffer)) != -1) {
+			out.write(buffer, 0, len)
+		}
+	}
+
+
+	static archiveImage(String srcUrl, CloudFile targetFile, String token, leaseUpdater, fileSize = 0, Closure progressCallback = null, Integer totalFiles=1, Integer currentFile=0, proxySettings = null) {
+		log.info("downloadImage: src: ${srcUrl}")
+		def inboundClient
+		def rtn = [success: false]
+		try {
+			def inboundSslBuilder = new SSLContextBuilder()
+			inboundSslBuilder.loadTrustMaterial(null, new TrustStrategy() {
+				@Override
+				boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					return true
+				}
+			})
+			def inboundSocketFactory = new SSLConnectionSocketFactory(inboundSslBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+			def clientBuilder = HttpClients.custom().setSSLSocketFactory(inboundSocketFactory)
+			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
+				boolean verify(String host, SSLSession sess) { return true }
+
+				void verify(String host, SSLSocket ssl) {}
+
+				void verify(String host, String[] cns, String[] subjectAlts) {}
+
+				void verify(String host, X509Certificate cert) {}
+			})
+			inboundClient = clientBuilder.build()
+			def inboundGet = new HttpGet(srcUrl)
+			inboundGet.addHeader('Cookie', 'vmware_cgi_ticket=' + token)
+			def responseBody = inboundClient.execute(inboundGet)
+			rtn.contentLength = responseBody.getEntity().getContentLength()
+			if(rtn.contentLength < 0 && fileSize > 0)
+				rtn.contentLength = fileSize
+			log.debug("download image contentLength: ${rtn.contentLength}")
+			def vmInputStream = new ProgressInputStream(new VmwareLeaseProgressInputStream(new BufferedInputStream(responseBody.getEntity().getContent(), 1200), leaseUpdater, rtn.contentLength, totalFiles, currentFile), rtn.contentLength)
+			vmInputStream.progressCallback = progressCallback
+			// targetFile.setContentLength(rtn.contentLength)
+			targetFile.setInputStream(vmInputStream)
+			targetFile.save()
+			rtn.success = true
+		} catch(e) {
+			log.error("downloadImage From Stream error: ${e}", e)
+		} finally {
+			inboundClient.close()
+		}
+		return rtn
+	}
+
+	static getIDEController(VirtualMachine vm) throws Exception {
+		def rtn
+		def vmConfig = vm.getConfig()
+		def virtualDevices = vmConfig.getHardware().getDevice()
+		virtualDevices.each { device ->
+			if(rtn == null) {
+				if(device instanceof VirtualIDEController)
+					rtn = device
+			}
+		}
+		return rtn
+	}
+
+	static encodeUrl(str) {
+		return java.net.URLEncoder.encode(str, "UTF-8").replaceAll('\\+', '%20') //.replaceAll('%', '%25')
+	}
+
+	static doTaskAnswerQuestions(vm, vmTask) {
+		def rtn = false
+		def future
+		def keepGoing = true
+		def counter = 0
+		future = monitorServiceExecutor.submit(new Runnable() {
+			@Override
+			void run() {
+				while(keepGoing == true) {
+					try {
+						log.debug("ANSWERING QUESTION FOR CD EJECT!!!")
+						def runtimeInfo = vm.getRuntime()
+						def question = runtimeInfo.getQuestion()
+						log.debug("checking question: ${question}")
+						if(question != null) {
+							log.debug("Checking question  ${question.getMessage()} - ${question.getText()}")
+							if(question.getMessage() != null) {
+								for(VirtualMachineMessage msg : question.getMessage()) {
+									log.debug("Message Id: ${msg.getId()}")
+									if("msg.cdromdisconnect.locked".equalsIgnoreCase(msg.getId())) {
+										log.info('answering msg.cdromdisconnect.locked')
+										def answer = '0'
+										def choice = question.getChoice()
+										if(choice != null) {
+											choice.getChoiceInfo()?.each { info ->
+												if(info.getLabel() == 'button.yes')
+													answer = info.getKey()
+											}
+										}
+										vm.answerVM(question.getId(), answer)
+										break
+									}
+								}
+							} else if(question.getText() != null) {
+								def text = question.getText()
+								def msgId
+								def msgText
+								def tokens = text.split(':')
+								msgId = tokens[0]
+								msgText = tokens[1]
+								if("msg.cdromdisconnect.locked".equalsIgnoreCase(msgId))
+									log.info('answering text msg.cdromdisconnect.locked')
+								def answer = '0'
+								def choice = question.getChoice()
+								if(choice != null) {
+									choice.getChoiceInfo()?.each { info ->
+										if(info.getLabel() == 'button.yes')
+											answer = info.getKey()
+									}
+								}
+								vm.answerVM(question.getId(), answer)
+								break
+							}
+						}
+					} catch(e) {
+						log.error("error answering questions: ${e}", e)
+					}
+					sleep(5000)
+					counter++
+					if(counter > 100)
+						keepGoing = false
+				}
+			}
+		})
+		try {
+			def result = vmTask.waitForTask()
+			if(result == Task.SUCCESS)
+				rtn = true
+		} catch(e) {
+			log.error("doTaskAnswerQuestions error: ${e}", e)
+		} finally {
+			keepGoing = false
+			future.cancel(true)
+		}
+		return rtn
+	}
+
+	static removeVmFile(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			def datacenter = new InventoryNavigator(rootFolder).searchManagedEntity('Datacenter', opts.datacenter)
+			def datastore = getFreeDatastore(vm, 1, opts.datastoreId)
+			def filePath = "[" + datastore.getName() + "] " + vm.getName() + "/" + opts.fileName
+			log.info("remove file path: ${filePath}")
+			def fileManager = serviceInstance.getFileManager()
+			def vmTask = fileManager.deleteDatastoreFile_Task(filePath, datacenter)
+			def result = vmTask.waitForTask()
+			if(result == Task.SUCCESS) {
+				rtn.success = true
+			}
+		} catch(e) {
+			log.error("removeVmFile error: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static addVmNetwork(apiUrl, username, password, opts = [:]) {
+		log.info("addVmNetwork: ${apiUrl}, ${username}, ${opts}")
+		def rtn = [success:false]
+		def serviceInstance
+		try {
+
+			def networkConfig = opts.networkConfig
+			if(networkConfig?.network?.externalId) {
+				serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+				def rootFolder = serviceInstance.getRootFolder()
+				def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+				def vmConfig = vm.getConfig()
+				def virtualDevices = vmConfig.getHardware().getDevice()
+				def networkBackingType = networkConfig.network.externalType != 'string' ? networkConfig.network.externalType : 'Network'
+				def vmNetwork = getManagedObject(serviceInstance, networkBackingType ?: 'Network', networkConfig.network.externalId ?: networkConfig.network.parentNetwork?.externalId)
+				if(vmNetwork) {
+					def nicIndex = networkConfig.displayOrder ?: opts.index ?: 0
+					def nicType = networkConfig?.type?.code ?: 'vmxNet3'
+					def nicSpec = createSetNetworkOnNicSpec(virtualDevices, vmNetwork, serviceInstance, networkConfig, nicIndex, true,
+							[switchUuid:networkConfig.network.internalId])
+					def vmConfigSpec = new VirtualMachineConfigSpec()
+					def deviceChange = nicSpec as VirtualDeviceConfigSpec[]
+					vmConfigSpec.setDeviceChange(deviceChange)
+					def vmConfigTask = vm.reconfigVM_Task(vmConfigSpec)
+					def result = vmConfigTask.waitForTask()
+					if(result == Task.SUCCESS) {
+						log.info("created network")
+						rtn.success = true
+						vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+						vmConfig = vm.getConfig()
+						virtualDevices = vmConfig.getHardware().getDevice()
+						rtn.networks = getVmNetworks(vm.getConfig().getHardware().getDevice())
+						def newNic = findNic(rtn.networks, nicIndex, nicType)
+						if(newNic) {
+							log.debug("found created network adapter: ${nicIndex}")
+							rtn.network = newNic
+							rtn.entity = vm
+						}
+					} else {
+						rtn.msg = 'error adding network adapter'
+					}
+				} else {
+					rtn.msg = 'requested network not found'
+				}
+			} else {
+				rtn.msg = 'requested network not found'
+			}
+		} catch(MethodFault e) {
+			rtn.msg = logFaultError('error creating network adapter', e)
+		} catch(e) {
+			log.error("addVmNetwork error: ${e}", e)
+			rtn.msg = 'error creating network adapter'
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static modifyVmNetwork(apiUrl, username, password, opts = [:]) {
+		log.info("addVmNetwork: ${apiUrl}, ${username}, ${opts}")
+		def rtn = [success:false]
+		def serviceInstance
+		try {
+
+			def networkConfig = opts.networkConfig
+			if(networkConfig?.network?.externalId) {
+				serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+				def rootFolder = serviceInstance.getRootFolder()
+				def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+				def vmConfig = vm.getConfig()
+				def virtualDevices = vmConfig.getHardware().getDevice()
+				def networkBackingType = networkConfig.network.externalType != 'string' ? networkConfig.network.externalType : 'Network'
+				def vmNetwork = getManagedObject(serviceInstance, networkBackingType ?: 'Network', networkConfig.network.externalId ?: networkConfig.network.parentNetwork?.externalId)
+				if(vmNetwork) {
+					def nicIndex = networkConfig.displayOrder ?: opts.index ?: 0
+					def nicType = networkConfig?.type?.code ?: 'vmxNet3'
+					def nicSpec = createSetNetworkOnNicSpec(virtualDevices, vmNetwork, serviceInstance, networkConfig, nicIndex, false,
+							[switchUuid:networkConfig.network.internalId])
+					def vmConfigSpec = new VirtualMachineConfigSpec()
+					def deviceChange = nicSpec as VirtualDeviceConfigSpec[]
+					vmConfigSpec.setDeviceChange(deviceChange)
+					def vmConfigTask = vm.reconfigVM_Task(vmConfigSpec)
+					def result = vmConfigTask.waitForTask()
+					if(result == Task.SUCCESS) {
+						log.info("created network")
+						rtn.success = true
+						vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+						vmConfig = vm.getConfig()
+						virtualDevices = vmConfig.getHardware().getDevice()
+						rtn.networks = getVmNetworks(vm.getConfig().getHardware().getDevice())
+						def newNic = findNic(rtn.networks, nicIndex, nicType)
+						if(newNic) {
+							log.debug("found created network adapter: ${nicIndex}")
+							rtn.network = newNic
+							rtn.entity = vm
+						}
+					} else {
+						rtn.msg = 'error adding network adapter'
+					}
+				} else {
+					rtn.msg = 'requested network not found'
+				}
+			} else {
+				rtn.msg = 'requested network not found'
+			}
+		} catch(MethodFault e) {
+			rtn.msg = logFaultError('error creating network adapter', e)
+		} catch(e) {
+			log.error("addVmNetwork error: ${e}", e)
+			rtn.msg = 'error creating network adapter'
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static findController(virtualDevices, busNumber = null, typeCode = null) {
+		def rtn
+		virtualDevices?.each { virtualDevice ->
+			if(rtn == null) {
+				if(busNumber != null && typeCode != null) {
+					if(virtualDevice instanceof com.vmware.vim25.VirtualController && virtualDevice.getBusNumber() == busNumber) {
+						if(typeCode == 'vmware-ide' && virtualDevice instanceof com.vmware.vim25.VirtualIDEController) {
+							rtn = virtualDevice
+						} else if(typeCode == 'vmware-busLogic' && virtualDevice instanceof com.vmware.vim25.VirtualBusLogicController) {
+							rtn = virtualDevice
+						} else if(typeCode == 'vmware-lsiLogic' && virtualDevice instanceof com.vmware.vim25.VirtualLsiLogicController) {
+							rtn = virtualDevice
+						} else if(typeCode == 'vmware-lsiLogicSas' && virtualDevice instanceof com.vmware.vim25.VirtualLsiLogicSASController) {
+							rtn = virtualDevice
+						} else if(typeCode == 'vmware-paravirtual' && virtualDevice instanceof com.vmware.vim25.ParaVirtualSCSIController) {
+							rtn = virtualDevice
+						}
+					}
+				} else {
+					if(virtualDevice instanceof com.vmware.vim25.VirtualSCSIController)
+						rtn = virtualDevice
+				}
+			}
+		}
+		return rtn
+	}
+
+	static createController(type) {
+		if(type == 'vmware-ide')
+			return new VirtualIDEController()
+		if(type == 'vmware-busLogic')
+			return new VirtualBusLogicController()
+		if(type == 'vmware-lsiLogic')
+			return new VirtualLsiLogicController()
+		if(type == 'vmware-lsiLogicSas')
+			return new VirtualLsiLogicSASController()
+		if(type == 'vmware-paravirtual')
+			return new ParaVirtualSCSIController()
+		return null
+	}
+
+	static findFreeUnitNumber(virtualDevices, key, suggested = null) {
+		def rtn
+		def controllerDevices = virtualDevices.findAll { it.getControllerKey() == key }
+		def freeUnitFound = false
+		if(suggested != null) {
+			def match = controllerDevices.find{ it.getUnitNumber() == suggested }
+			if(!match) {
+				rtn = suggested
+				freeUnitFound = true
+			}
+		}
+		// We should always have something set so at some point this should throw an error
+		// But right now the host wizard and api doesnt show/set controller mount points
+		// so this is still needed
+		(0..14).each { index ->
+			if(freeUnitFound == false) {
+				def match = controllerDevices.find { it.getUnitNumber() == index }
+				// Vmware reserves unit number 7 so dont set it
+				if(match == null && index != 7) {
+					rtn = index
+					freeUnitFound = true
+				}
+			}
+		}
+		return rtn
+	}
+
+	static adjustVmResources(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			def vmConfigSpec = new VirtualMachineConfigSpec()
+			def vmConfig = vm.getConfig()
+			if(opts.maxMemory)
+				vmConfigSpec.setMemoryMB(opts.maxMemory?.toLong())
+			if(opts.maxCpu){
+				vmConfigSpec.setNumCPUs(opts.maxCpu?.toInteger())
+				vmConfigSpec.setNumCoresPerSocket(opts.coresPerSocket?.toInteger() ?: 1)
+			}
+			if(opts.containsKey('notes')) {
+				vmConfigSpec.setAnnotation(opts.notes)
+			}
+			def vmTask = vm.reconfigVM_Task(vmConfigSpec)
+			def result = vmTask.waitForTask()
+			if(result == Task.SUCCESS) {
+				rtn.success = true
+			} else {
+				TaskInfo info = vmTask.getTaskInfo()
+				log.error("Error Adjusting Vm Resources ${info.getError().getLocalizedMessage()}")
+
+				rtn.msg = "Error Adjusting Vm Resources: ${info.getError().getLocalizedMessage()}"
+			}
+		} catch(e) {
+			log.error("adjustVmResources error: ${e.message}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static getNewDiskfileBacking(device, storageType) {
+		def rtn = [changed:false, backing:null]
+		def backing = device.getBacking()
+		log.debug("checking backing: ${backing} - new type: ${storageType}")
+		//check by current type
+		if(backing instanceof VirtualDiskRawDiskMappingVer1BackingInfo) {
+			//cant change raw to thin - maybe could check datastore for other thin types - but this is an older format
+			rtn.changed = false
+		} else if(backing instanceof VirtualDiskFlatVer1BackingInfo) {
+			if(storageType == 'thin') {
+				//gotta change it out to v2 - might error
+				rtn.changed = true
+				rtn.backing = new VirtualDiskFlatVer2BackingInfo()
+				rtn.backing.setThinProvisioned(true)
+			}
+		} else if(backing instanceof VirtualDiskFlatVer2BackingInfo) {
+			if(storageType != 'thin' && backing.getThinProvisioned()) {
+				//gotta change it out to v2 thick - might error
+				rtn.changed = true
+				rtn.backing = new VirtualDiskFlatVer2BackingInfo()
+				rtn.backing.setThinProvisioned(false)
+			} else if(storageType == 'thin' && !backing.getThinProvisioned()) {
+				rtn.changed = true
+				rtn.backing = new VirtualDiskFlatVer2BackingInfo()
+				rtn.backing.setThinProvisioned(true)
+			}
+		} else if(backing instanceof VirtualDiskSparseVer1BackingInfo || backing instanceof VirtualDiskSparseVer2BackingInfo) {
+			if(storageType != 'thin') {
+				//gotta change it out to v2 thick - might error
+				rtn.changed = true
+				rtn.backing = new VirtualDiskFlatVer2BackingInfo()
+				rtn.backing.setThinProvisioned(false)
+			}
+		}
+		return rtn
+	}
+
+	static queryHostPerformance(apiUrl, username, password, opts, hostId, startTime = null, endTime = null) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def host = getManagedObject(serviceInstance, 'HostSystem', hostId)
+			if(host) {
+				def now = new Date()
+				if(endTime == null) {
+					endTime = Calendar.getInstance()
+					endTime.setTime(now)
+				}
+				if(startTime == null) {
+					startTime = Calendar.getInstance()
+					startTime.setTime(new Date(now.time - (1000l * 60l * 5l)))
+				}
+				def performanceManager = serviceInstance.getPerformanceManager()
+				def providerSummary = performanceManager.queryPerfProviderSummary(host)
+				int perfInterval = providerSummary.getRefreshRate() //300 //5 minutes?
+				def counterList = performanceManager.getPerfCounter()
+				def queryList = counterList?.collect { it.getAssociatedCounterId() }
+				def results = performanceManager.queryPerformanceCou
+				/*def metricsList = performanceManager.queryAvailablePerfMetric(host, null, null, perfInterval)
+				metricsList?.each {
+					log.debug("metric: ${it.getInstance()} - ${it.getCounterId()}")
+				}
+				def currentTime = serviceInstance.currentTime()
+				def querySpec = new PerfQuerySpec()
+				querySpec.setEntity(host.getMOR())
+				querySpec.setMetricId(metricsList)
+				querySpec.setFormat('normal')
+				querySpec.setMaxSample(1)
+				querySpec.setIntervalId(perfInterval)
+				querySpec.setStartTime(startTime)
+				querySpec.setEndTime(endTime)
+				def performanceMetrics = performanceManager.queryPerfComposite(querySpec)
+				log.info("got: ${performanceMetrics.getEntity()}")
+				def metricsEntity = performanceMetrics.getEntity()
+				def metricValueList = metricsEntity.getValue()
+				def metricSampleInfo = metricsEntity.getSampleInfo()
+				log.info("metricSampleInfo: ${metricSampleInfo?.collect{it.getTimestamp()?.getTime().toString() + ' - ' + it.getInterval()}}")
+				log.info("metricValueList: ${metricValueList?.collect{it.getId().getCounterId() + ' - ' + it.getId().getInstance() + ' - ' + it.getValue()}}")*/
+				/*performanceMetrics?.getChildEntity()?.each { metric ->
+					def metricValueList = metric.getValue()
+					def metricSampleInfo = metric.getSampleInfo()
+					log.info("metricSampleInfo: ${metricSampleInfo?.collect{it.getTimestamp()?.getTime() + ' - ' + it.getInterval()}}")
+					log.info("metricValueList: ${metricValueList?.collect{it.getId().getCounterId() + ' - ' + it.getId().getInstance() + ' - ' + it.getValue()}}")
+				}*/
+			}
+		} catch(e) {
+			log.error("queryHostPerformance error: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static uploadTemplate(apiUrl, username, password, opts = [:]) {
+
+	}
+
+	static uploadVmdkFile(boolean put, String diskFilePath, String urlStr, long bytesAlreadyWritten, long totalBytes) {
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			boolean verify(String urlHostName, SSLSession session) {
+				return true
+			}
+		})
+		def conn = new URL(urlStr).openConnection()
+		conn.setDoOutput(true)
+		conn.setUseCaches(false)
+		conn.setChunkedStreamingMode(CHUCK_LEN)
+		conn.setRequestMethod(put ? "PUT" : "POST")
+		conn.setRequestProperty("Connection", "Keep-Alive")
+		conn.setRequestProperty("Content-Type", "application/x-vnd.vmware-streamVmdk")
+		conn.setRequestProperty("Content-Length", Long.toString(new File(diskFilePath).length()))
+		def bos = new BufferedOutputStream(conn.getOutputStream())
+		def diskis = new BufferedInputStream(new FileInputStream(diskFilePath))
+		int bytesAvailable = diskis.available()
+		int bufferSize = Math.min(bytesAvailable, CHUCK_LEN)
+		def buffer = new byte[bufferSize]
+		long totalBytesWritten = 0
+		while(true) {
+			int bytesRead = diskis.read(buffer, 0, bufferSize)
+			if(bytesRead == -1) {
+				log.debug("Total bytes written: " + totalBytesWritten)
+				break
+			}
+			totalBytesWritten += bytesRead
+			bos.write(buffer, 0, bufferSize)
+			bos.flush()
+			log.debug("Total bytes written: " + totalBytesWritten)
+			int progressPercent = (int) (((bytesAlreadyWritten + totalBytesWritten) * 100) / totalBytes)
+			leaseUpdater.setPercent(progressPercent)
+		}
+		diskis.close()
+		bos.flush()
+		bos.close()
+		conn.disconnect()
+	}
+
+	static readOvfContent(ovfFilePath) {
+		def strContent = new StringBuffer()
+		def inputStream = new BufferedReader(new InputStreamReader(new FileInputStream(ovfFilePath)))
+		def lineStr
+		while(lineStr = inputStream.readLine() != null) {
+			strContent.append(lineStr)
+		}
+		inputStream.close()
+		return strContent.toString()
+	}
+
+	static guestProcessReady(apiUrl,username,password,opts = [:]) {
+		def rtn = [success:false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			//log.debug("Vmware Tools Running Status : ${vm.getGuest().getToolsRunningStatus()}")
+			if(vm.getGuest().getToolsRunningStatus() == 'guestToolsRunning') {
+				rtn.success = true
+			}
+		} catch(e) {
+			log.error("guestProcessReady error: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+
+	}
+
+	static executeProcess(apiUrl, username, password, opts = [:]) {
+		def rtn = [success:false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			def guestOpsManager = serviceInstance.getGuestOperationsManager()
+			def guestProcessManager = guestOpsManager.getProcessManager(vm)
+			def guestAuth = new NamePasswordAuthentication()
+			guestAuth.setUsername(opts.sshUsername)
+			guestAuth.setPassword(opts.sshPassword)
+			def guestExecSpec = new GuestProgramSpec()
+			guestExecSpec.setProgramPath(opts.program)
+			guestExecSpec.setArguments(opts.arguments)
+			if(opts.workingDirectory)
+				guestExecSpec.setWorkingDirectory(opts.workingDirectory)
+			rtn.processId = guestProcessManager.startProgramInGuest(guestAuth, guestExecSpec)
+			rtn.success = rtn.processId > 0
+		} catch(e) {
+			log.error("executeProcess error: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static getProcessStatus(apiUrl, username, password, opts) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			def guestOpsManager = serviceInstance.getGuestOperationsManager()
+			def guestProcessManager = guestOpsManager.getProcessManager(vm)
+			def guestAuth = new NamePasswordAuthentication()
+			guestAuth.setUsername(opts.sshUsername)
+			guestAuth.setPassword(opts.sshPassword)
+			def processList = [opts.processId] as long[]
+			log.debug("getProcessStatus - vm: ${opts.externalId} process: ${processList}")
+			rtn.processStatus = guestProcessManager.listProcessesInGuest(guestAuth, processList)
+			rtn.success = true
+		} catch(com.vmware.vim25.InvalidGuestLogin e) {
+			log.error("getProcessStatus invalid login")
+			rtn.invalidLogin = true
+		} catch(e) {
+			log.error("getProcessStatus error: ${e}", e)
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
+	static getDefaultDevices(VirtualMachine vm) throws Exception {
+		def rtn
+		def vmRuntimeInfo = vm.getRuntime()
+		def envBrowser = vm.getEnvironmentBrowser()
+		def hmor = vmRuntimeInfo.getHost()
+		def cfgOpt = envBrowser.queryConfigOption(null, new HostSystem(vm.getServerConnection(), hmor))
+		if(cfgOpt != null) {
+			rtn = cfgOpt.getDefaultDevice()
+			if(rtn == null)
+				throw new Exception("No Datastore found in ComputeResource")
+		} else {
+			throw new Exception("No VirtualHardwareInfo found in ComputeResource")
+		}
+		return rtn
+	}
+
+	static connectVmNetworks(Map authConfig, String vmId) {
+		def rtn = [success: false]
+		try {
+			def serviceInstance = getServiceInstance(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', vmId)
+			def deviceChangeList = []
+			def vmConfigSpec = new VirtualMachineConfigSpec()
+			def vmConfig = vm.getConfig()
+			def virtualDevices = vmConfig.getHardware().getDevice()
+			def nics = virtualDevices.findAll { it instanceof VirtualEthernetCard }
+			nics.each { nic ->
+				if(!nic.connectable.connected) {
+					def connectable = new VirtualDeviceConnectInfo()
+					connectable.setStartConnected(true)
+					connectable.setConnected(true)
+					nic.setConnectable(connectable)
+					def nicSpec = new VirtualDeviceConfigSpec()
+					nicSpec.setOperation(VirtualDeviceConfigSpecOperation.edit)
+					nicSpec.setDevice(nic)
+					deviceChangeList << nicSpec
+				}
+			}
+
+			if(deviceChangeList.size() > 0) {
+				def deviceChanges = deviceChangeList as VirtualDeviceConfigSpec[]
+				vmConfigSpec.setDeviceChange(deviceChanges)
+				def vmTask = vm.reconfigVM_Task(vmConfigSpec)
+				def vmResult = retryWaitForTask(vmTask)
+				if(vmResult == Task.SUCCESS) {
+					rtn.success = true
+				}
+			} else {
+				rtn.success = true
+			}
+		} catch(e) {
+			log.error("connectVmNetworks error: ${e}", e)
+		}
+
+		return rtn
+	}
+
+
+	static relocateStorage(Map authConfig, String vmId, String targetDatastoreId) {
+		def rtn = [success: false]
+		try {
+			def serviceInstance = getServiceInstance(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword)
+
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', vmId)
+			def datastore = getManagedObject(serviceInstance, 'Datastore', targetDatastoreId)
+
+			def relocateSpec = new VirtualMachineRelocateSpec()
+			relocateSpec.setDatastore(datastore.getMOR())
+			def task = vm.relocateVM_Task(relocateSpec, VirtualMachineMovePriority.highPriority)
+
+			// rtn = retryWaitForTask(task)
+		} catch (e) {
+			log.error("relocateStorage error: ${e}", e)
+			rtn.success = false
+		}
+
+		return rtn
+	}
+
+	static getVmwareHostUrl(node) {
+		def sshHost = node.sshHost
+		if(sshHost) {
+			return 'https://' + sshHost + '/sdk'
+		}
+		throw new Exception('no esxi apiUrl specified')
+	}
+
+	static printOvfFileItem(OvfFileItem fi) {
+		log.debug("================ OvfFileItem ================")
+		log.debug("chunkSize: " + fi.getChunkSize())
+		log.debug("create: " + fi.isCreate())
+		log.debug("deviceId: " + fi.getDeviceId())
+		log.debug("path: " + fi.getPath())
+		log.debug("size: " + fi.getSize())
+		log.debug("==============================================")
+	}
+
+	static findVmwareTimezone(javaId) {
+		def rtn
+		if(!javaId) {
+			javaId = TimeZone.getDefault().getID()
+		}
+		if(javaId) {
+			def javaTimezone = TimeZone.getTimeZone(javaId)
+			def name = javaId
+			if(javaId?.indexOf('/') > -1)
+				name = name.substring(javaId.indexOf('/') + 1)
+			name = name.toLowerCase()
+			def match = vmwareTimezoneList.find{ it.name.toLowerCase().indexOf(name) > -1 }
+			if(!match)
+				match = vmwareTimezoneList.find{ it.description.toLowerCase().indexOf(name) > -1 }
+			if(!match) {
+				def rawOffset = (double) (javaTimezone.getRawOffset() / (1000d * 60d * 60d))
+				match = vmwareTimezoneList.find{ it.rawOffset == rawOffset }
+			}
+			if(match)
+				rtn = match
+		}
+		if(!rtn)
+			rtn = vmwareTimezoneList.find{it.id == 85}
+		return rtn
+	}
+
+
+	static vmwareTimezoneList = [
+			[id:0, stringId:'000', name:'Dateline Standard Time', description:'(GMT-12:00) International Date Line West', rawOffset:-12d],
+			[id:1, stringId:'001', name:'Samoa Standard Time', description:'(GMT-11:00) Midway Island, Samoa', rawOffset:-11d],
+			[id:2, stringId:'002', name:'Hawaiian Standard Time', description:'(GMT-10:00) Hawaii', rawOffset:-10d],
+			[id:3, stringId:'003', name:'Alaskan Standard Time', description:'(GMT-09:00) Alaska', rawOffset:-9d],
+			[id:4, stringId:'004', name:'Pacific Standard Time', description:'(GMT-08:00) Pacific Time (US and Canada); Tijuana', rawOffset:-8d],
+			[id:10, stringId:'010', name:'Mountain Standard Time', description:'(GMT-07:00) Mountain Time (US and Canada)', rawOffset:-7d],
+			[id:13, stringId:'013', name:'Mexico Standard Time 2', description:'(GMT-07:00) Chihuahua, La Paz, Mazatlan', rawOffset:-7d],
+			[id:15, stringId:'015', name:'U.S. Mountain Standard Time', description:'(GMT-07:00) Arizona', rawOffset:-7d],
+			[id:20, stringId:'020', name:'Central Standard Time', description:'(GMT-06:00) Central Time (US and Canada', rawOffset:-6d],
+			[id:25, stringId:'025', name:'Canada Central Standard Time', description:'(GMT-06:00) Saskatchewan', rawOffset:-6d],
+			[id:30, stringId:'030', name:'Mexico Standard Time', description:'(GMT-06:00) Guadalajara, Mexico City, Monterrey', rawOffset:-6d],
+			[id:33, stringId:'033', name:'Central America Standard Time', description:'(GMT-06:00) Central America', rawOffset:-6d],
+			[id:35, stringId:'035', name:'Eastern Standard Time', description:'(GMT-05:00) Eastern Time (US and Canada)', rawOffset:-5d],
+			[id:40, stringId:'040', name:'U.S. Eastern Standard Time', description:'(GMT-05:00) Indiana (East)', rawOffset:-5d],
+			[id:45, stringId:'045', name:'S.A. Pacific Standard Time', description:'(GMT-05:00) Bogota, Lima, Quito', rawOffset:-5d],
+			[id:50, stringId:'050', name:'Atlantic Standard Time', description:'(GMT-04:00) Atlantic Time (Canada)', rawOffset:-4d],
+			[id:55, stringId:'055', name:'S.A. Western Standard Time', description:'(GMT-04:00) Caracas, La Paz', rawOffset:-4d],
+			[id:56, stringId:'056', name:'Pacific S.A. Standard Time', description:'(GMT-04:00) Santiago', rawOffset:-4d],
+			[id:60, stringId:'060', name:'Newfoundland and Labrador Standard Time', description:'(GMT-03:30) Newfoundland and Labrador', rawOffset:-3.5d],
+			[id:65, stringId:'065', name:'E. South America Standard Time', description:'(GMT-03:00) Brasilia', rawOffset:-3d],
+			[id:70, stringId:'070', name:'S.A. Eastern Standard Time', description:'(GMT-03:00) Buenos Aires, Georgetown', rawOffset:-3d],
+			[id:73, stringId:'073', name:'Greenland Standard Time', description:'(GMT-03:00) Greenland', rawOffset:-3d],
+			[id:75, stringId:'075', name:'Mid-Atlantic Standard Time', description:'(GMT-02:00) Mid-Atlantic', rawOffset:-2d],
+			[id:80, stringId:'080', name:'Azores Standard Time', description:'(GMT-01:00) Azores', rawOffset:-1d],
+			[id:83, stringId:'083', name:'Cape Verde Standard Time', description:'(GMT-01:00) Cape Verde Islands', rawOffset:-1d],
+			[id:85, stringId:'085', name:'GMT Standard Time', description:'(GMT) Greenwich Mean Time: Dublin, Edinburgh, Lisbon, London', rawOffset:0d],
+			[id:90, stringId:'090', name:'Greenwich Standard Time', description:'(GMT) Casablanca, Monrovia', rawOffset:0d],
+			[id:95, stringId:'095', name:'Central Europe Standard Time', description:'(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague', rawOffset:1d],
+			[id:100, stringId:'100', name:'Central European Standard Time', description:'(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb', rawOffset:1d],
+			[id:105, stringId:'105', name:'Romance Standard Time', description:'(GMT+01:00) Brussels, Copenhagen, Madrid, Paris', rawOffset:1d],
+			[id:110, stringId:'110', name:'W. Europe Standard Time', description:'(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna', rawOffset:1d],
+			[id:113, stringId:'113', name:'W. Central Africa Standard Time', description:'(GMT+01:00) West Central Africa', rawOffset:1d],
+			[id:115, stringId:'115', name:'E. Europe Standard Time', description:'(GMT+02:00) Bucharest', rawOffset:2d],
+			[id:120, stringId:'120', name:'Egypt Standard Time', description:'(GMT+02:00) Cairo', rawOffset:2d],
+			[id:125, stringId:'125', name:'FLE Standard Time', description:'(GMT+02:00) Helsinki, Kiev, Riga, Sofia, Tallinn, Vilnius', rawOffset:2d],
+			[id:130, stringId:'130', name:'GTB Standard Time', description:'(GMT+02:00) Athens, Istanbul, Minsk', rawOffset:2d],
+			[id:135, stringId:'135', name:'Israel Standard Time', description:'(GMT+02:00) Jerusalem', rawOffset:2d],
+			[id:140, stringId:'140', name:'South Africa Standard Time', description:'(GMT+02:00) Harare, Pretoria', rawOffset:2d],
+			[id:145, stringId:'145', name:'Russian Standard Time', description:'(GMT+03:00) Moscow, St. Petersburg, Volgograd', rawOffset:3d],
+			[id:150, stringId:'150', name:'Arab Standard Time', description:'(GMT+03:00) Kuwait, Riyadh', rawOffset:3d],
+			[id:155, stringId:'155', name:'E. Africa Standard Time', description:'(GMT+03:00) Nairobi', rawOffset:3d],
+			[id:158, stringId:'158', name:'Arabic Standard Time', description:'(GMT+03:00) Baghdad', rawOffset:3d],
+			[id:160, stringId:'160', name:'Iran Standard Time', description:'(GMT+03:30) Tehran', rawOffset:3.5d],
+			[id:165, stringId:'165', name:'Arabian Standard Time', description:'(GMT+04:00) Abu Dhabi, Muscat', rawOffset:4d],
+			[id:170, stringId:'170', name:'Caucasus Standard Time', description:'(GMT+04:00) Baku, Tbilisi, Yerevan', rawOffset:4d],
+			[id:175, stringId:'175', name:'Transitional Islamic State of Afghanistan Standard Time', description:'(GMT+04:30) Kabul', rawOffset:4.5d],
+			[id:180, stringId:'180', name:'Ekaterinburg Standard Time', description:'(GMT+05:00) Ekaterinburg', rawOffset:5d],
+			[id:185, stringId:'185', name:'West Asia Standard Time', description:'(GMT+05:00) Islamabad, Karachi, Tashkent', rawOffset:5d],
+			[id:190, stringId:'190', name:'India Standard Time', description:'(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi', rawOffset:5.5d],
+			[id:193, stringId:'193', name:'Nepal Standard Time', description:'(GMT+05:45) Kathmandu', rawOffset:5.75d],
+			[id:195, stringId:'195', name:'Central Asia Standard Time', description:'(GMT+06:00) Astana, Dhaka', rawOffset:6d],
+			[id:200, stringId:'200', name:'Sri Lanka Standard Time', description:'(GMT+06:00) Sri Jayawardenepura', rawOffset:6d],
+			[id:201, stringId:'201', name:'N. Central Asia Standard Time', description:'(GMT+06:00) Almaty, Novosibirsk', rawOffset:6d],
+			[id:203, stringId:'203', name:'Myanmar Standard Time', description:'(GMT+06:30) Yangon Rangoon', rawOffset:6.5d],
+			[id:205, stringId:'205', name:'S.E. Asia Standard Time', description:'(GMT+07:00) Bangkok, Hanoi, Jakarta', rawOffset:7d],
+			[id:207, stringId:'207', name:'North Asia Standard Time', description:'(GMT+07:00) Krasnoyarsk', rawOffset:7d],
+			[id:210, stringId:'210', name:'China Standard Time', description:'(GMT+08:00) Beijing, Chongqing, Hong Kong SAR, Urumqi', rawOffset:8d],
+			[id:215, stringId:'215', name:'Singapore Standard Time', description:'(GMT+08:00) Kuala Lumpur, Singapore', rawOffset:8d],
+			[id:220, stringId:'220', name:'Taipei Standard Time', description:'(GMT+08:00) Taipei', rawOffset:8d],
+			[id:225, stringId:'225', name:'W. Australia Standard Time', description:'(GMT+08:00) Perth', rawOffset:8d],
+			[id:227, stringId:'227', name:'North Asia East Standard Time', description:'(GMT+08:00) Irkutsk, Ulaanbaatar', rawOffset:8d],
+			[id:230, stringId:'230', name:'Korea Standard Time', description:'(GMT+09:00) Seoul', rawOffset:9d],
+			[id:235, stringId:'235', name:'Tokyo Standard Time', description:'(GMT+09:00) Osaka, Sapporo, Tokyo', rawOffset:9d],
+			[id:240, stringId:'240', name:'Yakutsk Standard Time', description:'(GMT+09:00) Yakutsk', rawOffset:9d],
+			[id:245, stringId:'245', name:'A.U.S. Central Standard Time', description:'(GMT+09:30) Darwin', rawOffset:9.5d],
+			[id:250, stringId:'250', name:'Cen. Australia Standard Time', description:'(GMT+09:30) Adelaide', rawOffset:9.5d],
+			[id:255, stringId:'255', name:'A.U.S. Eastern Standard Time', description:'(GMT+10:00) Canberra, Melbourne, Sydney', rawOffset:10d],
+			[id:260, stringId:'260', name:'E. Australia Standard Time', description:'(GMT+10:00) Brisbane', rawOffset:10d],
+			[id:265, stringId:'265', name:'Tasmania Standard Time', description:'(GMT+10:00) Hobart', rawOffset:10d],
+			[id:270, stringId:'270', name:'Vladivostok Standard Time', description:'(GMT+10:00) Vladivostok', rawOffset:10d],
+			[id:275, stringId:'275', name:'West Pacific Standard Time', description:'(GMT+10:00) Guam, Port Moresby', rawOffset:10d],
+			[id:280, stringId:'280', name:'Central Pacific Standard Time', description:'(GMT+11:00) Magadan, Solomon Islands, New Caledonia', rawOffset:11d],
+			[id:285, stringId:'285', name:'Fiji Islands Standard Time', description:'(GMT+12:00) Fiji Islands, Kamchatka, Marshall Islands', rawOffset:12d],
+			[id:290, stringId:'290', name:'New Zealand Standard Time', description:'(GMT+12:00) Auckland, Wellington', rawOffset:12d],
+			[id:300, stringId:'300', name:'Tonga Standard Time', description:'(GMT+13:00) Nuku\'alofa', rawOffset:13d]
+	]
+
 }
