@@ -85,9 +85,9 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 
 		// Grab the projections.. doing a filter pass first
 		def virtualImageIds = []
-		def imageTypes =  [ImageType.vmdk, ImageType.ovf, ImageType.iso]
-		morpheusContext.virtualImage.listSyncProjections(cloudId).filter { VirtualImageIdentityProjection proj ->
-			return !proj.deleted && proj.imageType in imageTypes
+		ImageType[] imageTypes =  [ImageType.vmdk, ImageType.ovf, ImageType.iso]
+		morpheusContext.virtualImage.listSyncProjections(accountId, imageTypes).filter { VirtualImageIdentityProjection proj ->
+			return (proj.deleted == false)
 		}.blockingSubscribe{virtualImageIds << it.id }
 
 		List options = []
@@ -98,9 +98,15 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 				if (!(img.status in invalidStatus) &&
 						(img.visibility == 'public' || img.ownerId == accountId || img.ownerId == null || img.account.id == accountId)) {
 					if(img.category == "vmware.vsphere.image.${cloudId}" ||
+							(img.refType == 'ComputeZone' && img.refId == cloudId ) ||
 							img.imageLocations.any { it.refId == cloudId && it.refType == 'ComputeZone' }) {
 						options << [name: img.name, value: img.id]
-					} else if(regionCode && (img.imageRegion == regionCode || img.userUploaded || img.imageLocations.any { it.imageRegion == regionCode })) {
+					} else if(regionCode &&
+							(img.imageRegion == regionCode ||
+									img.userUploaded ||
+									img.imageLocations.any { it.imageRegion == regionCode }
+							)
+					) {
 						options << [name: img.name, value: img.id]
 					}
 				}

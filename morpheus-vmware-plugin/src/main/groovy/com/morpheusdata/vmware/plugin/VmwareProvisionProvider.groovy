@@ -536,7 +536,8 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				VirtualImageLocation virtualImageLocation = morpheusContext.virtualImage.location.findVirtualImageLocation(virtualImage.id, cloud.id, VmwareCloudProvider.getRegionCode(cloud), imageFolder?.name, false).blockingGet()
 				imageId = virtualImageLocation.externalId
 			} catch(e) {
-				log.debug "error in findVirtualImageLocation ${virtualImage.id}, ${e}"
+				// It might need to be uploaded so might not have a location yet
+				log.debug "did not find VirtualImageLocation for ${virtualImage.id}, ${e}"
 			}
 			def authConfig = getAuthConfig(cloud)
 			imageId = VmwareComputeUtility.checkImageId(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, imageId)
@@ -570,7 +571,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		def lockHostId = "container.vmware.uniqueHostname".toString()
 		try {
 			Cloud cloud = server.cloud
-			lockHost = morpheusContext.acquireLock(lockHostId.toString(), [timeout: 660l * 1000l])
+			lockHost = morpheusContext.acquireLock(lockHostId.toString(), [timeout: 660l * 1000l]).blockingGet()
 			def servers = []
 			morpheusContext.computeServer.listSyncProjections(cloud.id).blockingSubscribe { servers << it }
 			server.hostname = ComputeUtility.formatHostname(server.hostname, 'windows', server.id, servers)
@@ -580,7 +581,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			log.error("execContainer error: ${e}", e)
 		} finally {
 			if (lockHost) {
-				morpheusContext.releaseLock(lockHostId, [lock: lockHost])
+				morpheusContext.releaseLock(lockHostId, [lock: lockHost]).blockingGet()
 			}
 		}
 		//change interface names to match vmware names for windows if using guest customizations
@@ -1123,7 +1124,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			log.error "Error in getDatastoreOption: ${e}", e
 		} finally {
 			if(lock && lockId) {
-				morpheusContext.releaseLock(lockId, [lock:lock])
+				morpheusContext.releaseLock(lockId, [lock:lock]).blockingGet()
 			}
 		}
 
@@ -1190,13 +1191,14 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				}
 			}
 			if(runConfig.imageId == null && virtualImage && virtualImage?.imageType != ImageType.iso) {
-				lock = morpheusContext.acquireLock("vmware.imageupload.${runConfig.regionCode}.${virtualImage.id}".toString(), [timeout:imageTimeout, ttl:imageTtl])
+				lock = morpheusContext.acquireLock("vmware.imageupload.${runConfig.regionCode}.${virtualImage.id}".toString(), [timeout:imageTimeout, ttl:imageTtl]).blockingGet()
 				log.debug "Uploading image ${virtualImage.id}"
 				morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionImage), 'uploading')
 
 				Collection<CloudFile> cloudFiles
 				try {
 					cloudFiles = morpheusContext.virtualImage.getVirtualImageFiles(virtualImage).blockingGet()
+					log.debug "cloudfiles: ${cloudFiles?.size()}"
 				} catch(e) {
 					log.debug "error getVirtualImageFiles: ${e}"
 				}
@@ -1262,7 +1264,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			taskResults.message = 'Error uploading image'
 		} finally {
 			if(lock) {
-				morpheusContext.releaseLock("vmware.imageupload.${runConfig.regionCode}.${runConfig.virtualImageId}".toString(), [lock:lock])
+				morpheusContext.releaseLock("vmware.imageupload.${runConfig.regionCode}.${runConfig.virtualImageId}".toString(), [lock:lock]).blockingGet()
 			}
 		}
 		return taskResults

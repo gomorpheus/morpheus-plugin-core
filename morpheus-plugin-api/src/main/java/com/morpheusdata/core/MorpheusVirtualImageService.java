@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.bertramlabs.plugins.karman.CloudFile;
 import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.ImageType;
 import com.morpheusdata.model.VirtualImage;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import io.reactivex.Observable;
@@ -26,7 +27,7 @@ public interface MorpheusVirtualImageService {
 	/**
 	 * Get a list of VirtualImage projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @return Observable stream of sync projection
+	 * @return Observable stream of sync projections
 	 */
 	Observable<VirtualImageIdentityProjection> listSyncProjections(Long cloudId);
 
@@ -34,9 +35,18 @@ public interface MorpheusVirtualImageService {
 	 * Get a list of VirtualImage projections based on Provision Type Code
 	 * @since 0.11.0
 	 * @param provisionTypeCode Provision Type Code
-	 * @return Observable stream of sync projection
+	 * @return Observable stream of sync projections
 	 */
 	Observable<VirtualImageIdentityProjection> listSyncProjections(String provisionTypeCode);
+
+	/**
+	 * Get a list of VirtualImage projections that matches one of the provided ImageTypes and either the account owns or
+	 * the account can access due to the visibility setting on the VirtualImage
+	 * @param accountId Account Id
+	 * @param imageTypes Array of ImageTypes
+	 * @return Observable stream of sync projections
+	 */
+	Observable<VirtualImageIdentityProjection> listSyncProjections(Long accountId, ImageType[] imageTypes);
 
 	/**
 	 * Get a VirtualImage object by id

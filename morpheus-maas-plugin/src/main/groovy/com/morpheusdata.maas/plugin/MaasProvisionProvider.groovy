@@ -218,7 +218,7 @@ class MaasProvisionProvider extends AbstractProvisionProvider implements Provisi
 			throw e
 		} finally {
 			if(lock && lockId) {
-				morpheusContext.releaseLock(lockId, [lock: lock])
+				morpheusContext.releaseLock(lockId, [lock: lock]).blockingGet()
 			}
 		}
 		return rtn

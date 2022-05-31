@@ -7,11 +7,15 @@ public enum ImageType {
 	ami,
 	iso,
 	ova,
+	oci,
 	ovf,
 	pxe,
 	qcow2,
 	raw,
 	vdi,
 	vhd,
-	vmdk
+	vhdx,
+	vmdk,
+	xen,
+	zvhd2
 }
