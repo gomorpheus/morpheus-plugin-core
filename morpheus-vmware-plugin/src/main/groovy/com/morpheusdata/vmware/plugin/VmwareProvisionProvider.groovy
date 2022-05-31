@@ -56,11 +56,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse getServerDetails(ComputeServer server){
-		// TODO
+		// TODO : what should be returned from here?
 		return ServiceResponse.success()
 	}
 
-	@Override
 	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType imageOption = new OptionType([
@@ -739,12 +738,36 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse stopWorkload(Workload workload) {
-		// TODO
+		log.debug "stopWorkload: ${workload}"
+		if(workload.server?.externalId) {
+			def authConfig = getAuthConfig(workload.server.cloud)
+			def stopResults = VmwareComputeUtility.stopVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, workload.server?.externalId)
+			log.info("stopResults: ${stopResults}")
+			if(stopResults.success == true) {
+				return ServiceResponse.success()
+			} else {
+				return ServiceResponse.error(stopResults.msg ?: 'Error stopping VM')
+			}
+		} else {
+			ServiceResponse.error('vm not found')
+		}
 	}
 
 	@Override
 	ServiceResponse startWorkload(Workload workload) {
-		// TODO
+		log.debug "startWorkload: ${workload}"
+		if(workload.server?.externalId) {
+			def authConfig = getAuthConfig(workload.server.cloud)
+			def startResults = VmwareComputeUtility.startVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, workload.server?.externalId)
+			log.info("startResults: ${startResults}")
+			if(startResults.success == true) {
+				return ServiceResponse.success()
+			} else {
+				return ServiceResponse.error(startResults.msg ?: 'Error starting VM')
+			}
+		} else {
+			ServiceResponse.error('vm not found')
+		}
 	}
 
 	@Override
@@ -791,7 +814,30 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts){
-		ServiceResponse.success()
+		log.debug "removeWorkload: ${workload} ${opts}"
+		if(workload.server?.externalId) {
+			stopWorkload(workload)
+			def authConfig = getAuthConfig(workload.server.cloud)
+			if(workload.server.sourceImage?.isCloudInit) {
+				def	datacenterId = workload.server.cloud.getConfigProperty('datacenter')
+				def	datastoreId = workload.getConfigProperty('datastoreId')
+				//ensure config.iso is indeed gone
+				def cdRemoveResults = VmwareComputeUtility.ejectVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+						[externalId:workload.server.externalId, fileName:'config.iso'])
+				if(cdRemoveResults.success == true) {
+					def cdDeleteResults = VmwareComputeUtility.removeVmFile(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+							[externalId:workload.server.externalId, datacenter:datacenterId, datastoreId:datastoreId, fileName:'config.iso'])
+				}
+			}
+			def removeResults = VmwareComputeUtility.destroyVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, workload.server.externalId)
+			if(removeResults.success == true) {
+				return ServiceResponse.success()
+			} else {
+				return ServiceResponse.error('Failed to remove vm')
+			}
+		} else {
+			return ServiceResponse.success()
+		}
 	}
 
 	@Override
@@ -1093,7 +1139,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		return morpheusContext.computeServer.get(server.id).blockingGet()
 	}
 
-	private Map runVirtualMachine(Cloud cloud, WorkloadRequest workloadRequest, Map runConfig, WorkloadResponse workloadResponse, Map opts = [:]) {
+	private void runVirtualMachine(Cloud cloud, WorkloadRequest workloadRequest, Map runConfig, WorkloadResponse workloadResponse, Map opts = [:]) {
 		log.debug "runVirtualMachine: ${runConfig}"
 		try {
 			def imageUploadResults = insertImage(cloud, workloadRequest, runConfig)
@@ -1115,7 +1161,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				insertVm(cloud, workloadRequest, runConfig, imageUploadResults, workloadResponse)
 
 				if(workloadResponse.success) {
-					finalizeVm(runConfig, workloadResponse, opts)
+					finalizeVm(runConfig, workloadResponse)
 				}
 			} else {
 				workloadResponse.setError(imageUploadResults.message)
@@ -1398,14 +1444,14 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 //					if(!runConfig.cloneContainerId)
 //						runConfig.installAgent = runConfig.installAgent && (cloudConfigOpts.installAgent != true) && !runConfig.noAgent
-					log.debug("meta: ${runConfig.cloudConfigMeta} user:${runConfig.cloudConfigUser}")
+					log.debug("meta: ${server.cloudConfigMeta} user:${server.cloudConfigUser}")
 					byte[] isoData = morpheusContext.provision.buildIsoOutputStream(false, platformType, server.cloudConfigMeta, server.cloudConfigUser, server.cloudConfigNetwork).blockingGet()
 					cloudConfigResults = VmwareComputeUtility.addCloudInitIso(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, isoData, client,
 							[platform:runConfig.platform, externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId])
 					log.debug("add cloud config: ${cloudConfigResults}")
 					VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso'])
-					log.debug("attach cloud config: ${cloudConfigResults}")
+					log.debug("attach cloud config cloud init: ${cloudConfigResults}")
 				} else if(virtualImage?.isSysprep && !virtualImage.isForceCustomization && runConfig.platform == 'windows') {
 					log.debug "VirtualImage ${virtualImage} isSysprep"
 					morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionCloudInit), 'adding autounattend')
@@ -1417,7 +1463,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					log.debug("add cloud config: ${cloudConfigResults}")
 					cloudConfigResults = VmwareComputeUtility.addVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							[externalId:server.externalId, datacenter:runConfig.datacenter, datastoreId:runConfig.datastoreId, isoName:'config.iso', proxySettings: workloadRequest.proxyConfiguration])
-					log.debug("attach cloud config: ${cloudConfigResults}")
+					log.debug("attach cloud config sysprep: ${cloudConfigResults}")
 					workloadResponse.installAgent = workloadResponse.installAgent && (cloudConfigOpts.installAgent != true) && !workloadResponse.noAgent
 				} else if(virtualImage?.imageType == ImageType.iso) {
 					// We need to upload the ISO Image
@@ -1582,10 +1628,9 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			log.error("runException: ${runException}", runException)
 			workloadResponse.setError('Error running vm')
 		}
-		return workloadResponse
 	}
 
-	def finalizeVm(Map runConfig, WorkloadResponse workloadResponse, Map opts) {
+	def finalizeVm(Map runConfig, WorkloadResponse workloadResponse) {
 		log.debug("runTask onComplete: runConfig:${runConfig}, workloadResponse: ${workloadResponse}")
 		ComputeServer server = morpheusContext.computeServer.get(runConfig.serverId).blockingGet()
 		Workload workload = morpheusContext.cloud.getWorkloadById(runConfig.workloadId).blockingGet()
@@ -1695,7 +1740,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		try {
 			def pending = true
 			def attempts = 0
-			def authConfig = getAuthConfig(opts.zone)
+			def authConfig = getAuthConfig(opts.cloud)
 			while(pending) {
 				sleep(1000l * 5l)
 				opts.eventTypeIds = ['CustomizationStartedEvent', 'CustomizationFailed', 'CustomizationSucceeded', 'CustomizationUnknownFailure',

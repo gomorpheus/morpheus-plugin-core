@@ -2178,6 +2178,38 @@ class VmwareComputeUtility {
 		log.debug("==================================================")
 	}
 
+	static destroyVm(apiUrl, username, password, String externalId) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def rootFolder = serviceInstance.getRootFolder()
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', externalId)
+			def vmRuntime = vm.getRuntime()
+			if(vmRuntime.getPowerState() == VirtualMachinePowerState.poweredOff) {
+				def vmTask = vm.destroy_Task()
+				def result = vmTask.waitForTask()
+				if(result == Task.SUCCESS) {
+					rtn.success = true
+				}
+			} else {
+				rtn.msg = 'VM is already powered off'
+			}
+		} catch(e) {
+			if(e.cause instanceof ManagedObjectNotFound) {
+				log.debug("destroyVM: Managed object already removed, allow local delete to continue.")
+				rtn.success = true
+			} else {
+				log.error("destroyVm error: ${e}", e)
+				rtn.msg = 'error powering off vm'
+			}
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
+		return rtn
+	}
+
 	static createVm(apiUrl, username, password, opts=[:]) {
 		def rtn = [success:false, modified:false]
 		def serviceInstance
@@ -2677,7 +2709,7 @@ class VmwareComputeUtility {
 				def deviceChangeArray = []
 				if(opts.networkConfig?.primaryInterface?.network?.externalId) { //new style multi network
 					def primaryInterface = opts.networkConfig.primaryInterface
-					def primaryNetwork = opts.networkConfig.primaryInterface
+					def primaryNetwork = primaryInterface.network
 					def nicSpec
 					def networkBackingType = primaryInterface.network.externalType != 'string' ? primaryNetwork.externalType : 'Network'
 					def vmNetwork = getManagedObject(serviceInstance, networkBackingType ?: 'Network', primaryNetwork.externalId ?: primaryNetwork.parentNetwork?.externalId)
