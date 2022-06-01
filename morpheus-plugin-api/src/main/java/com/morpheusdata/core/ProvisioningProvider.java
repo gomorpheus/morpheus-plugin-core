@@ -182,6 +182,14 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
 
 	/**
+	 * This method is called after successful completion of runWorkload and provides an opportunity to perform some final
+	 * actions during the provisioning process. For example, ejected CDs, cleanup actions, etc
+	 * @param workload the Workload object that has been provisioned
+	 * @return Response from the API
+	 */
+	ServiceResponse finalizeWorkload(Workload workload);
+
+	/**
 	 * Issues the remote calls necessary top stop a workload element from running.
 	 * @param workload the Workload we want to shut down
 	 * @return Response from API

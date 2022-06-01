@@ -65,6 +65,11 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 		return ServiceResponse.success();
 	}
 
+	@Override
+	public ServiceResponse finalizeWorkload(Workload workload) {
+		return ServiceResponse.success();
+	}
+
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
 		Collection<ComputeServerType> serverTypes = getMorpheus().getCloud().getComputeServerTypes(cloudId).blockingGet();

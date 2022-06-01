@@ -738,6 +738,46 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	}
 
 	@Override
+	public ServiceResponse finalizeWorkload(Workload workload) {
+		def rtn = [success: true, msg: null]
+		log.debug "finalizeWorkload: ${workload?.id}"
+		try {
+			ComputeServer server = workload.server
+			Cloud cloud = server.cloud
+
+			def authConfig = getAuthConfig(cloud)
+			def	datacenterId = cloud.getConfigProperty('datacenter')
+			def	datastoreId = workload.getConfigProperty('datastoreId')
+			if(server.sourceImage?.isCloudInit || (server.sourceImage?.isSysprep && !server.sourceImage?.isForceCustomization)) {
+				def cdRemoveResults = VmwareComputeUtility.ejectVmCdRom(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+						[externalId:server.externalId, fileName:'config.iso'])
+				if(cdRemoveResults.success == true) {
+					def cdDeleteResults = VmwareComputeUtility.removeVmFile(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+							[externalId:server.externalId, datacenter:datacenterId, datastoreId:datastoreId, fileName:'config.iso'])
+				}
+			}
+			def serverDetails = VmwareComputeUtility.getServerDetail(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+					[externalId:server.externalId])?.results
+			//check if ip changed and update
+			def privateIp = serverDetails?.server?.ipAddress
+			def publicIp = serverDetails?.server?.ipAddress
+			if(server.internalIp != privateIp) {
+				if(server.sshHost == server.privateIp) {
+					server.sshHost = privateIp
+				}
+				server.internalIp = privateIp
+				server.externalIp = publicIp
+				morpheusContext.computeServer.save([server]).blockingGet()
+			}
+		} catch(e) {
+			rtn.success = false
+			rtn.msg = "Error in finalizing server: ${e.message}"
+			log.error "Error in finalizeWorkload: ${e}", e
+		}
+		return new ServiceResponse(rtn.success, rtn.msg, null, null)
+	}
+
+	@Override
 	ServiceResponse stopWorkload(Workload workload) {
 		log.debug "stopWorkload: ${workload}"
 		if(workload.server?.externalId) {
@@ -1249,6 +1289,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 							imageFolder: runConfig.imageFolderName
 					])
 					morpheusContext.virtualImage.location.create([virtualImageLocation], cloud).blockingGet()
+					taskResults.success = true
 				}
 			} else if(virtualImage?.imageType == ImageType.iso) {
 				log.debug "No upload required for ${virtualImage}... iso image"
@@ -1611,7 +1652,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 							}
 						}
 						server = saveAndGet(server)
-						workloadResponse.server = serverDetail.server
 						workloadResponse.success = true
 					}
 				} else {

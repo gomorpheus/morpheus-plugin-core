@@ -8,6 +8,9 @@ import com.morpheusdata.model.provisioning.UserConfiguration;
  */
 public class WorkloadResponse {
 
+	/**
+	 * Set to true when a Windows server was deployed and the image is syspreped or the unattend was customized
+	 */
 	public Boolean unattendCustomized = false;
 
 	/**
@@ -24,7 +27,6 @@ public class WorkloadResponse {
 	 * The private ip address of the created server
 	 */
 	public String privateIp;
-	public String status;
 
 	/**
 	 * Indicates if the agent should be installed on the server by Morpheus. Setting this to false does not
@@ -33,13 +35,23 @@ public class WorkloadResponse {
 	public Boolean installAgent;
 
 	/**
-	 * The list of users for Morpheus to create
+	 * Agent will not be installed in any way.. don't wait for it
+	 */
+	public Boolean noAgent = false;
+
+	/**
+	 * The list of users for Morpheus to create on the ComputeServer
 	 */
 	public List<UserConfiguration> createUsers;
-
-	public Object server; // cloud server data
-
+	
+	/**
+	 * Indicates if the provision was successful
+	 */
 	public Boolean success = false;
+
+	/**
+	 * Set to true when network customizations were performed
+	 */
 	public Boolean customized = false;
 
 	/**
@@ -47,17 +59,19 @@ public class WorkloadResponse {
 	 */
 	public Boolean licenseApplied = false;
 
-	/**
-	 * Agent will not be installed in any way.. don't wait for it
-	 */
-	public Boolean noAgent = false;
 
 	// This should be removed
 	public Long poolId;
 
+	/**
+	 * Set to the hostname of the ComputeServer (optional)
+	 */
 	public String hostname;
 
-	public String message; // error message
+	/**
+	 * When an error occurs, set the error message here
+	 */
+	public String message;
 
 	/**
 	 * Wait for the network to become active on the ComputeServer before finalizing

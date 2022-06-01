@@ -1651,7 +1651,7 @@ class VmwareComputeUtility {
 			                  datacenter:opts.datacenter, folder:opts.folder, proxySettings: opts.proxySettings]
 			def createResults = importOvfImage(apiUrl, username, password, insertOpts)
 			if(createResults.success == true) {
-				def vmResults = findVirtualMachine(apiUrl, username, password, image.name, opts)
+				def vmResults = findVirtualMachine(apiUrl, username, password, image.name, image.name)
 				if(vmResults.success == true) {
 					def vmImage = vmResults?.virtualMachine
 					if(vmImage) {
