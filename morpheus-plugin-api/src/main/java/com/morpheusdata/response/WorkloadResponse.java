@@ -43,7 +43,7 @@ public class WorkloadResponse {
 	 * The list of users for Morpheus to create on the ComputeServer
 	 */
 	public List<UserConfiguration> createUsers;
-	
+
 	/**
 	 * Indicates if the provision was successful
 	 */

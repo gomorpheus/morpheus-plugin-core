@@ -1691,10 +1691,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			workloadResponse.setError('failed to run server: ' + e)
 		}
 	}
-
-	// How to handle finalizeContainer
-	// Add a postFinalize method... do all the finalizeWindows, finalizeLinux etc and then call postFinalize
-
+	
 	private ComputeZonePoolIdentityProjection findHostByCloudAndExternalId(Cloud cloud, String externalId) {
 		log.debug "findHostByCloudAndExternalId ${cloud} ${externalId}"
 		ComputeZonePoolIdentityProjection host
