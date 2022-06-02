@@ -35,9 +35,6 @@ class ReverseTextTaskPlugin extends Plugin {
 		this.controllers.add(new ReverseTextTaskController(this, morpheus))
 		def model = new ViewModel<String>()
 		model.object = "Eric"
-
-		pluginProviders.get()
-
 		println this.getRenderer().renderTemplate('instanceTab', model).html
 	}
 
