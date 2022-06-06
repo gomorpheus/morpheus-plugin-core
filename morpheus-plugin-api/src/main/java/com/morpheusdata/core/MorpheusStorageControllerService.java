@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.StorageController;
+import com.morpheusdata.model.StorageControllerType;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
@@ -17,6 +18,12 @@ import java.util.List;
  * @author Alex Clement
  */
 public interface MorpheusStorageControllerService {
+
+	/**
+	 * Returns the MorpheusStorageControllerTypeService context used for performing updates or queries on {@link StorageControllerType} related assets within Morpheus.
+	 * @return An instance of the MorpheusStorageControllerTypeService Context
+	 */
+	MorpheusStorageControllerTypeService getStorageControllerType();
 
 	/**
 	 * Get a list of StorageControllers objects from a list of projection ids

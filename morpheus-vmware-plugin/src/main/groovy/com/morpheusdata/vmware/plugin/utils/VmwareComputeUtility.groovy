@@ -1,7 +1,11 @@
 package com.morpheusdata.vmware.plugin.utils
 
+import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.ComputeUtility
 import com.morpheusdata.core.util.SSLUtility
+import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.StorageController
+import com.morpheusdata.model.StorageControllerType
 import com.vmware.vim25.*
 import com.vmware.vim25.mo.*
 import groovy.transform.CompileStatic
@@ -5080,6 +5084,125 @@ class VmwareComputeUtility {
 		}
 
 		return rtn
+	}
+
+	static validateServerConfig(MorpheusContext morpheusContext, apiUrl, username, password, Map opts = [:], Boolean folderRequired=false) {
+		log.debug("validateServerConfig: ${opts}")
+		def rtn = [success:false, errors:[]]
+		try {
+			//template
+			if(opts.validateTemplate && !opts.template)
+				rtn.errors << [field:'template', msg:'Template is required']
+			//network
+			if(opts.networkId) {
+				// great
+			} else if (opts?.networkInterfaces) {
+				// JSON (or Map from parseNetworks)
+				log.debug("validateServerConfig networkInterfaces: ${opts?.networkInterfaces}")
+				opts?.networkInterfaces?.eachWithIndex { nic, index ->
+					def networkId = nic.network?.id ?: nic.network.group
+					log.debug("network.id: ${networkId}")
+					if(!networkId) {
+						rtn.errors << [field:'networkInterface', msg:'Network is required']
+					}
+					if (nic.ipMode == 'static' && !nic.ipAddress) {
+						rtn.errors = [field:'networkInterface', msg:'You must enter an ip address']
+					}
+				}
+			} else if (opts?.networkInterface) {
+				// UI params
+				log.debug("validateServerConfig networkInterface: ${opts.networkInterface}")
+				toList(opts?.networkInterface?.network?.id)?.eachWithIndex { networkId, index ->
+					log.debug("network.id: ${networkId}")
+					if(networkId?.length() < 1) {
+						rtn.errors << [field:'networkInterface', msg:'Network is required']
+					}
+					if (networkInterface[index].ipMode == 'static' && !networkInterface[index].ipAddress) {
+						rtn.errors = [field:'networkInterface', msg:'You must enter an ip address']
+					}
+				}
+			} else {
+				rtn.errors << [field:'networkId', msg:'Network is required']
+			}
+			if(opts.nodeCount != null && opts.nodeCount == ''){
+				rtn.errors << [field:'config.nodeCount', msg:'Number of Hosts Required']
+			}
+
+			def resourcePoolId = opts?.resourcePoolId ?: opts?.config?.resourcePoolId ?: opts.server?.config?.resourcePoolId ?: opts?.resourcePool ?: opts?.config?.vmwareResourcePoolId
+			if(!resourcePoolId) {
+				rtn.errors += [field: 'resourcePoolId', msg: 'Resource Pool is required']
+			}
+
+			def vmwareFolderId = opts?.vmwareFolderId ?: opts?.config?.vmwareFolderId ?: opts.server?.config?.vmwareFolderId
+			if(!vmwareFolderId && folderRequired) {
+				rtn.errors += [field: 'vmwareFolderId', msg: 'Folder is required']
+			}
+			// If host is selected, must validate that the cluster or datastore is reachable by the host
+			if(apiUrl && opts.hostId) {
+				// Gather up the datastore ids to validate (ignore 'auto')
+				def dataStoreIds = []
+				opts.volumes?.each { volume ->
+					if(volume?.datastoreId) {
+						dataStoreIds << volume.datastoreId
+					}
+					if (volume?.controllerMountPoint) {
+						def mountConfig = volume?.controllerMountPoint.tokenize(':')
+						// log.debug("mountConfig: ${mountConfig}")
+						// id:busNumber:typeId:unitId
+						// def controllerId = mountConfig[0]
+						// def busNumber = mountConfig[1]
+						Long typeId = mountConfig[2]?.toLong()
+						def unitNumber = mountConfig[3]
+						if(typeId) {
+							StorageControllerType storageType = morpheusContext.storageController.storageControllerType.get(typeId.toInteger()).blockingGet()
+							if (storageType.reservedUnitNumber == unitNumber) {
+								rtn.errors += [field: 'volumes', msg: "the storage controller unit selected is reservered: ${volume?.controllerMountPoint}"]
+							}
+						}
+					}
+				}
+				if(dataStoreIds) {
+					if(ignoreSsl) {
+						SSLUtility.trustAllHostnames()
+						SSLUtility.trustAllHttpsCertificates()
+					}
+					def serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+					ComputeServer computeServer = morpheusContext.computeServer.get(opts.hostId.toLong()).blockingGet()
+					def host = getManagedObject(serviceInstance, 'HostSystem', computeServer.externalId)
+					log.debug "validateServerConfig host: ${host}"
+					def hostDataStores = host.getDatastores()
+					log.debug "validateServerConfig hostDataStores: ${hostDataStores}"
+					dataStoreIds.each { dataStoreId ->
+						if(opts.datastoreId &&  dataStoreId != 'autoCluster' && dataStoreId == 'auto' ) {
+							com.morpheusdata.model.Datastore datastore
+							morpheusContext.cloud.datastore.listById([opts.datastoreId.toLong()]).blockingSubscribe { datastore = it }
+							if(datastore.type == 'generic') {
+								def datastoreAvailable = hostDataStores.find { it.getMOR().getVal() == datastore.externalId } != null
+								if(!datastoreAvailable)
+									rtn.errors << [field:'volume', msg :"Datastore ${datastore.name} is not accessible to host ${computeServer.name}"]
+							} else if(datastore.type == 'cluster') {
+								def storagePod = getManagedObject(serviceInstance, 'StoragePod', datastore.externalId)
+								storagePod.getChildEntity().each { vmds ->
+									def currentDatastoreExtId = vmds.getMOR().getVal()
+									def datastoreAvailable = hostDataStores.find { it.getMOR().getVal() == currentDatastoreExtId } != null
+									if(!datastoreAvailable) {
+										rtn.errors << [field:'volume', msg :"Datastore ${vmds.getName()} within cluster ${datastore.name} is not accessible to host ${computeServer.name}"]
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error "validateServerConfig error: ${e}", e
+		}
+		return rtn
+	}
+
+	static toList(value) {
+		[value].flatten()
 	}
 
 	static getVmwareHostUrl(node) {

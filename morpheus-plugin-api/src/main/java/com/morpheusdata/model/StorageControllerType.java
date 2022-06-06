@@ -10,6 +10,7 @@ public class StorageControllerType extends MorpheusModel {
 	private String name;
 	private String code;
 	private String externalId;
+	private Integer reservedUnitNumber;
 
 	public String getName() {
 		return name;
@@ -36,5 +37,14 @@ public class StorageControllerType extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
+	}
+
+	public Integer getReservedUnitNumber() {
+		return reservedUnitNumber;
+	}
+
+	public void setReservedUnitNumber(Integer reservedUnitNumber) {
+		this.reservedUnitNumber = reservedUnitNumber;
+		markDirty("reservedUnitNumber", reservedUnitNumber);
 	}
 }

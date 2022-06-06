@@ -322,10 +322,36 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse validateWorkload(Map opts = [:]) {
-		// TODO
-		log.debug("validateContainer: ${opts.config}")
+		log.debug("validateWorkload: ${opts.config}")
 		ServiceResponse rtn = new ServiceResponse(true, null, [:], null)
-		rtn
+		try {
+			Cloud cloud = morpheusContext.cloud.getCloudById(opts.zoneId?.toLong()).blockingGet()
+			def apiInfo = [:]
+			if(opts.hostId) {
+				apiInfo = getAuthConfig(cloud)
+			}
+
+			def validateTemplate = opts.template != null
+			VmwareOptionSourceProvider optionSourceProvider = plugin.getProviderByCode('vmware-option-source-plugin')
+			def resourceFolders = optionSourceProvider.selectableFolders(opts.accountId, cloud?.id, opts.site?.id, opts.plan?.id)
+			Boolean folderRequired = false
+			if(resourceFolders?.any{it.externalId == '/'}) {
+				folderRequired = false
+			} else {
+				folderRequired = true
+			}
+			def validationResults = VmwareComputeUtility.validateServerConfig(morpheusContext, apiInfo.apiUrl, apiInfo.apiUsername, apiInfo.apiPassword,
+					[validateTemplate:validateTemplate] + opts, folderRequired)
+			if(!validationResults.success) {
+				validationResults.errors?.each { it ->
+					rtn.addError(it.field, it.msg)
+				}
+			}
+
+		} catch(e) {
+			log.error("validateWorkload error: ${e}", e)
+		}
+		return rtn
 	}
 
 	@Override

@@ -134,7 +134,8 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * Validates the provided provisioning options of a workload. A return of success = false will halt the
 	 * creation and display errors
 	 * @param opts options
-	 * @return Response from API
+	 * @return Response from API. Errors should be returned in the errors Map with the key being the field name and the error
+	 * message as the value.
 	 */
 	ServiceResponse validateWorkload(Map opts);
 

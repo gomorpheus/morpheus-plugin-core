@@ -351,7 +351,7 @@ class VmwareCloudProvider implements CloudProvider {
 	Collection<StorageControllerType> getStorageControllerTypes() {
 		def standardType = new StorageControllerType([
 		        code: 'vmware-plugin-standard',
-				name: 'Vwmare Plugin Standard',
+				name: 'Vwmare Plugin Standard'
 		])
 
 		def ideType = new StorageControllerType([
@@ -362,21 +362,25 @@ class VmwareCloudProvider implements CloudProvider {
 		def busLogicType = new StorageControllerType([
 				code: 'vmware-plugin-busLogic',
 				name: 'Vwmare Plugin SCSI BusLogic Parallel',
+				reservedUnitNumber: 7
 		])
 
 		def lsiType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogic',
 				name: 'Vwmare Plugin SCSI LSI Logic Parallel',
+				reservedUnitNumber: 7
 		])
 
 		def lsiSasType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogicSas',
 				name: 'Vwmare Plugin SCSI LSI Logic SAS',
+				reservedUnitNumber: 7
 		])
 
 		def paravirtualType = new StorageControllerType([
 				code: 'vmware-plugin-paravirtual',
 				name: 'Vwmare Plugin SCSI VMware Paravirtual',
+				reservedUnitNumber: 7
 		])
 
 		return [standardType, ideType, busLogicType, lsiType, lsiSasType, paravirtualType]
