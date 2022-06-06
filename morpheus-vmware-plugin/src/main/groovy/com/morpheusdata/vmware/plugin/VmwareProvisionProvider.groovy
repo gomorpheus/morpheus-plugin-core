@@ -7,6 +7,7 @@ import com.morpheusdata.core.util.*
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.DatastoreIdentityProjection
+import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.request.ResizeRequest
@@ -44,7 +45,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse createWorkloadResources(Workload workload, Map opts) {
-		// TODO
 		return ServiceResponse.success()
 	}
 
@@ -103,8 +103,12 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse restartWorkload(Workload workload){
-		// TODO
-		return ServiceResponse.success()
+		log.debug 'restartWorkload'
+		ServiceResponse stopResult = stopWorkload(workload)
+		if (stopResult.success) {
+			return startWorkload(workload)
+		}
+		stopResult
 	}
 
 	@Override
@@ -1429,45 +1433,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				server.resourcePool = serverResourcePoolProj?.id ? new ComputeZonePool(id: serverResourcePoolProj.id) : null
 				server = saveAndGet(server)
 
-				// Apply Tags
-//				if(authConfig.apiVersion && authConfig.apiVersion != '6.0') {
-//					container.instance.metadata?.each { MetadataTag tag ->
-//						if(!tag.externalId && tag.type?.externalId) {
-//							def tagResult = VmwareComputeUtility.createTag(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [name:tag.value, categoryId:tag.type?.externalId])
-//							if(tagResult) {
-//								tag.refType = 'ComputeZone'
-//								tag.refId = server.zone.id
-//								tag.externalId = tagResult.tagId
-//								tag.save(flush:true)
-//							}
-//							else {
-//							}
-//							// we have a category
-//						} else if(!tag.externalId && !tag.type?.externalId) {
-//							def categoryResult = VmwareComputeUtility.createTagCategory(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [name:tag.name])
-//							if(categoryResult.success) {
-//								def category = new MetadataTagType(refType:'ComputeZone', refId:server.zone.id, name:tag.name, type:'fixed', externalId:categoryResult.categoryId)
-//								category.save(flush:true)
-//								tag.type = category
-//								def tagResult = VmwareComputeUtility.createTag(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [name:tag.value, categoryId:tag.type?.externalId])
-//								if(tagResult.success) {
-//									tag.refType = 'ComputeZone'
-//									tag.refId = server.zone.id
-//									tag.externalId = tagResult.tagId
-//									tag.save(flush:true)
-//								}
-//								else {
-//								}
-//								tag.save(flush:true)
-//							}
-//							else {
-//							}
-//						}
-//						if(tag.externalId) {
-//							VmwareComputeUtility.attachTagToVirtualMachine(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,tag.externalId,server.externalId)
-//						}
-//					}
-//				}
+				applyTags(workload, client)
 
 				workloadResponse.customized = createResults.customized == true
 				def resizeDiskResults = VmwareComputeUtility.resizeVmDisk(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
@@ -1691,7 +1657,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			workloadResponse.setError('failed to run server: ' + e)
 		}
 	}
-	
+
 	private ComputeZonePoolIdentityProjection findHostByCloudAndExternalId(Cloud cloud, String externalId) {
 		log.debug "findHostByCloudAndExternalId ${cloud} ${externalId}"
 		ComputeZonePoolIdentityProjection host
@@ -1997,6 +1963,58 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		}
 	}
 
+	def applyTags(Workload workload, HttpApiClient client) {
+		log.debug "applyTags"
+		try {
+			// Apply Tags
+			def server = workload.server
+			Map authConfig = getAuthConfig(server.cloud)
+			if (authConfig.apiVersion && authConfig.apiVersion != '6.0') {
+				workload.instance.metadata?.each { MetadataTag tag ->
+					log.debug "Working on tag: ${tag.name}"
+					if (!tag.externalId && tag.type?.externalId) {
+						def tagResult = VmwareComputeUtility.createTag(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [name: tag.value, categoryId: tag.type?.externalId])
+						if (tagResult) {
+							tag.refType = 'ComputeZone'
+							tag.refId = server.zone.id
+							tag.externalId = tagResult.tagId
+							morpheusContext.metadataTag.save([tag]).blockingGet()
+						}
+						// we have a category
+					} else if (!tag.externalId && !tag.type?.externalId) {
+						def categoryResult = VmwareComputeUtility.createTagCategory(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [name: tag.name])
+						if (categoryResult.success) {
+							def category = new MetadataTagType(refType: 'ComputeZone', refId: server.cloud.id, name: tag.name, externalId: categoryResult.categoryId)
+							morpheusContext.metadataTag.metadataTagType.create([category]).blockingGet()
+
+							Long categoryId
+							morpheusContext.metadataTag.metadataTagType.listSyncProjections('ComputeZone', server.cloud.id).filter { MetadataTagTypeIdentityProjection proj ->
+								proj.externalId == category.externalId && proj.name == category.name
+							}.blockingSubscribe { categoryId = it.id }
+
+							tag.type = new MetadataTagType(id: categoryId)
+							def tagResult = VmwareComputeUtility.createTag(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [name: tag.value, categoryId: tag.type?.externalId])
+							if (tagResult.success) {
+								tag.refType = 'ComputeZone'
+								tag.refId = server.zone.id
+								tag.externalId = tagResult.tagId
+								morpheusContext.metadataTag.save([tag]).blockingGet()
+							} else {
+								morpheusContext.metadataTag.save([tag]).blockingGet()
+							}
+						} else {
+						}
+					}
+					if (tag.externalId) {
+						VmwareComputeUtility.attachTagToVirtualMachine(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, tag.externalId, server.externalId)
+					}
+				}
+			}
+		} catch(e) {
+			log.error "Error in applyTags: ${e}", e
+		}
+	}
+
 	def getUniqueVolumeFileName(baseName,index,volumes) {
 		def name = "${baseName}_${index}"
 		def existingFileNames = volumes?.collect { vol -> vol.fileName}
@@ -2068,6 +2086,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		rtn.apiUrl = getVmwareApiUrl(cloud.serviceUrl)
 		rtn.apiUsername = cloud.serviceUsername
 		rtn.apiPassword = cloud.servicePassword
+		rtn.apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 		return rtn
 	}
 

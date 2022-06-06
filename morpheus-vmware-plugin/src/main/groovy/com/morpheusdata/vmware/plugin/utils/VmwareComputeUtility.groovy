@@ -2413,7 +2413,7 @@ class VmwareComputeUtility {
 			def coresPerSocket = opts.coresPerSocket?.toInteger() ?: 1
 			//setup
 			serviceInstance = connectionPool.getConnection(apiUrl, username, password,true,true)
-			def sessionResults = getRestSessionId(apiUrl,username,password,opts)
+			def sessionResults = getRestSessionId(url,username,password,opts)
 			sessionId = sessionResults.sessionId
 
 			//do deploy from rest
@@ -2447,7 +2447,8 @@ class VmwareComputeUtility {
 			if(opts.hostId) {
 				body.target.host_id = opts.hostId
 			}
-			apiResults = client.callJsonApi(url,"/rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}",new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId],query: ['~action':'deploy'],body:body,reuse:true, readTimeout: (60*60000).toInteger(), proxySettings: opts.proxySettings]),'POST')
+			// TODO: Proxy support
+			apiResults = client.callJsonApi(url,"/rest/com/vmware/vcenter/ovf/library-item/id:${opts.imageId}",new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId],query: ['~action':'deploy'],body:body,reuse:true, readTimeout: (60*60000).toInteger()]),'POST')
 			def cloneResults = apiResults.data.value
 			log.info("Clone Results: ${apiResults}")
 			if(cloneResults.succeeded) {
@@ -4998,6 +4999,91 @@ class VmwareComputeUtility {
 		} catch (e) {
 			log.error("relocateStorage error: ${e}", e)
 			rtn.success = false
+		}
+
+		return rtn
+	}
+
+	static createTagCategory(apiUrl,username,password, HttpApiClient client, opts=[:]) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			rtn.associations = [:]
+			def sessionResults = getRestSessionId(client, url,username,password,opts)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			log.debug("sessionId: ${sessionId}")
+			def body = [create_spec: [
+					associable_types: ['VirtualMachine'],
+					cardinality: 'SINGLE',
+					name:opts.name,
+					description: opts.name
+			]
+			]
+			// TODO: Proxy support
+			def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/category",new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId],body:body, readTimeout: (60*60000).toInteger()]),'POST')
+			rtn.success = apiResults.success
+			rtn.categoryId = apiResults.data.value
+		} catch(e) {
+			log.error("createTagCategory: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, url,sessionId)
+			}
+		}
+
+		return rtn
+	}
+
+	static createTag(apiUrl,username,password,HttpApiClient client, opts) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			rtn.associations = [:]
+			def sessionResults = getRestSessionId(client, url,username,password,opts)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			log.debug("sessionId: ${sessionId}")
+			def body = [create_spec: [
+					category_id: opts.categoryId,
+					name:opts.name,
+					description: opts.name
+			]
+			]
+			// TODO: Proxy support
+			def apiResults = client.callJsonApi(url,"/rest/com/vmware/cis/tagging/tag",new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId],body:body, readTimeout: (60*60000).toInteger()]),'POST')
+			rtn.success = apiResults.success
+			rtn.tagId = apiResults.data.value
+		} catch(e) {
+			log.error("createTagCategory: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, apiUrl,sessionId)
+			}
+		}
+
+		return rtn
+	}
+
+	static attachTagToVirtualMachine(apiUrl,username,password, HttpApiClient client, tagId,vmId,opts=[:]) {
+		def rtn = [success: false, customSpecs: []]
+		def sessionId
+		def url = privateGetSchemeHostAndPort(apiUrl)
+		try {
+			rtn.associations = [:]
+			def sessionResults = getRestSessionId(client, url,username,password,opts)
+			sessionId = sessionResults.sessionId//serviceInstance.sessionManager.currentSession.key
+			def query = ['~action':'attach']
+			def body = [object_id: [type: 'VirtualMachine', id: vmId]]
+			// TODO: Proxy support
+			def apiResults = client.callJsonApi(url, "/rest/com/vmware/cis/tagging/tag-association/id:${tagId}",null,null,new HttpApiClient.RequestOptions([headers: ["vmware-api-session-id": sessionId], body: body, query:query]),'POST')
+			rtn.success = apiResults.success
+		} catch(e) {
+			log.error("attachTagToVirtualMachine: ${e}", e)
+		} finally {
+			if(sessionId) {
+				logoutRestSessionId(client, apiUrl,sessionId)
+			}
 		}
 
 		return rtn
