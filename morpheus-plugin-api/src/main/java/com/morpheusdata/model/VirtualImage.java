@@ -42,6 +42,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isSysprep = false;
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
+	protected String interfaceName = "eth0";
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -303,6 +304,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setInstallAgent(Boolean installAgent) {
 		this.installAgent = installAgent;
 	}
+
+	public String getInterfaceName() {
+		return interfaceName;
+	}
+
+	public void setInterfaceName(String interfaceName) {
+		this.interfaceName = interfaceName;
+	}
+
 
 	public Boolean getUserUploaded() {
 		return userUploaded;

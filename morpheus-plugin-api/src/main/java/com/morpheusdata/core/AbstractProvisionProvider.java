@@ -31,6 +31,12 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	}
 
 	@Override
+	public Boolean canResizeRootVolume() { return false; }
+
+	@Override
+	public Boolean canReconfigureNetwork() { return false; }
+
+	@Override
 	public Boolean hasStorageControllers() {
 		return false;
 	}

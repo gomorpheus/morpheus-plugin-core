@@ -75,9 +75,10 @@ public interface MorpheusStorageControllerService {
 	 * to inform Morpheus that the StorageController no longer exists in the cloud
 	 * @param storageControllers controllers to remove
 	 * @param computeServer ComputeServerIdentityProjection to remove the controllers from
+	 * @param force Remove the StorageVolumes from the ComputeServer even if the status of the ComputeServer is 'resizing' (optional) defaults to false
 	 * @return success
 	 */
-	Single<Boolean> remove(List<StorageControllerIdentityProjection> storageControllers, ComputeServerIdentityProjection computeServer);
+	Single<Boolean> remove(List<StorageControllerIdentityProjection> storageControllers, ComputeServerIdentityProjection computeServer, Boolean force);
 
 	/**
 	 * Remove persisted StorageControllers from Morpheus and remove them from the VirtualImage.

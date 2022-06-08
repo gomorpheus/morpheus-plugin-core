@@ -11,6 +11,8 @@ import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.request.ResizeRequest
+import com.morpheusdata.request.UpdateModel
+import com.morpheusdata.vmware.plugin.sync.VmwareSyncUtils
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
@@ -113,8 +115,203 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts) {
-		// TODO
-		return ServiceResponse.success()
+		ServiceResponse rtn = ServiceResponse.success()
+		try {
+			log.info("resizeWorkload vm: ${instance} ${workload} ${resizeRequest} ${opts}")
+			ComputeServer server = workload.server
+			Cloud cloud = server.cloud
+
+			def authConfig = getAuthConfig(cloud)
+
+			//remove snapshots
+			def snapshotResults = VmwareComputeUtility.removeAllVmSnapshots(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [externalId:server.externalId])
+
+			def allocationSpecs = [
+					externalId:server.externalId,
+                   maxMemory:resizeRequest.maxMemory.div(ComputeUtility.ONE_MEGABYTE),
+                   maxCpu:resizeRequest.maxCores,
+                   coresPerSocket: resizeRequest.coresPerSocket
+			]
+
+			def allocationResults = VmwareComputeUtility.adjustVmResources(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, allocationSpecs)
+			if(!allocationResults.success) {
+				rtn.setError(allocationResults.msg ?: 'Error adjusting VM resource')
+				return rtn
+			}
+
+			// NOTE: Delete volumes before updating and adding to ensure correct fileName and unitNumber assignment
+			// Delete any removed volumes
+			resizeRequest.volumesDelete?.each { StorageVolume volume ->
+				log.info("resize deleting volume : ${volume.externalId}")
+				def datacenterId = cloud.getConfigProperty('datacenter')
+				def deleteResults = VmwareComputeUtility.deleteVmDisk(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter: datacenterId, diskKey:volume.externalId, externalId: server.externalId])
+				if(deleteResults.success == true) {
+					log.info("resize delete complete: ${deleteResults.success}")
+					morpheusContext.storageVolume.remove([volume], server, true).blockingGet()
+				}
+			}
+			//delete and removed controllers
+			resizeRequest.controllersDelete?.each { StorageController controller ->
+				log.info("resize deleting controller : ${controller.externalId}")
+				if(controller.externalId) {
+					def deleteResults = VmwareComputeUtility.deleteVmController(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+							[controllerKey:controller.externalId, externalId:server.externalId])
+					if(deleteResults.success == true) {
+						morpheusContext.storageController.remove([controller], server, true).blockingGet()
+					}
+				} else {
+					morpheusContext.storageController.remove([controller], server, true).blockingGet()
+				}
+			}
+
+			//controllers
+			resizeRequest.controllersAdd?.eachWithIndex { controllerAdd, index ->
+				log.info("adding controller: ${controllerAdd}")
+				def newIndex = server.controllers?.size() + index
+				def storageController = VmwareSyncUtils.buildStorageController(controllerAdd, newIndex)
+				storageController.uniqueId = "morpheus-controller-${instance.id}-${workload.id}-${newIndex}"
+				morpheusContext.storageController.create([storageController], server).blockingGet()
+				// Need to refetch the server
+				server = morpheusContext.computeServer.get(server.id).blockingGet()
+			}
+
+			//volumes
+			log.info("volumeUpdates {}", resizeRequest.volumesUpdate)
+			resizeRequest.volumesUpdate?.each { UpdateModel<StorageVolume> volumeUpdate ->
+				StorageVolume existing = volumeUpdate.existingModel
+				Map updateProps = volumeUpdate.updateProps
+				log.info("resizing vm storage: {}", volumeUpdate)
+				if (updateProps.maxStorage > existing.maxStorage) {
+					//stop it and start it?
+					def result = VmwareComputeUtility.resizeVmDisk(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+							[diskKey: existing.externalId, externalId: server.externalId, diskSize: updateProps.maxStorage.div(ComputeUtility.ONE_MEGABYTE)])
+					if (result.success == true) {
+						existing.maxStorage = updateProps.maxStorage
+						morpheusContext.storageVolume.save([existing]).blockingGet()
+					} else {
+						rtn.setError(result.msg ?: "Failed to expand Disk: ${existing.name}")
+						log.warn("error resizing disk: ${result.msg}")
+					}
+				}
+			}
+
+			def newCounter = server.volumes?.size()
+			resizeRequest.volumesAdd?.each { Map volumeAdd ->
+				//new disk add it
+				log.info("resizing vm adding storage: {}", volumeAdd)
+				StorageVolumeType volumeType
+				try {
+					volumeType = morpheusContext.storageVolume.storageVolumeType.get(volumeAdd.storageType?.toLong()).blockingGet()
+				} catch(e) {
+					log.debug "Unable to retrieve volumeType for ${volumeAdd.storageType} ${e}"
+				}
+				if(volumeAdd.controllerMountPoint)
+					assignStorageVolumeController(server, volumeAdd, volumeAdd.controllerMountPoint)
+
+				def addDiskConfig = [type:cloud.getConfigProperty('diskStorageType'), externalId:server.externalId,
+				                     diskSize:(volumeAdd.maxStorage.div(ComputeUtility.ONE_MEGABYTE)), diskIndex:newCounter,
+				                     diskName:getUniqueVolumeFileNameFromStorageVolumes(server.name, newCounter, server.volumes)]
+				addDiskConfig.datastoreId = getDatastoreExternalId(cloud, volumeAdd.datastoreId)
+				addDiskConfig.type = volumeType?.externalId ?: cloud.getConfigProperty('diskStorageType') ?: 'thin'
+				log.debug("got controller: {}", volumeAdd.controller)
+				if(volumeAdd.controller) {
+					addDiskConfig += [busNumber:volumeAdd.controller.busNumber?.toInteger(), unitNumber:volumeAdd.unitNumber?.toInteger(),
+					                  controllerType:volumeAdd.controller.type?.code ?: 'vmware-lsiLogic']
+				}
+				def addDiskResults = VmwareComputeUtility.addVmDisk(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, addDiskConfig)
+				log.debug("addDiskResults: ${addDiskResults} - ${addDiskResults.datastore?.getMOR()?.val}")
+				if(addDiskResults.success == true) {
+					volumeAdd.datastoreId = getRootDisk(workload)?.datastore?.id
+					def newVolume = VmwareSyncUtils.buildStorageVolume(server.account, server, volumeAdd, newCounter)
+					if(addDiskResults.controllerKey)
+						newVolume.controllerKey = "${addDiskResults.controllerKey}"
+					newVolume.uniqueId = "morpheus-vol-${instance.id}-${workload.id}-${newCounter}"
+					newVolume.maxStorage = volumeAdd.size.toInteger() * ComputeUtility.ONE_GIGABYTE
+					morpheusContext.storageVolume.create([newVolume], server).blockingGet()
+
+					// Need to refetch the server
+					server = morpheusContext.computeServer.get(server.id).blockingGet()
+					setControllerInfo(server.controllers, addDiskResults.controllers, addDiskResults.controller)
+					setVolumeInfo(server.volumes, addDiskResults.volumes, cloud)
+
+					newCounter++
+				} else {
+					//do stuff here to bubble up results
+					rtn.setError("error adding disk: ${addDiskResults?.msg}")
+					log.warn("error adding disk: ${addDiskResults}")
+				}
+			}
+
+			//networks
+			resizeRequest.interfacesDelete?.eachWithIndex { ComputeServerInterface networkDelete, index ->
+				def deleteConfig = [externalId:server.externalId, displayOrder:networkDelete.displayOrder,
+				                    networkKey:(networkDelete.externalId ? networkDelete.externalId.toInteger() : null)]
+				def deleteResults = VmwareComputeUtility.deleteVmNetwork(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, deleteConfig)
+				log.debug("deleteResults: ${deleteResults}")
+				if(deleteResults.success) {
+					deleteResults = releaseNetworkReservations(server, networkDelete)
+				}
+				if(deleteResults.success) {
+					morpheusContext.computeServer.computeServerInterface.remove([networkDelete]).blockingGet()
+				}
+			}
+
+			resizeRequest?.interfacesUpdate?.eachWithIndex { UpdateModel<ComputeServerInterface> networkUpdate, index ->
+				log.debug "Updating network: ${networkUpdate}"
+				ComputeServerInterface existing = networkUpdate.existingModel
+				Map networkMap = networkUpdate.updateProps
+				releaseNetworkReservations(server, existing)
+				//time to reconfigure
+				def nicIndex = existing.displayOrder
+				def newType = new ComputeServerInterfaceType(id: networkMap.networkInterfaceTypeId?.toLong())
+
+				Network newNetwork
+				morpheusContext.network.listById([networkMap.network.id.toLong()]).blockingSubscribe { newNetwork = it }
+
+				def networkConfig = [displayOrder:nicIndex, network:newNetwork, type:newType]
+				def networkResults = VmwareComputeUtility.modifyVmNetwork(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+						[networkConfig:networkConfig, externalId:server.externalId, index:nicIndex])
+				log.debug("network results: ${networkResults}")
+				if(networkResults.success == true) {
+					existing.network = newNetwork
+					//TODO: Handle pool allocation of new ip
+					//TODO: Handle network groups
+					//TODO: Handle Guest OS Configuration
+					morpheusContext.computeServer.computeServerInterface.save([existing]).blockingGet()
+				}
+				log.debug("modifying network: ${networkUpdate}")
+			}
+
+			resizeRequest.interfacesAdd?.eachWithIndex{ Map networkAdd ->
+				log.debug "adding network: ${networkAdd}"
+				def newIndex = networkAdd?.network?.isPrimary ? 0 : server.interfaces?.size()
+				def newType = new ComputeServerInterfaceType(id: networkAdd.network.networkInterfaceTypeId?.toLong())
+
+				Network newNetwork
+				morpheusContext.network.listById([networkAdd.network.network.id.toLong()]).blockingSubscribe { newNetwork = it }
+
+				def networkConfig = [displayOrder:newIndex, network:newNetwork, type:newType]
+				def networkResults = VmwareComputeUtility.addVmNetwork(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
+						[networkConfig:networkConfig, externalId:server.externalId, index:newIndex])
+				log.debug("network results: ${networkResults}")
+				if(networkResults.success == true) {
+					def newInterface = VmwareSyncUtils.buildComputeServerInterface(instance.account, instance, server, networkAdd.network, newIndex, [:])
+					if(networkResults.network?.key)
+						newInterface.externalId = "${networkResults.network.key}"
+					if(networkResults.network?.unitNumber)
+						newInterface.internalId = "${networkResults.network.unitNumber}"
+					newInterface.uniqueId = "morpheus-nic-${instance.id}-${workload.id}-${newIndex}"
+					morpheusContext.computeServer.computeServerInterface.create([newInterface], server).blockingGet()
+					// Need to refetch the server
+					server = morpheusContext.computeServer.get(server.id).blockingGet()
+				}
+			}
+
+		} catch(e) {
+			log.error("Unable to resize container: ${e.message}", e)
+			rtn.setError("Error resizing workload: ${e}")
+		}
+		return rtn
 	}
 
 	@Override
@@ -943,6 +1140,16 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 	@Override
 	Boolean canCustomizeRootVolume() {
+		true
+	}
+
+	@Override
+	Boolean canResizeRootVolume() {
+		true
+	}
+
+	@Override
+	Boolean canReconfigureNetwork() {
 		true
 	}
 
@@ -2061,6 +2268,25 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		return name
 	}
 
+	def releaseNetworkReservations(ComputeServer server, ComputeServerInterface serverInterface) {
+		def rtn=[success:true]
+		// TODO : Hanlde releasing pool addresses
+//		def networkIps = NetworkPoolIp.where{refType == 'ComputeServer' && refId == server.id && (subRefId == serverInterface.id || ipAddress == serverInterface.ipAddress)}.list()
+//		networkIps?.each { NetworkPoolIp networkIp ->
+//			Network network = serverInterface.network
+//			def networkPool = networkIp.networkPool
+//			if(networkPool) {
+//				if(networkPool.parentType == 'NetworkPoolServer') {
+//					def networkPoolServer = NetworkPoolServer.get(networkPool.parentId)
+//					rtn = networkPoolService.returnPoolAddress(networkPoolServer, networkPool, network, networkIp,[:])
+//				} else {
+//					rtn = networkPoolService.returnPoolAddress(null, networkPool, network, networkIp, [:])
+//				}
+//			}
+//		}
+		return rtn
+	}
+
 	def getDatastoreExternalId(Cloud cloud, datastoreId) {
 		if(datastoreId == 'auto' || datastoreId == 'autoCluster') {
 			return null
@@ -2083,6 +2309,23 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				rtn = newMaxStorage
 		}
 		return rtn
+	}
+
+	def assignStorageVolumeController( ComputeServer server, volume, mountPoint) {
+		if(server && volume && mountPoint) {
+			def mountConfig = mountPoint.tokenize(':')
+			log.debug("mountConfig: ${mountConfig}")
+			//id:busNumber:typeId:unitId
+			def controllerId = mountConfig[0]
+			def busNumber = mountConfig[1]
+			def typeId = mountConfig[2]?.toLong()
+			def unitNumber = mountConfig[3]
+			def controllerMatch = server.controllers?.find{it.busNumber == busNumber && it.type.id == typeId}
+			if(controllerMatch) {
+				volume.controller = controllerMatch
+				volume.unitNumber = unitNumber
+			}
+		}
 	}
 
 	private Boolean matchesDatastores(Datastore ds, Account account, List<Long> datastoreIds, ArrayList<Long> tenantDatastoreIds) {

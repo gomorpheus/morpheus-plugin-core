@@ -3538,6 +3538,19 @@ class VmwareComputeUtility {
 		return rtn
 	}
 
+	static getAssigedOrFreeDatastore(serviceInstance, datastoreId, vm, diskSize) {
+		def rtn
+		try {
+			if(datastoreId)
+				rtn = getDatastoreOrStoragePodDatastore(serviceInstance, datastoreId, vm, diskSize)
+			if(rtn == null)
+				rtn = getFreeDatastore(vm, diskSize)
+		} catch(e) {
+			log.error("getAssigedOrFreeDatastore error: ${e}", e)
+		}
+		return rtn
+	}
+
 	static listVmEvents(apiUrl, username, password, opts = [:]) {
 		def rtn = [success: false]
 		def serviceInstance
@@ -4537,7 +4550,7 @@ class VmwareComputeUtility {
 	}
 
 	static modifyVmNetwork(apiUrl, username, password, opts = [:]) {
-		log.info("addVmNetwork: ${apiUrl}, ${username}, ${opts}")
+		log.info("modifyVmNetwork: ${apiUrl}, ${username}, ${opts}")
 		def rtn = [success:false]
 		def serviceInstance
 		try {
@@ -4592,6 +4605,13 @@ class VmwareComputeUtility {
 			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
 		}
 
+		return rtn
+	}
+
+	static findNic(networks, index, type) {
+		def rtn = networks.find{it.type == type && it.key == index}
+		if(!rtn)
+			rtn = networks?.size() > index ? networks[index] : null
 		return rtn
 	}
 
@@ -4734,6 +4754,29 @@ class VmwareComputeUtility {
 				rtn.backing.setThinProvisioned(false)
 			}
 		}
+		return rtn
+	}
+
+	static removeAllVmSnapshots(apiUrl, username, password, opts = [:]) {
+		def rtn = [success: false]
+		def serviceInstance
+		try {
+
+			log.info("removing vmware snapshots for vm ${opts.externalId}")
+			serviceInstance = connectionPool.getConnection(apiUrl, username, password)
+			def vm = getManagedObject(serviceInstance, 'VirtualMachine', opts.externalId)
+			def vmTask = vm.removeAllSnapshots_Task()
+			def result = vmTask.waitForTask()
+			if(result == Task.SUCCESS) {
+				rtn.success = true
+			}
+		} catch(e) {
+			//log.error("removeAllVmSnapshots error: ${e}")
+			rtn.msg = "error removing snapshots for vm ${opts.externalId}"
+		} finally {
+			if(serviceInstance) {connectionPool.releaseConnection(apiUrl,username,password, serviceInstance)}
+		}
+
 		return rtn
 	}
 

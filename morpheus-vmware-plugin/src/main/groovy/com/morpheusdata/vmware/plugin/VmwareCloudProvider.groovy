@@ -351,36 +351,66 @@ class VmwareCloudProvider implements CloudProvider {
 	Collection<StorageControllerType> getStorageControllerTypes() {
 		def standardType = new StorageControllerType([
 		        code: 'vmware-plugin-standard',
-				name: 'Vwmare Plugin Standard'
+				name: 'Vwmare Plugin Standard',
+				category: null,
+				defaultType: true,
+				creatable: false,
+				displayOrder: 1,
+				maxDevices: 1
 		])
 
 		def ideType = new StorageControllerType([
 				code: 'vmware-plugin-ide',
 				name: 'Vwmare Plugin IDE',
+				category: 'ide',
+				defaultType: false,
+				creatable: false,
+				displayOrder: 1,
+				maxDevices: 12
 		])
 
 		def busLogicType = new StorageControllerType([
 				code: 'vmware-plugin-busLogic',
 				name: 'Vwmare Plugin SCSI BusLogic Parallel',
-				reservedUnitNumber: 7
+				category: 'scsi',
+				reservedUnitNumber: 7,
+				defaultType: false,
+				creatable: true,
+				displayOrder: 2,
+				maxDevices: 15
 		])
 
 		def lsiType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogic',
 				name: 'Vwmare Plugin SCSI LSI Logic Parallel',
-				reservedUnitNumber: 7
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 3,
+				maxDevices: 15
 		])
 
 		def lsiSasType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogicSas',
 				name: 'Vwmare Plugin SCSI LSI Logic SAS',
-				reservedUnitNumber: 7
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 4,
+				maxDevices: 15
 		])
 
 		def paravirtualType = new StorageControllerType([
 				code: 'vmware-plugin-paravirtual',
 				name: 'Vwmare Plugin SCSI VMware Paravirtual',
-				reservedUnitNumber: 7
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 5,
+				maxDevices: 15
 		])
 
 		return [standardType, ideType, busLogicType, lsiType, lsiSasType, paravirtualType]

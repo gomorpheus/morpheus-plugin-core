@@ -106,6 +106,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean canCustomizeDataVolumes();
 
 	/**
+	 * Indicates if the root volume may be resized
+	 * @return Boolean
+	 */
+	public Boolean canResizeRootVolume();
+
+	/**
+	 * Indicates if the network can be changed
+	 * @return Boolean
+	 */
+	public Boolean canReconfigureNetwork();
+
+	/**
 	 * Indicates if StorageControllers are utilized
 	 * @return Boolean
 	 */

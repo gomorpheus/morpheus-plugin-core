@@ -194,12 +194,12 @@ class HostsSync {
 		def removeList = existingVolumes.findAll{vol -> !hostDatastores.find{ds -> ds.ref == vol.externalId}}
 		if(removeList?.size() > 0) {
 			log.debug "Removing ${removeList.size()} storage volumes"
-			morpheusContext.storageVolume.remove(removeList, server).blockingGet()
+			morpheusContext.storageVolume.remove(removeList, server, false).blockingGet()
 		}
 
 		if(addList?.size() > 0) {
 			log.debug "Adding ${addList.size()} storage volumes"
-			morpheusContext.storageVolume.create(addList, server).blockingGet()
+			morpheusContext.storageVolume.create(addList, server, false).blockingGet()
 		}
 	}
 

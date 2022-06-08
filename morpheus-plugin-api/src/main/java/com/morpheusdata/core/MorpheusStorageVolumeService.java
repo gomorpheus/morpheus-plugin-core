@@ -20,6 +20,13 @@ import java.util.List;
 public interface MorpheusStorageVolumeService {
 
 	/**
+	 * Returns the StorageVolumeType Service
+	 *
+	 * @return An instance of the StorageVolumeType Service
+	 */
+	MorpheusStorageVolumeTypeService getStorageVolumeType();
+
+	/**
 	 * Get a list of StorageVolume objects from a list of projection ids
 	 * @param ids StorageVolume ids
 	 * @return Observable stream of StorageVolumes
@@ -69,9 +76,10 @@ public interface MorpheusStorageVolumeService {
 	 * to inform Morpheus that the StorageVolume no longer exists in the cloud
 	 * @param storageVolumes volumes to remove
 	 * @param computeServer ComputeServerIdentityProjection to remove the volumes from
+	 * @param force Remove the StorageVolumes from the ComputeServer even if the status of the ComputeServer is 'resizing' (optional) defaults to false
 	 * @return success
 	 */
-	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes, ComputeServerIdentityProjection computeServer);
+	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes, ComputeServerIdentityProjection computeServer, Boolean force);
 
 	/**
 	 * Remove persisted StorageVolumes from Morpheus and remove them from the VirtualImage.
