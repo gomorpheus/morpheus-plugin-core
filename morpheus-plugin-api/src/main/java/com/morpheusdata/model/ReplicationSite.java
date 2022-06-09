@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Date;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class ReplicationSite extends MorpheusModel {
 

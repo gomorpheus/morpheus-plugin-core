@@ -18,6 +18,13 @@ import java.util.List;
 public interface MorpheusBackupService {
 
 	/**
+	 * Returns the MorpheusBackupTypeContext used for performing updates/queries on {@link BackupType} related assets
+	 * within Morpheus.
+	 * @return An instance of the BackupTypeContext to be used for calls by various backup providers
+	 */
+	MorpheusBackupTypeService getType();
+
+	/**
 	 * Returns the BackupJobContext used for performing updates or queries on {@link BackupJob} related assets within Morpheus.
 	 * Typically this would be called by a {@link BackupProvider}
 	 * @return An instance of the Backup Job Context to be used for calls by various backup providers
@@ -32,11 +39,12 @@ public interface MorpheusBackupService {
 	MorpheusBackupResultService getBackupResult();
 
 	/**
-	 * Returns the MorpheusBackupTypeContext used for performing updates/queries on {@link BackupType} related assets
-	 * within Morpheus.
-	 * @return An instance of the BackupTypeContext to be used for calls by various backup providers
+	 * Returns the BackupRestoreContext used for performing updates or queries on {@link BackupRestore} related assets within Morpheus.
+	 * Typically this would be called by a {@link BackupProvider}.
+	 * @return An instance of the Backup Restore Context to be used for calls by various backup providers
 	 */
-	MorpheusBackupTypeService getType();
+	MorpheusBackupRestoreService getBackupRestore();
+
 
 	/**
 	 * Returns the MorpheusReplicationContext used for performing updates/queries on {@link Replication} related assets
