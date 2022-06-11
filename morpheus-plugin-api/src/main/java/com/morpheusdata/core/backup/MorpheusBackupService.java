@@ -5,6 +5,7 @@ import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupJob;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.BackupResult;
+import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.Replication;
 import com.morpheusdata.model.projection.BackupIdentityProjection;

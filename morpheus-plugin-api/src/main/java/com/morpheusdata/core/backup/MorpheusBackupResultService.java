@@ -1,6 +1,6 @@
 package com.morpheusdata.core.backup;
 
-import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.BackupResult;
 import com.morpheusdata.model.projection.BackupResultIdentityProjection;
@@ -22,12 +22,12 @@ public interface MorpheusBackupResultService {
 	Observable<BackupResultIdentityProjection> listIdentityProjections(BackupProvider backupProvider);
 
 	/**
-	 * Lists all backup result projection objects for a specified cloud.
+	 * Lists all backup result projection objects for a specified backup.
 	 * The projection is a subset of the properties on a full {@link BackupResult} object for sync matching.
-	 * @param cloud the {@link Cloud} identifier associated to the domains to be listed.
+	 * @param backup the {@link Backup} identifier associated to the domains to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<BackupResultIdentityProjection> listIdentityProjections(Cloud cloud);
+	Observable<BackupResultIdentityProjection> listIdentityProjections(Backup backup);
 
 	/**
 	 * Lists all {@link BackupResult} objects by a list of Identifiers. This is commonly used in sync / caching logic.

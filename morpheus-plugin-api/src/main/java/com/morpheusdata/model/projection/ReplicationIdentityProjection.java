@@ -15,6 +15,9 @@ public class ReplicationIdentityProjection extends MorpheusModel {
 	protected String externalId;
 	protected String name;
 	protected String typeCode;
+	protected Long replicationSiteId;
+	protected Long replicationGroupId;
+	protected String replicationSetId;
 
 	public ReplicationIdentityProjection() {
 	}
@@ -24,6 +27,16 @@ public class ReplicationIdentityProjection extends MorpheusModel {
 		this.name = name;
 		this.externalId = externalId;
 		this.typeCode = typeCode;
+	}
+
+	public ReplicationIdentityProjection(Long id, String externalId, String name, String typeCode, Long replicationSiteId, Long replicationGroupId, String replicationSetId) {
+		this.id = id;
+		this.name = name;
+		this.externalId = externalId;
+		this.typeCode = typeCode;
+		this.replicationSiteId = replicationSiteId;
+		this.replicationGroupId = replicationGroupId;
+		this.replicationSetId = replicationSetId;
 	}
 
 	/**
@@ -68,4 +81,30 @@ public class ReplicationIdentityProjection extends MorpheusModel {
 		return typeCode;
 	}
 
+	public Long getReplicationSiteId() {
+		return replicationSiteId;
+	}
+
+	public void setReplicationSiteId(Long replicationSiteId) {
+		this.replicationSiteId = replicationSiteId;
+		markDirty("replicationSiteId", replicationSiteId, this.replicationSiteId);
+	}
+
+	public Long getReplicationGroupId() {
+		return replicationGroupId;
+	}
+
+	public void setReplicationGroupId(Long replicationGroupId) {
+		this.replicationGroupId = replicationGroupId;
+		markDirty("replicationGroupId", replicationGroupId, this.replicationGroupId);
+	}
+
+	public String getReplicationSetId() {
+		return replicationSetId;
+	}
+
+	public void setReplicationSetId(String replicationSetId) {
+		this.replicationSetId = replicationSetId;
+		markDirty("replicationSetId", replicationSetId, this.replicationSetId);
+	}
 }

@@ -1,11 +1,10 @@
-package com.morpheusdata.core.backup
+package com.morpheusdata.core.backup;
 
-import com.morpheusdata.model.Backup
-import com.morpheusdata.model.BackupRestore
-import com.morpheusdata.model.BackupResult
-import com.morpheusdata.model.BackupProvider
-import com.morpheusdata.model.Cloud
-import com.morpheusdata.model.projection.BackupRestoreIdentityProjection
+import com.morpheusdata.model.Backup;
+import com.morpheusdata.model.BackupRestore;
+import com.morpheusdata.model.BackupResult;
+import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.projection.BackupRestoreIdentityProjection;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -25,8 +24,8 @@ public interface MorpheusBackupRestoreService {
 
 	/**
 	 * Lists all backup projection objects for a specified backup id.
-	 * The projection is a subset of the properties on a full {@link com.morpheusdata.model.BackupRestore} object for sync matching.
-	 * @param backup the {@link com.morpheusdata.core.Backup} identifier associated to the backups to be listed.
+	 * The projection is a subset of the properties on a full {@link BackupRestore} object for sync matching.
+	 * @param backup the {@link Backup} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<BackupRestoreIdentityProjection> listIdentityProjections(Backup backup);
@@ -34,7 +33,7 @@ public interface MorpheusBackupRestoreService {
 	/**
 	 * Lists all backup projection objects for a specified backup result id.
 	 * The projection is a subset of the properties on a full {@link com.morpheusdata.model.BackupRestore} object for sync matching.
-	 * @param backup the {@link com.morpheusdata.core.BackupResult} identifier associated to the backups to be listed.
+	 * @param backupResult the {@link BackupResult} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<BackupRestoreIdentityProjection> listIdentityProjections(BackupResult backupResult);
@@ -60,7 +59,7 @@ public interface MorpheusBackupRestoreService {
 
 	/**
 	 * Creates new Backup Restore Domains from cache / sync implementations
-	 * @param addList List of new {@link com.morpheusdata.model.BackupRestore} objects to be inserted into the database
+	 * @param addList List of new {@link BackupRestore} objects to be inserted into the database
 	 * @return notification of completion
 	 */
 	Single<Boolean> create(List<BackupRestore> addList);
@@ -76,7 +75,7 @@ public interface MorpheusBackupRestoreService {
 	/**
 	 * Saves a {@link BackupRestore} object. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
-	 * @param backup a Backup Object to be updated in the database.
+	 * @param backupRestore a Backup Object to be updated in the database.
 	 * @return the Single Observable containing the resulting Backup Object
 	 */
 	Single<Backup> save(BackupRestore backupRestore);

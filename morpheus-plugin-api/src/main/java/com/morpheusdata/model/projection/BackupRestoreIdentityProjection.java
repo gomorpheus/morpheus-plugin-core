@@ -1,4 +1,4 @@
-package com.morpheusdata.model.projection
+package com.morpheusdata.model.projection;
 
 import com.morpheusdata.model.MorpheusModel;
 
