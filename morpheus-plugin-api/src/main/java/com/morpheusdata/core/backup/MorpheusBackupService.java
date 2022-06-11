@@ -76,7 +76,7 @@ public interface MorpheusBackupService {
 	 * @param ids list of {@link Backup} ids to fetch.
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
-	Observable<BackupIdentityProjection> listById(Collection<Long> ids);
+	Observable<Backup> listById(Collection<Long> ids);
 
 	/**
 	 * Removes Missing Backup on the Morpheus side. This accepts the Projection Object instead of the main Object.

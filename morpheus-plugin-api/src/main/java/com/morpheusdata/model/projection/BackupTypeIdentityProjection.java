@@ -4,34 +4,15 @@ import com.morpheusdata.model.MorpheusModel;
 import com.morpheusdata.model.BackupType;
 
 public class BackupTypeIdentityProjection extends MorpheusModel {
-	protected String externalId;
 	protected String name;
 	protected String code;
 
 	public BackupTypeIdentityProjection() {}
 
-	public BackupTypeIdentityProjection(Long id, String externalId, String name, String code) {
+	public BackupTypeIdentityProjection(Long id, String name, String code) {
 		this.id = id;
 		this.name = name;
-		this.externalId = externalId;
 		this.code = code;
-	}
-
-	/**
-	 * returns the externalId also known as the API id of the equivalent object.
-	 * @return the external id or API id of the current record
-	 */
-	public String getExternalId() {
-		return externalId;
-	}
-
-	/**
-	 * Sets the externalId of the backup. In this class this should not be called directly
-	 * @param externalId the external id or API id of the current record
-	 */
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
 	}
 
 	/**
