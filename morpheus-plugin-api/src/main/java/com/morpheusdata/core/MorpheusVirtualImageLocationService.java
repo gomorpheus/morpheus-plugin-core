@@ -8,6 +8,7 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Context methods for syncing VirtualImageLocations in Morpheus. It can normally
@@ -39,6 +40,30 @@ public interface MorpheusVirtualImageLocationService {
 	Single<VirtualImageLocation> findVirtualImageLocation(Long virtualImageId, Long cloudId, String regionCode, String imageFolder, Boolean sharedStorage);
 
 	/**
+	 * Looks up a VirtualImageLocation by the externalId within the context of a cloud,region,type, and account
+	 * This is useful if a request is made based on a clouds remote id as opposed to the morpheus id. (i.e. AMI lookup).
+	 * @param externalId the external identifier in the cloud of this image (i.e. ami-adfadsf)
+	 * @param cloudId the id of the {@link Cloud} to scope the search to
+	 * @param regionCode the region code scope of the image
+	 * @param imageType image type to scope to
+	 * @param accountId optional accountId to scope it based on user access permissions on the lookup
+	 * @return an optional VirtualImageLocation with parent VirtualImage (if it exists)
+	 */
+	Single<Optional<VirtualImageLocation>> findVirtualImageLocationByExternalIdForCloudAndType(String externalId, Long cloudId, String regionCode, String imageType, Long accountId);
+
+	/**
+	 * Looks up a VirtualImageLocation by the externalId within the context of a cloud,region,type, and account
+	 * This is useful if a request is made based on a clouds remote id as opposed to the morpheus id. (i.e. AMI lookup).
+	 * @param externalId the external identifier in the cloud of this image (i.e. ami-adfadsf)
+	 * @param cloudId the id of the {@link Cloud} to scope the search to
+	 * @param regionCode the region code scope of the image
+	 * @param imageType image type to scope to
+	 * @return an optional VirtualImageLocation with parent VirtualImage (if it exists)
+	 */
+	Single<Optional<VirtualImageLocation>> findVirtualImageLocationByExternalIdForCloudAndType(String externalId, Long cloudId, String regionCode, String imageType);
+
+
+	/**
 	 * Get a list of VirtualImageLocation objects from a list of projection ids
 	 * @param ids VirtualImageLocation ids
 	 * @return Observable stream of VirtualImageLocations
@@ -60,6 +85,14 @@ public interface MorpheusVirtualImageLocationService {
 	 * @return success
 	 */
 	Single<Boolean> create(List<VirtualImageLocation> virtualImageLocations, Cloud cloud);
+
+	/**
+	 * Create a new VirtualImageLocation in Morpheus
+	 * @param virtualImageLocation a new VirtualImageLocation to persist
+	 * @param cloud the Cloud instance
+	 * @return success
+	 */
+	Single<VirtualImageLocation> create(VirtualImageLocation virtualImageLocation, Cloud cloud);
 
 	/**
 	 * Remove persisted VirtualImageLocations from Morpheus
