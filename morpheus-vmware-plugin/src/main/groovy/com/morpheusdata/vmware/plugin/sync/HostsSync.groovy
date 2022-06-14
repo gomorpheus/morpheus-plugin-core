@@ -199,7 +199,7 @@ class HostsSync {
 
 		if(addList?.size() > 0) {
 			log.debug "Adding ${addList.size()} storage volumes"
-			morpheusContext.storageVolume.create(addList, server, false).blockingGet()
+			morpheusContext.storageVolume.create(addList, server).blockingGet()
 		}
 	}
 
