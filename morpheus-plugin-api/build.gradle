@@ -54,6 +54,9 @@ dependencies {
 
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 	implementation 'commons-net:commons-net:3.7.2'
+	provided("com.bertramlabs.plugins:karman-core:${karmanVersion}") {
+		exclude module: 'groovy-all'
+	}
 
 	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	testImplementation "org.spockframework:spock-core:$spockVersion"

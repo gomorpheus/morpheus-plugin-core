@@ -16,9 +16,11 @@ public class VirtualImageIdentityProjection extends MorpheusModel {
 	protected String name;
 	protected ImageType imageType;
 	protected Boolean linkedClone;
+	protected String snapshotId;
 	protected Long ownerId;
 	protected Boolean systemImage;
 	protected Boolean deleted;
+	protected String visibility;
 
 	public String getExternalId() {
 		return externalId;
@@ -55,6 +57,15 @@ public class VirtualImageIdentityProjection extends MorpheusModel {
 		this.linkedClone = linkedClone;
 	}
 
+	public String getSnapshotId() {
+		return snapshotId;
+	}
+
+	public void setSnapshotId(String snapshotId) {
+		this.snapshotId = snapshotId;
+		markDirty("snapshotId", snapshotId);
+	}
+
 	public Long getOwnerId() {
 		return ownerId;
 	}
@@ -77,5 +88,13 @@ public class VirtualImageIdentityProjection extends MorpheusModel {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(String visibility) {
+		this.visibility = visibility;
 	}
 }

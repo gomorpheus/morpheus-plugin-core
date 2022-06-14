@@ -1,36 +1,34 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.core.AbstractProvisionProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerInterfaceType
 import com.morpheusdata.model.ComputeTypeLayout
 import com.morpheusdata.model.HostType
 import com.morpheusdata.model.ImageType
 import com.morpheusdata.model.Instance
-import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.OsType
 import com.morpheusdata.model.ServicePlan
-import com.morpheusdata.model.UsersConfiguration
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.Workload
+import com.morpheusdata.model.provisioning.WorkloadRequest
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.response.WorkloadResponse
 import groovy.json.JsonOutput
-import groovy.transform.AutoImplement
 import groovy.util.logging.Slf4j
-import io.reactivex.Single
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 
 @Slf4j
-class DigitalOceanProvisionProvider implements ProvisioningProvider {
+class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	Plugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
@@ -171,7 +169,12 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 	}
 
 	@Override
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts) {
+	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		ServiceResponse.success()
+	}
+
+	@Override
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
 		def containerConfig = new groovy.json.JsonSlurper().parseText(workload.configs ?: '{}')
 		String apiKey = workload.server.cloud.configMap.doApiKey
@@ -204,24 +207,23 @@ class DigitalOceanProvisionProvider implements ProvisioningProvider {
 		def userData
 		if(virtualImage?.isCloudInit) {
 			// Utilize the morpheus build cloud-init methods
-			Map cloudConfigOptions = morpheus.provision.buildCloudConfigOptions(workload.server.cloud, server, opts.installAgent,
-					opts + [doPing: true, hostName: server.getExternalHostname(), hosts: server.getExternalHostname(), nativeProvider: true, timezone: containerConfig.timezone]).blockingGet()
+			Map cloudConfigOptions = workloadRequest.cloudConfigOpts
 			log.debug "cloudConfigOptions ${cloudConfigOptions}"
 
 			// Inform Morpheus to install the agent (or not) after the server is created
 			callbackOpts.installAgent = opts.installAgent && (cloudConfigOptions.installAgent != true)
 
-			def cloudConfigUser = morpheus.provision.buildCloudUserData(com.morpheusdata.model.PlatformType.valueOf(server.osType), usersConfiguration, cloudConfigOptions).blockingGet()
+			def cloudConfigUser = workloadRequest.cloudConfigUser
 			log.debug "cloudConfigUser: ${cloudConfigUser}"
 			userData = cloudConfigUser
 
 			// Not really used in DO provisioning (example only)
-			String metadata = morpheus.provision.buildCloudMetaData(com.morpheusdata.model.PlatformType.valueOf(server.osType), workload.instance?.id, 'somehostname', cloudConfigOptions).blockingGet()
+			String metadata = workloadRequest.cloudConfigMeta
 			log.debug "metadata: ${metadata}"
 
-			// Not really used in DO provisioning (example only)
-			String networkData = morpheus.provision.buildCloudNetworkData(com.morpheusdata.model.PlatformType.valueOf(server.osType), cloudConfigOptions).blockingGet()
-			log.debug "networkData: ${networkData}"
+//			// Not really used in DO provisioning (example only)
+//			String networkData = morpheus.provision.buildCloudNetworkData(com.morpheusdata.model.PlatformType.valueOf(server.osType), cloudConfigOptions).blockingGet()
+//			log.debug "networkData: ${networkData}"
 		} else {
 			// These users will be created by Morpheus after provisioning
 			callbackOpts.createUsers = usersConfiguration.createUsers

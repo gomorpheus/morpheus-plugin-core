@@ -117,18 +117,79 @@ class VmwareCloudProvider implements CloudProvider {
 				optionSource: 'vmwarePluginResourcePool'
 		)
 
+		OptionType hideHostSelection = new OptionType(
+				name: 'Inventory Existing Instances',
+				code: 'vmware-plugin-hide-host-selection',
+				fieldName: 'hideHostSelection',
+				displayOrder: 7,
+				fieldLabel: 'Hide Host Selection from Users',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config'
+		)
+
 		OptionType inventoryInstances = new OptionType(
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-import-existing',
 				fieldName: 'importExisting',
-				displayOrder: 7,
+				displayOrder: 8,
 				fieldLabel: 'Inventory Existing Instances',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
 				fieldContext: 'config'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances]
+		// Advanced options
+		OptionType diskTypeSelection = new OptionType(
+				name: 'Enable Disk Type Selection',
+				code: 'vmware-plugin-disk-type-selection',
+				fieldName: 'enableDiskTypeSelection',
+				displayOrder: 9,
+				fieldLabel: 'Enable Disk Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType storageTypeSelection = new OptionType(
+				name: 'Enable Storage Type Selection',
+				code: 'vmware-plugin-storage-type-selection',
+				fieldName: 'enableStorageTypeSelection',
+				displayOrder: 10,
+				fieldLabel: 'Enable Storage Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType networkTypeSelection = new OptionType(
+				name: 'Enable Network Interface Type Selection',
+				code: 'vmware-plugin-network-type-selection',
+				fieldName: 'enableNetworkTypeSelection',
+				displayOrder: 11,
+				fieldLabel: 'Enable Network Interface Type Selection',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		OptionType diskStorageType = new OptionType(
+				name: 'Storage Type',
+				code: 'vmware-plugin-disk-storage-selection',
+				fieldName: 'diskStorageType',
+				displayOrder: 12,
+				fieldLabel: 'Storage Type',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				optionSource: 'vmwarePluginDiskTypes',
+				fieldContext: 'config',
+				fieldGroup: 'VMware Advanced'
+		)
+
+		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances, hideHostSelection, diskTypeSelection, storageTypeSelection, networkTypeSelection, diskStorageType]
 	}
 
 	@Override
@@ -291,31 +352,65 @@ class VmwareCloudProvider implements CloudProvider {
 		def standardType = new StorageControllerType([
 		        code: 'vmware-plugin-standard',
 				name: 'Vwmare Plugin Standard',
+				category: null,
+				defaultType: true,
+				creatable: false,
+				displayOrder: 1,
+				maxDevices: 1
 		])
 
 		def ideType = new StorageControllerType([
 				code: 'vmware-plugin-ide',
 				name: 'Vwmare Plugin IDE',
+				category: 'ide',
+				defaultType: false,
+				creatable: false,
+				displayOrder: 1,
+				maxDevices: 12
 		])
 
 		def busLogicType = new StorageControllerType([
 				code: 'vmware-plugin-busLogic',
 				name: 'Vwmare Plugin SCSI BusLogic Parallel',
+				category: 'scsi',
+				reservedUnitNumber: 7,
+				defaultType: false,
+				creatable: true,
+				displayOrder: 2,
+				maxDevices: 15
 		])
 
 		def lsiType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogic',
 				name: 'Vwmare Plugin SCSI LSI Logic Parallel',
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 3,
+				maxDevices: 15
 		])
 
 		def lsiSasType = new StorageControllerType([
 				code: 'vmware-plugin-lsiLogicSas',
 				name: 'Vwmare Plugin SCSI LSI Logic SAS',
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 4,
+				maxDevices: 15
 		])
 
 		def paravirtualType = new StorageControllerType([
 				code: 'vmware-plugin-paravirtual',
 				name: 'Vwmare Plugin SCSI VMware Paravirtual',
+				reservedUnitNumber: 7,
+				category: 'scsi',
+				defaultType: false,
+				creatable: true,
+				displayOrder: 5,
+				maxDevices: 15
 		])
 
 		return [standardType, ideType, busLogicType, lsiType, lsiSasType, paravirtualType]

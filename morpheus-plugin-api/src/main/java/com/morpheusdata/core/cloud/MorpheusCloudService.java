@@ -8,6 +8,8 @@ import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ public interface MorpheusCloudService {
 	MorpheusDatastoreService getDatastore();
 
 	MorpheusNetworkService getNetwork();
+
+	Single<Collection<ComputeServerType>> getComputeServerTypes(Long cloudId);
 
 	/**
 	 * Update the status of a Cloud during setup

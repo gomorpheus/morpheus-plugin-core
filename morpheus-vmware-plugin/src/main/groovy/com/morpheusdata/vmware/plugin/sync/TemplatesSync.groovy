@@ -29,7 +29,7 @@ class TemplatesSync {
 		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
 
 		try {
-	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
+	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)]).blockingGet()
 			def listResults = VmwareCloudProvider.listTemplates(cloud)
 			if(listResults.success) {
 				// First pass through.. dedupe logic
@@ -92,7 +92,7 @@ class TemplatesSync {
 			addMissingVirtualImages(itemsToAdd, osTypes)
 		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 			// Found the VirtualImage for this location.. just need to create the location
-			addMissingVirtualImageLocationsForImages(updateItems, osTypes)
+			addMissingVirtualImageLocationsForImages(updateItems)
 		}.start()
 	}
 

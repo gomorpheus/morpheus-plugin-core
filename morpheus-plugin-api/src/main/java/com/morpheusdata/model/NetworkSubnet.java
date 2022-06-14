@@ -59,6 +59,7 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
 	protected NetworkSubnet.Status status = NetworkSubnet.Status.AVAILABLE;
+	protected Long networkId;
 
 	public enum Status {
 		PROVISIONING,
@@ -398,6 +399,15 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	public void setStatus(Status status) {
 		this.status = status;
 		markDirty("status", status);
+	}
+
+	public Long getNetworkId() {
+		return networkId;
+	}
+
+	public void setNetworkId(Long networkId) {
+		this.networkId = networkId;
+		markDirty("networkId", networkId);
 	}
 
 }

@@ -1,9 +1,13 @@
 package com.morpheusdata.core.util;
 
+import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.PlatformType;
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility methods for compute operations.
@@ -37,6 +41,49 @@ public class ComputeUtility {
 				while(rtn.endsWith("-")) {
 					rtn = rtn.substring(0,rtn.length() - 1);
 				}
+			}
+		}
+		return rtn;
+	}
+
+	static String formatHostname(String name, PlatformType platform, Long serverId, List<ComputeServerIdentityProjection> existingServers) {
+		String rtn = name;
+		if(rtn != null) {
+			rtn = rtn.replaceAll("\\W+", "-");
+			rtn = rtn.replaceAll("\'", "");
+			rtn = rtn.replaceAll(",", "");
+			rtn = rtn.toLowerCase();
+		}
+
+		if(rtn == null || rtn =="") {
+			return rtn;
+		}
+		if(platform == PlatformType.windows) {
+			rtn = rtn.substring(0, Math.min(rtn.length(), 15));
+			while(rtn.endsWith("-")) {
+				rtn = rtn.substring(0,rtn.length() - 1);
+			}
+			String originalInternalName = rtn;
+			Integer seq=1;
+			ArrayList<String> existingNames = new ArrayList<>();
+			for(int i=0; i < existingServers.size(); i++) {
+				ComputeServerIdentityProjection server = existingServers.get(i);
+				String hostName = server.getHostname();
+				if(server.getId() != serverId && hostName.startsWith(originalInternalName.substring(0,3))) {
+					existingNames.add(hostName);
+				}
+			}
+			Boolean nameExists = existingNames.contains(rtn);
+			while(nameExists) {
+				seq++;
+				String sequence = seq.toString();
+				Boolean originalEndsWithDash = originalInternalName.endsWith("-");
+				String suffix = originalEndsWithDash ? sequence : "-" + sequence;
+				int suffixLength = suffix.length();
+
+				String namePrefix = originalInternalName.substring(0, 15-suffixLength);
+				rtn = namePrefix + suffix;
+				nameExists = existingNames.contains(rtn);
 			}
 		}
 		return rtn;

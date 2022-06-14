@@ -72,6 +72,7 @@ public class Network extends NetworkIdentityProjection {
 	public String category;
 	public String code;
 	public Integer cidrMask;
+	protected NetworkIdentityProjection parentNetwork;
 
 	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
 
@@ -474,4 +475,11 @@ public class Network extends NetworkIdentityProjection {
 		this.assignedZonePools = assignedZonePools;
 	}
 
+	public NetworkIdentityProjection getParentNetwork() {
+		return parentNetwork;
+	}
+
+	public void setParentNetwork(NetworkIdentityProjection parentNetwork) {
+		this.parentNetwork = parentNetwork;
+	}
 }

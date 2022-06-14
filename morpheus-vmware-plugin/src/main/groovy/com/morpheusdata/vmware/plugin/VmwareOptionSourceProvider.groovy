@@ -1,14 +1,16 @@
 package com.morpheusdata.vmware.plugin
 
+import com.morpheusdata.core.AbstractOptionSourceProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.*
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection
+import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import groovy.util.logging.Slf4j
-import com.morpheusdata.core.OptionSourceProvider
 import com.morpheusdata.vmware.plugin.utils.*
 
 @Slf4j
-class VmwareOptionSourceProvider implements OptionSourceProvider {
+class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
@@ -40,7 +42,7 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC', 'vmwarePluginCluster', 'vmwarePluginResourcePool'])
+		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC', 'vmwarePluginCluster', 'vmwarePluginResourcePool','vmwarePluginImage','vmwarePluginHost','vmwarePluginFolder', 'vmwarePluginDiskTypes'])
 	}
 
 	def vmwarePluginVersions(args) {
@@ -71,6 +73,141 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 		def resourcePoolList = buildPoolTree(resourcePools)
 		def sortedPools = resourcePoolList.sort{ a, b -> a.name <=> b.name }
 		sortedPools.collect {  [name: it.name, value: it.ref] }
+	}
+
+	def vmwarePluginImage(args) {
+		log.debug "vmwarePluginImage: ${args}"
+
+		def cloudId = args?.size() > 0 ? args.getAt(0).zoneId.toLong() : null
+		def accountId = args?.size() > 0 ? args.getAt(0).accountId.toLong() : null
+		Cloud tmpCloud = morpheusContext.cloud.getCloudById(cloudId).blockingGet()
+		def regionCode = VmwareCloudProvider.getRegionCode(tmpCloud)
+
+		// Grab the projections.. doing a filter pass first
+		def virtualImageIds = []
+		ImageType[] imageTypes =  [ImageType.vmdk, ImageType.ovf, ImageType.iso]
+		morpheusContext.virtualImage.listSyncProjections(accountId, imageTypes).filter { VirtualImageIdentityProjection proj ->
+			return (proj.deleted == false)
+		}.blockingSubscribe{virtualImageIds << it.id }
+
+		List options = []
+		if(virtualImageIds.size() > 0) {
+			def invalidStatus = ['Saving', 'Failed', 'Converting']
+
+			morpheusContext.virtualImage.listById(virtualImageIds).blockingSubscribe { VirtualImage img ->
+				if (!(img.status in invalidStatus) &&
+						(img.visibility == 'public' || img.ownerId == accountId || img.ownerId == null || img.account.id == accountId)) {
+					if(img.category == "vmware.vsphere.image.${cloudId}" ||
+							(img.refType == 'ComputeZone' && img.refId == cloudId ) ||
+							img.imageLocations.any { it.refId == cloudId && it.refType == 'ComputeZone' }) {
+						options << [name: img.name, value: img.id]
+					} else if(regionCode &&
+							(img.imageRegion == regionCode ||
+									img.userUploaded ||
+									img.imageLocations.any { it.imageRegion == regionCode }
+							)
+					) {
+						options << [name: img.name, value: img.id]
+					}
+				}
+			}
+		}
+
+		if(options.size() > 0) {
+			options = options.sort { it.name }
+		}
+
+		options
+	}
+
+	def vmwarePluginHost(args) {
+		log.debug "vmwarePluginHost: ${args}"
+		def cloudId = args?.size() > 0 ? args.getAt(0).zoneId.toLong() : null
+		Cloud tmpCloud = morpheusContext.cloud.getCloudById(cloudId).blockingGet()
+
+		if(tmpCloud.getConfigProperty('hideHostSelection') == 'on' || tmpCloud.getConfigProperty('hideHostSelection') == true) {
+			return [[name:'Auto', value: '']]
+		}
+
+		def hostIds = []
+		morpheusContext.computeServer.listSyncProjections(cloudId).filter { ComputeServerIdentityProjection proj ->
+			proj.category == "vmware.vsphere.host.${cloudId}"
+		}.blockingSubscribe { hostIds << it.id }
+		List<ComputeServer> hosts = []
+		if(hostIds) {
+			morpheusContext.computeServer.listById(hostIds).blockingSubscribe { ComputeServer server ->
+			if(server.account.id == tmpCloud.account.id) {
+				hosts << server
+			}}
+			hosts = hosts?.sort { it.name }?.collect {hst -> [name: hst.name, value: hst.id] }
+		}
+		hosts
+	}
+
+	def vmwarePluginFolder(args) {
+		log.debug "vmwarePluginFolder: ${args}"
+		def cloudId = args?.size() > 0 ? args.getAt(0).zoneId?.toLong() : null
+		def accountId = args?.size() > 0 ? args.getAt(0).accountId.toLong() : null
+		def currentUser = args?.size() > 0 ? args.getAt(0).currentUser : null
+
+		def rtn = []
+		Map mapArgs = args?.size() > 0 ? args.getAt(0) : [:]
+		def siteId = getSiteId(mapArgs)
+		def planId = getPlanId(mapArgs) ?: getPlanId(mapArgs.server ?: [:])
+		List<ComputeZoneFolder> resourceFolders = selectableFolders(accountId, cloudId, siteId, planId)
+		def defaultFolderId = morpheusContext.cloud.folder.getDefaultFolderForAccount(cloudId, currentUser.account.id, siteId, planId).blockingGet()?.externalId
+		log.debug("default folder: ${defaultFolderId}")
+
+		rtn = resourceFolders?.collect { ComputeZoneFolder folder ->
+			[value:folder.externalId, name:nameForFolder(folder), root: folder.externalId == '/' ? 0 : 1, isDefault:(folder.externalId == defaultFolderId ? true : false)]
+		}?.sort{a,b -> a.root <=> b.root ?: a.name <=> b.name}
+
+		return rtn
+	}
+
+	def vmwarePluginDiskTypes(args) {
+		log.debug "vmwarePluginDiskTypes: ${args}"
+		return [[name:'Thin', value:'thin'], [name:'Thick (Lazy Zero)', value:'thick'], [name:'Thick (Eager)', value:'thickEager']]
+	}
+
+	private List<ComputeZoneFolder> selectableFolders(Long accountId, Long cloudId, Long siteId, Long planId, List<Long> scopedFolderIds = null) {
+		def folderIds = morpheusContext.permission.listAccessibleResources(accountId, Permission.ResourceType.ComputeZoneFolder, siteId, planId)
+		def tenantFolderIds = morpheusContext.permission.listAccessibleResources(accountId, Permission.ResourceType.ComputeZoneFolder, null, null)
+
+		def projIds = []
+		morpheusContext.cloud.folder.listSyncProjections(cloudId).blockingSubscribe { projIds << it.id }
+
+		List<ComputeZoneFolder> folders = []
+		if(projIds?.size() > 0) {
+			morpheusContext.cloud.folder.listById(projIds).blockingSubscribe { ComputeZoneFolder folder ->
+				def matches = false
+				def id = folder.id
+				if(!folder.readOnly && folder.externalId != null && folder.active) {
+					matches = true
+				}
+				if(matches && scopedFolderIds) {
+					matches = scopedFolderIds.contains(id)
+				}
+				if(matches) {
+					if(folderIds && folderIds.contains(id)) {
+						// still matches
+					} else {
+						if((!(tenantFolderIds.size() > 0) || !tenantFolderIds.contains(id)) &&
+								(folder.visibility == 'public' || folder.owner.id == accountId)) {
+							// still matches
+						} else {
+							matches = false
+						}
+					}
+				}
+				if(matches) {
+					folders << folder
+				}
+			}
+		}
+
+		folders = folders.sort { it.name }
+		folders
 	}
 
 	private Cloud loadLookupZone(args) {
@@ -137,4 +274,21 @@ class VmwareOptionSourceProvider implements OptionSourceProvider {
 		}
 		return nameElements.join(' / ')
 	}
+
+
+	protected nameForFolder(ComputeZoneFolder folder) {
+		def nameElements = [folder.name]
+		def currentFolder = folder
+		while(currentFolder.parent) {
+			if(currentFolder.parent.name == '/') {
+				nameElements.add(0, '')
+			} else {
+				nameElements.add(0, currentFolder.parent.name)
+			}
+
+			currentFolder = currentFolder.parent
+		}
+		return nameElements.join(' / ')?.trim()
+	}
+
 }

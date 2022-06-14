@@ -28,6 +28,17 @@ public interface MorpheusVirtualImageLocationService {
 	Observable<VirtualImageLocationIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
+	 * Find a VirtualImageLocation given the parameters
+	 * @param virtualImageId The VirtualImage to search against
+	 * @param cloudId The id of the Cloud to search against
+	 * @param regionCode The regionCode of the Cloud to search against (optional) Defaults to null
+	 * @param imageFolder The name of the ComputeZoneFolder to search within (optional) Defaults to null
+	 * @param sharedStorage Whether to search for VirtualImageLocations with sharedStorage (optional) Defaults to false.
+	 * @return Observable VirtualImageLocation matching the parameters
+	 */
+	Single<VirtualImageLocation> findVirtualImageLocation(Long virtualImageId, Long cloudId, String regionCode, String imageFolder, Boolean sharedStorage);
+
+	/**
 	 * Get a list of VirtualImageLocation objects from a list of projection ids
 	 * @param ids VirtualImageLocation ids
 	 * @return Observable stream of VirtualImageLocations
