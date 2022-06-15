@@ -211,6 +211,16 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasCloudInit() {
+		false
+	}
+
+	@Override
+	Boolean supportsDistributedWorker() {
+		false
+	}
+
+	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		return ServiceResponse.success()
 	}

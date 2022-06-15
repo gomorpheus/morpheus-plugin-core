@@ -164,4 +164,17 @@ public interface CloudProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse deleteServer(ComputeServer computeServer);
+
+	/**
+	 * Indicates if the cloud supports cloud-init. Returning true will allow configuration of the Cloud
+	 * to allow installing the agent remotely via SSH /WinRM or via Cloud Init
+	 * @return Boolean
+	 */
+	Boolean hasCloudInit();
+
+	/**
+	 * Indicates if the cloud supports the distributed worker functionality
+	 * @return Boolean
+	 */
+	Boolean supportsDistributedWorker();
 }

@@ -548,6 +548,15 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasCloudInit() {
+		true
+	}
+	@Override
+	Boolean supportsDistributedWorker() {
+		true
+	}
+
+	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		log.debug("startServer: ${computeServer}")
 		def rtn = [success:false]
