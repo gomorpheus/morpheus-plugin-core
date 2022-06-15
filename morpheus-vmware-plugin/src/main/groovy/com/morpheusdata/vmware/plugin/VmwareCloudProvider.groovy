@@ -117,11 +117,24 @@ class VmwareCloudProvider implements CloudProvider {
 				optionSource: 'vmwarePluginResourcePool'
 		)
 
+		OptionType rpcMode = new OptionType(
+				name: 'RPC Mode',
+				code: 'vmware-plugin-rpc-mode',
+				fieldName: 'rpcMode',
+				displayOrder: 7,
+				fieldLabel: 'RPC Mode',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				helpText: 'Capable of using SSH/Winrm (rpc) or VMWare Tools (guestexec) for agent installation and orchestration on the provisioned vm.',
+				fieldContext: 'config',
+				optionSource: 'vmwarePluginRpcMode'
+		)
+
 		OptionType hideHostSelection = new OptionType(
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-hide-host-selection',
 				fieldName: 'hideHostSelection',
-				displayOrder: 7,
+				displayOrder: 8,
 				fieldLabel: 'Hide Host Selection from Users',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -132,11 +145,33 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-import-existing',
 				fieldName: 'importExisting',
-				displayOrder: 8,
+				displayOrder: 9,
 				fieldLabel: 'Inventory Existing Instances',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
 				fieldContext: 'config'
+		)
+
+		OptionType hypervisorConsole = new OptionType(
+				name: 'Enable Hypervisor Console',
+				code: 'vmware-plugin-hypervisor-console',
+				fieldName: 'enableVnc',
+				displayOrder: 10,
+				fieldLabel: 'Enable Hypervisor Console',
+				required: false,
+				inputType: OptionType.InputType.CHECKBOX,
+				fieldContext: 'config'
+		)
+
+		OptionType keyboardLayout = new OptionType(
+				name: 'Keyboard Layout',
+				code: 'vmware-plugin-keyboard-layout',
+				fieldName: 'consoleKeymap',
+				displayOrder: 11,
+				fieldLabel: 'Keyboard Layout',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				optionSource: 'vmwarePluginConsoleKeymap'
 		)
 
 		// Advanced options
@@ -144,7 +179,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Disk Type Selection',
 				code: 'vmware-plugin-disk-type-selection',
 				fieldName: 'enableDiskTypeSelection',
-				displayOrder: 9,
+				displayOrder: 12,
 				fieldLabel: 'Enable Disk Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -156,7 +191,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Storage Type Selection',
 				code: 'vmware-plugin-storage-type-selection',
 				fieldName: 'enableStorageTypeSelection',
-				displayOrder: 10,
+				displayOrder: 13,
 				fieldLabel: 'Enable Storage Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -168,7 +203,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Network Interface Type Selection',
 				code: 'vmware-plugin-network-type-selection',
 				fieldName: 'enableNetworkTypeSelection',
-				displayOrder: 11,
+				displayOrder: 14,
 				fieldLabel: 'Enable Network Interface Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -180,7 +215,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Storage Type',
 				code: 'vmware-plugin-disk-storage-selection',
 				fieldName: 'diskStorageType',
-				displayOrder: 12,
+				displayOrder: 15,
 				fieldLabel: 'Storage Type',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -189,7 +224,9 @@ class VmwareCloudProvider implements CloudProvider {
 				fieldGroup: 'VMware Advanced'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances, hideHostSelection, diskTypeSelection, storageTypeSelection, networkTypeSelection, diskStorageType]
+		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances,
+			hypervisorConsole, keyboardLayout, hideHostSelection, rpcMode, diskTypeSelection,
+            storageTypeSelection, networkTypeSelection, diskStorageType]
 	}
 
 	@Override

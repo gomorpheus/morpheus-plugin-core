@@ -42,7 +42,11 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 
 	@Override
 	List<String> getMethodNames() {
-		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC', 'vmwarePluginCluster', 'vmwarePluginResourcePool','vmwarePluginImage','vmwarePluginHost','vmwarePluginFolder', 'vmwarePluginDiskTypes'])
+		return new ArrayList<String>(['vmwarePluginVersions', 'vmwarePluginVDC',
+		                              'vmwarePluginCluster', 'vmwarePluginResourcePool',
+		                              'vmwarePluginImage','vmwarePluginHost',
+		                              'vmwarePluginFolder', 'vmwarePluginDiskTypes',
+		                              'vmwarePluginRpcMode', 'vmwarePluginConsoleKeymap'])
 	}
 
 	def vmwarePluginVersions(args) {
@@ -168,6 +172,35 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 	def vmwarePluginDiskTypes(args) {
 		log.debug "vmwarePluginDiskTypes: ${args}"
 		return [[name:'Thin', value:'thin'], [name:'Thick (Lazy Zero)', value:'thick'], [name:'Thick (Eager)', value:'thickEager']]
+	}
+
+	def vmwarePluginRpcMode(args) {
+		log.debug "vmwarePluginRpcMode: ${args}"
+		return [
+			[value:'rpc', name:'SSH / WinRM'],
+			[value:'guestexec', name:'Vmware Tools']
+		]
+	}
+
+	def vmwarePluginConsoleKeymap(args) {
+		log.debug "vmwarePluginConsoleKeymap: ${args}"
+		return [
+			[name: 'en-us', value: 'us'],
+			[name: 'en-uk', value: 'uk'],
+			[name: 'de', value: 'de'],
+			[name: 'de-ch', value: 'de-ch'],
+			[name: 'es', value: 'es'],
+			[name: 'fi', value: 'fi'],
+			[name: 'fr', value: 'fr'],
+			[name: 'fr-be', value: 'fr-be'],
+			[name: 'fr-ch', value: 'fr-ch'],
+			[name: 'is', value: 'is'],
+			[name: 'it', value: 'it'],
+			[name: 'jp', value: 'jp'],
+			[name: 'nl-be', value: 'nl-be'],
+			[name: 'no', value: 'no'],
+			[name: 'pt', value: 'pt']
+		]
 	}
 
 	private List<ComputeZoneFolder> selectableFolders(Long accountId, Long cloudId, Long siteId, Long planId, List<Long> scopedFolderIds = null) {
