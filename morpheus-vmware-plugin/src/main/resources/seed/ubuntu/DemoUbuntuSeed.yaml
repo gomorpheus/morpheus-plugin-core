@@ -1,0 +1,23 @@
+# dependencies
+dependsOn: []
+# seed entries
+seed:
+  accountResourceType:
+    meta:
+      key: code
+    code: plugin.vmware.test_nested_seed_item
+    category: testing
+    apiCategory: testing
+    apiType: plugin_testing
+    iacType: plugin_testing
+    iacProvider: testing
+    name: Test Nested Seed Item
+    type: testSeedItem
+    morpheusType: accountResource
+    resourceType: testSeedItem
+    rootType: true
+    resourceIcon: testing
+    resourceVersion: 1.0
+    displayOrder: 10
+    iacProviderType: testing
+    description: ''
