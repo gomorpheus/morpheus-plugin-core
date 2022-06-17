@@ -16,10 +16,12 @@ class TemplatesSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public TemplatesSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public TemplatesSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -30,7 +32,7 @@ class TemplatesSync {
 
 		try {
 	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)]).blockingGet()
-			def listResults = VmwareCloudProvider.listTemplates(cloud)
+			def listResults = vmwarePlugin.cloudProvider.listTemplates(cloud)
 			if(listResults.success) {
 				// First pass through.. dedupe logic
 				removeDuplicates()

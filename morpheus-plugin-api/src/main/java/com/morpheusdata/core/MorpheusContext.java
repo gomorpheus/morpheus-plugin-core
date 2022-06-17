@@ -227,6 +227,18 @@ public interface MorpheusContext {
 	 */
 	MorpheusPermissionService getPermission();
 
+	/**
+	 * Returns the MorpheusAccountCredentialTypeService
+	 * @return An instance of the MorpheusAccountCredentialTypeService
+	 */
+	MorpheusAccountCredentialTypeService getAccountCredentialType();
+
+	/**
+	 * Returns the MorpheusAccountCredentialService
+	 * @return An instance of the MorpheusAccountCredentialService
+	 */
+	MorpheusAccountCredentialService getAccountCredential();
+
 	//Common methods used across various contexts
 
 	/**

@@ -70,6 +70,14 @@ public interface MorpheusCloudService {
 	Single<Workload> getWorkloadById(Long id);
 
 	/**
+	 * Returns the AccountCredential for the Cloud if the usage of credentials is
+	 * supported by the Cloud and the Cloud is currently configured to use an AccountCredential
+	 * @param cloudId
+	 * @return AccountCredential
+	 */
+	Single<AccountCredential> loadCredentials(Long cloudId);
+
+	/**
 	 * Saves a workload
 	 * @param workload
 	 * @return boolean

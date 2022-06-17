@@ -12,10 +12,10 @@ import com.morpheusdata.vmware.plugin.utils.*
 @Slf4j
 class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 
-	Plugin plugin
+	VmwarePlugin plugin
 	MorpheusContext morpheusContext
 
-	VmwareOptionSourceProvider(Plugin plugin, MorpheusContext context) {
+	VmwareOptionSourceProvider(VmwarePlugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -57,26 +57,38 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 	def vmwarePluginVDC(args) {
 		log.debug "vmwarePluginVDC: ${args}"
 		Cloud cloud = loadLookupZone(args)
-		def datacenters = VmwareCloudProvider.listDatacenters(cloud)?.datacenters
-		log.debug "datacenters: ${datacenters}"
-		datacenters?.collect {  [name: it.name, value: it.name] }
+		def rtn = plugin.cloudProvider.listDatacenters(cloud)
+		if(!rtn.success) {
+			rtn.datacenters = [ [value: '', name: 'No datacenters found: check your config']]
+		}
+		log.debug "datacenters: ${rtn.datacenters}"
+		rtn.datacenters?.collect {  [name: it.name, value: it.name] }
 	}
 
 	def vmwarePluginCluster(args) {
 		log.debug "vmwarePluginCluster: ${args}"
 		Cloud cloud = loadLookupZone(args)
-		def clusters = VmwareCloudProvider.listComputeResources(cloud)?.computeResorces
-		log.debug "clusters: ${clusters}"
-		clusters.collect {  [name: it.name, value: it.name] }
+		def rtn = plugin.cloudProvider.listComputeResources(cloud)
+		if (!rtn.success) {
+			rtn.computeResorces = [[value: '', name: 'No clusters found: check your config']]
+		}
+		log.debug "clusters: ${rtn.computeResorces}"
+		rtn.computeResorces.collect {  [name: it.name, value: it.name] }
 	}
 
 	def vmwarePluginResourcePool(args) {
 		log.debug "vmwarePluginResourcePool: ${args}"
 		Cloud cloud = loadLookupZone(args)
-		def resourcePools = VmwareCloudProvider.listResourcePools(cloud)?.resourcePools
-		def resourcePoolList = buildPoolTree(resourcePools)
-		def sortedPools = resourcePoolList.sort{ a, b -> a.name <=> b.name }
-		sortedPools.collect {  [name: it.name, value: it.ref] }
+		def rtn = plugin.cloudProvider.listResourcePools(cloud)
+		if(!rtn.success) {
+			return [[ value:'', name: 'No resource pools found: check your config']]
+		} else {
+			def resourcePoolList = buildPoolTree(rtn?.resourcePools)
+			def sortedPools = resourcePoolList.sort { a, b -> a.name <=> b.name }
+			def resourcePools = [[value: '', name: 'All']]
+			resourcePools += sortedPools.collect { [name: it.name, value: it.ref] }
+			return resourcePools
+		}
 	}
 
 	def vmwarePluginImage(args) {
@@ -243,37 +255,69 @@ class VmwareOptionSourceProvider extends AbstractOptionSourceProvider {
 		folders
 	}
 
+	/**
+	 * Load/create a cloud with credentials and auth info set on it.. overlay any arg config
+	 * @param args
+	 * @return
+	 */
 	private Cloud loadLookupZone(args) {
 		log.debug "loadLookupZone: $args"
-		def cloudArgs = args?.size() > 0 ? args.getAt(0) : null
 		Cloud tmpCloud = new Cloud()
-		if(cloudArgs?.zone) {
-			tmpCloud.serviceUrl = cloudArgs.zone.serviceUrl
-			tmpCloud.serviceUsername = cloudArgs.zone.serviceUsername
-			tmpCloud.servicePassword = cloudArgs.zone.servicePassword
-			tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
-			tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
-		} else {
-			def zoneId = cloudArgs?.zoneId?.toLong()
-			if (zoneId) {
-				log.debug "using zoneId: ${zoneId}"
-				tmpCloud = morpheusContext.cloud.getCloudById(zoneId).blockingGet()
+		try {
+			def cloudArgs = args?.size() > 0 ? args.getAt(0) : null
+			if (cloudArgs?.zone) {
+				// Case when changes are made in the config dialog
+				tmpCloud.serviceUrl = cloudArgs.zone.serviceUrl
+				tmpCloud.serviceUsername = cloudArgs.zone.serviceUsername
+				tmpCloud.servicePassword = cloudArgs.zone.servicePassword
+				if(tmpCloud.servicePassword == '************' && cloudArgs?.zoneId?.toLong()) {
+					def cloud = morpheusContext.cloud.getCloudById(cloudArgs?.zoneId?.toLong()).blockingGet()
+					tmpCloud.servicePassword = cloud.servicePassword
+				}
+				tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
+				tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
+				tmpCloud.setConfigProperty('apiVersion', cloudArgs.config?.apiVersion)
 
-				if(cloudArgs.zone?.serviceUrl)
-					tmpCloud.serviceUrl = cloudArgs.zone?.serviceUrl
+				Map credentialConfig = morpheusContext.accountCredential.loadCredentialConfig(cloudArgs?.credential, cloudArgs.zone).blockingGet()
+				tmpCloud.accountCredentialLoaded = true
+				tmpCloud.accountCredentialData = credentialConfig?.data
+			} else {
+				// Case when the config dialog opens without any changes
+				def zoneId = cloudArgs?.zoneId?.toLong()
+				if (zoneId) {
+					log.debug "using zoneId: ${zoneId}"
+					tmpCloud = morpheusContext.cloud.getCloudById(zoneId).blockingGet()
 
-				if(cloudArgs.zone?.serviceUsername)
-					tmpCloud.serviceUsername = cloudArgs.zone?.serviceUsername
+					// Load the credential for the cloud
+					def authData = plugin.getAuthConfig(tmpCloud)
+					def username = authData.apiUsername
+					def password = authData.apiPassword
+					tmpCloud.accountCredentialData = null // force the user of serviceUsername / servicePassword
+					tmpCloud.serviceUsername = username
+					tmpCloud.servicePassword = password
 
-				if(cloudArgs.zone?.password && cloudArgs.zone.password != MorpheusUtils.passwordHidden)
-					tmpCloud.servicePassword = cloudArgs.zone.servicePassword
+					// Overlay any settings passed in
+					if (cloudArgs.zone?.serviceUrl)
+						tmpCloud.serviceUrl = cloudArgs.zone?.serviceUrl
 
-				if(cloudArgs.config?.datacenter)
-					tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
+					if (cloudArgs.config?.apiVersion)
+						tmpCloud.setConfigProperty('apiVersion', cloudArgs.config?.apiVersion)
 
-				if(cloudArgs.config?.cluster)
-					tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
+					if (cloudArgs.zone?.serviceUsername)
+						tmpCloud.serviceUsername = cloudArgs.zone?.serviceUsername
+
+					if (cloudArgs.zone?.password && cloudArgs.zone.password != MorpheusUtils.passwordHidden)
+						tmpCloud.servicePassword = cloudArgs.zone.servicePassword
+
+					if (cloudArgs.config?.datacenter)
+						tmpCloud.setConfigProperty('datacenter', cloudArgs.config?.datacenter)
+
+					if (cloudArgs.config?.cluster)
+						tmpCloud.setConfigProperty('cluster', cloudArgs.config?.cluster)
+				}
 			}
+		} catch(e) {
+			log.error "Error in loadLookupZone: ${e}", e
 		}
 		tmpCloud
 	}

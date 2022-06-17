@@ -1,5 +1,7 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusAccountCredentialService
+import com.morpheusdata.core.MorpheusAccountCredentialTypeService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusPermissionService
@@ -323,6 +325,16 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusPermissionService getPermission() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialTypeService getAccountCredentialType() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialService getAccountCredential() {
 		return null
 	}
 }

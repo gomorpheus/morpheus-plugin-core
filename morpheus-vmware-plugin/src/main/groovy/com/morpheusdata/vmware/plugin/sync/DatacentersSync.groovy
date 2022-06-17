@@ -15,10 +15,12 @@ class DatacentersSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public DatacentersSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public DatacentersSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -54,7 +56,7 @@ class DatacentersSync {
 	private listDatacenters(Cloud cloud) {
 		log.debug "listDatacenters: ${cloud}"
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = vmwarePlugin.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listDatacenters(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [:])
 		return rtn
 	}

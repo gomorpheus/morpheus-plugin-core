@@ -177,4 +177,30 @@ public interface CloudProvider extends PluginProvider {
 	 * @return Boolean
 	 */
 	Boolean supportsDistributedWorker();
+
+	/**
+	 * Indicates if the cloud supports Credentials. If true, then a
+	 * 1. Credentials Input is provided in the configuration of the Cloud
+	 * 2. getLocalCredentialOptionTypes is called to obtain the OptionType inputs to display when local is selected
+	 * 3. getAccountCredentialTypes is called to obtain the list of supported AccountCredentialTypes
+	 * @return Boolean
+	 */
+	Boolean supportsCredentials();
+
+	/**
+	 * Provides a Collection of OptionType inputs that will be displayed in the Cloud configuration UI and
+	 * if supportsCredentials returns true and if 'Local Credentials' is selected
+	 * @return Collection of OptionType
+	 */
+	Collection<OptionType> getLocalCredentialOptionTypes();
+
+	/**
+	 * Called by Morpheus to obtain the list of AccountCredentialTypes supported by this Cloud.
+	 * This will only be called if supportsCredentials returns true. The default AccountCredentialTypes
+	 * provided by Morpheus can be obtained by calling MorpheusContext.accountCredentialType.listAll().
+	 * For simplicity, known types can be constructed and returned using just their code. For example,
+	 * `return [new AccountCredentialType(code: 'username-password')]`
+	 * @return Collection of AccountCredentialTypes
+	 */
+	Collection<AccountCredentialType> getAccountCredentialTypes();
 }

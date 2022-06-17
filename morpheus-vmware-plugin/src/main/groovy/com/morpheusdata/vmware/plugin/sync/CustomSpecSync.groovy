@@ -15,17 +15,19 @@ class CustomSpecSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public CustomSpecSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public CustomSpecSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
 		log.debug "execute: ${cloud}"
 
 		try {
-			def listResults = VmwareCloudProvider.listCustomizationSpecs(cloud)
+			def listResults = vmwarePlugin.cloudProvider.listCustomizationSpecs(cloud)
 			if(listResults.success == true) {
 				Observable<ReferenceDataSyncProjection> domainRecords = morpheusContext.cloud.listReferenceDataByCategory(cloud, "vmware.vsphere.customizationSpec.${cloud.id}")
 				SyncTask<ReferenceDataSyncProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, listResults?.customSpecs)

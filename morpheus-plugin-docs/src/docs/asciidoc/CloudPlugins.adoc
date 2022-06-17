@@ -13,3 +13,22 @@ Before Getting Started, It is recommended to look at the digital ocean sample pl
 On a cloud implementation there are 2 scheduled jobs for refreshing. There is firstly a 5 minute sync job (typically) that syncs state changes on a periodic basis. Then secondly a daily job that runs at Midnight UTC to do larger syncs like price data or things that may change less frequently. Refer to implementations of the `refresh()` method as well as the `refreshDaily()` methods.
 
 Finally one must also provide the option types inputs for configuring the add cloud wizard as well as the `ComputeServerType` objects available to this zone type. There should be multiple based often on platform and management state.
+
+==== Defining Credentials
+
+During the `refresh()` call (and others) the `CloudProvider` implementation will need to reach out to underlying cloud using credentials. There are two ways to define and store the required credentials.
+
+====== Using OptionTypes
+The simplest method is to define `OptionType` fields (like username and password) and return them on implementation of `CloudProvider.getOptionTypes()`. These will then be displayed on the Cloud configuration UI. The values can then be obtained during sync operations via the Cloud's `getConfigMap` or directly on the object itself (i.e. `serviceUsername`) depending on how the `OptionType` was defined.
+
+====== Using Morpheus Credentials
+A more flexible option is to use Morpheus' built-in Credentials support. With this option, Credentials can be stored securely in Morpheus and utilized in various locations. In order to user this method, a few configurations need to be discussed. (Refer to the API documentation of `CloudProvider` for more details and `VmwareCloudProvider` for an example implementation)
+
+. `supportsCredentials` on `CloudProvider` needs to return `true`
+. `getLocalCredentialOptionTypes` on `CloudProvider` should return `OptionType` objects that should be displayed when Local Credentials is selected in the Credentials input. For example, username and password inputs.
+. `getAccountCredentialTypes` on `CloudProvider` should return the types of `AccountCredential` records that should be displayed in the Credentials input.
+. Any `OptionTypes` that should be reloaded when the Credential input changes should likely include `credential-type` (`accountCredentialType.general.username`, `accountCredentialType.general.password` for username-password credential types) in their `dependsOn` value. This will trigger the `OptionType` `optionSource` function to be called when the Credentials change.
+
+To load the Credential information that may be set on a Cloud, the `MorpheusCloudService` can be used.
+
+To load the Credential information from within `OptionSourceService` implementations (which may be called during Cloud configuration), `MorpheusAccountCredentialService` may be used to load Credential information from the passed in form options. See `VmwareOptionSourceService` for an example.

@@ -24,7 +24,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class VmwareProvisionProvider extends AbstractProvisionProvider {
 
-	Plugin plugin
+	VmwarePlugin plugin
 	MorpheusContext morpheusContext
 
 	static vmwareTimeout = 30l * 1000l // 30 min
@@ -35,7 +35,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	static defaultMinDisk = 5
 	static defaultMinRam = 512 * ComputeUtility.ONE_MEGABYTE
 
-	VmwareProvisionProvider(Plugin plugin, MorpheusContext context) {
+	VmwareProvisionProvider(VmwarePlugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -121,7 +121,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			ComputeServer server = workload.server
 			Cloud cloud = server.cloud
 
-			def authConfig = getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 
 			//remove snapshots
 			def snapshotResults = VmwareComputeUtility.removeAllVmSnapshots(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [externalId:server.externalId])
@@ -525,7 +525,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			Cloud cloud = morpheusContext.cloud.getCloudById(opts.zoneId?.toLong()).blockingGet()
 			def apiInfo = [:]
 			if(opts.hostId) {
-				apiInfo = getAuthConfig(cloud)
+				apiInfo = plugin.getAuthConfig(cloud)
 			}
 
 			def validateTemplate = opts.template != null
@@ -766,7 +766,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				// It might need to be uploaded so might not have a location yet
 				log.debug "did not find VirtualImageLocation for ${virtualImage.id}, ${e}"
 			}
-			def authConfig = getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 			imageId = VmwareComputeUtility.checkImageId(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, imageId)
 		} else {
 			runConfig.fromContentLibrary = true
@@ -862,7 +862,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 		try {
 			Cloud cloud = server.cloud
-			def authConfig = getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 			def runConfig = buildRunConfig(workload, workloadRequest, opts)
 			workloadResponse.skipNetworkWait = runConfig.skipNetworkWait
 
@@ -972,7 +972,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			ComputeServer server = workload.server
 			Cloud cloud = server.cloud
 
-			def authConfig = getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 			def	datacenterId = cloud.getConfigProperty('datacenter')
 			def	datastoreId = workload.getConfigProperty('datastoreId')
 			if(server.sourceImage?.isCloudInit || (server.sourceImage?.isSysprep && !server.sourceImage?.isForceCustomization)) {
@@ -1008,7 +1008,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	ServiceResponse stopWorkload(Workload workload) {
 		log.debug "stopWorkload: ${workload}"
 		if(workload.server?.externalId) {
-			def authConfig = getAuthConfig(workload.server.cloud)
+			def authConfig = plugin.getAuthConfig(workload.server.cloud)
 			def stopResults = VmwareComputeUtility.stopVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, workload.server?.externalId)
 			log.info("stopResults: ${stopResults}")
 			if(stopResults.success == true) {
@@ -1025,7 +1025,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	ServiceResponse startWorkload(Workload workload) {
 		log.debug "startWorkload: ${workload}"
 		if(workload.server?.externalId) {
-			def authConfig = getAuthConfig(workload.server.cloud)
+			def authConfig = plugin.getAuthConfig(workload.server.cloud)
 			def startResults = VmwareComputeUtility.startVm(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, workload.server?.externalId)
 			log.info("startResults: ${startResults}")
 			if(startResults.success == true) {
@@ -1085,7 +1085,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		log.debug "removeWorkload: ${workload} ${opts}"
 		if(workload.server?.externalId) {
 			stopWorkload(workload)
-			def authConfig = getAuthConfig(workload.server.cloud)
+			def authConfig = plugin.getAuthConfig(workload.server.cloud)
 			if(workload.server.sourceImage?.isCloudInit) {
 				def	datacenterId = workload.server.cloud.getConfigProperty('datacenter')
 				def	datastoreId = workload.getConfigProperty('datastoreId')
@@ -1337,7 +1337,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					dsList = dsList.sort { it.freeSpace * -1 }
 
 					// Fetch the VMware datastores
-					def authConfig = getAuthConfig(cloud)
+					def authConfig = plugin.getAuthConfig(cloud)
 					def vmwareDsList = VmwareComputeUtility.getTargetDatastores(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword,
 							datacenterId, clusterId, hostId)
 					log.debug("Vmware Ds List: ${vmwareDsList}")
@@ -1453,7 +1453,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	private insertImage(Cloud cloud, WorkloadRequest workloadRequest, Map runConfig) {
 		log.debug "insertImage: ${cloud} ${runConfig}"
 
-		Map authConfig = getAuthConfig(cloud)
+		Map authConfig = plugin.getAuthConfig(cloud)
 		def taskResults = [success:false, imageId:runConfig.imageId, imageType: null]
 		def lock
 		try {
@@ -1551,7 +1551,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	def insertVm(Cloud cloud, WorkloadRequest workloadRequest, Map runConfig, Map imageConfig, WorkloadResponse workloadResponse) {
 		log.debug "insertVm: ${runConfig} ${imageConfig}"
 
-		Map authConfig = getAuthConfig(cloud)
+		Map authConfig = plugin.getAuthConfig(cloud)
 		Boolean needsCustomizations = false
 		try {
 			//prep for insert
@@ -1909,7 +1909,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			def pending = true
 			def attempts = 0
 			def cloud = opts.cloud
-			def authConfig = getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 			if(opts.modified == true) {
 				def customizationResults = checkCustomizationSuccess(opts)
 				log.info("customizationResults: ${customizationResults}")
@@ -1978,7 +1978,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		try {
 			def pending = true
 			def attempts = 0
-			def authConfig = getAuthConfig(opts.cloud)
+			def authConfig = plugin.getAuthConfig(opts.cloud)
 			while(pending) {
 				sleep(1000l * 5l)
 				opts.eventTypeIds = ['CustomizationStartedEvent', 'CustomizationFailed', 'CustomizationSucceeded', 'CustomizationUnknownFailure',
@@ -2201,7 +2201,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		try {
 			// Apply Tags
 			def server = workload.server
-			Map authConfig = getAuthConfig(server.cloud)
+			Map authConfig = plugin.getAuthConfig(server.cloud)
 			if (authConfig.apiVersion && authConfig.apiVersion != '6.0') {
 				workload.instance.metadata?.each { MetadataTag tag ->
 					log.debug "Working on tag: ${tag.name}"
@@ -2336,27 +2336,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			return true
 		}
 		return false
-	}
-
-	static getAuthConfig(Map options) {
-		log.debug "getAuthConfig: ${options}"
-
-		def rtn = [:]
-		rtn.apiUrl =  getVmwareApiUrl(options.serviceUrl)
-		rtn.apiUsername = options.serviceUsername
-		rtn.apiPassword = options.servicePassword
-		return rtn
-	}
-
-	static getAuthConfig(Cloud cloud) {
-		log.debug "getAuthConfig: ${cloud}"
-		def rtn = [:]
-
-		rtn.apiUrl = getVmwareApiUrl(cloud.serviceUrl)
-		rtn.apiUsername = cloud.serviceUsername
-		rtn.apiPassword = cloud.servicePassword
-		rtn.apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
-		return rtn
 	}
 
 	static getVmwareApiUrl(String apiUrl) {

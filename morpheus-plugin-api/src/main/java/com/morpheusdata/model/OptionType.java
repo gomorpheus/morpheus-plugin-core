@@ -13,6 +13,7 @@ public class OptionType extends MorpheusModel {
 
 	protected String name;
 	protected String code;
+	protected String fieldClass;
 	protected String fieldLabel;
 	protected String fieldName;
 	protected String fieldContext;
@@ -324,6 +325,14 @@ public class OptionType extends MorpheusModel {
 	 */
 	public void setShowOnEdit(Boolean showOnEdit) {
 		this.showOnEdit = showOnEdit;
+	}
+
+	public String getFieldClass() {
+		return fieldClass;
+	}
+
+	public void setFieldClass(String fieldClass) {
+		this.fieldClass = fieldClass;
 	}
 
 

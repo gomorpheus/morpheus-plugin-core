@@ -23,13 +23,15 @@ class VirtualMachineSync {
 	private ProvisioningProvider provisioningProvider
 	private Collection<ComputeServerInterfaceType> netTypes
 	private HttpApiClient client
+	private VmwarePlugin vmwarePlugin
 
-	public VirtualMachineSync(Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, MorpheusContext morpheusContext, ProvisioningProvider provisioningProvider, HttpApiClient client) {
+	public VirtualMachineSync(VmwarePlugin vmwarePlugin, Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, ProvisioningProvider provisioningProvider, HttpApiClient client) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
 		this.createNew = createNew
 		this.proxySettings = proxySettings
 		this.apiVersion = apiVersion
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 		this.netTypes = provisioningProvider.getComputeServerInterfaceTypes()
 		this.provisioningProvider = provisioningProvider
 		this.client = client
@@ -49,7 +51,7 @@ class VirtualMachineSync {
 			def cloudItems = []
 			def listResultSuccess = true
 			queryResults.clusters?.each { ComputeZonePoolIdentityProjection cluster ->
-				def listResults = VmwareCloudProvider.listVirtualMachines(cloud, cluster.internalId)
+				def listResults = vmwarePlugin.cloudProvider.listVirtualMachines(cloud, cluster.internalId)
 				if(!listResults.success) {
 					listResultSuccess = false
 				}else {
@@ -184,7 +186,7 @@ class VirtualMachineSync {
 		def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 		def tagAssociations
 		if(apiVersion && apiVersion != '6.0') {
-			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+			def authConfig = vmwarePlugin.getAuthConfig(cloud)
 			tagAssociations = VmwareComputeUtility.listTagAssociationsForVirtualMachines(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, [vmIds: vmIds])
 		}
 		def statsData = []
