@@ -48,11 +48,46 @@ class VmwareCloudProvider implements CloudProvider {
 				inputType: OptionType.InputType.TEXT,
 				fieldContext: 'domain'
 		)
+		OptionType credentials = new OptionType(
+				code: 'vmware-plugin-credential',
+				inputType: OptionType.InputType.CREDENTIAL,
+				name: 'Credentials',
+				fieldName: 'type',
+				fieldLabel: 'Credentials',
+				fieldContext: 'credential',
+				required: true,
+				defaultValue: 'local',
+				displayOrder: 10,
+				optionSource: 'credentials',
+				config: '{"credentialTypes":["username-password"]}'
+		)
+		OptionType username = new OptionType(
+				name: 'Username',
+				code: 'vmware-plugin-username',
+				fieldName: 'serviceUsername',
+				displayOrder: 20,
+				fieldLabel: 'Username',
+				required: true,
+				inputType: OptionType.InputType.TEXT,
+				fieldContext: 'domain',
+				localCredential: true
+		)
+		OptionType password = new OptionType(
+				name: 'Password',
+				code: 'vmware-plugin-password',
+				fieldName: 'servicePassword',
+				displayOrder: 25,
+				fieldLabel: 'Password',
+				required: true,
+				inputType: OptionType.InputType.PASSWORD,
+				fieldContext: 'domain',
+				localCredential: true
+		)
 		OptionType version = new OptionType(
 				name: 'Version',
 				code: 'vmware-plugin-version',
 				fieldName: 'apiVersion',
-				displayOrder: 3,
+				displayOrder: 30,
 				fieldLabel: 'Version',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -63,12 +98,12 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'VDC',
 				code: 'vmware-plugin-vdc',
 				fieldName: 'datacenter',
-				displayOrder: 4,
+				displayOrder: 40,
 				fieldLabel: 'VDC',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
 				fieldContext: 'config',
-				dependsOn: 'vmware-plugin-api-url,vmware-plugin-username,vmware-plugin-password,credential-type,accountCredentialType.general.username,accountCredentialType.general.password',
+				dependsOn: 'vmware-plugin-api-url,vmware-plugin-username,vmware-plugin-password,credential-type',
 				optionSource: 'vmwarePluginVDC'
 		)
 
@@ -76,7 +111,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Cluster',
 				code: 'vmware-plugin-cluster',
 				fieldName: 'cluster',
-				displayOrder: 5,
+				displayOrder: 50,
 				fieldLabel: 'Cluster',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -89,7 +124,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Resource Pool',
 				code: 'vmware-plugin-resource-pool',
 				fieldName: 'resourcePoolId',
-				displayOrder: 6,
+				displayOrder: 60,
 				fieldLabel: 'Resource Pool',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -102,7 +137,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'RPC Mode',
 				code: 'vmware-plugin-rpc-mode',
 				fieldName: 'rpcMode',
-				displayOrder: 7,
+				displayOrder: 70,
 				fieldLabel: 'RPC Mode',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -115,7 +150,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-hide-host-selection',
 				fieldName: 'hideHostSelection',
-				displayOrder: 8,
+				displayOrder: 80,
 				fieldLabel: 'Hide Host Selection from Users',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -126,7 +161,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-import-existing',
 				fieldName: 'importExisting',
-				displayOrder: 9,
+				displayOrder: 90,
 				fieldLabel: 'Inventory Existing Instances',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -137,7 +172,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Hypervisor Console',
 				code: 'vmware-plugin-hypervisor-console',
 				fieldName: 'enableVnc',
-				displayOrder: 10,
+				displayOrder: 100,
 				fieldLabel: 'Enable Hypervisor Console',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -148,7 +183,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Keyboard Layout',
 				code: 'vmware-plugin-keyboard-layout',
 				fieldName: 'consoleKeymap',
-				displayOrder: 11,
+				displayOrder: 110,
 				fieldLabel: 'Keyboard Layout',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -160,7 +195,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Disk Type Selection',
 				code: 'vmware-plugin-disk-type-selection',
 				fieldName: 'enableDiskTypeSelection',
-				displayOrder: 12,
+				displayOrder: 120,
 				fieldLabel: 'Enable Disk Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -172,7 +207,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Storage Type Selection',
 				code: 'vmware-plugin-storage-type-selection',
 				fieldName: 'enableStorageTypeSelection',
-				displayOrder: 13,
+				displayOrder: 130,
 				fieldLabel: 'Enable Storage Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -184,7 +219,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Network Interface Type Selection',
 				code: 'vmware-plugin-network-type-selection',
 				fieldName: 'enableNetworkTypeSelection',
-				displayOrder: 14,
+				displayOrder: 140,
 				fieldLabel: 'Enable Network Interface Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -196,7 +231,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Storage Type',
 				code: 'vmware-plugin-disk-storage-selection',
 				fieldName: 'diskStorageType',
-				displayOrder: 15,
+				displayOrder: 150,
 				fieldLabel: 'Storage Type',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -205,39 +240,9 @@ class VmwareCloudProvider implements CloudProvider {
 				fieldGroup: 'VMware Advanced'
 		)
 
-		[apiUrl, version, vdc, cluster, resourcePool, inventoryInstances,
+		[apiUrl, credentials, username, password, version, vdc, cluster, resourcePool, inventoryInstances,
 			hypervisorConsole, keyboardLayout, hideHostSelection, rpcMode, diskTypeSelection,
             storageTypeSelection, networkTypeSelection, diskStorageType]
-	}
-
-	@Override
-	Collection<OptionType> getLocalCredentialOptionTypes() {
-		OptionType username = new OptionType(
-				name: 'Username',
-				code: 'vmware-plugin-username',
-				fieldName: 'serviceUsername',
-				displayOrder: 1,
-				fieldLabel: 'Username',
-				required: true,
-				inputType: OptionType.InputType.TEXT,
-				fieldContext: 'domain'
-		)
-		OptionType password = new OptionType(
-				name: 'Password',
-				code: 'vmware-plugin-password',
-				fieldName: 'servicePassword',
-				displayOrder: 2,
-				fieldLabel: 'Password',
-				required: true,
-				inputType: OptionType.InputType.PASSWORD,
-				fieldContext: 'domain'
-		)
-		[username, password]
-	}
-
-	@Override
-	Collection<AccountCredentialType> getAccountCredentialTypes() {
-		return [new AccountCredentialType(code: 'username-password')]
 	}
 
 	@Override
@@ -564,11 +569,6 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 	@Override
 	Boolean supportsDistributedWorker() {
-		true
-	}
-
-	@Override
-	Boolean supportsCredentials() {
 		true
 	}
 

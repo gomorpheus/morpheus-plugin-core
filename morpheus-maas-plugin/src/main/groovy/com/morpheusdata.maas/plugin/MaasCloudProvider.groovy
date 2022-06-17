@@ -222,21 +222,6 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Boolean supportsCredentials() {
-		false
-	}
-
-	@Override
-	Collection<OptionType> getLocalCredentialOptionTypes() {
-		return []
-	}
-
-	@Override
-	Collection<AccountCredentialType> getAccountCredentialTypes() {
-		return []
-	}
-
-	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		return ServiceResponse.success()
 	}

@@ -22,12 +22,20 @@ During the `refresh()` call (and others) the `CloudProvider` implementation will
 The simplest method is to define `OptionType` fields (like username and password) and return them on implementation of `CloudProvider.getOptionTypes()`. These will then be displayed on the Cloud configuration UI. The values can then be obtained during sync operations via the Cloud's `getConfigMap` or directly on the object itself (i.e. `serviceUsername`) depending on how the `OptionType` was defined.
 
 ====== Using Morpheus Credentials
-A more flexible option is to use Morpheus' built-in Credentials support. With this option, Credentials can be stored securely in Morpheus and utilized in various locations. In order to user this method, a few configurations need to be discussed. (Refer to the API documentation of `CloudProvider` for more details and `VmwareCloudProvider` for an example implementation)
+A more flexible option is to use Morpheus' built-in Credentials support. With this option, Credentials can be stored securely in Morpheus and utilized in various locations. In order to user this method, a few specific `OptionType` objects need to be defined. (Refer to `VmwareCloudProvider` for an example implementation)
 
-. `supportsCredentials` on `CloudProvider` needs to return `true`
-. `getLocalCredentialOptionTypes` on `CloudProvider` should return `OptionType` objects that should be displayed when Local Credentials is selected in the Credentials input. For example, username and password inputs.
-. `getAccountCredentialTypes` on `CloudProvider` should return the types of `AccountCredential` records that should be displayed in the Credentials input.
-. Any `OptionTypes` that should be reloaded when the Credential input changes should likely include `credential-type` (`accountCredentialType.general.username`, `accountCredentialType.general.password` for username-password credential types) in their `dependsOn` value. This will trigger the `OptionType` `optionSource` function to be called when the Credentials change.
+. An `OptionType` needs to be defined to represent the selection of the Credential type. The following properties must be configured on the `OptionType`: `inputType=OptionType.InputType.CREDENTIAL`, `fieldContext=credential`, `fieldName=type`, `optionSource=credentials`. In addition, the `config` for the `OptionType` should be something like `'{"credentialTypes":["username-password"]}'`. Where the array of types may be one or more of `username-password,
+username-password-keypair,
+username-keypair,
+access-key-secret,
+client-id-secret,
+username-api-key,
+email-private-key,
+tenant-username-keypair,
+oauth2,
+api-key`. These represent the preconfigured credential types in Morpheus.
+. `OptionType` objects need to be defined to represent the 'local' auth values. For example, username and password would need their own `OptionType`. For these 'local' types, their `localCredential` value must be `true`
+. Any `OptionTypes` that should be reloaded when the Credential input changes should include `credential-type` in their `dependsOn` value. This will trigger the `OptionType` `optionSource` function to be called when the Credentials change.
 
 To load the Credential information that may be set on a Cloud, the `MorpheusCloudService` can be used.
 

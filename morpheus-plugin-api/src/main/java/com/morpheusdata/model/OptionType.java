@@ -28,6 +28,7 @@ public class OptionType extends MorpheusModel {
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
 	protected Boolean showOnEdit = true;
+	protected Boolean localCredential = false;
 
 	public String getName() {
 		return name;
@@ -335,6 +336,14 @@ public class OptionType extends MorpheusModel {
 		this.fieldClass = fieldClass;
 	}
 
+	public Boolean getLocalCredential() {
+		return localCredential;
+	}
+
+	public void setLocalCredential(Boolean localCredential) {
+		this.localCredential = localCredential;
+	}
+
 
 	public enum InputType {
 		TEXT("text"),
@@ -344,6 +353,7 @@ public class OptionType extends MorpheusModel {
 		SELECT("select"),
 		CHECKBOX("checkbox"),
 		RADIO("radio"),
+		CREDENTIAL("credential"),
 		CODE_EDITOR("code-editor");
 
 		private final String value;

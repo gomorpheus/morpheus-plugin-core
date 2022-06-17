@@ -81,21 +81,6 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Boolean supportsCredentials() {
-		false
-	}
-
-	@Override
-	Collection<OptionType> getLocalCredentialOptionTypes() {
-		return []
-	}
-
-	@Override
-	Collection<AccountCredentialType> getAccountCredentialTypes() {
-		return []
-	}
-
-	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Client Email',
