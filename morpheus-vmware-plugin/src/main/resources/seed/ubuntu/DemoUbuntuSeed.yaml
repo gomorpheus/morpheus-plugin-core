@@ -3,7 +3,7 @@ dependsOn: []
 # seed entries
 seed:
   accountResourceType:
-    meta:
+  - meta:
       key: code
     code: plugin.vmware.test_nested_seed_item
     category: testing
