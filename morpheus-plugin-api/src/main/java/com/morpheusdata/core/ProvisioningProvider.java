@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
@@ -29,6 +30,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Collection of OptionTypes
 	 */
 	public Collection<OptionType> getNodeOptionTypes();
+
+	/**
+	 * Provides a Collection of StorageVolumeTypes that are available for root StorageVolumes
+	 * @return Collection of StorageVolumeTypes
+	 */
+	public Collection<StorageVolumeType> getRootVolumeStorageTypes();
+
+	/**
+	 * Provides a Collection of StorageVolumeTypes that are available for data StorageVolumes
+	 * @return Collection of StorageVolumeTypes
+	 */
+	public Collection<StorageVolumeType> getDataVolumeStorageTypes();
 
 
 	/**
@@ -63,6 +76,66 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean hasPlanTagMatch();
 
 	/**
+	 * Determines if this provision type has ComputeZonePools that can be selected or not.
+	 * @return Boolean representation of whether or not this provision type has ComputeZonePools
+	 */
+	public Boolean hasComputeZonePools();
+
+	/**
+	 * Indicates if a ComputeZonePool is required during provisioning
+	 * @return Boolean
+	 */
+	public Boolean computeZonePoolRequired();
+
+	/**
+	 * Indicates if volumes may be added during provisioning
+	 * @return Boolean
+	 */
+	public Boolean canAddVolumes();
+
+	/**
+	 * Indicates if the root volume may be customized during provisioning. For example, the size changed
+	 * @return Boolean
+	 */
+	public Boolean canCustomizeRootVolume();
+
+	/**
+	 * Indicates if data volumes may be customized during provisioning. For example, the size changed
+	 * @return Boolean
+	 */
+	public Boolean canCustomizeDataVolumes();
+
+	/**
+	 * Indicates if the root volume may be resized
+	 * @return Boolean
+	 */
+	public Boolean canResizeRootVolume();
+
+	/**
+	 * Indicates if the network can be changed
+	 * @return Boolean
+	 */
+	public Boolean canReconfigureNetwork();
+
+	/**
+	 * Indicates if StorageControllers are utilized
+	 * @return Boolean
+	 */
+	public Boolean hasStorageControllers();
+
+	/**
+	 * Indicates if automatic Datastore selection is supported
+	 * @return Boolean
+	 */
+	public Boolean supportsAutoDatastore();
+
+	/**
+	 * Indicates if Network selection should be scoped to the ComputeZonePool selected during provisioning
+	 * @return Boolean
+	 */
+	public Boolean networksScopedToPools();
+
+	/**
 	 * Returns the maximum number of network interfaces that can be chosen when provisioning with this type
 	 * @return maximum number of networks or 0,null if unlimited.
 	 */
@@ -73,7 +146,8 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * Validates the provided provisioning options of a workload. A return of success = false will halt the
 	 * creation and display errors
 	 * @param opts options
-	 * @return Response from API
+	 * @return Response from API. Errors should be returned in the errors Map with the key being the field name and the error
+	 * message as the value.
 	 */
 	ServiceResponse validateWorkload(Map opts);
 
@@ -96,14 +170,37 @@ public interface ProvisioningProvider extends PluginProvider {
 	ServiceResponse validateDockerHost(ComputeServer server, Map opts);
 
 	/**
+	 * This method is called before runWorkload and provides an opportunity to perform action or obtain configuration
+	 * that will be needed in runWorkload. At the end of this method, if deploying a ComputeServer with a VirtualImage,
+	 * the sourceImage on ComputeServer should be determined and saved.
+	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
+	 *                 how best to provision the workload
+	 * @param workloadRequest the RunWorkloadRequest object containing the various configurations that may be needed
+	 *                        in running the Workload. This will be passed along into runWorkload
+	 * @param opts additional configuration options that may have been passed during provisioning
+	 * @return Response from API
+	 */
+	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+
+	/**
 	 * This method is a key entry point in provisioning a workload. This could be a vm, a container, or something else.
 	 * Information associated with the passed Workload object is used to kick off the workload provision request
 	 * @param workload the Workload object we intend to provision along with some of the associated data needed to determine
 	 *                 how best to provision the workload
+	 * @param workloadRequest the RunWorkloadRequest object containing the various configurations that may be needed
+	 *                        in running the Workload
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, Map opts);
+	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+
+	/**
+	 * This method is called after successful completion of runWorkload and provides an opportunity to perform some final
+	 * actions during the provisioning process. For example, ejected CDs, cleanup actions, etc
+	 * @param workload the Workload object that has been provisioned
+	 * @return Response from the API
+	 */
+	ServiceResponse finalizeWorkload(Workload workload);
 
 	/**
 	 * Issues the remote calls necessary top stop a workload element from running.

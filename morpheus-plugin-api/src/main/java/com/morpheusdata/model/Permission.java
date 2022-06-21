@@ -16,6 +16,25 @@ public class Permission extends MorpheusModel {
 	protected String code;
 	protected List<AccessType> availableAccessTypes;
 
+	public enum ResourceType {
+		ComputeZoneFolder,
+		ComputeZonePool,
+		Datastore,
+		Network,
+		NetworkDomain,
+		NetworkEdgeCluster,
+		NetworkGroup,
+		NetworkLoadBalancer,
+		NetworkPool,
+		NetworkResourceGroup,
+		NetworkRouter,
+		NetworkScope,
+		NetworkServer,
+		NetworkSubnet,
+		PricePlan,
+		SecurityGroup,
+		ServicePlan
+	}
 
 	public Permission(String name, String code, List<AccessType> availableAccessTypes) {
 		this.name = name;

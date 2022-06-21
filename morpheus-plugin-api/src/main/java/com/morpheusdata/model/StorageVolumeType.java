@@ -10,6 +10,17 @@ public class StorageVolumeType extends MorpheusModel {
 	private String name;
 	private String code;
 	private String externalId;
+	protected String description;
+	protected String displayName;
+	protected String volumeType = "disk";
+	protected Integer displayOrder = 1;
+	protected Boolean customLabel = true;
+	protected Boolean customSize = true;
+	protected Boolean defaultType = false;
+	protected Boolean autoDelete = true;
+	protected Boolean hasDatastore = true;
+	protected Boolean allowSearch = false;
+	protected String volumeCategory = "disk";
 
 	public String getName() {
 		return name;
@@ -36,5 +47,93 @@ public class StorageVolumeType extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getVolumeType() {
+		return volumeType;
+	}
+
+	public void setVolumeType(String volumeType) {
+		this.volumeType = volumeType;
+	}
+
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
+	public Boolean getCustomLabel() {
+		return customLabel;
+	}
+
+	public void setCustomLabel(Boolean customLabel) {
+		this.customLabel = customLabel;
+	}
+
+	public Boolean getCustomSize() {
+		return customSize;
+	}
+
+	public void setCustomSize(Boolean customSize) {
+		this.customSize = customSize;
+	}
+
+	public Boolean getDefaultType() {
+		return defaultType;
+	}
+
+	public void setDefaultType(Boolean defaultType) {
+		this.defaultType = defaultType;
+	}
+
+	public Boolean getAutoDelete() {
+		return autoDelete;
+	}
+
+	public void setAutoDelete(Boolean autoDelete) {
+		this.autoDelete = autoDelete;
+	}
+
+	public Boolean getHasDatastore() {
+		return hasDatastore;
+	}
+
+	public void setHasDatastore(Boolean hasDatastore) {
+		this.hasDatastore = hasDatastore;
+	}
+
+	public Boolean getAllowSearch() {
+		return allowSearch;
+	}
+
+	public void setAllowSearch(Boolean allowSearch) {
+		this.allowSearch = allowSearch;
+	}
+
+	public String getVolumeCategory() {
+		return volumeCategory;
+	}
+
+	public void setVolumeCategory(String volumeCategory) {
+		this.volumeCategory = volumeCategory;
 	}
 }

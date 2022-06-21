@@ -6,6 +6,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.util.SyncTask
+import com.morpheusdata.model.AccountCredentialType
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
@@ -208,6 +209,16 @@ class MaasCloudProvider implements CloudProvider {
 	@Override
 	Boolean hasFolders() {
 		return false
+	}
+
+	@Override
+	Boolean hasCloudInit() {
+		false
+	}
+
+	@Override
+	Boolean supportsDistributedWorker() {
+		false
 	}
 
 	@Override

@@ -22,7 +22,7 @@ Create a new project with a `build.gradle` file. We will use the shadowjar plugi
 ----
 plugins {
     id "com.bertramlabs.asset-pipeline" version "3.4.4"
-    id "com.github.johnrengelman.plugin-shadow" version "6.0.0"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 apply plugin: 'java'

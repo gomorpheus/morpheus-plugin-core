@@ -17,17 +17,19 @@ class StoragePodsSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public StoragePodsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public StoragePodsSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
 		log.debug "cacheStoragePods: ${cloud}"
 
 		try {
-			def listResults = VmwareCloudProvider.listStoragePods(cloud)
+			def listResults = vmwarePlugin.cloudProvider.listStoragePods(cloud)
 			if(listResults.success == true) {
 
 

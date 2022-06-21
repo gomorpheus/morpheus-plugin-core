@@ -35,9 +35,14 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String refType;
 	protected String imageRegion;
 	protected Boolean isForceCustomization;
-	protected Boolean isCloudInit;
-	protected Boolean virtioSupported;
-	protected Boolean deleted;
+	protected Boolean isCloudInit = true;
+	protected Boolean virtioSupported = true;
+	protected Boolean deleted = false;
+	protected Boolean userUploaded = false;
+	protected Boolean isSysprep = false;
+	protected Boolean vmToolsInstalled = true;
+	protected Boolean installAgent = true;
+	protected String interfaceName = "eth0";
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -274,5 +279,46 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 		markDirty("deleted", deleted);
+	}
+
+	public Boolean getSysprep() {
+		return isSysprep;
+	}
+
+	public void setSysprep(Boolean sysprep) {
+		isSysprep = sysprep;
+	}
+
+	public Boolean getVmToolsInstalled() {
+		return vmToolsInstalled;
+	}
+
+	public void setVmToolsInstalled(Boolean vmToolsInstalled) {
+		this.vmToolsInstalled = vmToolsInstalled;
+	}
+
+	public Boolean getInstallAgent() {
+		return installAgent;
+	}
+
+	public void setInstallAgent(Boolean installAgent) {
+		this.installAgent = installAgent;
+	}
+
+	public String getInterfaceName() {
+		return interfaceName;
+	}
+
+	public void setInterfaceName(String interfaceName) {
+		this.interfaceName = interfaceName;
+	}
+
+
+	public Boolean getUserUploaded() {
+		return userUploaded;
+	}
+
+	public void setUserUploaded(Boolean userUploaded) {
+		this.userUploaded = userUploaded;
 	}
 }

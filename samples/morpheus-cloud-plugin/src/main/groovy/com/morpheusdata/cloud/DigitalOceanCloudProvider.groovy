@@ -77,6 +77,16 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasCloudInit() {
+		false
+	}
+
+	@Override
+	Boolean supportsDistributedWorker() {
+		false
+	}
+
+	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType ot1 = new OptionType(
 				name: 'Username',

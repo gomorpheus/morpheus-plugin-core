@@ -16,10 +16,12 @@ class TemplatesSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public TemplatesSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public TemplatesSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -29,8 +31,8 @@ class TemplatesSync {
 		morpheusContext.osType.listAll().blockingSubscribe { osTypes << it }
 
 		try {
-	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)])
-			def listResults = VmwareCloudProvider.listTemplates(cloud)
+	//		lock = lockService.acquireLock(lockKey.toString(), [timeout:(300l * 1000l), ttl:(60l * 60l * 1000l)]).blockingGet()
+			def listResults = vmwarePlugin.cloudProvider.listTemplates(cloud)
 			if(listResults.success) {
 				// First pass through.. dedupe logic
 				removeDuplicates()
@@ -92,7 +94,7 @@ class TemplatesSync {
 			addMissingVirtualImages(itemsToAdd, osTypes)
 		}.onUpdate { List<SyncTask.UpdateItem<VirtualImage, Map>> updateItems ->
 			// Found the VirtualImage for this location.. just need to create the location
-			addMissingVirtualImageLocationsForImages(updateItems, osTypes)
+			addMissingVirtualImageLocationsForImages(updateItems)
 		}.start()
 	}
 

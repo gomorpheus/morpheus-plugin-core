@@ -34,7 +34,8 @@ class ImagesSync {
 			syncTask.addMatchFunction { VirtualImageIdentityProjection projection, VirtualImage apiImage ->
 				projection.externalId == apiImage.externalId
 			}.onDelete { List<VirtualImageIdentityProjection> deleteList ->
-				morpheusContext.virtualImage.remove(deleteList)
+				log.debug "deleteList: ${deleteList?.size()}"
+				morpheusContext.virtualImage.remove(deleteList).blockingGet()
 			}.onAdd { createList ->
 				log.info("Creating ${createList?.size()} new images")
 				while (createList.size() > 0) {
@@ -97,6 +98,7 @@ class ImagesSync {
 	}
 
 	void updateMatchedImages(List<SyncTask.UpdateItem<VirtualImage,Map>> updateItems) {
+		log.debug "updateMatchedImages: ${updateItems?.size()}"
 		List<VirtualImage> imagesToUpdate = []
 
 		updateItems.each {it ->
@@ -120,6 +122,7 @@ class ImagesSync {
 			}
 		}
 
+		log.debug "Have ${imagesToUpdate?.size()} to update"
 		morpheusContext.virtualImage.save(imagesToUpdate, cloud).blockingGet()
 	}
 

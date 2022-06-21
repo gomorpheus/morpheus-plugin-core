@@ -1,7 +1,11 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusAccountCredentialService
+import com.morpheusdata.core.MorpheusAccountCredentialTypeService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusInstanceService
+import com.morpheusdata.core.MorpheusPermissionService
+import com.morpheusdata.core.MorpheusProcessService
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
@@ -311,6 +315,26 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusComputeTypeLayoutFactoryService getComputeTypeLayoutFactoryService() {
+		return null
+	}
+
+	@Override
+	MorpheusProcessService getProcess() {
+		return null
+	}
+
+	@Override
+	MorpheusPermissionService getPermission() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialTypeService getAccountCredentialType() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialService getAccountCredential() {
 		return null
 	}
 }

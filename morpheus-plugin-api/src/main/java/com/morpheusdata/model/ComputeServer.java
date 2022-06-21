@@ -32,7 +32,6 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ServicePlan plan;
 	protected String internalName;
 	protected String status = "provisioning";
-	protected String hostname;
 	protected Long provisionSiteId;
 	protected OsType serverOs;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -101,7 +100,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ComputeStats computeStats;
 	@JsonIgnore
 	protected List<MetadataTag> metadata;
-
+	protected Date statusDate;
+	protected String cloudConfigUser;
+	protected String cloudConfigMeta;
+	protected String cloudConfigNetwork;
 
 	public String getUuid() {
 		return uuid;
@@ -221,10 +223,6 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public String getStatus() {
 		return status;
-	}
-
-	public String getHostname() {
-		return hostname;
 	}
 
 	public Long getProvisionSiteId() {
@@ -347,6 +345,38 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		this.usedCpu = usedCpu;
 	}
 
+	public String getCloudConfigUser() {
+		return cloudConfigUser;
+	}
+
+	public void setCloudConfigUser(String cloudConfigUser) {
+		this.cloudConfigUser = cloudConfigUser;
+	}
+
+	public String getCloudConfigMeta() {
+		return cloudConfigMeta;
+	}
+
+	public void setCloudConfigMeta(String cloudConfigMeta) {
+		this.cloudConfigMeta = cloudConfigMeta;
+	}
+
+	public String getCloudConfigNetwork() {
+		return cloudConfigNetwork;
+	}
+
+	public void setCloudConfigNetwork(String cloudConfigNetwork) {
+		this.cloudConfigNetwork = cloudConfigNetwork;
+	}
+
+	public Date getStatusDate() {
+		return statusDate;
+	}
+
+	public void setStatusDate(Date statusDate) {
+		this.statusDate = statusDate;
+	}
+
 	public enum PowerState {
 		on,
 		off,
@@ -377,11 +407,6 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setStatus(String status) {
 		this.status = status;
 		markDirty("status", status);
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-		markDirty("hostname", hostname);
 	}
 
 	public void setProvisionSiteId(Long provisionSiteId) {

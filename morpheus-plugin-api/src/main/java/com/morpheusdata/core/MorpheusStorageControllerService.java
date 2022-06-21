@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.StorageController;
+import com.morpheusdata.model.StorageControllerType;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
@@ -17,6 +18,12 @@ import java.util.List;
  * @author Alex Clement
  */
 public interface MorpheusStorageControllerService {
+
+	/**
+	 * Returns the MorpheusStorageControllerTypeService context used for performing updates or queries on {@link StorageControllerType} related assets within Morpheus.
+	 * @return An instance of the MorpheusStorageControllerTypeService Context
+	 */
+	MorpheusStorageControllerTypeService getStorageControllerType();
 
 	/**
 	 * Get a list of StorageControllers objects from a list of projection ids
@@ -68,9 +75,10 @@ public interface MorpheusStorageControllerService {
 	 * to inform Morpheus that the StorageController no longer exists in the cloud
 	 * @param storageControllers controllers to remove
 	 * @param computeServer ComputeServerIdentityProjection to remove the controllers from
+	 * @param force Remove the StorageVolumes from the ComputeServer even if the status of the ComputeServer is 'resizing' (optional) defaults to false
 	 * @return success
 	 */
-	Single<Boolean> remove(List<StorageControllerIdentityProjection> storageControllers, ComputeServerIdentityProjection computeServer);
+	Single<Boolean> remove(List<StorageControllerIdentityProjection> storageControllers, ComputeServerIdentityProjection computeServer, Boolean force);
 
 	/**
 	 * Remove persisted StorageControllers from Morpheus and remove them from the VirtualImage.

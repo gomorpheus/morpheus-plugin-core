@@ -141,7 +141,11 @@ class VmwareSyncUtils {
 				def matchedVolumes = serverVolumes?.findAll{ it.externalId == volume.key.toString()}
 				if(matchedVolumes?.size() > 1) {
 					def deleteVolumes = matchedVolumes.findAll { it.id != existingVolume.id }
-					morpheusContext.storageVolume.remove(deleteVolumes, locationOrServer).blockingGet()
+					if(locationOrServer instanceof ComputeServer) {
+						morpheusContext.storageVolume.remove(deleteVolumes, locationOrServer, false).blockingGet()
+					} else {
+						morpheusContext.storageVolume.remove(deleteVolumes, locationOrServer).blockingGet()
+					}
 				}
 			}
 
@@ -154,7 +158,11 @@ class VmwareSyncUtils {
 			// The removes
 			if(syncLists.removeList) {
 				rtn.changed = true
-				morpheusContext.storageVolume.remove(syncLists.removeList, locationOrServer).blockingGet()
+				if(locationOrServer instanceof ComputeServer) {
+					morpheusContext.storageVolume.remove(syncLists.removeList, locationOrServer, false).blockingGet()
+				} else {
+					morpheusContext.storageVolume.remove(syncLists.removeList, locationOrServer).blockingGet()
+				}
 			}
 
 			// The adds
@@ -207,8 +215,8 @@ class VmwareSyncUtils {
 	}
 
 
-	static StorageVolume buildStorageVolume(account, server, volume, index, size = null) {
-		log.debug "buildStorageVolume: ${account} ${server} ${volume} ${index}"
+	static StorageVolume buildStorageVolume(Account account, locationOrServer, volume, index, size = null) {
+		log.debug "buildStorageVolume: ${account} ${locationOrServer} ${volume} ${index}"
 		StorageVolume storageVolume = new StorageVolume()
 		storageVolume.name = volume.name
 		storageVolume.account = account
@@ -223,11 +231,128 @@ class VmwareSyncUtils {
 			storageVolume.internalId = volume.internalId
 		if(volume.unitNumber)
 			storageVolume.unitNumber = volume.unitNumber
-		storageVolume.rootVolume = volume.rootVolume
+		if(volume.datastoreId) {
+			storageVolume.datastore = new DatastoreIdentityProjection(id: volume.datastoreId.toLong())
+		}
+		if(volume.controller) {
+			if(volume.controller instanceof StorageController)
+				storageVolume.controller = volume.controller
+		}
+		storageVolume.rootVolume = volume.rootVolume == true
 		storageVolume.removable = storageVolume.rootVolume != true
-		storageVolume.displayOrder = volume.displayOrder ?: server?.volumes?.size() ?: 0
+		storageVolume.displayOrder = volume.displayOrder ?: locationOrServer?.volumes?.size() ?: 0
 		storageVolume.diskIndex = index
 		return storageVolume
+	}
+
+	def buildComputeServerInterface(Account account, Instance instance, ComputeServer server, networkInterface, index, opts = [:]) {
+		log.debug "networkInterface: ${networkInterface}, ${index}, ${opts}"
+		def computeServerInterface = new ComputeServerInterface()
+		def platform = server.serverOs?.platform ?: (server.platform ?: 'linux')
+		//computeServerInterface.name = networkInterface.name
+		def nicName
+		if(index == 0 && server.sourceImage?.interfaceName) {
+			nicName = server.sourceImage?.interfaceName
+		}
+		if(networkInterface instanceof Map && networkInterface.nicName) {
+			nicName = networkInterface.nicName
+		}
+		if(!nicName) {
+			if(platform == 'windows') {
+				nicName = (index == 0) ? 'Ethernet' : 'Ethernet ' + (index + 1)
+			} else if(platform == 'linux') {
+				nicName = "eth${index}"
+			} else {
+				nicName = "eth${index}"
+			}
+		}
+		computeServerInterface.name =  nicName
+		computeServerInterface.displayOrder = index
+		computeServerInterface.macAddress = networkInterface.macAddress
+		computeServerInterface.ipMode = networkInterface.ipMode
+
+		def v = networkInterface.replaceHostRecord
+		v == true || v == 'true' || v == 'on' || v == 'yes'
+		computeServerInterface.replaceHostRecord = (v == true || v == 'true' || v == 'on' || v == 'yes')
+		computeServerInterface.primaryInterface = networkInterface.isPrimary != null ? networkInterface.isPrimary : index == 0
+		if(networkInterface instanceof ComputeServerInterface) {
+			computeServerInterface.type = networkInterface.type
+		} else if(networkInterface.networkInterfaceTypeId) {
+			computeServerInterface.type = ComputeServerInterfaceType.get(networkInterface.networkInterfaceTypeId?.toLong())
+		}
+		if(networkInterface.externalId) {
+			computeServerInterface.externalId = networkInterface.externalId
+		}
+		if(networkInterface.network?.id) {
+			computeServerInterface.network = new Network(id: networkInterface.network.id.toLong())
+			if(!(networkInterface.network instanceof Network) && networkInterface.network?.subnet) {
+				computeServerInterface.subnet = new NetworkSubnet(id: networkInterface.network.subnet.toLong())
+			}
+			// TODO : Handle NetworkGroup
+//			if(networkInterface.network instanceof Map && networkInterface.network?.group) {
+//				computeServerInterface.networkGroup = new NetworkGroup(id: networkInterface.network.group.toLong())
+//			}
+		} else if(networkInterface.network?.group) {
+			// TODO : Handle NetworkGroup
+//			computeServerInterface.networkGroup = NetworkGroup.get(networkInterface.network.group.toLong())
+//			def siteId = instance ? instance.site.id : server?.provisionSiteId
+//			def usedNetworks = []
+//			if(instance) {
+//				usedNetworks = instance.containers.findAll{container -> container.server.id != server.id}?.collect{ container -> container.server.interfaces?.collect{ net -> net.network }}.flatten()?.findAll{it != null} ?: []
+//				def serverUsedNetworks = server.interfaces?.collect{ net -> net.network}?.findAll{it != null} ?: []
+//				if(serverUsedNetworks) {
+//					usedNetworks += serverUsedNetworks
+//				}
+//				usedNetworks.flatten()
+//			}
+//			def usedSubnets = []
+//			if(instance) {
+//				usedSubnets = instance.containers.findAll{container -> container.server.id != server.id}?.collect{ container -> container.server.interfaces?.collect{ net -> net.subnet }}.flatten()?.findAll{it != null} ?: []
+//				def serverUsedSubnets = server.interfaces?.collect{ net -> net.subnet}?.findAll{it != null} ?: []
+//				if(serverUsedSubnets) {
+//					usedSubnets += serverUsedSubnets
+//				}
+//				usedSubnets.flatten()
+//			}
+//			//computeServerInterface.network = networkService.pickNetworkGroupNetworkOrSubnet(computeServerInterface.networkGroup, account.id,
+//			def pickedItem = networkService.pickNetworkGroupNetworkOrSubnet(computeServerInterface.networkGroup, account.id,
+//					siteId, server?.zone?.id, usedNetworks, usedSubnets)
+//			if(pickedItem instanceof NetworkSubnet) {
+//				computeServerInterface.subnet = pickedItem
+//				computeServerInterface.network = computeServerInterface.subnet?.network
+//			} else {
+//				computeServerInterface.network = pickedItem
+//			}
+		} else if(!(networkInterface.network instanceof Network) && networkInterface.network?.subnet) {
+			computeServerInterface.subnet = new NetworkSubnet(id: networkInterface.network.subnet.toLong())
+			computeServerInterface.network = new Network(id: computeServerInterface.subnet?.networkId)
+		}
+		if(computeServerInterface.network && !instance?.networkDomain) {
+			computeServerInterface.networkDomain = computeServerInterface.network.networkDomain
+		}
+		if((computeServerInterface.subnet?.pool?.id ?: computeServerInterface.network?.pool?.id) && (computeServerInterface.ipMode != 'dhcp' || !computeServerInterface.ipMode)) {
+			def poolId = computeServerInterface.subnet?.pool?.id ?: computeServerInterface.network?.pool?.id
+			computeServerInterface.networkPool = new NetworkPool(id: poolId.toLong())
+			computeServerInterface.dhcp = computeServerInterface.networkPool?.dhcpServer
+			if(computeServerInterface.ipMode != 'pool') {
+				computeServerInterface.ipAddress = networkInterface.ipAddress
+				computeServerInterface.publicIpAddress = computeServerInterface.ipAddress
+				computeServerInterface.dhcp = false
+			}
+		}
+		def networkOrSubnet = computeServerInterface.subnet ?: computeServerInterface.network
+		if(networkOrSubnet?.dhcpServer && (computeServerInterface.ipMode == 'dhcp' || !computeServerInterface.ipMode)) {
+			computeServerInterface.dhcp = true
+			if(!(networkInterface instanceof ComputeServerInterface) && networkInterface.forceIpSet ) {
+				computeServerInterface.ipAddress = networkInterface.forceIpSet.ipAddress
+				computeServerInterface.publicIpAddress = networkInterface.forceIpSet.publicIpAddress
+			}
+		} else if(!(networkInterface instanceof ComputeServerInterface) && networkInterface.ipAddress ) {
+			computeServerInterface.ipAddress = networkInterface.ipAddress
+			computeServerInterface.publicIpAddress = computeServerInterface.ipAddress
+			computeServerInterface.dhcp = false
+		}
+		return computeServerInterface
 	}
 
 	static Boolean syncInterfaces(ComputeServer server, List networks, List ipList, Map systemNetworks, Collection<ComputeServerInterfaceType> netTypes, MorpheusContext morpheusContext) {
@@ -354,7 +479,13 @@ class VmwareSyncUtils {
 				def matchedControllers = serverControllers?.findAll{ it.externalId == controller.externalId}
 				if(matchedControllers?.size() > 1) {
 					def deleteControllers = matchedControllers.findAll { it.id != existingController.id }
-					morpheusContext.storageController.remove(deleteControllers, serverOrLocation).blockingGet()
+					if(serverOrLocation instanceof ComputeServer) {
+						morpheusContext.storageController.remove(deleteControllers, serverOrLocation, false).blockingGet()
+					} else {
+						morpheusContext.storageController.remove(deleteControllers, serverOrLocation).blockingGet()
+					}
+
+
 				}
 			}
 
@@ -367,7 +498,11 @@ class VmwareSyncUtils {
 			// The removes
 			if(syncLists.removeList) {
 				rtn = true
-				morpheusContext.storageController.remove(syncLists.removeList, serverOrLocation).blockingGet()
+				if(serverOrLocation instanceof ComputeServer) {
+					morpheusContext.storageController.remove(syncLists.removeList, serverOrLocation, false).blockingGet()
+				} else {
+					morpheusContext.storageController.remove(syncLists.removeList, serverOrLocation).blockingGet()
+				}
 			}
 
 			// The adds

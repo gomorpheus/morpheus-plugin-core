@@ -233,6 +233,29 @@ public interface MorpheusContext {
 	 */
 	MorpheusBackupJobService getBackupJob();
 
+	/**
+	 * Returns the Process Service
+	 * @return An instance of the MorpheusProcessService
+	 */
+	MorpheusProcessService getProcess();
+
+	/**
+	 * Returns the Permission Service
+	 * @return An instance of the MorpheusPermissionService
+	 */
+	MorpheusPermissionService getPermission();
+
+	/**
+	 * Returns the MorpheusAccountCredentialTypeService
+	 * @return An instance of the MorpheusAccountCredentialTypeService
+	 */
+	MorpheusAccountCredentialTypeService getAccountCredentialType();
+
+	/**
+	 * Returns the MorpheusAccountCredentialService
+	 * @return An instance of the MorpheusAccountCredentialService
+	 */
+	MorpheusAccountCredentialService getAccountCredential();
 
 	//Common methods used across various contexts
 
