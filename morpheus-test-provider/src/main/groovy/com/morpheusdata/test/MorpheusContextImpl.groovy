@@ -11,6 +11,8 @@ import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusUsageService
 import com.morpheusdata.core.MorpheusWikiPageService
+import com.morpheusdata.core.backup.MorpheusBackupJobService
+import com.morpheusdata.core.backup.MorpheusBackupService
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.costing.MorpheusCostingService
@@ -84,6 +86,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    statsContext = new MorpheusStatsServiceImpl()
 	    instanceService = new MorpheusInstanceServiceImpl()
 	    snapshotService = new MorpheusSnapshotServiceImpl()
+		backupService = new MorpheusBackupServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -212,6 +215,25 @@ class MorpheusContextImpl implements MorpheusContext {
 	MorpheusCostingService getCosting() {
 		return null;
 	}
+
+
+	@Override
+	MorpheusBackupService getBackup() {
+
+	}
+
+	/**
+	* Returns the Backup Job Context for sync, executing and restoring backup jobs
+	* Typically this would be called by a {@link BackupProvider}.
+	*
+	* @return an instance of the Backup Job Context
+	*/
+	@Override
+	MorpheusBackupJobService getBackupJob() {
+		return
+	}
+
+
 /**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
 	 *

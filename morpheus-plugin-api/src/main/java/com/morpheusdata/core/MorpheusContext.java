@@ -9,9 +9,11 @@ import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.policy.MorpheusPolicyService;
+import com.morpheusdata.core.MorpheusOperationNotificationService;
+import com.morpheusdata.core.backup.MorpheusBackupService;
+import com.morpheusdata.core.backup.MorpheusBackupJobService;
 import com.morpheusdata.model.*;
 import io.reactivex.Single;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -214,6 +216,22 @@ public interface MorpheusContext {
 	 * @return An instance of the ComputeTypeLayoutFactory
 	 */
 	MorpheusComputeTypeLayoutFactoryService getComputeTypeLayoutFactoryService();
+
+	/**
+	 * Returns the Backup Context for sync, executing and restoring backups
+	 * Typically this would be called by a {@link BackupProvider}.
+	 *
+	 * @return an instance of the Backup Context
+	 */
+	MorpheusBackupService getBackup();
+
+	/**
+	 * Returns the Backup Job Context for sync, executing and restoring backup jobs
+	 * Typically this would be called by a {@link BackupProvider}.
+	 *
+	 * @return an instance of the Backup Job Context
+	 */
+	MorpheusBackupJobService getBackupJob();
 
 	/**
 	 * Returns the Process Service
