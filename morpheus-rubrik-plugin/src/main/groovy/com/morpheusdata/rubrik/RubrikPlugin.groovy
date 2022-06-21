@@ -17,14 +17,14 @@ class RubrikPlugin extends Plugin {
 		RubrikBackupProvider backupProvider = new RubrikBackupProvider(this, morpheus)
 		this.pluginProviders.put(backupProvider.code, backupProvider)
 
-		RubrikBackupJobProvider backupJobProvider = new RubrikBackupJobProvider(this, morpheus)
-		this.pluginProviders.put(backupJobProvider.code, backupJobProvider)
-
-		RubrikBackupExecutionProvider backupExectionProvider = new RubrikBackupExectionProvider(this, morpheus)
-		this.pluginProviders.put(backupExectionProvider.code, backupExectionProvider)
-
-		RubrikBackupRestoreProvider backupRestoreProvider = new RubrikBackupExectionProvider(this, morpheus)
-		this.pluginProviders.put(backupRestoreProvider.code, backupRestoreProvider)
+		// RubrikBackupJobProvider backupJobProvider = new RubrikBackupJobProvider(this, morpheus)
+		// this.pluginProviders.put(backupJobProvider.code, backupJobProvider)
+		//
+		// RubrikBackupExecutionProvider backupExectionProvider = new RubrikBackupExectionProvider(this, morpheus)
+		// this.pluginProviders.put(backupExectionProvider.code, backupExectionProvider)
+		//
+		// RubrikBackupRestoreProvider backupRestoreProvider = new RubrikBackupExectionProvider(this, morpheus)
+		// this.pluginProviders.put(backupRestoreProvider.code, backupRestoreProvider)
 	}
 
 	/**
