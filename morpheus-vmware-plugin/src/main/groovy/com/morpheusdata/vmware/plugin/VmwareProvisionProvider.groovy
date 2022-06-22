@@ -886,7 +886,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 					server = saveAndGet(server)
 				}
 
-//				runConfig.licenses = licenseService.applyLicense(opts.server.sourceImage, 'ComputeServer', opts.server.id, opts.server.account)?.data?.licenses
 				//add vnc
 //				runConfig.extraConfig = configureVnc(opts.server, vmHost, runConfig.enableVnc) ?: []
 //				runConfig.extraConfig = runConfig.extraConfig?.toList()
@@ -1612,7 +1611,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				needsCustomizations = true
 			}
 			if(runConfig.platform == 'windows' && virtualImage.vmToolsInstalled && (virtualImage.isForceCustomization || workloadRequest.networkConfiguration?.doCustomizations)) {
-				cloudConfigOpts.licenses = runConfig.licenses
 				if(cloudConfigOpts.licenseApplied) {
 					workloadResponse.licenseApplied = true
 				}
