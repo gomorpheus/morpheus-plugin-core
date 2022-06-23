@@ -1,0 +1,32 @@
+== Seeding data during plugin installation
+
+You might need to ensure that certain data (e.g. layouts, plans, etc.) is added to the database when your plugin is installed. You can use the process outlined here to "seed" that data in.
+
+Seed files should be YAML and should be in a *seed* folder your plugin's resources folder ('src/main/resources/seed'). They should be modeled off of plugin database model classes.
+=== Example
+
+[source,yaml]
+----
+# dependencies
+dependsOn: []
+# seed entries
+seed:
+	optionType:
+	- meta:
+		key: code
+	  code: demo-option-1
+	  name: Demo Option 1
+	  fieldClass: input-tall
+	  fieldLabel: Demo Option 1
+	  fieldName: demoOption1
+	  displayOrder: 10
+	- meta:
+		key: code
+	  code: demo-option-2
+	  name: Demo Option 2
+	  fieldLabel: Demo Option 2
+	  fieldName: demoOption2
+	  helpText: Click this
+	  displayOrder: 20
+----
+

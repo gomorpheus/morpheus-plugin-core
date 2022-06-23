@@ -36,6 +36,8 @@ include::OptionSources.adoc[]
 
 include::Testing.adoc[]
 
+include::Seeding.adoc[]
+
 == Examples
 
 include::TaskPlugin.adoc[]
