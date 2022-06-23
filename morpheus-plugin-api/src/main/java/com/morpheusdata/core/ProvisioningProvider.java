@@ -1,8 +1,10 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.request.ResizeRequest;
+import com.morpheusdata.response.HostResponse;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
 
@@ -215,6 +217,52 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Response from API
 	 */
 	ServiceResponse startWorkload(Workload workload);
+
+
+	/**
+	 * This method is called before runHost and provides an opportunity to perform action or obtain configuration
+	 * that will be needed in runHost. At the end of this method, if deploying a ComputeServer with a VirtualImage,
+	 * the sourceImage on ComputeServer should be determined and saved.
+	 * @param server the ComputeServer object we intend to provision along with some of the associated data needed to determine
+	 *                 how best to provision the server
+	 * @param hostRequest the HostRequest object containing the various configurations that may be needed
+	 *                        in running the server. This will be passed along into runHost
+	 * @param opts additional configuration options that may have been passed during provisioning
+	 * @return Response from API
+	 */
+	ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts);
+
+	/**
+	 * This method is called to provision a Host (i.e. Docker host).
+	 * Information associated with the passed ComputeServer object is used to kick off the provision request. Implementations
+	 * of this method should populate HostResponse as complete as possible and as quickly as possible. Implementations
+	 * may choose to save the externalId on the ComputeServer or pass it back in HostResponse.
+	 * @param server the ComputeServer object we intend to provision along with some of the associated data needed to determine
+	 *                 how best to provision the server
+	 * @param hostRequest the HostRequest object containing the various configurations that may be needed
+	 *                         in running the server.
+	 * @param opts additional configuration options that may have been passed during provisioning
+	 * @return Response from API
+	 */
+	ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts);
+
+	/**
+	 * This method is called after runHost returns successfully and provides implementations a mechanism to wait for the
+	 * ComputeServer to finish the creation process in the underlying Cloud. HostResponse should be filled out as
+	 * complete as possible.
+	 * @param server the ComputeServer object to wait for
+	 * @return
+	 */
+	ServiceResponse<HostResponse> waitForHost(ComputeServer server);
+
+	/**
+	 * This method is called after successful completion of runHost and successful completion of waitForHost and provides
+	 * an opportunity to perform some final actions during the provisioning process.
+	 * For example, ejected CDs, cleanup actions, etc
+	 * @param server the ComputeServer object that has been provisioned
+	 * @return Response from the API
+	 */
+	ServiceResponse finalizeHost(ComputeServer server);
 
 	/**
 	 * Stop the server

@@ -3,6 +3,8 @@ package com.morpheusdata.test
 import com.morpheusdata.core.MorpheusAccountCredentialService
 import com.morpheusdata.core.MorpheusAccountCredentialTypeService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
+import com.morpheusdata.core.MorpheusComputeTypeSetService
+import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
@@ -190,7 +192,16 @@ class MorpheusContextImpl implements MorpheusContext {
 		return computeServerContext
 	}
 
-	/**
+	@Override
+	MorpheusComputeTypeSetService getComputeTypeSet() {
+		return null
+	}
+
+	@Override
+	MorpheusContainerTypeService getContainerType() {
+		return null
+	}
+/**
 	 * Returns the Custom Report Types Context used for generating custom reports.
 	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
 	 *

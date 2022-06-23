@@ -101,6 +101,18 @@ public interface MorpheusContext {
 	MorpheusComputeServerService getComputeServer();
 
 	/**
+	 * Returns the ComputeTypeSet context
+	 * @return
+	 */
+	MorpheusComputeTypeSetService getComputeTypeSet();
+
+	/**
+	 * Returns the ContainerType context
+	 * @return
+	 */
+	MorpheusContainerTypeService getContainerType();
+
+	/**
 	 * Returns the Custom Report Types Context used for generating custom reports.
 	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
 	 *
