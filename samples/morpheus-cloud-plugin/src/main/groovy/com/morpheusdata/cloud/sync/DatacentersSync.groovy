@@ -1,6 +1,7 @@
 package com.morpheusdata.cloud.sync
 
 import com.morpheusdata.cloud.DigitalOceanApiService
+import com.morpheusdata.cloud.DigitalOceanPlugin
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
@@ -18,12 +19,14 @@ class DatacentersSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
-	
+	DigitalOceanPlugin plugin
+
 	public static String DIGITAL_OCEAN_CAT = 'digitalocean.datacenter'
 	
-	public DatacentersSync(Cloud cloud, MorpheusContext morpheusContext, DigitalOceanApiService apiService) {
+	public DatacentersSync(DigitalOceanPlugin plugin, Cloud cloud, DigitalOceanApiService apiService) {
+		this.plugin = plugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = this.plugin.morpheusContext
 		this.apiService = apiService
 	}
 
@@ -59,8 +62,9 @@ class DatacentersSync {
 		log.debug "listDatacenters"
 		
 		List<ReferenceData> datacenters = []
-		
-		List regions = apiService.makePaginatedApiCall(cloud.configMap.doApiKey, '/v2/regions', 'regions', [:])
+
+		String apiKey = plugin.getAuthConfig(cloud).doApiKey
+		List regions = apiService.makePaginatedApiCall(apiKey, '/v2/regions', 'regions', [:])
 
 		log.info("regions: $regions")
 		regions.each { it ->

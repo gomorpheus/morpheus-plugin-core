@@ -1,6 +1,7 @@
 package com.morpheusdata.cloud.sync
 
 import com.morpheusdata.cloud.DigitalOceanApiService
+import com.morpheusdata.cloud.DigitalOceanPlugin
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
@@ -16,18 +17,21 @@ class SizesSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
+	DigitalOceanPlugin plugin
 
-	public SizesSync(Cloud cloud, MorpheusContext morpheusContext, DigitalOceanApiService apiService) {
+	public SizesSync(DigitalOceanPlugin plugin, Cloud cloud, DigitalOceanApiService apiService) {
+		this.plugin = plugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = this.plugin.morpheusContext
 		this.apiService = apiService
 	}
 
 	def execute() {
 		log.debug "execute: ${cloud}"
 		try {
+			String apiKey = plugin.getAuthConfig(cloud).doApiKey
 			HttpGet sizesGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/sizes")
-			Map respMap = apiService.makeApiCall(sizesGet, cloud.configMap.doApiKey)
+			Map respMap = apiService.makeApiCall(sizesGet, apiKey)
 			List<ServicePlan> servicePlans = []
 			respMap.json?.sizes?.each {
 				def name = getNameForSize(it)

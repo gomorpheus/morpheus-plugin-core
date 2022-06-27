@@ -35,13 +35,13 @@ import org.apache.http.entity.StringEntity
 
 @Slf4j
 class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
-	Plugin plugin
+	DigitalOceanPlugin plugin
 	MorpheusContext context
 	private static final String DIGITAL_OCEAN_ENDPOINT = 'https://api.digitalocean.com'
 	private static final String UBUNTU_VIRTUAL_IMAGE_CODE = 'doplugin.image.os.digital-ocean-plugin.ubuntu.18.04'
 	DigitalOceanApiService apiService
 
-	DigitalOceanProvisionProvider(Plugin plugin, MorpheusContext context) {
+	DigitalOceanProvisionProvider(DigitalOceanPlugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.context = context
 		apiService = new DigitalOceanApiService()
@@ -183,7 +183,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		log.debug "DO Provision Provider: runWorkload ${workload.configs} ${opts}"
 		def containerConfig = new groovy.json.JsonSlurper().parseText(workload.configs ?: '{}')
-		String apiKey = workload.server.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(workload.server.cloud).doApiKey
 		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'No API Key provided')
 		}
@@ -306,7 +306,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts) {
 		log.debug "runHost: ${server} ${hostRequest} ${opts}"
 
-		String apiKey = server.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(server.cloud).doApiKey
 		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'No API Key provided')
 		}
@@ -410,7 +410,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 		log.debug "internalResizeServer: ${server} ${resizeRequest}"
 		ServiceResponse rtn = ServiceResponse.success()
 		try {
-			String apiKey = server.cloud.configMap.doApiKey
+			String apiKey = plugin.getAuthConfig(server.cloud).doApiKey
 			String dropletId = server.externalId
 			Map body = [
 					'type': 'resize',
@@ -429,7 +429,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	ServiceResponse<WorkloadResponse> stopWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
-		String apiKey = workload.server.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(workload.server.cloud).doApiKey
 		log.debug "stop server: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
@@ -451,7 +451,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	ServiceResponse<WorkloadResponse> startWorkload(Workload workload) {
 		String dropletId = workload.server.externalId
-		String apiKey = workload.server.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(workload.server.cloud).doApiKey
 		log.debug "startWorkload for server: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
@@ -474,13 +474,14 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	ServiceResponse removeWorkload(Workload workload, Map opts) {
 		String dropletId = workload.server.externalId
+		String apiKey = plugin.getAuthConfig(workload.server.cloud).doApiKey
 		log.debug "removeWorkload for server: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		HttpDelete httpDelete = new HttpDelete("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
-		Map respMap = apiService.makeApiCall(httpDelete, workload.server.cloud.configMap.doApiKey)
+		Map respMap = apiService.makeApiCall(httpDelete, apiKey)
 		if (respMap?.resp?.statusLine?.statusCode == 204) {
 			return new ServiceResponse(success: true)
 		} else {
@@ -522,8 +523,9 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	ServiceResponse<WorkloadResponse> serverStatus(ComputeServer server) {
 		log.debug "check server status for server ${server.externalId}"
 		ServiceResponse resp = new ServiceResponse(success: false)
+		String apiKey = plugin.getAuthConfig(server.cloud).doApiKey
 		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
-		def respMap = apiService.makeApiCall(httpGet, server.cloud.configMap.doApiKey)
+		def respMap = apiService.makeApiCall(httpGet, apiKey)
 
 		String status = respMap.json?.droplet?.status
 		log.debug "droplet status: ${status}"

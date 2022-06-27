@@ -7,6 +7,7 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.*
+import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
@@ -180,7 +181,7 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Cloud zoneInfo) {
+	ServiceResponse validate(Cloud zoneInfo, ValidateCloudRequest validateCloudRequest) {
 		log.debug "validating Cloud: ${zoneInfo.code}"
 		def jsonSettings = this.morpheusContext.getSettings(this.plugin).blockingGet()
 		def settings = new groovy.json.JsonSlurper().parseText(jsonSettings ?: '{}')

@@ -18,6 +18,7 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.StorageControllerType
 import com.morpheusdata.model.StorageVolumeType
 import com.morpheusdata.model.PlatformType
+import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.vmware.plugin.sync.*
@@ -470,7 +471,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Cloud cloudInfo) {
+	ServiceResponse validate(Cloud cloudInfo, ValidateCloudRequest validateCloudRequest) {
 		log.info("validate: {}", cloudInfo)
 		try {
 			if(cloudInfo) {

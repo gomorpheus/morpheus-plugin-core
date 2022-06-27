@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.AccountCredential;
 import io.reactivex.Single;
 
 import java.util.Map;
@@ -17,4 +18,11 @@ public interface MorpheusAccountCredentialService {
 	 * @return Observable
 	 */
 	Single<Map> loadCredentialConfig(Map credentialConfig, Map refConfig);
+
+	/**
+	 * Load the AccountCredential requested
+	 * @param credentialId
+	 * @return
+	 */
+	Single<AccountCredential> get(Long credentialId);
 }

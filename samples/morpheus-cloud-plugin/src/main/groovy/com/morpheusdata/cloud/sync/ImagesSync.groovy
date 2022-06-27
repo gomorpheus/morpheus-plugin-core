@@ -1,6 +1,7 @@
 package com.morpheusdata.cloud.sync
 
 import com.morpheusdata.cloud.DigitalOceanApiService
+import com.morpheusdata.cloud.DigitalOceanPlugin
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
@@ -16,10 +17,12 @@ class ImagesSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
+	DigitalOceanPlugin plugin
 
-	public ImagesSync(Cloud cloud, MorpheusContext morpheusContext, DigitalOceanApiService apiService) {
+	public ImagesSync(DigitalOceanPlugin plugin, Cloud cloud, DigitalOceanApiService apiService) {
+		this.plugin = plugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = this.plugin.morpheusContext
 		this.apiService = apiService
 	}
 
@@ -69,7 +72,9 @@ class ImagesSync {
 		} else {
 			queryParams.type = 'distribution'
 		}
-		List images = apiService.makePaginatedApiCall(cloud.configMap.doApiKey, '/v2/images', 'images', queryParams)
+
+		String apiKey = plugin.getAuthConfig(cloud).doApiKey
+		List images = apiService.makePaginatedApiCall(apiKey, '/v2/images', 'images', queryParams)
 
 		String imageCodeBase = "doplugin.image.${userImages ? 'user' : 'os'}"
 

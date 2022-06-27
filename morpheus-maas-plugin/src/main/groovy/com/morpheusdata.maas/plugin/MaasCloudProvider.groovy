@@ -25,6 +25,7 @@ import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.NetworkIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
+import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
 import io.reactivex.Observable
@@ -146,7 +147,7 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Cloud cloudInfo) {
+	ServiceResponse validate(Cloud cloudInfo, ValidateCloudRequest validateCloudRequest) {
 		log.info("MaaS validate")
 		return new ServiceResponse(success: true)
 	}
