@@ -16,6 +16,7 @@ import com.morpheusdata.model.Instance
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.OsType
 import com.morpheusdata.model.ServicePlan
+import com.morpheusdata.model.StorageVolume
 import com.morpheusdata.model.VirtualImage
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.provisioning.HostRequest
@@ -418,6 +419,13 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 					'size': resizeRequest.plan.externalId
 			]
 			rtn = apiService.performDropletAction(dropletId, body, apiKey)
+			if(rtn.success) {
+				StorageVolume existingVolume = server.volumes?.first()
+				if (existingVolume) {
+					existingVolume.maxStorage = resizeRequest.maxStorage
+					morpheus.storageVolume.save([existingVolume]).blockingGet()
+				}
+			}
 		} catch(e) {
 			rtn.success = false
 			rtn.msg = e.message
