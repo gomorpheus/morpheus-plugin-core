@@ -9,9 +9,11 @@ import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.DatastoreIdentityProjection
 import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
+import com.morpheusdata.model.provisioning.HostRequest
 import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.request.UpdateModel
+import com.morpheusdata.response.HostResponse
 import com.morpheusdata.vmware.plugin.sync.VmwareSyncUtils
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.model.*
@@ -114,11 +116,20 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	}
 
 	@Override
+	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
+		log.info("resizeServer vm: ${server} ${resizeRequest} ${opts}")
+		internalResizeServer(server, resizeRequest)
+	}
+
+	@Override
 	ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts) {
+		log.info("resizeWorkload vm: ${instance} ${workload} ${resizeRequest} ${opts}")
+		internalResizeServer(workload.server, resizeRequest)
+	}
+
+	private internalResizeServer(ComputeServer server, ResizeRequest resizeRequest) {
 		ServiceResponse rtn = ServiceResponse.success()
 		try {
-			log.info("resizeWorkload vm: ${instance} ${workload} ${resizeRequest} ${opts}")
-			ComputeServer server = workload.server
 			Cloud cloud = server.cloud
 
 			def authConfig = plugin.getAuthConfig(cloud)
@@ -312,11 +323,6 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			rtn.setError("Error resizing workload: ${e}")
 		}
 		return rtn
-	}
-
-	@Override
-	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
-		return ServiceResponse.success()
 	}
 
 	@Override
@@ -1001,6 +1007,29 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 			log.error "Error in finalizeWorkload: ${e}", e
 		}
 		return new ServiceResponse(rtn.success, rtn.msg, null, null)
+	}
+
+	@Override
+	ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts) {
+		log.debug "prepareHost: ${server} ${hostRequest} ${opts}"
+		def rtn = [success: false, msg: null]
+		new ServiceResponse(rtn.success, rtn.msg, null, null)
+	}
+
+	@Override
+	ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts) {
+		log.debug "runHost: ${server} ${hostRequest} ${opts}"
+	}
+
+	@Override
+	ServiceResponse<HostResponse> waitForHost(ComputeServer server) {
+		log.debug "waitForHost: ${server} "
+	}
+
+	@Override
+	ServiceResponse finalizeHost(ComputeServer server) {
+		log.debug "finalizeHost: ${server} "
+		return ServiceResponse.success()
 	}
 
 	@Override

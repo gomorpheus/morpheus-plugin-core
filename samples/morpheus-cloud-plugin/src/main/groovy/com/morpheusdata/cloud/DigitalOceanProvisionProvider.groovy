@@ -396,6 +396,12 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	}
 
 	@Override
+	ServiceResponse finalizeHost(ComputeServer server) {
+		log.debug "finalizeHost: ${server} "
+		return ServiceResponse.success();
+	}
+
+	@Override
 	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts) {
 		log.debug "resizeServer: ${server} ${resizeRequest} ${opts}"
 		internalResizeServer(server, resizeRequest)

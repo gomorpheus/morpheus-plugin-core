@@ -301,7 +301,24 @@ class VmwareCloudProvider implements CloudProvider {
 		vmwareVm.managed = true
 		vmwareVm.provisionTypeCode = 'vmware-provision-provider-plugin'
 
-		return [hypervisorType, serverType, vmwareWindows, vmwareVm]
+		ComputeServerType vmwareDockerHost = new ComputeServerType()
+		vmwareDockerHost.name = 'VMware Docker Host'
+		vmwareDockerHost.code = 'vmware-plugin-linux'
+		vmwareDockerHost.description = ''
+		vmwareDockerHost.controlEjectCd = true
+		vmwareDockerHost.guestVm = true
+		vmwareDockerHost.controlSuspend = true
+		vmwareDockerHost.reconfigureSupported = true
+		vmwareDockerHost.hasAutomation = true
+		vmwareDockerHost.supportsConsoleKeymap = true
+		vmwareDockerHost.platform = PlatformType.linux
+		vmwareDockerHost.managed = true
+		vmwareDockerHost.provisionTypeCode = 'vmware-provision-provider-plugin'
+		vmwareDockerHost.agentType = ComputeServerType.AgentType.host
+		vmwareDockerHost.clusterType = ComputeServerType.ClusterType.docker
+		// TODO: Option types?
+
+		return [hypervisorType, serverType, vmwareWindows, vmwareVm, vmwareDockerHost]
 	}
 
 	@Override

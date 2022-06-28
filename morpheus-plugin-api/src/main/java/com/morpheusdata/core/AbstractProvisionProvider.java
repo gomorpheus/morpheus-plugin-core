@@ -75,7 +75,7 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 
 	@Override
 	public ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts) {
-		return ServiceResponse.error();
+		return ServiceResponse.success();
 	}
 
 	@Override
@@ -85,11 +85,12 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 
 	@Override
 	public ServiceResponse<HostResponse> waitForHost(ComputeServer server) {
-		return ServiceResponse.error();
+		return ServiceResponse.success();
 	}
 
+	@Override
 	public ServiceResponse finalizeHost(ComputeServer server) {
-		return ServiceResponse.error();
+		return ServiceResponse.success();
 	}
 
 	@Override
