@@ -1,6 +1,6 @@
 package com.morpheusdata.cloud
 
-import com.morpheusdata.core.BackupProvider
+import com.morpheusdata.core.backup.BackupProvider;
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin

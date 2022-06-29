@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.core.BackupProvider;
+import com.morpheusdata.core.backup.BackupProvider;
 
 import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
