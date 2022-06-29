@@ -64,6 +64,10 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		return ServiceResponse.success()
 	}
 
+	Collection<String> getBackupTypeProviders() {
+		["rubrikVmwareBackupProvider2"]
+	}
+
 	@Override
 	Collection<OptionType> getOptionTypes() {
 		OptionType imageOption = new OptionType([

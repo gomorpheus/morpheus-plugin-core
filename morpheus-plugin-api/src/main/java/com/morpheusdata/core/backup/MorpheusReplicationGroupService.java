@@ -6,7 +6,6 @@ import com.morpheusdata.model.ReplicationGroup;
 
 import com.morpheusdata.model.projection.ReplicationGroupIdentityProjection;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Collection;
@@ -18,7 +17,7 @@ public interface MorpheusReplicationGroupService {
 	/**
 	 * Lists all backup projection objects for a specified replication group id.
 	 * The projection is a subset of the properties on a full {@link ReplicationGroup} object for sync matching.
-	 * @param backupProvider the {@link com.morpheusdata.core.BackupProvider} identifier associated to the replication groups to be listed.
+	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the replication groups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<ReplicationGroupIdentityProjection> listIdentityProjections(BackupProvider backupProvider);

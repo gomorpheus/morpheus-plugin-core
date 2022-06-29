@@ -1,12 +1,11 @@
 package com.morpheusdata.vmware.plugin
 
 import com.morpheusdata.core.util.HttpApiClient
-import com.morpheusdata.core.BackupProvider
+import com.morpheusdata.core.backup.AbstractBackupProvider
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.model.AccountCredentialType
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
@@ -327,7 +326,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<BackupProvider> getAvailableBackupProviders() {
+	Collection<AbstractBackupProvider> getAvailableBackupProviders() {
 		return null
 	}
 

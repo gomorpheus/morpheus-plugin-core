@@ -1,12 +1,12 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.core.BackupProvider;
+import com.morpheusdata.core.backup.AbstractBackupProvider;
 import java.util.Date;
 
 public class BackupRepository extends MorpheusModel {
 
 	protected Account account;
-	protected BackupProvider backupProvider;
+	protected AbstractBackupProvider backupProvider;
 	// TODO: storage buckets? Need a storage provider plugin to do this?
 	// protected StorageBucket storageProvider;
 	protected String name;
@@ -34,11 +34,11 @@ public class BackupRepository extends MorpheusModel {
 		this.account = account;
 	}
 
-	public BackupProvider getBackupProvider() {
+	public AbstractBackupProvider getBackupProvider() {
 		return backupProvider;
 	}
 
-	public void setBackupProvider(BackupProvider backupProvider) {
+	public void setBackupProvider(AbstractBackupProvider backupProvider) {
 		markDirty("backupProvider", backupProvider, this.backupProvider);
 		this.backupProvider = backupProvider;
 	}

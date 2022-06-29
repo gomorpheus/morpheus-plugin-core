@@ -10,7 +10,6 @@ import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.Replication;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Collection;
@@ -58,7 +57,7 @@ public interface MorpheusBackupService {
 	/**
 	 * Lists all backup projection objects for a specified backup provider id.
 	 * The projection is a subset of the properties on a full {@link Backup} object for sync matching.
-	 * @param backupProvider the {@link com.morpheusdata.core.BackupProvider} identifier associated to the backups to be listed.
+	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<BackupIdentityProjection> listIdentityProjections(BackupProvider backupProvider);

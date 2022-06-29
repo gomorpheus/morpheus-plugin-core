@@ -5,7 +5,6 @@ import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupResult;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.projection.BackupRestoreIdentityProjection;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Collection;
@@ -17,7 +16,7 @@ public interface MorpheusBackupRestoreService {
 	/**
 	 * Lists all backup projection objects for a specified backup provider id.
 	 * The projection is a subset of the properties on a full {@link com.morpheusdata.model.Backup} object for sync matching.
-	 * @param backupProvider the {@link com.morpheusdata.core.BackupProvider} identifier associated to the backups to be listed.
+	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<BackupRestoreIdentityProjection> listIdentityProjections(BackupProvider backupProvider);

@@ -6,7 +6,6 @@ import com.morpheusdata.model.ReplicationSite;
 
 import com.morpheusdata.model.projection.ReplicationSiteIdentityProjection;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Collection;
@@ -18,7 +17,7 @@ public interface MorpheusReplicationSiteService {
 	/**
 	 * Lists all backup projection objects for a specified replication site id.
 	 * The projection is a subset of the properties on a full {@link ReplicationSite} object for sync matching.
-	 * @param backupProvider the {@link com.morpheusdata.core.BackupProvider} identifier associated to the replication sites to be listed.
+	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the replication sites to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<ReplicationSiteIdentityProjection> listIdentityProjections(BackupProvider backupProvider);
