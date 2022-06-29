@@ -1,6 +1,10 @@
 package com.morpheusdata.test
 
+import com.morpheusdata.core.MorpheusAccountCredentialService
+import com.morpheusdata.core.MorpheusAccountCredentialTypeService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
+import com.morpheusdata.core.MorpheusComputeTypeSetService
+import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
@@ -9,6 +13,8 @@ import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusUsageService
 import com.morpheusdata.core.MorpheusWikiPageService
+import com.morpheusdata.core.backup.MorpheusBackupJobService
+import com.morpheusdata.core.backup.MorpheusBackupService
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.costing.MorpheusCostingService
@@ -82,6 +88,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    statsContext = new MorpheusStatsServiceImpl()
 	    instanceService = new MorpheusInstanceServiceImpl()
 	    snapshotService = new MorpheusSnapshotServiceImpl()
+		backupService = new MorpheusBackupServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -185,7 +192,16 @@ class MorpheusContextImpl implements MorpheusContext {
 		return computeServerContext
 	}
 
-	/**
+	@Override
+	MorpheusComputeTypeSetService getComputeTypeSet() {
+		return null
+	}
+
+	@Override
+	MorpheusContainerTypeService getContainerType() {
+		return null
+	}
+/**
 	 * Returns the Custom Report Types Context used for generating custom reports.
 	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
 	 *
@@ -210,6 +226,25 @@ class MorpheusContextImpl implements MorpheusContext {
 	MorpheusCostingService getCosting() {
 		return null;
 	}
+
+
+	@Override
+	MorpheusBackupService getBackup() {
+
+	}
+
+	/**
+	* Returns the Backup Job Context for sync, executing and restoring backup jobs
+	* Typically this would be called by a {@link BackupProvider}.
+	*
+	* @return an instance of the Backup Job Context
+	*/
+	@Override
+	MorpheusBackupJobService getBackupJob() {
+		return
+	}
+
+
 /**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
 	 *
@@ -323,6 +358,16 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusPermissionService getPermission() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialTypeService getAccountCredentialType() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountCredentialService getAccountCredential() {
 		return null
 	}
 }

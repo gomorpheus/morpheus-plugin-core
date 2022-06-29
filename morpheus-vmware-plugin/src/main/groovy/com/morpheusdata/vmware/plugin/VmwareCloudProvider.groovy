@@ -6,6 +6,7 @@ import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.model.AccountCredentialType
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
@@ -17,6 +18,7 @@ import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.StorageControllerType
 import com.morpheusdata.model.StorageVolumeType
 import com.morpheusdata.model.PlatformType
+import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.vmware.plugin.sync.*
@@ -27,10 +29,10 @@ import java.security.MessageDigest
 @Slf4j
 class VmwareCloudProvider implements CloudProvider {
 
-	Plugin plugin
+	VmwarePlugin plugin
 	MorpheusContext morpheusContext
 
-	VmwareCloudProvider(Plugin plugin, MorpheusContext morpheusContext) {
+	VmwareCloudProvider(VmwarePlugin plugin, MorpheusContext morpheusContext) {
 		this.plugin = plugin
 		this.morpheusContext = morpheusContext
 	}
@@ -47,31 +49,46 @@ class VmwareCloudProvider implements CloudProvider {
 				inputType: OptionType.InputType.TEXT,
 				fieldContext: 'domain'
 		)
+		OptionType credentials = new OptionType(
+				code: 'vmware-plugin-credential',
+				inputType: OptionType.InputType.CREDENTIAL,
+				name: 'Credentials',
+				fieldName: 'type',
+				fieldLabel: 'Credentials',
+				fieldContext: 'credential',
+				required: true,
+				defaultValue: 'local',
+				displayOrder: 10,
+				optionSource: 'credentials',
+				config: '{"credentialTypes":["username-password"]}'
+		)
 		OptionType username = new OptionType(
 				name: 'Username',
 				code: 'vmware-plugin-username',
 				fieldName: 'serviceUsername',
-				displayOrder: 1,
+				displayOrder: 20,
 				fieldLabel: 'Username',
 				required: true,
 				inputType: OptionType.InputType.TEXT,
-				fieldContext: 'domain'
+				fieldContext: 'domain',
+				localCredential: true
 		)
 		OptionType password = new OptionType(
 				name: 'Password',
 				code: 'vmware-plugin-password',
 				fieldName: 'servicePassword',
-				displayOrder: 2,
+				displayOrder: 25,
 				fieldLabel: 'Password',
 				required: true,
 				inputType: OptionType.InputType.PASSWORD,
-				fieldContext: 'domain'
+				fieldContext: 'domain',
+				localCredential: true
 		)
 		OptionType version = new OptionType(
 				name: 'Version',
 				code: 'vmware-plugin-version',
 				fieldName: 'apiVersion',
-				displayOrder: 3,
+				displayOrder: 30,
 				fieldLabel: 'Version',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -82,12 +99,12 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'VDC',
 				code: 'vmware-plugin-vdc',
 				fieldName: 'datacenter',
-				displayOrder: 4,
+				displayOrder: 40,
 				fieldLabel: 'VDC',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
 				fieldContext: 'config',
-				dependsOn: 'vmware-plugin-api-url,vmware-plugin-username,vmware-plugin-password',
+				dependsOn: 'vmware-plugin-api-url,vmware-plugin-username,vmware-plugin-password,credential-type',
 				optionSource: 'vmwarePluginVDC'
 		)
 
@@ -95,7 +112,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Cluster',
 				code: 'vmware-plugin-cluster',
 				fieldName: 'cluster',
-				displayOrder: 5,
+				displayOrder: 50,
 				fieldLabel: 'Cluster',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -108,9 +125,9 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Resource Pool',
 				code: 'vmware-plugin-resource-pool',
 				fieldName: 'resourcePoolId',
-				displayOrder: 6,
+				displayOrder: 60,
 				fieldLabel: 'Resource Pool',
-				required: false,
+				required: true,
 				inputType: OptionType.InputType.SELECT,
 				fieldContext: 'config',
 				dependsOn: 'vmware-plugin-cluster',
@@ -121,7 +138,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'RPC Mode',
 				code: 'vmware-plugin-rpc-mode',
 				fieldName: 'rpcMode',
-				displayOrder: 7,
+				displayOrder: 70,
 				fieldLabel: 'RPC Mode',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -134,7 +151,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-hide-host-selection',
 				fieldName: 'hideHostSelection',
-				displayOrder: 8,
+				displayOrder: 80,
 				fieldLabel: 'Hide Host Selection from Users',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -145,7 +162,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Inventory Existing Instances',
 				code: 'vmware-plugin-import-existing',
 				fieldName: 'importExisting',
-				displayOrder: 9,
+				displayOrder: 90,
 				fieldLabel: 'Inventory Existing Instances',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -156,7 +173,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Hypervisor Console',
 				code: 'vmware-plugin-hypervisor-console',
 				fieldName: 'enableVnc',
-				displayOrder: 10,
+				displayOrder: 100,
 				fieldLabel: 'Enable Hypervisor Console',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -167,7 +184,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Keyboard Layout',
 				code: 'vmware-plugin-keyboard-layout',
 				fieldName: 'consoleKeymap',
-				displayOrder: 11,
+				displayOrder: 110,
 				fieldLabel: 'Keyboard Layout',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -179,7 +196,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Disk Type Selection',
 				code: 'vmware-plugin-disk-type-selection',
 				fieldName: 'enableDiskTypeSelection',
-				displayOrder: 12,
+				displayOrder: 120,
 				fieldLabel: 'Enable Disk Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -191,7 +208,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Storage Type Selection',
 				code: 'vmware-plugin-storage-type-selection',
 				fieldName: 'enableStorageTypeSelection',
-				displayOrder: 13,
+				displayOrder: 130,
 				fieldLabel: 'Enable Storage Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -203,7 +220,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Enable Network Interface Type Selection',
 				code: 'vmware-plugin-network-type-selection',
 				fieldName: 'enableNetworkTypeSelection',
-				displayOrder: 14,
+				displayOrder: 140,
 				fieldLabel: 'Enable Network Interface Type Selection',
 				required: false,
 				inputType: OptionType.InputType.CHECKBOX,
@@ -215,7 +232,7 @@ class VmwareCloudProvider implements CloudProvider {
 				name: 'Storage Type',
 				code: 'vmware-plugin-disk-storage-selection',
 				fieldName: 'diskStorageType',
-				displayOrder: 15,
+				displayOrder: 150,
 				fieldLabel: 'Storage Type',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
@@ -224,7 +241,7 @@ class VmwareCloudProvider implements CloudProvider {
 				fieldGroup: 'VMware Advanced'
 		)
 
-		[apiUrl, username, password, version, vdc, cluster, resourcePool, inventoryInstances,
+		[apiUrl, credentials, username, password, version, vdc, cluster, resourcePool, inventoryInstances,
 			hypervisorConsole, keyboardLayout, hideHostSelection, rpcMode, diskTypeSelection,
             storageTypeSelection, networkTypeSelection, diskStorageType]
 	}
@@ -284,7 +301,24 @@ class VmwareCloudProvider implements CloudProvider {
 		vmwareVm.managed = true
 		vmwareVm.provisionTypeCode = 'vmware-provision-provider-plugin'
 
-		return [hypervisorType, serverType, vmwareWindows, vmwareVm]
+		ComputeServerType vmwareDockerHost = new ComputeServerType()
+		vmwareDockerHost.name = 'VMware Docker Host'
+		vmwareDockerHost.code = 'vmware-plugin-linux'
+		vmwareDockerHost.description = ''
+		vmwareDockerHost.controlEjectCd = true
+		vmwareDockerHost.guestVm = true
+		vmwareDockerHost.controlSuspend = true
+		vmwareDockerHost.reconfigureSupported = true
+		vmwareDockerHost.hasAutomation = true
+		vmwareDockerHost.supportsConsoleKeymap = true
+		vmwareDockerHost.platform = PlatformType.linux
+		vmwareDockerHost.managed = true
+		vmwareDockerHost.provisionTypeCode = 'vmware-provision-provider-plugin'
+		vmwareDockerHost.agentType = ComputeServerType.AgentType.host
+		vmwareDockerHost.clusterType = ComputeServerType.ClusterType.docker
+		// TODO: Option types?
+
+		return [hypervisorType, serverType, vmwareWindows, vmwareVm, vmwareDockerHost]
 	}
 
 	@Override
@@ -454,7 +488,7 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Cloud cloudInfo) {
+	ServiceResponse validate(Cloud cloudInfo, ValidateCloudRequest validateCloudRequest) {
 		log.info("validate: {}", cloudInfo)
 		try {
 			if(cloudInfo) {
@@ -597,7 +631,7 @@ class VmwareCloudProvider implements CloudProvider {
 		HttpApiClient client
 
 		try {
-			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+			def authConfig = plugin.getAuthConfig(cloud)
 			def apiVersion = cloud.getConfigProperty('apiVersion') ?: '6.7'
 			def apiUrlObj = new URL(authConfig.apiUrl)
 			def apiHost = apiUrlObj.getHost()
@@ -620,23 +654,23 @@ class VmwareCloudProvider implements CloudProvider {
 					checkZoneConfig(cloud)
 					checkCluster(cloud)
 
-					(new ResourcePoolsSync(cloud, morpheusContext)).execute()
-					(new FoldersSync(cloud, morpheusContext)).execute()
-					(new CustomSpecSync(cloud, morpheusContext)).execute()
-					(new IPPoolsSync(cloud, morpheusContext)).execute()
-					(new AlarmsSync(cloud, morpheusContext)).execute()
-					(new DatastoresSync(cloud, morpheusContext)).execute()
-					(new StoragePodsSync(cloud, morpheusContext)).execute()
-					(new TemplatesSync(cloud, morpheusContext)).execute()
-					(new ContentLibrarySync(cloud, morpheusContext, client)).execute()
-					(new NetworksSync(cloud, morpheusContext, getNetworkTypes())).execute()
-					(new HostsSync(cloud, morpheusContext)).execute()
-					(new DatacentersSync(cloud, morpheusContext)).execute()
+					(new ResourcePoolsSync(this.plugin, cloud)).execute()
+					(new FoldersSync(this.plugin, cloud)).execute()
+					(new CustomSpecSync(this.plugin, cloud)).execute()
+					(new IPPoolsSync(this.plugin, cloud)).execute()
+					(new AlarmsSync(this.plugin, cloud)).execute()
+					(new DatastoresSync(this.plugin, cloud)).execute()
+					(new StoragePodsSync(this.plugin, cloud)).execute()
+					(new TemplatesSync(this.plugin, cloud)).execute()
+					(new ContentLibrarySync(this.plugin, cloud, client)).execute()
+					(new NetworksSync(this.plugin, cloud, getNetworkTypes())).execute()
+					(new HostsSync(this.plugin, cloud)).execute()
+					(new DatacentersSync(this.plugin, cloud)).execute()
 					if(apiVersion && apiVersion != '6.0') {
-						(new CategoriesSync(cloud, morpheusContext, client)).execute()
-						(new TagsSync(cloud, morpheusContext, client)).execute()
+						(new CategoriesSync(this.plugin, cloud, client)).execute()
+						(new TagsSync(this.plugin, cloud, client)).execute()
 					}
-					(new VirtualMachineSync(cloud, createNew, proxySettings, apiVersion, morpheusContext, vmwareProvisionProvider(), client)).execute()
+					(new VirtualMachineSync(this.plugin, cloud, createNew, proxySettings, apiVersion, vmwareProvisionProvider(), client)).execute()
 					rtn = ServiceResponse.success()
 				}
 				else {
@@ -701,7 +735,7 @@ class VmwareCloudProvider implements CloudProvider {
 	def checkCluster(Cloud cloud) {
 		log.debug "checkCluster: ${cloud}"
 		def serviceInstance
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		try {
 			def cluster = cloud.getConfigProperty('cluster')
 			if(!cluster) {
@@ -722,63 +756,63 @@ class VmwareCloudProvider implements CloudProvider {
 		}
 	}
 
-	static listHosts(Cloud cloud, String clusterScope) {
+	def listHosts(Cloud cloud, String clusterScope) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterScope ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listHosts(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listComputeResources(Cloud cloud) {
+	def listComputeResources(Cloud cloud) {
 		log.debug "listComputeResources: ${cloud}"
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		rtn = VmwareComputeUtility.listComputeResources(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter])
 		return rtn
 	}
 
-	static listDatacenters(Cloud cloud) {
+	def listDatacenters(Cloud cloud) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listDatacenters(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, getApiOptions(cloud))
 		return rtn
 	}
 
-	static listDatastores(Cloud cloud, String clusterInternalId=null) {
+	def listDatastores(Cloud cloud, String clusterInternalId=null) {
 		log.debug "listDatastores: ${cloud}"
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listDatastores(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listStoragePods(Cloud cloud, String clusterInternalId=null) {
+	def listStoragePods(Cloud cloud, String clusterInternalId=null) {
 		log.debug "listStoragePods: ${cloud}"
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listStoragePods(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listResourcePools(Cloud cloud, String clusterName=null) {
+	def listResourcePools(Cloud cloud, String clusterName=null) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterName ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listResourcePools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster: cluster])
 		return rtn
 	}
 
-	static listVirtualMachines(Cloud cloud, String clusterInternalId=null) {
+	def listVirtualMachines(Cloud cloud, String clusterInternalId=null) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
@@ -786,9 +820,9 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	static listTemplates(Cloud cloud) {
+	def listTemplates(Cloud cloud) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		def resourcePool = cloud?.getConfigProperty('resourcePoolId')
@@ -796,36 +830,36 @@ class VmwareCloudProvider implements CloudProvider {
 		return rtn
 	}
 
-	static listIpPools(Cloud cloud) {
+	def listIpPools(Cloud cloud) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listIpPools(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listNetworks(Cloud cloud, String clusterInternalId=null) {
+	def listNetworks(Cloud cloud, String clusterInternalId=null) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = clusterInternalId ?: cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listNetworks(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listCustomizationSpecs(Cloud cloud) {
+	def listCustomizationSpecs(Cloud cloud) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		def datacenter = cloud?.getConfigProperty('datacenter')
 		def cluster = cloud?.getConfigProperty('cluster')
 		rtn = VmwareComputeUtility.listCustomizationSpecs(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [datacenter:datacenter, cluster:cluster])
 		return rtn
 	}
 
-	static listAlarms(Cloud cloud) {
+	def listAlarms(Cloud cloud) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = plugin.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listAlarms(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, getApiOptions(cloud))
 		return rtn
 	}

@@ -17,10 +17,12 @@ class ResourcePoolsSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public ResourcePoolsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public ResourcePoolsSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -30,7 +32,7 @@ class ResourcePoolsSync {
 			String clusterScope = cloud.getConfigProperty('cluster') as String
 			String clusterRef = cloud.getConfigProperty('clusterRef') as String
 			List clusters = []
-			def clsResults = VmwareCloudProvider.listComputeResources(cloud)
+			def clsResults = vmwarePlugin.cloudProvider.listComputeResources(cloud)
 			Boolean success = clsResults.success
 			def tmpClusterResults = clsResults.computeResorces
 			success = tmpClusterResults.success
@@ -51,7 +53,7 @@ class ResourcePoolsSync {
 			Map tmpPoolResults = [:]
 			if (success) {
 				for (cluster in clusters) {
-					tmpPoolResults[cluster.name] = VmwareCloudProvider.listResourcePools(cloud, cluster.name)
+					tmpPoolResults[cluster.name] = vmwarePlugin.cloudProvider.listResourcePools(cloud, cluster.name)
 				}
 			}
 

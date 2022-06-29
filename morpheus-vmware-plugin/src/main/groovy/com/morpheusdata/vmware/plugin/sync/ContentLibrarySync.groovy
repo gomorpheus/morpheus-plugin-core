@@ -16,10 +16,12 @@ class ContentLibrarySync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	private HttpApiClient client
+	private VmwarePlugin vmwarePlugin
 
-	public ContentLibrarySync(Cloud cloud, MorpheusContext morpheusContext, HttpApiClient client) {
+	public ContentLibrarySync(VmwarePlugin vmwarePlugin, Cloud cloud, HttpApiClient client) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 		this.client = client
 	}
 
@@ -67,7 +69,7 @@ class ContentLibrarySync {
 
 	def listContentLibraryItems() {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = vmwarePlugin.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listContentLibraryItems(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client)
 		return rtn
 	}

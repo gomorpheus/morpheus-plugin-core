@@ -15,16 +15,18 @@ class AlarmsSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public AlarmsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public AlarmsSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
 		log.debug "execute: ${cloud}"
 		try {
-			def listResults = VmwareCloudProvider.listAlarms(cloud)
+			def listResults = vmwarePlugin.cloudProvider.listAlarms(cloud)
 			if(listResults.success) {
 				Observable<OperationNotificationIdentityProjection> domainRecords = morpheusContext.operationNotification.listSyncProjections("vwmare.alarm.${cloud.id}")
 				SyncTask<OperationNotificationIdentityProjection, Map, OperationNotification> syncTask = new SyncTask<>(domainRecords, listResults?.alarms ?: [])

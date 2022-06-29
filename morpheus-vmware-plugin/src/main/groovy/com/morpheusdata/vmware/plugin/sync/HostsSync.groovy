@@ -17,10 +17,12 @@ class HostsSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public HostsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public HostsSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -42,7 +44,7 @@ class HostsSync {
 			def cloudItems = []
 			def listResultSuccess = false
 			queryResults.clusters?.each { cluster ->
-				def listResults = VmwareCloudProvider.listHosts(cloud, cluster.internalId)
+				def listResults = vmwarePlugin.cloudProvider.listHosts(cloud, cluster.internalId)
 				if (listResults.success) {
 					listResultSuccess = true
 					cloudItems += listResults?.hosts

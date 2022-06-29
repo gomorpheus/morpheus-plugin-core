@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.request.ValidateCloudRequest;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Collection;
@@ -85,9 +86,10 @@ public interface CloudProvider extends PluginProvider {
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.
 	 * @param cloudInfo cloud
+	 * @param validateCloudRequest Additional validation information
 	 * @return ServiceResponse
 	 */
-	ServiceResponse validate(Cloud cloudInfo);
+	ServiceResponse validate(Cloud cloudInfo, ValidateCloudRequest validateCloudRequest);
 
 	/**
 	 * Called when a Cloud From Morpheus is first saved. This is a hook provided to take care of initial state

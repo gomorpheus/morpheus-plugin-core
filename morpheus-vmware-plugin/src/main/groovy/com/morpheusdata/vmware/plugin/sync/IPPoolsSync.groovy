@@ -16,17 +16,19 @@ class IPPoolsSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public IPPoolsSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public IPPoolsSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
 		log.debug "execute: ${cloud}"
 
 		try {
-			def listResults = VmwareCloudProvider.listIpPools(cloud)
+			def listResults = vmwarePlugin.cloudProvider.listIpPools(cloud)
 			if(listResults.success == true) {
 				
 				def masterItems = listResults?.ipPools

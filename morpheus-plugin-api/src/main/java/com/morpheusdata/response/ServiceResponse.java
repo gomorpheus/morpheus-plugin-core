@@ -22,6 +22,7 @@ public class ServiceResponse<T> {
 	 */
 	private static final String DEFAULT_ERROR_KEY = "error";
 	private Boolean success = false;
+	private Boolean warning = false;
 	private String msg = null;
 	private Map<String,String> errors = new LinkedHashMap<>();
 	private T data;
@@ -37,13 +38,51 @@ public class ServiceResponse<T> {
 	public ServiceResponse() { }
 
 
-	public ServiceResponse(Boolean success, String msg, Map<String,String> errors, T data) {
+	public ServiceResponse(Boolean success, String msg, Map<String, String> errors, T data) {
 		this.success = success;
 		this.msg = msg;
 		if(errors != null) {
 			this.errors = errors;
 		}
 		this.data = data;
+	}
+
+	/**
+	 * Helper to initialize a base response.
+	 * @return A generic respose assuming the repsonse is an error if not converted to a success response.
+	 */
+	public static ServiceResponse prepare() {
+		return new ServiceResponse(false, null, null, null);
+	}
+
+	/**
+	 * Helper to build an error response from a generic map.
+	 * @return A success or error response based on the boolean value of success in the map.
+	 */
+	public static ServiceResponse create(Map<String, Object> config) {
+		Boolean configSuccess = config.get("success") == null ? false : (Boolean)config.get("success");
+		String configMsg = config.get("msg") != null ? (String)config.get("message") : null;
+		Map<String, String> configErrors = (LinkedHashMap<String, String>)config.getOrDefault("errors", new LinkedHashMap<String, String>());
+		Object configData = config.getOrDefault("data", new LinkedHashMap<String, Object>());
+		ServiceResponse rtn = new ServiceResponse(configSuccess, configMsg, configErrors, configData);
+		Boolean inProgress = (Boolean)config.get("inProgress");
+		if(inProgress != null) {
+			rtn.inProgress = inProgress;
+		}
+		Boolean warning = (Boolean)config.get("warning");
+		if(warning != null) {
+			rtn.warning = warning;
+		}
+		return rtn;
+	}
+
+	/**
+	 * Helper to create service response from an existing service response.
+	 * Primarly a convenience method to prevent errors when a map has already been converted to a service response.
+	 * @return An unmodified service response.
+	 */
+	public static ServiceResponse create(ServiceResponse source) {
+		return source;
 	}
 
 	/**

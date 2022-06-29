@@ -1,6 +1,7 @@
 package com.morpheusdata.vmware.plugin.sync
 
 import com.morpheusdata.model.Account
+import com.morpheusdata.vmware.plugin.VmwarePlugin
 import groovy.util.logging.Slf4j
 import com.morpheusdata.model.ComputeZoneFolder
 import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection
@@ -16,10 +17,12 @@ class FoldersSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public FoldersSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public FoldersSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	enum DEFAULT_TYPE{
@@ -31,7 +34,7 @@ class FoldersSync {
 		log.debug "cacheFolders: ${cloud}"
 
 		try {
-			def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+			def authConfig = vmwarePlugin.getAuthConfig(cloud)
 			def datacenter = cloud.getConfigProperty('datacenter')
 	
 			// Make sure we have a root Folder

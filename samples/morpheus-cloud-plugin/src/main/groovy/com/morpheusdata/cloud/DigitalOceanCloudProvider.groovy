@@ -9,6 +9,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.model.*
+import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
@@ -19,13 +20,13 @@ import org.apache.http.entity.StringEntity
 
 @Slf4j
 class DigitalOceanCloudProvider implements CloudProvider {
-	Plugin plugin
+	DigitalOceanPlugin plugin
 	MorpheusContext morpheusContext
 	DigitalOceanApiService apiService
 
 	public static String LINUX_VIRTUAL_IMAGE_CODE = 'digitalOceanLinux2'
 
-	DigitalOceanCloudProvider(Plugin plugin, MorpheusContext context) {
+	DigitalOceanCloudProvider(DigitalOceanPlugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 		apiService = new DigitalOceanApiService()
@@ -88,39 +89,54 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
+		OptionType credentials = new OptionType(
+				code: 'do-plugin-credential',
+				inputType: OptionType.InputType.CREDENTIAL,
+				name: 'Credentials',
+				fieldName: 'type',
+				fieldLabel: 'Credentials',
+				fieldContext: 'credential',
+				required: true,
+				defaultValue: 'local',
+				displayOrder: 0,
+				optionSource: 'credentials',
+				config: '{"credentialTypes":["username-api-key"]}'
+		)
 		OptionType ot1 = new OptionType(
 				name: 'Username',
 				code: 'do-username',
 				fieldName: 'doUsername',
-				displayOrder: 0,
+				displayOrder: 10,
 				fieldLabel: 'Username',
 				required: true,
 				inputType: OptionType.InputType.TEXT,
-				fieldContext: 'config'
+				fieldContext: 'config',
+				localCredential: true
 		)
 		OptionType ot2 = new OptionType(
 				name: 'API Key',
 				code: 'do-api-key',
 				fieldName: 'doApiKey',
-				displayOrder: 1,
+				displayOrder: 20,
 				fieldLabel: 'API Key',
 				required: true,
 				inputType: OptionType.InputType.PASSWORD,
-				fieldContext: 'config'
+				fieldContext: 'config',
+				localCredential: true
 		)
 		OptionType ot3 = new OptionType(
 				name: 'Datacenter',
 				code: 'do-datacenter',
 				fieldName: 'datacenter',
 				optionSource: 'datacenters',
-				displayOrder: 2,
+				displayOrder: 30,
 				fieldLabel: 'Datacenter',
 				required: true,
 				inputType: OptionType.InputType.SELECT,
 				dependsOn: 'do-api-key',
 				fieldContext: 'config'
 		)
-		return [ot1, ot2, ot3]
+		return [credentials, ot1, ot2, ot3]
 	}
 
 	@Override
@@ -142,7 +158,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 				//docker
 				new ComputeServerType(code: LINUX_VIRTUAL_IMAGE_CODE, name: 'DigitalOcean Docker Host', description: '', platform: PlatformType.linux,
 						enabled: true, selectable: false, externalDelete: true, managed: true, controlPower: true, controlSuspend: false, creatable: true, computeService: null,
-						displayOrder: 16, hasAutomation: true, reconfigureSupported: true,
+						displayOrder: 16, hasAutomation: true, reconfigureSupported: true, provisionTypeCode: 'do-provider',
 						containerHypervisor: true, bareMetalHost: false, vmHypervisor: false, agentType: ComputeServerType.AgentType.host, clusterType: ComputeServerType.ClusterType.docker,
 						computeTypeCode: 'docker-host',
 				),
@@ -208,20 +224,36 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ServiceResponse validate(Cloud zoneInfo) {
-		log.debug "validating Cloud: ${zoneInfo.code}"
+	ServiceResponse validate(Cloud zoneInfo, ValidateCloudRequest validateCloudRequest) {
+		log.debug "validating Cloud: ${zoneInfo.code}, ${validateCloudRequest.credentialType} ${validateCloudRequest.credentialUsername} ${validateCloudRequest.credentialPassword}"
 		if (!zoneInfo.configMap.datacenter) {
 			return new ServiceResponse(success: false, msg: 'Choose a datacenter')
 		}
-		if (!zoneInfo.configMap.doUsername) {
+		def apiKey
+		def username
+
+		if(validateCloudRequest.credentialType == 'local') {
+			apiKey = zoneInfo.configMap.doApiKey
+			username = zoneInfo.configMap.doUsername
+		} else if (validateCloudRequest.credentialType && validateCloudRequest.credentialType.isNumber()) {
+			def credentialId = validateCloudRequest.credentialType.toLong()
+			AccountCredential accountCredential = morpheusContext.accountCredential.get(credentialId).blockingGet()
+			apiKey = accountCredential.data?.password
+			username = accountCredential.data?.username
+		} else {
+			apiKey = validateCloudRequest.credentialPassword
+			username = validateCloudRequest.credentialUsername
+		}
+
+		if (!username) {
 			return new ServiceResponse(success: false, msg: 'Enter a username')
 		}
-		if (!zoneInfo.configMap.doApiKey) {
+		if (!apiKey) {
 			return new ServiceResponse(success: false, msg: 'Enter your api key')
 		}
 
 		HttpGet http = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/regions")
-		def respMap = apiService.makeApiCall(http, zoneInfo.configMap.doApiKey)
+		def respMap = apiService.makeApiCall(http, apiKey)
 		if(respMap.resp.statusLine.statusCode != 200) {
 			return new ServiceResponse(success: false, msg: 'Invalid credentials')
 		}
@@ -234,7 +266,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		ServiceResponse serviceResponse
 		log.debug "Initializing Cloud: ${cloud.code}"
 		log.debug "config: ${cloud.configMap}"
-		String apiKey = cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(cloud).doApiKey
 		HttpGet accountGet = new HttpGet("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/account")
 
 		// check account
@@ -242,9 +274,9 @@ class DigitalOceanCloudProvider implements CloudProvider {
 		if (respMap.resp.statusLine.statusCode == 200 && respMap.json.account.status == 'active') {
 			serviceResponse = new ServiceResponse(success: true, content: respMap.json)
 
-			(new DatacentersSync(cloud, morpheusContext, apiService)).execute()
-			(new SizesSync(cloud, morpheusContext, apiService)).execute()
-			(new ImagesSync(cloud, morpheusContext, apiService)).execute()
+			(new DatacentersSync(plugin, cloud, apiService)).execute()
+			(new SizesSync(plugin, cloud, apiService)).execute()
+			(new ImagesSync(plugin, cloud, apiService)).execute()
 
 			KeyPair keyPair = morpheusContext.cloud.findOrGenerateKeyPair(cloud.account).blockingGet()
 			if (keyPair) {
@@ -263,8 +295,8 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse refresh(Cloud cloud) {
 		log.debug "cloud refresh has run for ${cloud.code}"
-		(new SizesSync(cloud, morpheusContext, apiService)).execute()
-		(new ImagesSync(cloud, morpheusContext, apiService)).execute()
+		(new SizesSync(plugin, cloud, apiService)).execute()
+		(new ImagesSync(plugin, cloud, apiService)).execute()
 		return ServiceResponse.success()
 	}
 
@@ -281,7 +313,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse startServer(ComputeServer computeServer) {
 		String dropletId = computeServer.externalId
-		String apiKey = computeServer.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(computeServer.cloud).doApiKey
 		log.debug "startServer: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
@@ -294,7 +326,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse stopServer(ComputeServer computeServer) {
 		String dropletId = computeServer.externalId
-		String apiKey = computeServer.cloud.configMap.doApiKey
+		String apiKey = plugin.getAuthConfig(computeServer.cloud).doApiKey
 		log.debug "stopServer: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
@@ -307,13 +339,14 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse deleteServer(ComputeServer computeServer) {
 		String dropletId = computeServer.externalId
+		String apiKey = plugin.getAuthConfig(computeServer.cloud).doApiKey
 		log.debug "deleteServer for server: ${dropletId}"
 		if (!dropletId) {
 			log.debug "no Droplet ID provided"
 			return new ServiceResponse(success: false, msg: 'No Droplet ID provided')
 		}
 		HttpDelete httpDelete = new HttpDelete("${DigitalOceanApiService.DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${dropletId}")
-		Map respMap = apiService.makeApiCall(httpDelete, computeServer.cloud.configMap.doApiKey)
+		Map respMap = apiService.makeApiCall(httpDelete, apiKey)
 		if (respMap?.resp?.statusLine?.statusCode == 204) {
 			return new ServiceResponse(success: true)
 		} else {

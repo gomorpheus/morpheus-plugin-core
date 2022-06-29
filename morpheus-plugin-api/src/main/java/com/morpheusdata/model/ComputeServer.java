@@ -30,6 +30,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected NetworkDomain networkDomain;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ServicePlan plan;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeTypeSet typeSet;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeTypeLayout layout;
 	protected String internalName;
 	protected String status = "provisioning";
 	protected Long provisionSiteId;
@@ -375,6 +379,22 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public void setStatusDate(Date statusDate) {
 		this.statusDate = statusDate;
+	}
+
+	public ComputeTypeSet getTypeSet() {
+		return typeSet;
+	}
+
+	public void setTypeSet(ComputeTypeSet typeSet) {
+		this.typeSet = typeSet;
+	}
+
+	public ComputeTypeLayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(ComputeTypeLayout layout) {
+		this.layout = layout;
 	}
 
 	public enum PowerState {

@@ -17,10 +17,12 @@ class CategoriesSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	private HttpApiClient client
+	private VmwarePlugin vmwarePlugin
 
-	public CategoriesSync(Cloud cloud, MorpheusContext morpheusContext, HttpApiClient client) {
+	public CategoriesSync(VmwarePlugin vmwarePlugin, Cloud cloud, HttpApiClient client) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 		this.client = client
 	}
 
@@ -55,7 +57,7 @@ class CategoriesSync {
 
 	private listTagCategories(HttpApiClient client, opts) {
 		def rtn = [success:false]
-		def authConfig = VmwareProvisionProvider.getAuthConfig(cloud)
+		def authConfig = vmwarePlugin.getAuthConfig(cloud)
 		rtn = VmwareComputeUtility.listCategories(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, client, opts)
 		return rtn
 	}

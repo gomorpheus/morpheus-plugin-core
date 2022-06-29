@@ -21,10 +21,12 @@ class NetworksSync {
 	private Cloud cloud
 	private MorpheusContext morpheusContext
 	private Collection<NetworkType> networkTypes
+	private VmwarePlugin vmwarePlugin
 
-	public NetworksSync(Cloud cloud, MorpheusContext morpheusContext,  Collection<NetworkType> networkTypes) {
+	public NetworksSync(VmwarePlugin vmwarePlugin, Cloud cloud, Collection<NetworkType> networkTypes) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 		this.networkTypes = networkTypes
 	}
 
@@ -38,7 +40,7 @@ class NetworksSync {
 			}.blockingSubscribe { clusters << it }
 			def allResults = [:]
 			clusters?.each { ComputeZonePoolIdentityProjection cluster ->
-				def listResults = VmwareCloudProvider.listNetworks(cloud, cluster.internalId)
+				def listResults = vmwarePlugin.cloudProvider.listNetworks(cloud, cluster.internalId)
 				if (listResults.success == true) {
 					allResults[cluster.id] = listResults
 				}

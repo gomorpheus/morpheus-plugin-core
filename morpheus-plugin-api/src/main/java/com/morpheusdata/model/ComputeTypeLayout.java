@@ -15,6 +15,7 @@ public class ComputeTypeLayout extends MorpheusModel {
 	protected Boolean hasAutoScale = false;
 	protected Collection<ComputeTypeSet> computeServers;
 	protected ProvisionType provisionType;
+	protected ComputeServerGroupType groupType;
 
 
 	public String getCode() {
@@ -103,5 +104,13 @@ public class ComputeTypeLayout extends MorpheusModel {
 
 	public void setProvisionType(ProvisionType provisionType) {
 		this.provisionType = provisionType;
+	}
+
+	public ComputeServerGroupType getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(ComputeServerGroupType groupType) {
+		this.groupType = groupType;
 	}
 }

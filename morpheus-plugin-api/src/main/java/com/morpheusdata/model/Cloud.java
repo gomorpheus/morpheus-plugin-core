@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.CloudIdentityProjection;
@@ -90,6 +91,10 @@ public class Cloud extends CloudIdentityProjection {
 	protected String iacId; //id for infrastructure as code integrations;
 	protected String uuid = UUID.randomUUID().toString();
 	protected String noProxy;
+	//non-persisted properties for active credentials
+
+	protected Map accountCredentialData;
+	protected Boolean accountCredentialLoaded = false;
 
 	/**
 	 * Morpheus Account
@@ -353,6 +358,36 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getNoProxy() {
 		return noProxy;
+	}
+
+	/**
+	 * Indicates if the AccountCredential associated with this Cloud has been loaded.
+	 * This is a non-persisted property and used by Cloud consumers to indicate if the
+	 * AccountCredential needs to be loaded via a context
+	 * @return Boolean
+	 */
+	public Boolean getAccountCredentialLoaded() {
+		return accountCredentialLoaded;
+	}
+
+	public void setAccountCredentialLoaded(Boolean accountCredentialLoaded) {
+		this.accountCredentialLoaded = accountCredentialLoaded;
+	}
+
+	/**
+	 * The AccountCredential.data associates with this Cloud.
+	 * This is a non-persisted property and not set when obtain from Morpheus.
+	 * Typically this is set by Providers via calls to MorpheusCloudService.loadCredentials or
+	 * MorpheusAccountCredentialService.loadCredentialConfig. After obtaining the value, one call
+	 * setAccountCredentialLoaded(true) to indicate that any credential information has been loaded
+	 * @return Map of the credential data
+	 */
+	public Map getAccountCredentialData() {
+		return accountCredentialData;
+	}
+
+	public void setAccountCredentialData(Map accountCredentialData) {
+		this.accountCredentialData = accountCredentialData;
 	}
 
 	public enum Status {

@@ -17,10 +17,12 @@ class DatastoresSync {
 
 	private Cloud cloud
 	private MorpheusContext morpheusContext
+	private VmwarePlugin vmwarePlugin
 
-	public DatastoresSync(Cloud cloud, MorpheusContext morpheusContext) {
+	public DatastoresSync(VmwarePlugin vmwarePlugin, Cloud cloud) {
+		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
-		this.morpheusContext = morpheusContext
+		this.morpheusContext = vmwarePlugin.morpheusContext
 	}
 
 	def execute() {
@@ -33,7 +35,7 @@ class DatastoresSync {
 			}.blockingSubscribe { clusters << it }
 
 			clusters?.each { ComputeZonePoolIdentityProjection cluster ->
-				def listResults = VmwareCloudProvider.listDatastores(cloud, cluster.internalId)
+				def listResults = vmwarePlugin.cloudProvider.listDatastores(cloud, cluster.internalId)
 				if(listResults.success == true) {
 
 					Observable domainRecords = morpheusContext.cloud.datastore.listSyncProjections(cloud.id).filter { DatastoreIdentityProjection projection ->

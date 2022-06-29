@@ -79,7 +79,7 @@ class VmwareProvisionProviderSpec extends Specification {
 		Cloud cloud = new Cloud(serviceUrl: '1.1.1.1', serviceUsername: 'u1', servicePassword: 'password')
 
 		when:
-		def config = VmwareProvisionProvider.getAuthConfig(cloud)
+		def config = plugin.getAuthConfig(cloud)
 
 		then:
 		config.apiUrl == 'https://1.1.1.1/sdk'
@@ -89,7 +89,7 @@ class VmwareProvisionProviderSpec extends Specification {
 
 	void "getApiUrl"() {
 		expect:
-		apiUrl == VmwareProvisionProvider.getVmwareApiUrl(url)
+		apiUrl == plugin.getVmwareApiUrl(url)
 
 		where:
 		url | apiUrl

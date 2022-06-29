@@ -1,7 +1,9 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
+import com.morpheusdata.response.HostResponse;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
@@ -68,6 +70,26 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 
 	@Override
 	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	@Override
+	public ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	@Override
+	public ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts) {
+		return ServiceResponse.error();
+	}
+
+	@Override
+	public ServiceResponse<HostResponse> waitForHost(ComputeServer server) {
+		return ServiceResponse.success();
+	}
+
+	@Override
+	public ServiceResponse finalizeHost(ComputeServer server) {
 		return ServiceResponse.success();
 	}
 
