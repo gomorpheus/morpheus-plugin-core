@@ -17,7 +17,13 @@ class TabPlugin extends Plugin {
 	@Override
 	void initialize() {
 		CustomTabProvider customTabProvider = new CustomTabProvider(this, morpheus)
+		CustomNetworkTabProvider customNetworkTabProvider = new CustomNetworkTabProvider(this, morpheus)
+		CustomClusterTabProvider customClusterTabProvider = new CustomClusterTabProvider(this, morpheus)
+		CustomAppTabProvider customAppTabProvider = new CustomAppTabProvider(this, morpheus)
 		this.pluginProviders.put(customTabProvider.code, customTabProvider)
+		this.pluginProviders.put(customNetworkTabProvider.code,customNetworkTabProvider)
+		this.pluginProviders.put(customClusterTabProvider.code,customClusterTabProvider)
+		this.pluginProviders.put(customAppTabProvider.code,customAppTabProvider)
 		this.setName("Custom Tabs")
 		this.setPermissions([Permission.build('Custom Instance Tab','custom-instance-tab', [Permission.AccessType.none, Permission.AccessType.full])])
 		this.setRenderer(new HandlebarsRenderer(this.classLoader))
