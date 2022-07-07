@@ -745,10 +745,12 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					shortHostname = hostname.substring(0,suffixIndex)
 				}
 			}
+			def networkView = networkPool.externalId.tokenize('/')[3]
 			def body = [
 					name             : shortHostname,
+					view             : networkView,
 					ipv4addrs        : [
-							[configure_for_dhcp: false, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.name}".toString()]
+							[configure_for_dhcp: false, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.externalId}".toString()]
 					],
 					configure_for_dns: false
 			]
@@ -1095,7 +1097,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		morpheus.network.pool.listIdentityProjections(poolServer.id).buffer(50).flatMap { Collection<NetworkPoolIdentityProjection> poolIdents ->
 			return morpheus.network.pool.listById(poolIdents.collect{it.id})
 		}.flatMap { NetworkPool pool ->
-			def listResults = listHostRecords(client, poolServer, pool.name, opts)
+			def listResults = listHostRecords(client, poolServer, pool, opts)
 			if (listResults.success) {
 				List<Map> apiItems = listResults.data as List<Map>
 				Observable<NetworkPoolIpIdentityProjection> poolIps = morpheus.network.pool.poolIp.listIdentityProjections(pool.id)
@@ -1186,9 +1188,10 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	}
 
 
-	ServiceResponse listHostRecords(HttpApiClient client, NetworkPoolServer poolServer, String networkName, Map opts) {
+	ServiceResponse listHostRecords(HttpApiClient client, NetworkPoolServer poolServer, NetworkPool networkPool, Map opts) {
 		def rtn = new ServiceResponse()
 		rtn.data = []
+		def networkView = networkPool.externalId.tokenize('/')[3]
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl) //ipv4address?network=10.10.10.0/24
 		def apiPath = getServicePath(poolServer.serviceUrl) + 'ipv4address'
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
@@ -1197,7 +1200,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def maxResults = opts.maxResults ?: 256
 		def pageId = null
 		def attempt = 0
-		def pageQuery = [network: networkName,status: 'USED','_return_as_object':'1' ,'_paging':'1', '_max_results':maxResults.toString()]
+		def pageQuery = [network: networkPool.name, network_view: networkView, status: 'USED','_return_as_object':'1' ,'_paging':'1', '_max_results':maxResults.toString()]
 
 		while(hasMore && attempt < 1000) {
 			if(pageId != null)
