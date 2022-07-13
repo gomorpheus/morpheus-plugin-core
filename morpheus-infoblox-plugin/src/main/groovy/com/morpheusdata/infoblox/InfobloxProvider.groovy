@@ -1120,7 +1120,8 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					updateMatchedIps(updateItems)
 				}.observe()
 			} else {
-				return Single.just(false)
+				return Single.just(false).toObservable()
+
 			}
 		}.doOnError{ e ->
 			log.error("cacheIpRecords error: ${e}", e)
