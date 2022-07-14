@@ -1,11 +1,19 @@
 package com.morpheusdata.cloud
 
+import com.morpheusdata.core.backup.BackupExecutionProvider
+import com.morpheusdata.core.backup.BackupJobProvider
 import com.morpheusdata.core.backup.BackupProvider;
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.backup.BackupRestoreProvider
+import com.morpheusdata.core.backup.BackupTypeProvider
 import com.morpheusdata.model.Backup
 import com.morpheusdata.model.BackupJob
+import com.morpheusdata.model.BackupType
 import com.morpheusdata.model.ComputeServer
+import com.morpheusdata.model.Icon
+import com.morpheusdata.model.OptionType
+import com.morpheusdata.model.ReplicationType
 import com.morpheusdata.response.ServiceResponse
 
 class DigitalOceanBackupProvider implements BackupProvider {
@@ -18,121 +26,6 @@ class DigitalOceanBackupProvider implements BackupProvider {
 		this.context = context
 		this.plugin = plugin
 		this.apiService = new DigitalOceanApiService()
-	}
-
-	@Override
-	ServiceResponse configureBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse validateBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse createBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse cloneBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse addToBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse deleteBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse configureBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse validateBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse createBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse deleteBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse prepareExecuteBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse executeBackupJob(BackupJob backupJob, Map opts) {
-		return null
-	}
-
-	@Override
-	ServiceResponse cancelBackupJob() {
-		return null
-	}
-
-	@Override
-	ServiceResponse deleteBackupResult() {
-		return null
-	}
-
-	@Override
-	ServiceResponse prepareExecuteBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse prepareBackupResult() {
-		return null
-	}
-
-	@Override
-	// TODO: existing method that needs converted to the stub below.
-	// ServiceResponse executeBackup(ComputeServer server, Map opts) {
-	// 	Map body = [type: 'snapshot', name: opts.snapshotName]
-	// 	String apiKey = server.cloud.configMap.doApiKey
-	// 	apiService.performDropletAction(server.externalId, body, apiKey)
-	// }
-	ServiceResponse executeBackup(Backup backup, Map opts) {
-		return null
-	}
-
-	@Override
-	ServiceResponse cancelBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse prepareRestoreBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse restoreBackup() {
-		return null
-	}
-
-	@Override
-	ServiceResponse finalizeRestore() {
-		return null
-	}
-
-	ServiceResponse getSnapshot() {
-		return null
 	}
 
 	@Override
@@ -153,5 +46,200 @@ class DigitalOceanBackupProvider implements BackupProvider {
 	@Override
 	String getName() {
 		return 'DigitalOcean Plugin Backup Provider'
+	}
+
+	@Override
+	Collection<BackupTypeProvider> getAvailableBackupTypeProviders() {
+		return null
+	}
+
+	@Override
+	BackupTypeProvider getAvailableBackupTypeProvider(String providerCode) {
+		return null
+	}
+
+	@Override
+	Collection<BackupJobProvider> getAvailableBackupJobProviders() {
+		return null
+	}
+
+	@Override
+	BackupJobProvider getAvailableBackupJobProvider(String providerCode) {
+		return null
+	}
+
+	@Override
+	Collection<BackupExecutionProvider> getAvailableBackupExecutionProviders() {
+		return null
+	}
+
+	@Override
+	BackupExecutionProvider getAvailableBackupExecutionProvider(String providerCode) {
+		return null
+	}
+
+	@Override
+	Collection<BackupRestoreProvider> getAvailableBackupRestoreProviders() {
+		return null
+	}
+
+	@Override
+	BackupRestoreProvider getAvailableBackupRestoreProvider(String providerCode) {
+		return null
+	}
+
+	@Override
+	String providerService() {
+		return null
+	}
+
+	@Override
+	String jobService() {
+		return null
+	}
+
+	@Override
+	Boolean hasCopyToStore() {
+		return null
+	}
+
+	@Override
+	Boolean hasStreamToStore() {
+		return null
+	}
+
+	@Override
+	Boolean downloadEnabled() {
+		return null
+	}
+
+	@Override
+	Boolean restoreExistingEnabled() {
+		return null
+	}
+
+	@Override
+	Boolean restoreNewEnabled() {
+		return null
+	}
+
+	@Override
+	Boolean hasBackups() {
+		return null
+	}
+
+	@Override
+	Boolean hasReplication() {
+		return null
+	}
+
+	@Override
+	Boolean hasServers() {
+		return null
+	}
+
+	@Override
+	Boolean hasRepositories() {
+		return null
+	}
+
+	@Override
+	Boolean hasJobs() {
+		return null
+	}
+
+	@Override
+	Boolean hasSites() {
+		return null
+	}
+
+	@Override
+	Boolean hasReplicationGroups() {
+		return null
+	}
+
+	@Override
+	Boolean hasCreateJob() {
+		return null
+	}
+
+	@Override
+	Boolean hasCloneJob() {
+		return null
+	}
+
+	@Override
+	Boolean hasAddToJob() {
+		return null
+	}
+
+	@Override
+	Boolean hasOptionalJob() {
+		return null
+	}
+
+	@Override
+	Boolean hasSchedule() {
+		return null
+	}
+
+	@Override
+	Boolean hasStorageProvider() {
+		return null
+	}
+
+	@Override
+	Boolean hasRetentionCount() {
+		return null
+	}
+
+	@Override
+	Boolean hasCancelBackup() {
+		return null
+	}
+
+	@Override
+	Collection<BackupType> backupTypes() {
+		return null
+	}
+
+	@Override
+	Collection<ReplicationType> replicationTypes() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> OptionTypes() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> replicationGroupOptions() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> replicationOptions() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> backupJobOptions() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> backupOptions() {
+		return null
+	}
+
+	@Override
+	Collection<OptionType> instanceReplicationGroupOptions() {
+		return null
+	}
+
+	@Override
+	Icon getIcon() {
+		return null
 	}
 }

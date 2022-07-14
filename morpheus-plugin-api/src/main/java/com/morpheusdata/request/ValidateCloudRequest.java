@@ -1,5 +1,7 @@
 package com.morpheusdata.request;
 
+import java.util.Map;
+
 public class ValidateCloudRequest {
 	/**
 	 * Set to the newly entered credential username, if credentialType is a string
@@ -19,9 +21,15 @@ public class ValidateCloudRequest {
 	 */
 	public String credentialType;
 
-	public ValidateCloudRequest(String credentialUsername, String credentialPassword, String credentialType){
+	/**
+	 * Additional options
+	 */
+	public Map opts;
+
+	public ValidateCloudRequest(String credentialUsername, String credentialPassword, String credentialType, Map opts){
 		this.credentialUsername = credentialUsername;
 		this.credentialPassword = credentialPassword;
 		this.credentialType = credentialType;
+		this.opts = opts;
 	}
 }
