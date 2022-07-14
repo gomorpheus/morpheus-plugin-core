@@ -1,6 +1,5 @@
 package com.morpheusdata.model;
 
-
 import java.util.Collection;
 
 public class BackupProviderType extends MorpheusModel {

@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.core.cloud.MorpheusCloudService;
 import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
+import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
@@ -275,6 +276,12 @@ public interface MorpheusContext {
 	 * @return An instance of the SecurityGroup Service
 	 */
 	MorpheusSecurityGroupService getSecurityGroup();
+
+	/**
+	 * Returns the MorpheusDashboardService
+	 * @return An instance of the MorpheusDashboardService
+	 */
+	MorpheusDashboardService getDashboard();
 
 	//Common methods used across various contexts
 

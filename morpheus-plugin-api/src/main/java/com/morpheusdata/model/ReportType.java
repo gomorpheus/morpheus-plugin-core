@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import java.util.List;
 
 public class ReportType extends MorpheusModel {
+	
 	protected String name;
 	protected String description;
 	protected List<OptionType> optionTypes;

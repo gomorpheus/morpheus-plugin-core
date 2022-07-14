@@ -36,6 +36,7 @@ import com.morpheusdata.core.MorpheusMetadataTagService
 import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.web.MorpheusWebRequestService
+import com.morpheusdata.core.dashboard.MorpheusDashboardService
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Container
 import com.morpheusdata.model.Instance
@@ -45,6 +46,7 @@ import com.morpheusdata.model.TaskConfig
 import com.morpheusdata.model.TaskResult
 import com.morpheusdata.test.network.MorpheusNetworkServiceImpl
 import com.morpheusdata.test.network.MorpheusNetworkSubnetServiceImpl
+import com.morpheusdata.test.dashboard.MorpheusDashboardServiceImpl
 import io.reactivex.Single
 
 /**
@@ -69,6 +71,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusStatsService statsContext
 	protected MorpheusInstanceService instanceService
 	protected MorpheusSnapshotService snapshotService
+	protected MorpheusDashboardService dashboardService
 
 
     MorpheusContextImpl() {
@@ -90,6 +93,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    instanceService = new MorpheusInstanceServiceImpl()
 	    snapshotService = new MorpheusSnapshotServiceImpl()
 		backupService = new MorpheusBackupServiceImpl()
+		dashboardService = new MorpheusDashboardServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -161,6 +165,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusTaskService getTask() {
 		return taskContext
+	}
+
+	@Override
+	MorpheusDashboardService getDashboard() {
+		return dashboardService
 	}
 
 	@Override
