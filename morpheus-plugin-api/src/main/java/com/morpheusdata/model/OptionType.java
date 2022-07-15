@@ -27,6 +27,9 @@ public class OptionType extends MorpheusModel {
 	protected String optionSource; //Dynamic dropdown field method reference (How to add via provider...)
 	protected String dependsOn; //Marked for refresh for a comma delimited list of other option type codes
 	protected Boolean showOnEdit = true;
+	protected Boolean displayValueOnDetails = false;
+	protected Boolean showOnCreate = true;
+
 
 	public String getName() {
 		return name;
@@ -309,21 +312,57 @@ public class OptionType extends MorpheusModel {
 	}
 
 	/**
-	 * Specifies whether this option type is visible on edit forms. This sometimes is the case where a field can be set on create
+	 * Specifies whether this option type is visible on create forms. This sometimes is the case where a field can be set on create
 	 * but not changed later nor does it make sense to display it after create.
-	 * @return whether or not this option type is visible upon edit
+	 * @return whether or not this option type is visible upon create
+	 */
+	public Boolean getShowOnCreate() {
+		return showOnCreate;
+	}
+
+	/**
+	 * Sets whether or not this option type is visible on create forms. This sometimes is the case where a field can be set on create
+	 * but not changed later, nor does it make sense to display it after create.
+	 * @param showOnCreate whether or not this option type is visible upon create
+	 */
+	public void setShowOnCreate(Boolean showOnCreate) {
+		this.showOnCreate = showOnCreate;
+		markDirty("showOnCreate", showOnCreate);
+	}
+
+	/**
+	 * Specifies if this option type is visible on edit forms. This sometimes is the case where a field can be set on create
+	 * but not changed later nor does it make sense to display it after create.
+	 * @return determines if this option type is visible upon edit
 	 */
 	public Boolean getShowOnEdit() {
 		return showOnEdit;
 	}
 
 	/**
-	 * Sets whether or not this option type is visible on edit forms. This sometimes is the case where a field can be set on create
+	 * Sets if this option type is visible on edit forms. This sometimes is the case where a field can be set on create
 	 * but not changed later, nor does it make sense to display it after create.
-	 * @param showOnEdit whether or not this option type is visible upon edit
+	 * @param showOnEdit determines if this option type is visible upon edit
 	 */
 	public void setShowOnEdit(Boolean showOnEdit) {
 		this.showOnEdit = showOnEdit;
+	}
+
+	/**
+	 * Specifies if this option type is visible on resource detail views.
+	 * @return determines if this option type is visible upon edit
+	 */
+	public Boolean getDisplayValueOnDetails() {
+		return displayValueOnDetails;
+	}
+
+	/**
+	 * Sets if this option type is visible on resource detail views.
+	 * @param displayValueOnDetails determines if this option type is visible on resource detail views
+	 */
+	public void setDisplayValueOnDetails(Boolean displayValueOnDetails) {
+		this.displayValueOnDetails = displayValueOnDetails;
+		markDirty("displayValueOnDetails", displayValueOnDetails);
 	}
 
 
