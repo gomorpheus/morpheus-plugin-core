@@ -1,8 +1,9 @@
 == Seeding data during plugin installation
 
-You might need to ensure that certain data (e.g. layouts, plans, etc.) is added to the database when your plugin is installed. You can use the process outlined here to "seed" that data in.
+If you need to ensure that certain data (e.g. layouts, plans, etc.) is added to the database when your plugin is installed, you can use this process to "seed" that data.
 
-Seed files should be YAML and should be in a *seed* folder your plugin's resources folder ('src/main/resources/seed'). They should be modeled off of plugin database model classes.
+You will need to create a folder called *seed* in your your plugin's resources folder ('src/main/resources/seed'). Then add YAML seed files to that folder. We recommend descriptive names like _Ubuntu22Seeds.yaml_. The seed files should be modeled off of plugin database model classes (see examples below). All new seeds and updates to existing seeds will be processed when your plugin is installed or reloaded.
+
 === Example
 
 [source,yaml]
@@ -11,22 +12,27 @@ Seed files should be YAML and should be in a *seed* folder your plugin's resourc
 dependsOn: []
 # seed entries
 seed:
-	optionType:
-	- meta:
-		key: code
-	  code: demo-option-1
-	  name: Demo Option 1
-	  fieldClass: input-tall
-	  fieldLabel: Demo Option 1
-	  fieldName: demoOption1
-	  displayOrder: 10
-	- meta:
-		key: code
-	  code: demo-option-2
-	  name: Demo Option 2
-	  fieldLabel: Demo Option 2
-	  fieldName: demoOption2
-	  helpText: Click this
-	  displayOrder: 20
+  optionType:
+  - meta:
+      key: code
+    code: demo-option-1
+    name: Demo Option 1
+    type: text
+    fieldClass: input-tall
+    fieldLabel: Demo Option 1
+    fieldName: demoOption1
+    fieldGroup: Demo Config
+    fieldContext: config
+    displayOrder: 10
+  - meta:
+      key: code
+    code: demo-option-2
+    name: Demo Option 2
+    type: password
+    fieldLabel: Demo Option
+    fieldName: demoOption2
+    fieldGroup: Demo Config
+    fieldContext: config
+    displayOrder: 20
 ----
 
