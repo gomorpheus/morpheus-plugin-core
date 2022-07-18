@@ -213,6 +213,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasDatastores() {
+		return false
+	}
+
+	@Override
 	Boolean hasCloudInit() {
 		false
 	}

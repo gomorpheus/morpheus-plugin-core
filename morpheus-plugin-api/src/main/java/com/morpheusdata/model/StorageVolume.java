@@ -23,6 +23,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Account account;
 	protected String deviceName;
 	protected Long maxStorage;
+	protected Long usedStorage;
 	protected StorageVolumeType type;
 	protected Integer displayOrder;
 	protected Boolean rootVolume = false;
@@ -61,6 +62,16 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public Long getMaxStorage() {
 		return maxStorage;
 	}
+
+	public void setUsedStorage(Long usedStorage) {
+		this.usedStorage = usedStorage;
+		markDirty("usedStorage",usedStorage);
+	}
+
+	public Long getUsedStorage() {
+		return usedStorage;
+	}
+
 
 	public void setType(StorageVolumeType type) {
 		this.type = type;

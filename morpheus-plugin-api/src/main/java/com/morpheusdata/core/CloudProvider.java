@@ -145,6 +145,12 @@ public interface CloudProvider extends PluginProvider {
 	Boolean hasFolders();
 
 	/**
+	 * Returns whether a cloud supports {@link Datastore}
+	 * @return Boolean
+	 */
+	Boolean hasDatastores();
+
+	/**
 	 * Called when a server should be started. Returning a response of success will cause corresponding updates to usage
 	 * records, result in the powerState of the computeServer to be set to 'on', and related instances set to 'running'
 	 * @param computeServer server to start

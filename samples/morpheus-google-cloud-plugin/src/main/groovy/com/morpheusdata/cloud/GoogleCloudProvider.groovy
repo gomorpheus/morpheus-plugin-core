@@ -77,6 +77,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasDatastores() {
+		return false
+	}
+
+	@Override
 	Boolean supportsDistributedWorker() {
 		false
 	}

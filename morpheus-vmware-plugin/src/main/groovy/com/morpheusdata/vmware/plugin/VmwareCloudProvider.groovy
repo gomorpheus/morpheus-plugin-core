@@ -584,6 +584,12 @@ class VmwareCloudProvider implements CloudProvider {
 	Boolean hasCloudInit() {
 		true
 	}
+
+	@Override
+	Boolean hasDatastores() {
+		return false
+	}
+
 	@Override
 	Boolean supportsDistributedWorker() {
 		true
