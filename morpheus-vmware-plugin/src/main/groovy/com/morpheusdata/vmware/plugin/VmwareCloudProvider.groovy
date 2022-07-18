@@ -591,6 +591,11 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasBareMetal() {
+		return false
+	}
+
+	@Override
 	Boolean supportsDistributedWorker() {
 		true
 	}

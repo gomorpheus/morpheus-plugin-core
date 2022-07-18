@@ -88,6 +88,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasBareMetal() {
+		return false
+	}
+
+	@Override
 	Boolean supportsDistributedWorker() {
 		false
 	}

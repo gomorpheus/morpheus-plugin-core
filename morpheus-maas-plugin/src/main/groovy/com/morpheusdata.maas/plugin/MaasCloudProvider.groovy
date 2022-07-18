@@ -218,6 +218,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Boolean hasBareMetal() {
+		return false
+	}
+
+	@Override
 	Boolean hasCloudInit() {
 		false
 	}

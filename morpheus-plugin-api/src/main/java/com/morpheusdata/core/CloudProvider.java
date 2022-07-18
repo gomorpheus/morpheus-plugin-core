@@ -151,6 +151,12 @@ public interface CloudProvider extends PluginProvider {
 	Boolean hasDatastores();
 
 	/**
+	 * Returns whether a cloud supports bare metal VMs
+	 * @return Boolean
+	 */
+	Boolean hasBareMetal();
+
+	/**
 	 * Called when a server should be started. Returning a response of success will cause corresponding updates to usage
 	 * records, result in the powerState of the computeServer to be set to 'on', and related instances set to 'running'
 	 * @param computeServer server to start
