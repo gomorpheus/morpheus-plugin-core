@@ -23,6 +23,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String category;
 	protected Boolean isPublic;
 	protected String platform;
+	protected String bucketId;
 	protected Long minDisk;
 	protected Long minRam;
 	protected String internalId;
@@ -111,6 +112,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setPlatform(String platform) {
 		this.platform = platform;
 		markDirty("platform", platform);
+	}
+
+	public String getBucketId() {
+		return bucketId;
+	}
+
+	public void setBucketId(String bucketId) {
+		this.bucketId = bucketId;
+		markDirty("bucketId", bucketId);
 	}
 
 	public Long getMinDisk() {

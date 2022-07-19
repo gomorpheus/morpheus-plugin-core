@@ -614,26 +614,27 @@ class VirtualMachineSync {
 				}
 
 				add.capacityInfo = new ComputeCapacityInfo(maxCores: maxCores, maxMemory: maxMemory, maxStorage: maxStorage, usedStorage: usedStorage)
-				if (!morpheusContext.computeServer.create([add]).blockingGet()) {
+				ComputeServer savedServer = morpheusContext.computeServer.create(add).blockingGet()
+				if (!savedServer) {
 					log.error "Error in creating server ${add}"
 				} else {
-				usageLists.updatedSnapshotIds = syncSnapshotsForServer(add,cloudItem.snapshots,cloudItem.currentSnapshot)
-					if(add.consolePort) {
+				usageLists.updatedSnapshotIds = syncSnapshotsForServer(savedServer,cloudItem.snapshots,cloudItem.currentSnapshot)
+					if(savedServer.consolePort) {
 						def computePorts = []
 						morpheusContext.computeServer.computePort.create([new ComputePort([
 								parentType: 'ComputeZone',
 								parentId  : cloud.id,
-								port      : add.consolePort,
+								port      : savedServer.consolePort,
 								portType  : 'vnc',
 								refType   : 'ComputeServer',
 								regionCode: cloud.regionCode,
-								refId     : add.id])
+								refId     : savedServer.id])
 						]).blockingGet()
 					}
-					if (add.powerState == ComputeServer.PowerState.on) {
-						usageLists.startUsageIds << add.id
+					if (savedServer.powerState == ComputeServer.PowerState.on) {
+						usageLists.startUsageIds << savedServer.id
 					} else {
-						usageLists.stopUsageIds << add.id
+						usageLists.stopUsageIds << savedServer.id
 					}
 				}
 			}
