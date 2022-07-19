@@ -149,6 +149,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 			} else if (model != null && model.object != null) {
 				response.html = template.apply(model.object);
 			} else {
+				//odd - what if you have asset paths and helpers?
 				response.html = template.text();
 			}
 

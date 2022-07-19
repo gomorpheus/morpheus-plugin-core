@@ -38,4 +38,12 @@ public interface DashboardProvider extends UIExtensionProvider {
 	 */
 	HTMLResponse renderDashboard(Dashboard dashboard, Map<String, Object> opts);
 
+	/**
+	 * Returns the relative path of a script for this dashboard
+	 * @param dashboard the dashboard to render
+	 * @param opts map of input options
+	 * @return path to a dashboard script
+	 */
+	String getDashboardScriptPath(Dashboard dashboard, Map<String, Object> opts);
+
 }

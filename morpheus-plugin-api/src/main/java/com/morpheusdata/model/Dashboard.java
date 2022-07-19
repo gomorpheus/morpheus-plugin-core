@@ -22,6 +22,8 @@ public class Dashboard extends MorpheusModel {
 	protected Boolean defaultDashboard = false;
 	protected Boolean enabled = true;
 	protected String sourceType = "system";
+	protected String scriptPath;
+	protected String templatePath;
 	protected String config;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -136,6 +138,24 @@ public class Dashboard extends MorpheusModel {
 	public void setSourceType(String sourceType) {
 		markDirty("sourceType", sourceType);
 		this.sourceType = sourceType;
+	}
+
+	public String getScriptPath() {
+		return scriptPath;
+	}
+
+	public void setScriptPath(String scriptPath) {
+		markDirty("scriptPath", scriptPath);
+		this.scriptPath = scriptPath;
+	}
+
+	public String getTemplatePath() {
+		return templatePath;
+	}
+
+	public void setTemplatePath(String templatePath) {
+		markDirty("templatePath", templatePath);
+		this.templatePath = templatePath;
 	}
 
 	public String getConfig() {

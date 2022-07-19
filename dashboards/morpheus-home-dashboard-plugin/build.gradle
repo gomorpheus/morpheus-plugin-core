@@ -5,6 +5,7 @@ buildscript {
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+		classpath "com.bertramlabs.plugins:jsx-asset-pipeline:${assetPipelineVersion}"
 	}
 }
 

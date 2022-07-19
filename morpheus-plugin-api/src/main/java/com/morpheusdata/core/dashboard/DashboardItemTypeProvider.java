@@ -38,4 +38,12 @@ public interface DashboardItemTypeProvider extends UIExtensionProvider {
 	 */
 	HTMLResponse renderDashboardItem(DashboardItem dashboardItem, Map<String, Object> opts);
 
+	/**
+	 * Returns the relative path of a script for this dashboard item
+	 * @param dashboardItem the dashboard item to render
+	 * @param opts map of input options
+	 * @return result of rendering an item
+	 */
+	String getDashboardItemScriptPath(DashboardItem dashboardItem, Map<String, Object> opts);
+
 }

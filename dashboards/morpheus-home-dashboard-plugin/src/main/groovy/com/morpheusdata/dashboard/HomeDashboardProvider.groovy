@@ -49,27 +49,6 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		return 'default home dashboard'
 	}
 
-	/**
-	 * render the dashboard item template
-	 * @param dashboard the dashboard to render
-	 * @return
-	 */
-	@Override
-	HTMLResponse renderDashboard(Dashboard dashboard, Map<String, Object> opts) {
-		ViewModel<String> model = new ViewModel<String>()
-		getRenderer().renderTemplate("hbs/home-dashboard", model)
-	}
-
-	/**
-	 * Allows various sources used in the template to be loaded
-	 * @return
-	 */
-	@Override
-	ContentSecurityPolicy getContentSecurityPolicy() {
-		def csp = new ContentSecurityPolicy()
-		return csp
-	}
-
 	@Override
 	Dashboard getDashboard() {
 		def rtn = new Dashboard()
@@ -82,7 +61,8 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.description = 'the default home dashboard'
 		rtn.defaultDashboard = true
 		rtn.enabled = true
-		rtn.sourceType = "system"
+		rtn.sourceType = 'system'
+		rtn.templatePath = 'hbs/home-dashboard'
 		//add items
 		def dashboardItemTypes = ['dashboard-item-instance-count']
 		def currentRow = 0

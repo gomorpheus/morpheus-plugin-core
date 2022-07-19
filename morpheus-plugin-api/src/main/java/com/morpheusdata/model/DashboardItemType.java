@@ -15,6 +15,8 @@ public class DashboardItemType extends MorpheusModel {
 	//view info
 	protected String uiSize; //xs-1,s-1,m-1,l-1,xl-1
 	protected String uiType; //widget class etc.
+	protected String scriptPath;
+	protected String templatePath;
 	//options
 	protected List<OptionType> optionTypes;
 
@@ -98,6 +100,24 @@ public class DashboardItemType extends MorpheusModel {
 
 	public void setUiType(String uiType) {
 		this.uiType = uiType;
+	}
+
+	public String getScriptPath() {
+		return scriptPath;
+	}
+
+	public void setScriptPath(String scriptPath) {
+		markDirty("scriptPath", scriptPath);
+		this.scriptPath = scriptPath;
+	}
+
+	public String getTemplatePath() {
+		return templatePath;
+	}
+
+	public void setTemplatePath(String templatePath) {
+		markDirty("templatePath", templatePath);
+		this.templatePath = templatePath;
 	}
 
 	public List<OptionType> getOptionTypes() {

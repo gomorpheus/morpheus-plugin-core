@@ -40,7 +40,7 @@ class InstanceCountWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('instanceCountWidget', KubeClusterMemoryWidget);
+Morpheus.components.register('instanceCountWidget', InstanceCountWidget);
 
 $(document).ready(function() {
 	ReactDOM.render(

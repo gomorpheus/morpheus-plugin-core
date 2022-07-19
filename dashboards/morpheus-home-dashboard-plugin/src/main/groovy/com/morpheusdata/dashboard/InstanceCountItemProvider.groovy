@@ -3,7 +3,6 @@ package com.morpheusdata.dashboard
 import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.model.ContentSecurityPolicy
 import com.morpheusdata.model.DashboardItem
 import com.morpheusdata.model.DashboardItemType
 import com.morpheusdata.views.HTMLResponse
@@ -48,38 +47,19 @@ class InstanceCountItemProvider extends AbstractDashboardItemTypeProvider {
 		return 'Instance count'
 	}
 
-	/**
-	 * render the dashboard item template
-	 * @param  instance details of an Instance
-	 * @return
-	 */
-	@Override
-	HTMLResponse renderDashboardItem(DashboardItem dashboardItem, Map<String, Object> opts) {
-		ViewModel<String> model = new ViewModel<String>()
-		getRenderer().renderTemplate("hbs/instance-count-widget", model)
-	}
-
-	/**
-	 * Allows various sources used in the template to be loaded
-	 * @return
-	 */
-	@Override
-	ContentSecurityPolicy getContentSecurityPolicy() {
-		def csp = new ContentSecurityPolicy()
-		return csp
-	}
-
 	@Override
 	DashboardItemType getDashboardItemType() {
 		def rtn = new DashboardItemType()
 		//populate it
 		//rtn.uuid = ?
-		rtn.name = getName();
-		rtn.code = getCode();
-		rtn.category = 'instance';
-		rtn.title = 'instance count';
-		rtn.description = 'instance count';
-		rtn.uiSize = 's-1';
+		rtn.name = getName()
+		rtn.code = getCode()
+		rtn.category = 'instance'
+		rtn.title = 'instance count'
+		rtn.description = 'instance count'
+		rtn.uiSize = 's-1'
+		rtn.templatePath = 'hbs/instance-count-widget'
+		rtn.scriptPath = 'instance-count-widget.js'
 		return rtn
 	}
 
