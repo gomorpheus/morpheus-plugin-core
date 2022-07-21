@@ -54,6 +54,12 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	}
 
 	@Override
+	public Boolean disableRootDatastore() { return false; }
+
+	@Override
+	public Boolean hasConfigurableSockets() { return false; }
+
+	@Override
 	public Collection<StorageVolumeType> getRootVolumeStorageTypes() {
 		return new ArrayList<StorageVolumeType>();
 	}

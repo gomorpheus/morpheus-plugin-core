@@ -102,6 +102,18 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean canCustomizeRootVolume();
 
 	/**
+	 * Indicates if a Datastore on a root volume on a ComputeServer is configurable
+	 * @return Boolean
+	 */
+	public Boolean disableRootDatastore();
+
+	/**
+	 * Indicates if the sockets are configurable when deploying a ComputeServer via a custom plan
+	 * @return Boolean
+	 */
+	public Boolean hasConfigurableSockets();
+
+	/**
 	 * Indicates if data volumes may be customized during provisioning. For example, the size changed
 	 * @return Boolean
 	 */
