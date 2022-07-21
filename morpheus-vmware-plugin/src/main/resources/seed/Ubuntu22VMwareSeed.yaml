@@ -1,0 +1,176 @@
+dependsOn: [ProvisionTypeVmwareSeed]
+seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxNet3
+
+  virtualImage:
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.22.04-v1.ubuntu.22.04.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    name: Morpheus Ubuntu 22.04 v1
+    imageType: vmdk
+    remotePath: https://morpheus-images.s3-us-west-1.amazonaws.com/vmware/ubuntu/ubuntu-22_04-v1-amd64/morpheus-ubuntu-22_04-amd64-20220428.ovf
+    imagePath: vmware/ubuntu/ubuntu-22_04-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.22.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.volume.0
+
+  containerType:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04
+    shortName: ubuntu
+    name: Ubuntu 22.04
+    ports: [22]
+    containerVersion: '22.04'
+    imageCode: morpheus ubuntu 22.04
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: ubuntu
+    showServerLogs: 'true'
+    category: ubuntu
+    cloneType: ubuntu
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware
+    containerPorts:
+    - meta: {key: code}
+      code: ubuntu.22
+    actions:
+    - meta: {key: code}
+      code: ubuntu-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.ubuntu.22.04-v1.ubuntu.22.04.amd64
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+
+  containerTypeSet:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04-set
+    containerType: {domainClass: containerType, code: vmware-plugin-ubuntu-22.04}
+    category: ubuntu
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+
+  instanceTypeLayout:
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-ubuntu-22.04-single
+    name: VMware VM Plugin
+    sortOrder: 30
+    instanceVersion: '22.04'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: ubuntu
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    supportsConvertToManaged: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-ubuntu-22.04-set
+    actions:
+    - meta: {key: code}
+      code: ubuntu-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+
+  scaleAction:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-ubuntu-22.04-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: ubuntu-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: ubuntu-remove-node
