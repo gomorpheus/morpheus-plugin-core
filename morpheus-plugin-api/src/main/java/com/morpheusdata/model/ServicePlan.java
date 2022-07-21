@@ -29,7 +29,7 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public String serverClass; //hardware classes on clouds;
 	public Integer sortOrder = 0;
 	public String provisionTypeCode;
-	public Boolean editable;
+	public Boolean editable = true;
 	public Long maxCores;
 	public Long maxMemory;
 	public Long maxStorage;

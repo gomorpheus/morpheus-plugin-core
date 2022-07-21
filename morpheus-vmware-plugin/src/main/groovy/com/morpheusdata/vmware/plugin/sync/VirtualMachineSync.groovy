@@ -742,6 +742,7 @@ class VirtualMachineSync {
 		servers
 	}
 
+	// TODO : This can be replaced by SyncUtils.findServicePlanBySizing
 	ServicePlan findServicePlanBySizing(Collection<ServicePlan> allPlans, Long maxMemory, Long maxCores, Long coresPerSocket=null, ServicePlan fallbackPlan=null, ServicePlan existingPlan = null, Account account = null) {
 		Collection<ServicePlan> availablePlans = allPlans
 		if(account) {
