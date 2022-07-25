@@ -106,7 +106,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				optionSource : 'vmwarePluginFolder'
 		])
 
-		[]
+		[imageOption, hostOption, folderOption]
 	}
 
 	@Override

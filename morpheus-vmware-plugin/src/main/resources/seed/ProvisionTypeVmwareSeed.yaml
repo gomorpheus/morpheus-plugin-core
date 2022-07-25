@@ -2,10 +2,10 @@
 seed:
   optionType:
     - meta: {key: code}
-      code: provisionType.vmware.plugin.plugin.resourcePool
+      code: provisionType.vmware.plugin.resourcePool
       type: select
       name: resource pool
-      category: provisionType.vmware.plugin.plugin
+      category: provisionType.vmware.plugin
       fieldName: vmwareResourcePoolId
       fieldLabel: Resource Pool
       fieldContext: config
@@ -24,10 +24,10 @@ seed:
       noBlank: true
       contextualDefault: true
     - meta: {key: code}
-      code: provisionType.vmware.plugin.plugin.host
+      code: provisionType.vmware.plugin.host
       type: select
       name: host
-      category: provisionType.vmware.plugin.plugin
+      category: provisionType.vmware.plugin
       fieldName: hostId
       fieldLabel: Host
       fieldContext: config
@@ -45,7 +45,7 @@ seed:
       displayOrder: 102
       fieldClass: null
     - meta: {key: code}
-      code: provisionType.vmware.plugin.plugin.storagePod
+      code: provisionType.vmware.plugin.storagePod
       type: select
       name: storagePod
       category: provisionType.vmware.plugin
@@ -440,6 +440,8 @@ seed:
       code: vmware-provision-provider-plugin
       name: VMware Plugin
       optionTypes:
+        - meta: { key: code }
+          code: provisionType.vmware.plugin.resourcePool
         - meta: {key: code}
           code: provisionType.vmware.plugin.host
         - meta: {key: code}
