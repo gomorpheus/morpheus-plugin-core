@@ -6,15 +6,10 @@ import com.morpheusdata.core.backup.BackupProvider;
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.backup.BackupRestoreProvider
-import com.morpheusdata.core.backup.BackupTypeProvider
-import com.morpheusdata.model.Backup
-import com.morpheusdata.model.BackupJob
 import com.morpheusdata.model.BackupType
-import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.ReplicationType
-import com.morpheusdata.response.ServiceResponse
 
 class DigitalOceanBackupProvider implements BackupProvider {
 	MorpheusContext context
@@ -46,16 +41,6 @@ class DigitalOceanBackupProvider implements BackupProvider {
 	@Override
 	String getName() {
 		return 'DigitalOcean Plugin Backup Provider'
-	}
-
-	@Override
-	Collection<BackupTypeProvider> getAvailableBackupTypeProviders() {
-		return null
-	}
-
-	@Override
-	BackupTypeProvider getAvailableBackupTypeProvider(String providerCode) {
-		return null
 	}
 
 	@Override

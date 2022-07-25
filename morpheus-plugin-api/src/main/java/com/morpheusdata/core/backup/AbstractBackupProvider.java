@@ -34,31 +34,13 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 	}
 
 	@Override
-	public String providerService() {
-		return this.getCode();
+	public Collection<BackupType> getBackupTypes() {
+		return this.getBackupProviderType().getBackupTypes();
 	}
 
 	@Override
-	public Collection<BackupTypeProvider> getAvailableBackupTypeProviders() {
-		Collection<PluginProvider> pluginProviders = plugin.getProvidersByType(BackupTypeProvider.class);
-		Collection<BackupTypeProvider> backupTypeProviders = new ArrayList<>();
-		for(PluginProvider pluginProvider:pluginProviders) {
-			backupTypeProviders.add((BackupTypeProvider)pluginProvider);
-		}
-		return backupTypeProviders;
-	}
-
-	@Override
-	public BackupTypeProvider getAvailableBackupTypeProvider(String providerCode) {
-		Collection<BackupTypeProvider> typeProviders = getAvailableBackupTypeProviders();
-		BackupTypeProvider matchedProvider = null;
-		for(BackupTypeProvider typeProvider:typeProviders) {
-			if(typeProvider.getCode() == providerCode) {
-				matchedProvider = typeProvider;
-			}
-		}
-
-		return matchedProvider;
+	public Collection<ReplicationType> getReplicationTypes() {
+		return this.getBackupProviderType().getReplicationTypes();
 	}
 
 	@Override
@@ -129,91 +111,5 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 
 		return matchedProvider;
 	}
-
-	@Override
-	public Boolean hasCopyToStore() { return false; }
-
-	@Override
-	public Boolean hasStreamToStore() { return false; }
-
-	@Override
-	public Boolean downloadEnabled() { return false; }
-
-	@Override
-	public Boolean restoreExistingEnabled() { return false; }
-
-	@Override
-	public Boolean restoreNewEnabled() { return false; }
-
-	@Override
-	public Boolean hasBackups() { return false; }
-
-	@Override
-	public Boolean hasReplication() { return false; }
-
-	@Override
-	public Boolean hasServers() { return false; }
-
-	@Override
-	public Boolean hasRepositories() { return false; }
-
-	@Override
-	public Boolean hasJobs() { return false; }
-
-	@Override
-	public Boolean hasSites() { return false; }
-
-	@Override
-	public Boolean hasReplicationGroups() { return false; }
-
-	@Override
-	public Boolean hasCreateJob() { return false; }
-
-	@Override
-	public Boolean hasCloneJob() { return false; }
-
-	@Override
-	public Boolean hasAddToJob() { return false; }
-
-	@Override
-	public Boolean hasOptionalJob() { return false; }
-
-	@Override
-	public Boolean hasSchedule() { return false; }
-
-	@Override
-	public Boolean hasStorageProvider() { return false; }
-
-	@Override
-	public Boolean hasRetentionCount() { return false; }
-
-	@Override
-	public Boolean hasCancelBackup() { return false; }
-
-
-	@Override
-	public Collection<BackupType> backupTypes() { return new ArrayList<BackupType>(); }
-
-	@Override
-	public Collection<ReplicationType> replicationTypes() { return new ArrayList<ReplicationType>(); };
-
-
-	@Override
-	public Collection<OptionType> OptionTypes() { return new ArrayList<OptionType>(); };
-
-	@Override
-	public Collection<OptionType> backupJobOptions() { return new ArrayList<OptionType>(); };
-
-	@Override
-	public Collection<OptionType> backupOptions() { return new ArrayList<OptionType>(); };
-
-	@Override
-	public Collection<OptionType> replicationGroupOptions() { return new ArrayList<OptionType>(); };
-
-	@Override
-	public Collection<OptionType> replicationOptions() { return new ArrayList<OptionType>(); };
-
-	@Override
-	public Collection<OptionType> instanceReplicationGroupOptions() { return new ArrayList<OptionType>(); };
 
 }

@@ -8,7 +8,11 @@ public class BackupType extends MorpheusModel {
 	protected String backupFormat; //data,file,snapshot
 	protected String containerFormat; //container,vm,all
 	protected String providerService;
+	protected String jobService;
+
 	protected String execService;
+	protected String restoreService;
+
 	protected String containerType;
 	protected String containerCategory;
 	protected String restoreType;
@@ -225,5 +229,32 @@ public class BackupType extends MorpheusModel {
 	public void setRestrictTargets(Boolean restrictTargets) {
 		markDirty("restrictTargets", restrictTargets, this.restrictTargets);
 		this.restrictTargets = restrictTargets;
+	}
+
+	public List<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(List<OptionType> optionTypes) {
+		this.optionTypes = optionTypes;
+		markDirty("optionTypes", optionTypes, this.optionTypes);
+	}
+
+	public String getJobService() {
+		return jobService;
+	}
+
+	public void setJobService(String jobService) {
+		this.jobService = jobService;
+		markDirty("jobService", jobService, this.jobService);
+	}
+
+	public String getRestoreService() {
+		return restoreService;
+	}
+
+	public void setRestoreService(String restoreService) {
+		this.restoreService = restoreService;
+		markDirty("restoreService", restoreService, this.restoreService);
 	}
 }

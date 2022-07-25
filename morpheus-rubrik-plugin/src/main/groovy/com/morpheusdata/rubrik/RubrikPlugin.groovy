@@ -18,8 +18,6 @@ class RubrikPlugin extends Plugin {
 		this.pluginProviders.put(backupProvider.code, backupProvider)
 
 		// vmware
-		RubrikVmwareBackupTypeProvider rubrikVmwareBackupTypeProvider = new RubrikVmwareBackupTypeProvider(this, morpheus)
-		this.pluginProviders.put(rubrikVmwareBackupTypeProvider.code, rubrikVmwareBackupTypeProvider)
 		RubrikVmwareBackupExecutionProvider vmwareBackupExecutionProvider = new RubrikVmwareBackupExecutionProvider(this, morpheus)
 		this.pluginProviders.put(vmwareBackupExecutionProvider.code, vmwareBackupExecutionProvider)
 		RubrikVmwareBackupRestoreProvider vmwareBackupRestoreProvider = new RubrikVmwareBackupRestoreProvider(this, morpheus)

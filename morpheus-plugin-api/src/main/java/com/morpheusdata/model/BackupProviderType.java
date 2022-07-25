@@ -1,12 +1,16 @@
 package com.morpheusdata.model;
 
 
+import java.util.Collection;
+
 public class BackupProviderType extends MorpheusModel {
 
 	protected String name;
 	protected String code;
 	protected String description;
 	protected String providerService;
+	protected String jobService;
+
 	protected String viewSet;
 	protected Boolean enabled = true;
 	protected Boolean creatable = false;
@@ -36,6 +40,17 @@ public class BackupProviderType extends MorpheusModel {
 	protected Boolean hasCancelBackup = true;
 
 	protected Boolean isPlugin;
+
+	protected Collection<BackupType> backupTypes;
+	protected Collection<ReplicationType> replicationTypes;
+
+
+	protected Collection<OptionType> optionTypes;
+	protected Collection<OptionType> replicationGroupOptions;
+	protected Collection<OptionType> replicationOptions;
+	protected Collection<OptionType> backupJobOptions;
+	protected Collection<OptionType> backupOptions;
+	protected Collection<OptionType> instanceReplicationGroupOptions;
 
 	public String getName() {
 		return name;
@@ -287,5 +302,106 @@ public class BackupProviderType extends MorpheusModel {
 	public void setPlugin(Boolean plugin) {
 		markDirty("isPlugin", plugin, this.isPlugin);
 		isPlugin = plugin;
+	}
+
+	public String getJobService() {
+		return jobService;
+	}
+
+	public void setJobService(String jobService) {
+		this.jobService = jobService;
+		markDirty("jobService", jobService, this.jobService);
+	}
+
+	public Collection<BackupType> getBackupTypes() {
+		return backupTypes;
+	}
+
+	public void setBackupTypes(Collection<BackupType> backupTypes) {
+		this.backupTypes = backupTypes;
+		markDirty("backupTypes", backupTypes, this.backupTypes);
+	}
+
+	public Collection<ReplicationType> getReplicationTypes() {
+		return replicationTypes;
+	}
+
+	public void setReplicationTypes(Collection<ReplicationType> replicationTypes) {
+		this.replicationTypes = replicationTypes;
+		markDirty("replicationTypes", replicationTypes, this.replicationTypes);
+	}
+
+	public Collection<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(Collection<OptionType> optionTypes) {
+		this.optionTypes = optionTypes;
+		markDirty("optionTypes", optionTypes, this.optionTypes);
+	}
+
+	public Collection<OptionType> getReplicationGroupOptions() {
+		return replicationGroupOptions;
+	}
+
+	public Collection<OptionType> getReplicationGroupOptionTypes() {
+		return getReplicationGroupOptions();
+	}
+
+	public void setReplicationGroupOptions(Collection<OptionType> replicationGroupOptions) {
+		this.replicationGroupOptions = replicationGroupOptions;
+		markDirty("replicationGroupOptions", replicationGroupOptions, this.replicationGroupOptions);
+	}
+
+	public Collection<OptionType> getReplicationOptions() {
+		return replicationOptions;
+	}
+
+	public Collection<OptionType> getReplicationOptionTypes() {
+		return getReplicationOptions();
+	}
+
+	public void setReplicationOptions(Collection<OptionType> replicationOptions) {
+		this.replicationOptions = replicationOptions;
+		markDirty("replicationOptions", replicationOptions, this.replicationOptions);
+	}
+
+	public Collection<OptionType> getBackupJobOptions() {
+		return backupJobOptions;
+	}
+
+	public Collection<OptionType> getBackupJobOptionTypes() {
+		return getBackupJobOptions();
+	}
+
+	public void setBackupJobOptions(Collection<OptionType> backupJobOptions) {
+		this.backupJobOptions = backupJobOptions;
+		markDirty("backupJobOptions", backupJobOptions, this.backupJobOptions);
+	}
+
+	public Collection<OptionType> getBackupOptions() {
+		return backupOptions;
+	}
+
+	public Collection<OptionType> getBackupOptionTypes() {
+		return getBackupOptions();
+	}
+
+	public void setBackupOptions(Collection<OptionType> backupOptions) {
+		this.backupOptions = backupOptions;
+		markDirty("backupOptions", backupOptions, this.backupOptions);
+	}
+
+	public Collection<OptionType> getInstanceReplicationGroupOptions() {
+		return instanceReplicationGroupOptions;
+	}
+
+	public Collection<OptionType> getInstanceReplicationGroupOptionTypes() {
+		return getInstanceReplicationGroupOptions();
+	}
+
+	public void setInstanceReplicationGroupOptions(Collection<OptionType> instanceReplicationGroupOptions) {
+		this.instanceReplicationGroupOptions = instanceReplicationGroupOptions;
+		markDirty("instanceReplicationGroupOptions", instanceReplicationGroupOptions, this.instanceReplicationGroupOptions);
 	}
 }
