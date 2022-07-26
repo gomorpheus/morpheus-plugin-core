@@ -12,7 +12,8 @@ seed:
       fieldGroup: Options
       required: true
       enabled: true
-      optionSource: zonePools
+      optionSource: vmwarePluginResourcePool
+      optionSourceType: vmware-plugin
       editable: false
       global: false
       placeHolder: null
@@ -34,8 +35,8 @@ seed:
       fieldGroup: Options
       required: false
       enabled: true
-      optionSource: vmwareHost
-      optionSourceType: vmware
+      optionSource: vmwarePluginHost
+      optionSourceType: vmware-plugin
       editable: false
       global: false
       placeHolder: null
@@ -43,46 +44,6 @@ seed:
       defaultValue: null
       custom: false
       displayOrder: 102
-      fieldClass: null
-    - meta: {key: code}
-      code: provisionType.vmware.plugin.storagePod
-      type: select
-      name: storagePod
-      category: provisionType.vmware.plugin
-      fieldName: storagePodId
-      fieldLabel: Datastore Cluster
-      fieldContext: config
-      fieldGroup: Options
-      required: false
-      enabled: true
-      optionSource: datastoreCluster
-      editable: false
-      global: false
-      placeHolder: null
-      helpBlock: ''
-      defaultValue: null
-      custom: false
-      displayOrder: 103
-      fieldClass: null
-    - meta: {key: code}
-      code: provisionType.vmware.plugin.datastore
-      type: select
-      name: datastore
-      category: provisionType.vmware.plugin
-      fieldName: datastoreId
-      fieldLabel: Datastore
-      fieldContext: config
-      fieldGroup: Options
-      required: false
-      enabled: true
-      optionSource: datastore
-      editable: false
-      global: false
-      placeHolder: null
-      helpBlock: ''
-      defaultValue: null
-      custom: false
-      displayOrder: 104
       fieldClass: null
     - meta: {key: code}
       code: provisionType.vmware.plugin.network
@@ -115,8 +76,8 @@ seed:
       fieldGroup: Options
       required: false
       enabled: true
-      optionSource: vmwareFolders
-      optionSourceType: vmware
+      optionSource: vmwarePluginFolder
+      optionSourceType: vmware-plugin
       editable: false
       global: false
       placeHolder: null
@@ -227,8 +188,8 @@ seed:
       type: select
       name: virtual image
       category: provisionType.vmware.plugin.custom
-      optionSource: vmwareVirtualImages
-      optionSourceType: vmware
+      optionSource: vmwarePluginImages
+      optionSourceType: vmware-plugin
       fieldName: virtualImageId
       fieldLabel: Virtual Image
       fieldContext: containerType
