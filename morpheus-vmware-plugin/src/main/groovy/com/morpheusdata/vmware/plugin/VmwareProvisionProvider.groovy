@@ -832,10 +832,15 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		log.debug "prepareWorkload: ${workload} ${workloadRequest} ${opts}"
-
 		def rtn = [success: false, msg: null]
 		try {
-			Long virtualImageId = workload.getConfigProperty('virtualImageId')?.toLong()
+			ComputeServer server = workload.getServer()
+			Long virtualImageId
+			if(workload.getConfigProperty('virtualImageId')) {
+				virtualImageId = workload.getConfigProperty('virtualImageId')?.toLong()
+			} else if(server?.sourceImage) {
+				virtualImageId = server.sourceImage.id
+			}
 			if(!virtualImageId) {
 				rtn.msg = "No virtual image selected"
 			} else {
@@ -1830,7 +1835,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 
 					def serverDetail = checkServerReady(workloadRequest, workloadResponse, [cloud:cloud, server:server, externalId:server.externalId,
 					                                     modified:createResults.modified])
-					log.debug("serverDetail: ${serverDetail}")
+					log.info("serverDetail: ${serverDetail}")
 					if(serverDetail.error == true) {
 						workloadResponse.setError(serverDetail.msg ?: 'failed to load server status after creating')
 					} else if(serverDetail.success == true) {
@@ -1960,7 +1965,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				def serverDetail = VmwareComputeUtility.getServerDetail(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, opts)
 				opts.server = morpheusContext.computeServer.get(opts.server.id).blockingGet()
 				def sshHost = opts.server.internalIp
-				log.debug("server detail ${serverDetail} - ${sshHost}")
+				log.info("server detail ${serverDetail} - ${sshHost}")
 				if(serverDetail.found == false) {
 					rtn.error = true
 					rtn.results = serverDetail.results
