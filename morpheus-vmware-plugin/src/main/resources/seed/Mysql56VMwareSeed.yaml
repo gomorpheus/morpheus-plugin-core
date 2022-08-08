@@ -1,0 +1,511 @@
+seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.interface.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-e1000
+
+  virtualImage:
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.mysql.5.6
+    category: vmware.plugin.vsphere.image.morpheus.mysql.5.6
+    sshUsername: ubuntu
+    sshPassword: null
+    name: morpheus mysql 5.6
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/mysql/mysql-5_6/ubuntu-14_04-mysql-5_6.ovf
+    imagePath: vmware/mysql/mysql-5_6
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-1
+    category: vmware.plugin.vsphere.image.morpheus.mysql.5.6
+    sshUsername: ubuntu
+    sshPassword: null
+    name: ubuntu-14_04-mysql-5_6-1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/mysql/mysql-5_6-1/ubuntu-14_04-mysql-5_6.ovf
+    imagePath: vmware/mysql/mysql-5_6-1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-2
+    category: vmware.plugin.vsphere.image.morpheus.mysql.5.6
+    sshUsername: ubuntu
+    sshPassword: null
+    name: ubuntu-14_04-mysql-5_6-2
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/mysql/mysql-5_6-2/ubuntu-14_04-mysql-5_6.ovf
+    imagePath: vmware/mysql/mysql-5_6-2
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-v3
+    category: vmware.plugin.vsphere.image.morpheus.mysql.5.6
+    sshUsername: ubuntu
+    sshPassword: null
+    name: Morpheus MySQL 5.6 on Ubuntu 14.04 v3
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/mysql/mysql-5_6-ubuntu-14_04_5-v3-amd64/morpheus-mysql-5_6-ubuntu-14_04_5-v3-amd64.ovf
+    imagePath: vmware/mysql/mysql-5_6-ubuntu-14_04_5-v3-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.mysql.volume.0
+
+  containerType:
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6
+    shortName: mysql
+    name: MySQL 5.6
+    ports: [3306]
+    containerVersion: '5.6'
+    imageCode: morpheus mysql 5.6
+    entryPoint: /entrypoint.sh
+    statTypeCode: mysql
+    logTypeCode: mysql
+    checkTypeCode: mysqlCheck
+    mountData: /var/lib/mysql
+    mountConfig: /etc/mysql/conf.d
+    mountLogs: /var/log/mysql
+    category: master
+    cloneType: mysql
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    deploymentType:
+      domainClass: containerDeployType
+      meta: {key: code}
+      code: mysql
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-v3
+    scripts:
+    - meta: {key: code}
+      code: mysql-5.6-vm-entrypoint
+    - meta: {key: code}
+      code: mysql-5.6-vm-stop
+    - meta: {key: code}
+      code: mysqld-deploy-seed
+    - meta: {key: code}
+      code: mysql-5.6-vm-start
+    - meta: {key: code}
+      code: mysql-5.6-vm-restart
+    containerMounts:
+    - meta: {key: code}
+      code: mysql-config
+    - meta: {key: code}
+      code: mysql-data
+    - meta: {key: code}
+      code: mysql-seed
+    - meta: {key: code}
+      code: mysql-logs
+    templates:
+    - meta: {key: code}
+      code: mysqld-app-armor-cnf-5.6
+    - meta: {key: code}
+      code: mysql-cnf-5.6
+    - meta: {key: code}
+      code: mysql-charset-5.6
+    - meta: {key: code}
+      code: mysql-cnf-custom-5.6
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: MySQL
+    containerPorts:
+    - meta: {key: code}
+      code: mysql.3306
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-master
+    shortName: mysql
+    name: MySQL 5.6 Master
+    ports: [3306]
+    containerVersion: '5.6'
+    repositoryImage: ''
+    imageCode: morpheus mysql 5.6
+    entryPoint: /entrypoint.sh
+    statTypeCode: mysql
+    logTypeCode: mysql
+    checkTypeCode: mysqlCheck
+    mountData: /var/lib/mysql
+    mountConfig: /etc/mysql/conf.d
+    mountLogs: /var/log/mysql
+    category: master
+    cloneType: mysql
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    deploymentType:
+      domainClass: containerDeployType
+      meta: {key: code}
+      code: mysql
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-v3
+    actions:
+    - meta: {key: code}
+      code: mysql-remove-expired-master
+    scripts:
+    - meta: {key: code}
+      code: mysql-5.6-vm-entrypoint
+    - meta: {key: code}
+      code: mysql-5.6-vm-stop
+    - meta: {key: code}
+      code: mysqld-deploy-seed
+    - meta: {key: code}
+      code: mysql-5.6-vm-start
+    - meta: {key: code}
+      code: mysql-5.6-vm-restart
+    templates:
+    - meta: {key: code}
+      code: mysqld-app-armor-cnf-5.6
+    - meta: {key: code}
+      code: mysql-cnf-master-5.6
+    - meta: {key: code}
+      code: mysql-cnf-custom-5.6
+    containerMounts:
+    - meta: {key: code}
+      code: mysql-config
+    - meta: {key: code}
+      code: mysql-data
+    - meta: {key: code}
+      code: mysql-seed
+    - meta: {key: code}
+      code: mysql-logs
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: MySQL
+    containerPorts:
+    - meta: {key: code}
+      code: mysql.3306
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-slave
+    shortName: mysql
+    name: MySQL 5.6 Slave
+    ports: [3306]
+    containerVersion: '5.6'
+    repositoryImage: ''
+    imageCode: morpheus mysql 5.6
+    entryPoint: /entrypoint.sh
+    statTypeCode: mysql
+    logTypeCode: mysql
+    checkTypeCode: mysqlCheck
+    mountData: /var/lib/mysql
+    mountConfig: /etc/mysql/conf.d
+    mountLogs: /var/log/mysql
+    category: slave
+    cloneType: mysql
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    hasDeployment: false
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.mysql.5.6-v3
+    actions:
+    - meta: {key: code}
+      code: mysql-remove-slave
+    scripts:
+    - meta: {key: code}
+      code: mysql-5.6-vm-entrypoint
+    - meta: {key: code}
+      code: mysql-5.6-vm-stop
+    - meta: {key: code}
+      code: mysql-5.6-vm-start
+    - meta: {key: code}
+      code: mysql-5.6-vm-restart
+    templates:
+    - meta: {key: code}
+      code: mysqld-app-armor-cnf-5.6
+    - meta: {key: code}
+      code: mysql-cnf-slave-5.6
+    - meta: {key: code}
+      code: mysql-cnf-custom-5.6
+    containerMounts:
+    - meta: {key: code}
+      code: mysql-config
+    - meta: {key: code}
+      code: mysql-data
+    - meta: {key: code}
+      code: mysql-seed
+    - meta: {key: code}
+      code: mysql-logs
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: MySQL
+    containerPorts:
+    - meta: {key: code}
+      code: mysql.3306
+
+  containerTypeSet:
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-set
+    category: master
+    containerType: {domainClass: containerType, code: mysql-vmware-plugin-5.6}
+    priorityOrder: 0
+    containerCount: 1
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-master-set
+    category: master
+    containerType: {domainClass: containerType, code: mysql-vmware-plugin-5.6-master}
+    priorityOrder: 0
+    containerCount: 1
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-slave-set
+    category: master
+    containerType: {domainClass: containerType, code: mysql-vmware-plugin-5.6-slave}
+    priorityOrder: 2
+    containerCount: 1
+  - meta: {key: code}
+    code: mysql-vmware-plugin-5.6-master-dual-set
+    category: master
+    containerType: {domainClass: containerType, code: mysql-vmware-plugin-5.6-master}
+    priorityOrder: 0
+    containerCount: 2
+
+  instanceTypeLayout:
+  - meta:
+      key: [code, instanceType]
+    code: mysql-vmware-plugin-5.6-single
+    name: VMware Master
+    sortOrder: 30
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: mysql
+    instanceVersion: '5.6'
+    serverCount: 1
+    portCount: 1
+    memoryRequirement: 2147483648
+    hasSettings: true
+    layoutStyle: mysql
+    serverType: vm
+    postProvisionService: null
+    postProvisionOperation: null
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: mysql-vmware-plugin-5.6-set
+    actions:
+    - meta: {key: code}
+      code: mysql-add-slave
+    optionTypes:
+    - meta: {key: code}
+      code: instanceType.mysql.rootPassword
+    - meta: {key: code}
+      code: instanceType.mysql.username
+    - meta: {key: code}
+      code: instanceType.mysql.password
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: mysql-vmware-plugin-5.6-master-slave
+    name: VMware Master/Slave
+    sortOrder: 31
+    description: This will provision a master and slave vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: mysql
+    instanceVersion: '5.6'
+    serverCount: 2
+    portCount: 1
+    memoryRequirement: 2147483648
+    hasSettings: true
+    layoutStyle: master_slave
+    serverType: vm
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: mysql-vmware-plugin-5.6-master-set
+    - meta: {key: code}
+      code: mysql-vmware-plugin-5.6-slave-set
+    postProvisionService: mysqlContainerService
+    postProvisionOperation: initMasterSlave
+    actions:
+    - meta: {key: code}
+      code: mysql-add-slave
+    - meta: {key: code}
+      code: mysql-change-master
+    optionTypes:
+    - meta: {key: code}
+      code: instanceType.mysql.rootPassword
+    - meta: {key: code}
+      code: instanceType.mysql.username
+    - meta: {key: code}
+      code: instanceType.mysql.password
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: mysql-vmware-plugin-5.6-master-master
+    name: VMware Master/Master
+    sortOrder: 32
+    description: This will provision dual masters in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: mysql
+    instanceVersion: '5.6'
+    serverCount: 2
+    portCount: 1
+    memoryRequirement: 2147483648
+    hasSettings: true
+    layoutStyle: master_master
+    serverType: vm
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: mysql-vmware-plugin-5.6-master-dual-set
+    postProvisionService: mysqlContainerService
+    postProvisionOperation: initMasterMaster
+    actions:
+    - meta: {key: code}
+      code: mysql-add-slave
+    optionTypes:
+    - meta: {key: code}
+      code: instanceType.mysql.rootPassword
+    - meta: {key: code}
+      code: instanceType.mysql.username
+    - meta: {key: code}
+      code: instanceType.mysql.password
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
