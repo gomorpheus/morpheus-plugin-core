@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.util.*
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection
+import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.DatastoreIdentityProjection
 import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection
@@ -734,7 +735,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 		def folderId = runConfig.folder
 		def clusterId = runConfig.cluster
 
-		ComputeZoneFolder imageFolder
+		ComputeZoneFolderIdentityProjection imageFolder
 		try {
 			imageFolder = morpheusContext.cloud.folder.getDefaultImageFolderForAccount(cloud.id, account.id).blockingGet()
 		} catch(e) {
@@ -1801,7 +1802,7 @@ class VmwareProvisionProvider extends AbstractProvisionProvider {
 				// Setup smbios Information for reference in Guest Operating System
 				def assetOption = new OptionValue()
 				assetOption.setKey('smbios.assetTag')
-				assetOption.setValue(workload.getConfigProperty('smbiosAssetTag') ?: server.name)
+				assetOption.setValue(workload.getConfigProperty('smbiosAssetTag') instanceof String ? workload.getConfigProperty('smbiosAssetTag') : server.name)
 				VmwareComputeUtility.adjustVmConfig(authConfig.apiUrl, authConfig.apiUsername, authConfig.apiPassword, [externalId:server.externalId, extraConfig:[assetOption]])
 
 				morpheusContext.process.startProcessStep(workloadRequest.process, new ProcessEvent(type: ProcessEvent.ProcessType.provisionLaunch), 'starting vm')
