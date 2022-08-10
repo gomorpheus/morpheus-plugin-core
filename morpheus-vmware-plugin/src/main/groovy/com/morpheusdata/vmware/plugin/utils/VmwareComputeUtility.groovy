@@ -2,6 +2,7 @@ package com.morpheusdata.vmware.plugin.utils
 
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.ComputeUtility
+import com.morpheusdata.core.util.ProgressInputStream
 import com.morpheusdata.core.util.SSLUtility
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.StorageController
