@@ -1,0 +1,91 @@
+seed:
+  optionType:
+    - meta: {key: code}
+      code: instanceType.vmware.plugin.template
+      type: select
+      name: Template
+      category: instanceType.vmware.plugin
+      fieldName: template
+      fieldLabel: Image
+      fieldContext: config
+      fieldGroup: Options
+      required: true
+      enabled: true
+      optionSource: vmwarePluginImage
+      optionSourceType: vmware-plugin
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 1
+      fieldClass: null
+      description: Choose from a list of Virtual Images that might want to be provisioned.
+  instanceType:
+    - meta: {key: code}
+      code: vmware-provision-provider-plugin
+      name: VMware Plugin
+      category: cloud
+      active: true
+      enabled: true
+      stackTier: 30
+      hasConfig: false
+      hasSettings: false
+      hasDeployment: false
+      versions: ['1.0']
+      environmentPrefix: VMWARE-PROVISION-PROVIDER-PLUGIN
+      optionTypes:
+        - meta: {key: code}
+          code: instanceType.vmware.plugin.template
+  containerType:
+    - meta: {key: code}
+      code: vmware-provision-provider-plugin-1.0
+      shortName: vmware-plugin
+      name: VMware Plugin
+      ports: []
+      containerVersion: '1.0'
+      serverType: vm
+      category: vmware-plugin
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+  containerTypeSet:
+    - meta: {key: code}
+      code: vmware-plugin-1.0-set
+      containerType: {domainClass: containerType, code: vmware-provision-provider-plugin-1.0}
+      priorityOrder: 0
+      dynamicCount: true
+      containerCount: 1
+  instanceTypeLayout:
+    - meta:
+        key: [code, instanceType]
+      code: vmware-plugin-1.0-single
+      name: Vmware VM
+      sortOrder: 0
+      instanceVersion: '1.0'
+      description: This will provision a single vm
+      postProvisionService: null
+      postProvisionOperation: null
+      instanceType:
+        domainClass: instanceType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+      serverCount: 1
+      portCount: 0
+      enabled: true
+      creatable: true
+      containers:
+        - meta: {key: code}
+          code: vmware-plugin-1.0-set
+      actions:
+        - meta: {key: code}
+          code: vmware-add-node
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+      optionTypes:
+        - meta: {key: code}
+          code: instanceType.exposePorts

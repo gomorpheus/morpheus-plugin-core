@@ -1,0 +1,642 @@
+seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.8.8.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.8.8.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.8.8.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.9.13.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.9.13.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.9.13.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.10.9.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.10.9.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.10.9.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.11.0.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.11.0.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.11.0.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.8.8.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.9.13.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.10.9.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.11.0.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.controller.scsi0
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.8.8.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: e1000
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.9.13.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.10.9.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.debian.11.0.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  virtualImage:
+  - meta: {key: code}
+    code: debian-8_7.ovf
+    category: vmware.plugin.morpheus.debian
+    sshUsername: debian
+    sshPassword: null
+    name: morpheus debian 8.8
+    imageType: vmdk
+    imagePath: vmware/debian/debian-8_8-v1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: debian.8.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.8.8.volume.0
+  - meta: {key: code}
+    code: debian-9_13.ovf
+    category: vmware.plugin.morpheus.debian
+    sshUsername: debian
+    sshPassword: null
+    name: morpheus debian 9.13
+    imageType: vmdk
+    imagePath: vmware/debian/debian-9_13_0-v1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: debian.9.13.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.9.13.volume.0
+  - meta: {key: code}
+    code: debian-10_9.ovf
+    category: vmware.plugin.morpheus.debian
+    sshUsername: debian
+    sshPassword: null
+    name: morpheus debian 10.10
+    imageType: vmdk
+    imagePath: vmware/debian/debian-10_10_0-v1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: debian.10.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.10.9.volume.0
+  - meta: {key: code}
+    code: debian-11_0.ovf
+    category: vmware.plugin.morpheus.debian
+    sshUsername: debian
+    sshPassword: null
+    name: morpheus debian 11.0
+    imageType: vmdk
+    imagePath: vmware/debian/debian-11_0_0-v1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: debian.11.64
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.debian.11.0.volume.0
+  containerType:
+  - meta: {key: code}
+    code: vmware-plugin-debian-8.8
+    shortName: debian
+    name: Debian 8.8
+    ports: [22]
+    containerVersion: '8.8'
+    imageCode: morpheus debian 8.8
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: debian
+    showServerLogs: 'true'
+    category: debian
+    cloneType: debian
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: debian.22
+    actions:
+    - meta: {key: code}
+      code: generic-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: debian-8_7.ovf
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-debian-9.13
+    shortName: debian
+    name: Debian 9.13
+    ports: [22]
+    containerVersion: '9.13'
+    imageCode: morpheus debian 9.13
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: debian
+    showServerLogs: 'true'
+    category: debian
+    cloneType: debian
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: debian.22
+    actions:
+    - meta: {key: code}
+      code: generic-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: debian-9_13.ovf
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-debian-10.9
+    shortName: debian
+    name: Debian 10
+    ports: [22]
+    containerVersion: '10'
+    imageCode: morpheus debian 10
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: debian
+    showServerLogs: 'true'
+    category: debian
+    cloneType: debian
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: debian.22
+    actions:
+    - meta: {key: code}
+      code: generic-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: debian-10_9.ovf
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-debian-11.0
+    shortName: debian
+    name: Debian 11
+    ports: [22]
+    containerVersion: '11'
+    imageCode: morpheus debian 11
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: debian
+    showServerLogs: 'true'
+    category: debian
+    cloneType: debian
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: debian.22
+    actions:
+    - meta: {key: code}
+      code: generic-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: debian-11_0.ovf
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  containerTypeSet:
+  - meta: {key: code}
+    code: vmware-plugin-debian-8.8-set
+    containerType: {domainClass: containerType, code: vmware-plugin-debian-8.8}
+    category: debian
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-debian-9.13-set
+    containerType: {domainClass: containerType, code: vmware-plugin-debian-9.13}
+    category: debian
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-debian-10.9-set
+    containerType: {domainClass: containerType, code: vmware-plugin-debian-10.9}
+    category: debian
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-debian-11.0-set
+    containerType: {domainClass: containerType, code: vmware-plugin-debian-11.0}
+    category: debian
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  instanceTypeLayout:
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-debian-8.8-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '8.8'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: debian
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-debian-8.8-set
+    actions:
+    - meta: {key: code}
+      code: generic-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-debian-9.13-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '9.13'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: debian
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-debian-9.13-set
+    actions:
+    - meta: {key: code}
+      code: generic-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-debian-10.9-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '10'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: debian
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-debian-10.9-set
+    actions:
+    - meta: {key: code}
+      code: generic-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-debian-11.0-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '11'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: debian
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    enabled: true
+    creatable: true
+    supportsConvertToManaged: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-debian-11.0-set
+    actions:
+    - meta: {key: code}
+      code: generic-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  scaleAction:
+  - meta: {key: code}
+    code: vmware-plugin-debian-8.8-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-debian-8.8-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: generic-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: generic-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-debian-9.13-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-debian-9.13-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: generic-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: generic-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-debian-10.9-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-debian-10.9-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: generic-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: generic-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-debian-11.0-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-debian-11.0-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: generic-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: generic-remove-node
