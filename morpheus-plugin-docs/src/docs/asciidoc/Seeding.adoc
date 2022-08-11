@@ -8,8 +8,6 @@ You will need to create a folder called *seed* in your your plugin's resources f
 
 [source,yaml]
 ----
-# dependencies
-dependsOn: []
 # seed entries
 seed:
   optionType:
