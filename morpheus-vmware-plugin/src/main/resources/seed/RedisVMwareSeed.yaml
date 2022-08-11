@@ -1,4 +1,56 @@
+dependsOn: []
 seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.redis.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.redis.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.redis.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.redis.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.redis.controller.scsi0
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.redis.interface.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-e1000
   virtualImage:
   - meta: {key: code}
     code: vmware.plugin.vsphere.image.morpheus.redis.3.0
@@ -139,7 +191,6 @@ seed:
     volumes:
     - meta: {key: uniqueId}
       uniqueId: vmware.plugin.vsphere.image.morpheus.redis.volume.0
-
   containerType:
   - meta: {key: code}
     code: redis-vmware-plugin-3.0
@@ -308,7 +359,6 @@ seed:
       code: redis.6379
     - meta: {key: code}
       code: redis.16379
-
   containerTypeSet:
   - meta: {key: code}
     code: redis-vmware-plugin-3.0-set
@@ -334,7 +384,6 @@ seed:
     containerType: {domainClass: containerType, code: redis-vmware-plugin-3.0-cluster}
     priorityOrder: 0
     containerCount: 6
-
   instanceTypeLayout:
   - meta:
       key: [code, instanceType]
@@ -359,7 +408,7 @@ seed:
     provisionType:
       domainClass: provisionType
       meta: {key: code}
-      code: vmware
+      code: vmware-provision-provider-plugin
   - meta:
       key: [code, instanceType]
     code: redis-vmware-plugin-3.0-master-slave
@@ -385,7 +434,7 @@ seed:
     provisionType:
       domainClass: provisionType
       meta: {key: code}
-      code: vmware
+      code: vmware-provision-provider-plugin
   - meta:
       key: [code, instanceType]
     code: redis-vmware-plugin-3.0-ha
@@ -413,7 +462,7 @@ seed:
     provisionType:
       domainClass: provisionType
       meta: {key: code}
-      code: vmware
+      code: vmware-provision-provider-plugin
   - meta:
       key: [code, instanceType]
     code: redis-vmware-plugin-3.0-cluster
@@ -437,6 +486,6 @@ seed:
     provisionType:
       domainClass: provisionType
       meta: {key: code}
-      code: vmware
+      code: vmware-provision-provider-plugin
     postProvisionService: redisContainerService
     postProvisionOperation: postProvisionCluster

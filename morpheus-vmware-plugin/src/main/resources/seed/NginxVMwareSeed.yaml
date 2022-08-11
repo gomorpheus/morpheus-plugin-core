@@ -1,0 +1,229 @@
+seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.scsi0
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.interface.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-e1000
+  virtualImage:
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.nginx.1.9
+    category: vmware.plugin.vsphere.image.morpheus.nginx.1.9
+    sshUsername: ubuntu
+    sshPassword: null
+    name: ubuntu-14_04-nginx-1_9-morph.0.1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/nginx/nginx-1_9-morph.0.1/ubuntu-14_04-nginx-1_9.ovf
+    imagePath: vmware/nginx/nginx-1_9-morph.0.1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.volume.0
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.nginx.1.9-1
+    category: vmware.plugin.vsphere.image.morpheus.nginx.1.9
+    sshUsername: ubuntu
+    sshPassword: null
+    name: ubuntu-14_04-nginx-1_9-1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/nginx/nginx-1_9-1/ubuntu-14_04-nginx-1_9.ovf
+    imagePath: vmware/nginx/nginx-1_9-1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.interface.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.nginx.volume.0
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.14.04.64
+  containerType:
+  - meta: {key: code}
+    code: nginx-vmware-plugin-1.9
+    shortName: nginx
+    name: NGINX 1.9
+    ports: []
+    containerVersion: '1.9'
+    repositoryImage: ''
+    entryPoint: /entrypoint.sh
+    statTypeCode: vm
+    logTypeCode: nginx
+    checkTypeCode: webGetCheck
+    mountPoint: /data
+    mountData: /morpheus/data
+    mountConfig: /etc/nginx
+    mountLogs: /var/log/nginx
+    category: nginx
+    cloneType: nginx
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    deploymentType:
+      domainClass: containerDeployType
+      meta: {key: code}
+      code: nginx
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.nginx.1.9-1
+    actions:
+    - meta: {key: code}
+      code: nginx-1.9-remove-node
+    scripts:
+    - meta: {key: code}
+      code: nginx-1.9-vm-entrypoint
+    - meta: {key: code}
+      code: nginx-1.9-vm-start
+    - meta: {key: code}
+      code: nginx-1.9-vm-stop
+    containerMounts:
+    - meta: {key: code}
+      code: nginx-1.9-config
+    - meta: {key: code}
+      code: nginx-1.9-data
+    - meta: {key: code}
+      code: nginx-1.9-certs
+    - meta: {key: code}
+      code: nginx-1.9-logs
+    templates:
+    - meta: {key: code}
+      code: nginx-1.9
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+    containerPorts:
+    - meta: {key: code}
+      code: nginx.80
+    - meta: {key: code}
+      code: nginx.443
+    hasSslCert: true
+    certificateFile: nginx
+    certificatePath: /etc/nginx/certs
+    certificateWritePath: /config/certs
+    certificateStyle: crt_key
+  containerTypeSet:
+  - meta: {key: code}
+    code: nginx-vmware-plugin-1.9-set
+    category: nginx
+    containerType: {domainClass: containerType, code: nginx-vmware-plugin-1.9}
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  instanceTypeLayout:
+  - meta:
+      key: [code, instanceType]
+    code: nginx-vmware-plugin-1.9-single
+    name: VMware NGINX
+    sortOrder: 10
+    description: This will provision a single process with no redundancy
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: nginx
+    instanceVersion: '1.9'
+    serverCount: 1
+    portCount: 2
+    serverType: vm
+    hasAutoScale: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: nginx-vmware-plugin-1.9-set
+    actions:
+    - meta: {key: code}
+      code: nginx-1.9-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  scaleAction:
+  - meta: {key: code}
+    code: nginx-vmware-plugin-1.9-scale
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: nginx-vmware-plugin-1.9-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: nginx-1.9-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: nginx-1.9-remove-node
