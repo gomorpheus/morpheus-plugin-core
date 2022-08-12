@@ -1,12 +1,11 @@
 package com.morpheusdata.core.backup;
 
 import com.morpheusdata.core.*;
-import com.morpheusdata.model.BackupType;
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.ReplicationType;
+import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Provides a standard set of methods for interacting with backup providers.
@@ -17,6 +16,8 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 
 	Plugin plugin;
 	MorpheusContext morpheusContext;
+
+	BackupJobProvider backupJobProvider;
 
 	public AbstractBackupProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin;
@@ -34,82 +35,156 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 	}
 
 	@Override
-	public Collection<BackupType> getBackupTypes() {
-		return this.getBackupProviderType().getBackupTypes();
-	}
+	public Boolean getEnabled() { return true; }
 
 	@Override
-	public Collection<ReplicationType> getReplicationTypes() {
-		return this.getBackupProviderType().getReplicationTypes();
-	}
+	public Boolean getCreatable() { return false; }
 
 	@Override
-	public Collection<BackupJobProvider> getAvailableBackupJobProviders() {
-		Collection<PluginProvider> pluginProviders = plugin.getProvidersByType(BackupJobProvider.class);
-		Collection<BackupJobProvider> backupJobProviders = new ArrayList<>();
-		for(PluginProvider pluginProvider:pluginProviders) {
-			backupJobProviders.add((BackupJobProvider)pluginProvider);
-		}
-		return backupJobProviders;
-	}
+	public String getViewSet() { return null; }
 
 	@Override
-	public BackupJobProvider getAvailableBackupJobProvider(String providerCode) {
-		Collection<BackupJobProvider> jobProviders = getAvailableBackupJobProviders();
-		BackupJobProvider matchedProvider = null;
-		for(BackupJobProvider jobProvider:jobProviders) {
-			if(jobProvider.getCode() == providerCode) {
-				matchedProvider = jobProvider;
+	public Boolean getDownloadEnabled() { return false; };
+
+	@Override
+	public Boolean getHasAddToJob() { return true; }
+
+	@Override
+	public Boolean getHasBackups() { return true; }
+
+	@Override
+	public Boolean hasCancelBackup() { return true; };
+
+	@Override
+	public Boolean getHasCloneJob() { return true; }
+
+	@Override
+	public Boolean getHasCopyToStore() { return false; };
+
+	@Override
+	public Boolean getHasCreateJob() { return true; }
+
+	@Override
+	public Boolean getHasJobs() { return false; };
+
+	@Override
+	public Boolean getHasOptionalJob() { return false; }
+
+	@Override
+	public Boolean getHasReplication() { return false; };
+
+	@Override
+	public Boolean getHasReplicationGroups() { return false; };
+
+	@Override
+	public Boolean getHasRepositories() { return false; };
+
+	@Override
+	public Boolean getHasRetentionCount() { return true; }
+
+	@Override
+	public Boolean getHasSchedule() { return true; }
+
+	@Override
+	public Boolean getHasServers() { return false; };
+
+	@Override
+	public Boolean getHasSites() { return false; };
+
+	@Override
+	public Boolean hasStorageProvider() { return true; };
+
+	@Override
+	public Boolean getHasStreamToStore() { return false; };
+
+	@Override
+	public Boolean getRestoreExistingEnabled() { return false; };
+
+	@Override
+	public Boolean getRestoreNewEnabled() { return false; };
+
+	public void addScopedProvider(com.morpheusdata.model.BackupIntegration backupIntegration) {
+		scopedProviders.add(backupIntegration);
+	}
+
+	public void addScopedProvider(BackupTypeProvider backupTypeProvider, String provisionTypeCode, String containerTypeCode) {
+		com.morpheusdata.model.BackupIntegration scopedProvider = new com.morpheusdata.model.BackupIntegration(backupTypeProvider,  provisionTypeCode, containerTypeCode);
+		scopedProviders.add(scopedProvider);
+	}
+
+	public Collection<com.morpheusdata.model.BackupIntegration> getScopedProviders() {
+		return scopedProviders;
+	}
+
+	public Collection<BackupTypeProvider> getBackupProviders() {
+		ArrayList<BackupTypeProvider> backupTypeProviders = new ArrayList<>();
+		for(com.morpheusdata.model.BackupIntegration scopedProvider:scopedProviders) {
+			if(backupTypeProviders.contains(scopedProvider.getBackupTypeProvider()) == false) {
+				backupTypeProviders.add(scopedProvider.getBackupTypeProvider());
 			}
 		}
 
-		return matchedProvider;
+		return backupTypeProviders;
+	}
+
+	// provider
+	@Override
+	public ServiceResponse configureBackupProvider(com.morpheusdata.model.BackupProvider backupProviderModel, Map config, Map opts) {
+		return ServiceResponse.success();
 	}
 
 	@Override
-	public Collection<BackupExecutionProvider> getAvailableBackupExecutionProviders() {
-		Collection<PluginProvider> pluginProviders = plugin.getProvidersByType(BackupJobProvider.class);
-		Collection<BackupExecutionProvider> backupExecutionProviders = new ArrayList<>();
-		for(PluginProvider pluginProvider:pluginProviders) {
-			backupExecutionProviders.add((BackupExecutionProvider)pluginProvider);
-		}
-		return backupExecutionProviders;
+	public ServiceResponse validateBackupProvider(com.morpheusdata.model.BackupProvider backupProviderModel, Map opts) {
+		return ServiceResponse.success();
 	}
 
 	@Override
-	public BackupExecutionProvider getAvailableBackupExecutionProvider(String providerCode) {
-		Collection<BackupExecutionProvider> jobProviders = getAvailableBackupExecutionProviders();
-		BackupExecutionProvider matchedProvider = null;
-		for(BackupExecutionProvider jobProvider:jobProviders) {
-			if(jobProvider.getCode() == providerCode) {
-				matchedProvider = jobProvider;
-			}
-		}
-
-		return matchedProvider;
+	public ServiceResponse initializeBackupProvider(com.morpheusdata.model.BackupProvider backupProviderModel, Map opts) {
+		return ServiceResponse.success();
 	}
 
 	@Override
-	public Collection<BackupRestoreProvider> getAvailableBackupRestoreProviders() {
-		Collection<PluginProvider> pluginProviders = plugin.getProvidersByType(BackupJobProvider.class);
-		Collection<BackupRestoreProvider> backupRestoreProviders = new ArrayList<>();
-		for(PluginProvider pluginProvider:pluginProviders) {
-			backupRestoreProviders.add((BackupRestoreProvider)pluginProvider);
-		}
-		return backupRestoreProviders;
+	public ServiceResponse updateBackupProvider(com.morpheusdata.model.BackupProvider backupProviderModel, Map opts) {
+		return ServiceResponse.success();
+	}
+
+
+	// backup jobs
+	public abstract BackupJobProvider getBackupJobProvider();
+	
+	@Override
+	public ServiceResponse configureBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map config, Map opts) {
+		return getBackupJobProvider().configureBackupJob(backupJobModel, config, opts);
 	}
 
 	@Override
-	public BackupRestoreProvider getAvailableBackupRestoreProvider(String providerCode) {
-		Collection<BackupRestoreProvider> restoreProviders = getAvailableBackupRestoreProviders();
-		BackupRestoreProvider matchedProvider = null;
-		for(BackupRestoreProvider restoreProvider:restoreProviders) {
-			if(restoreProvider.getCode() == providerCode) {
-				matchedProvider = restoreProvider;
-			}
-		}
+	public ServiceResponse validateBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map config, Map opts) {
+		return getBackupJobProvider().validateBackupJob(backupJobModel, config, opts);
+	}
 
-		return matchedProvider;
+	@Override
+	public ServiceResponse createBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map opts) {
+		return getBackupJobProvider().createBackupJob(backupJobModel, opts);
+	}
+
+	@Override
+	public ServiceResponse cloneBackupJob(com.morpheusdata.model.BackupJob sourceBackupJobModel, com.morpheusdata.model.BackupJob backupJobModel, Map opts) {
+		return getBackupJobProvider().cloneBackupJob(sourceBackupJobModel, backupJobModel, opts);
+	}
+
+	@Override
+	public ServiceResponse addToBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map opts) {
+		return getBackupJobProvider().addToBackupJob(backupJobModel, opts);
+	}
+
+	@Override
+	public ServiceResponse deleteBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map opts) {
+		return getBackupJobProvider().deleteBackupJob(backupJobModel, opts);
+	}
+
+	@Override
+	public ServiceResponse executeBackupJob(com.morpheusdata.model.BackupJob backupJobModel, Map opts) {
+		return getBackupJobProvider().executeBackupJob(backupJobModel, opts);
 	}
 
 }

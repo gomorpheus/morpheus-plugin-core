@@ -9,6 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @since 0.8.0
  */
 public class ReferenceDataSyncProjection extends MorpheusModel {
+	protected String internalId;
 	protected String externalId;
 	protected String name;
 
@@ -28,5 +29,14 @@ public class ReferenceDataSyncProjection extends MorpheusModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+		markDirty("internalId", internalId, this.internalId);
 	}
 }

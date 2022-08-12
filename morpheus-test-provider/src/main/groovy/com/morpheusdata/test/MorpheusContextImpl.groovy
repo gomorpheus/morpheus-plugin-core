@@ -8,6 +8,7 @@ import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
+import com.morpheusdata.core.MorpheusReferenceDataService
 import com.morpheusdata.core.MorpheusSecurityGroupService
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
@@ -71,7 +72,9 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusStatsService statsContext
 	protected MorpheusInstanceService instanceService
 	protected MorpheusSnapshotService snapshotService
+	protected MorpheusBackupServiceImpl backupService
 	protected MorpheusDashboardService dashboardService
+	protected MorpheusReferenceDataService referenceDataService
 
 
     MorpheusContextImpl() {

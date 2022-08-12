@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.backup.MorpheusBackupProviderService;
 import com.morpheusdata.core.cloud.MorpheusCloudService;
 import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
@@ -10,7 +11,6 @@ import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.policy.MorpheusPolicyService;
-import com.morpheusdata.core.MorpheusOperationNotificationService;
 import com.morpheusdata.core.backup.MorpheusBackupService;
 import com.morpheusdata.core.backup.MorpheusBackupJobService;
 import com.morpheusdata.model.*;
@@ -95,11 +95,18 @@ public interface MorpheusContext {
 	MorpheusServicePlanService getServicePlan();
 
 	/**
-	 * Returns the Service Plan context used for syncing machines within Morpheus.
+	 * Returns the Compute Server context used for syncing machines within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Compute Server Context to be used for calls by various providers
 	 */
 	MorpheusComputeServerService getComputeServer();
+
+	/**
+	 * Returns the workload context used for syncing workloads within Morpheus.
+	 * Typically this would be called by a {@link CloudProvider}.
+	 * @return An instance of the workload Context to be used for calls by various providers
+	 */
+	MorpheusWorkloadService getWorkload();
 
 	/**
 	 * Returns the ComputeTypeSet context
@@ -283,6 +290,18 @@ public interface MorpheusContext {
 	 */
 	MorpheusDashboardService getDashboard();
 
+	/**
+	 * Returns the MorpheusReferenceDataService
+	 * @return an instance of the MorpheusReferenceDataService
+	 */
+	MorpheusReferenceDataService getReferenceData();
+
+	/**
+	 * Returns the MorpheusBackupProviderService
+	 * @return an instance of the MorpheusBackupProviderService
+	 */
+	MorpheusBackupProviderService getBackupProvider();
+
 	//Common methods used across various contexts
 
 	/**
@@ -370,6 +389,25 @@ public interface MorpheusContext {
 	 * @return A result object detailing the command execution
 	 */
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo);
+
+
+	/**
+	 * Execute a command on a server using custom connection details
+	 *
+	 * @param server server on which to execute the command
+	 * @param command the command to be executed
+	 * @param rpc when enabled, override the agent mode and execute over ssh/winrm
+	 * @param sshUsername username
+	 * @param sshPassword password
+	 * @param publicKey public key as a String
+	 * @param privateKey private key as a String
+	 * @param passPhrase passphrase for <code>privateKey</code>
+	 * @param noProfile for Windows VMs, add a <code>–noprofile</code> argument to PowerShell
+	 * @param sudo execute the command with sudo permissions
+	 * @param guestExec execute the command with guest execution
+	 * @return A result object detailing the command execution
+	 */
+	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo, Boolean guestExec);
 
 	Single<TaskConfig> buildInstanceConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildContainerConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);

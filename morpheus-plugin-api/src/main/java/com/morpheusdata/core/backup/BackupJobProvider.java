@@ -11,17 +11,21 @@ import java.util.Map;
  * @since 0.12.2
  * @author Dustin DeYoung
  */
-public interface BackupJobProvider extends PluginProvider {
+public interface BackupJobProvider {
 
-	ServiceResponse configureBackupJob();
-	ServiceResponse validateBackupJob();
-	ServiceResponse createBackupJob();
-	ServiceResponse cloneBackupJob();
-	ServiceResponse addToBackupJob();
-	ServiceResponse deleteBackupJob();
-	ServiceResponse prepareExecuteBackupJob();
+	ServiceResponse configureBackupJob(BackupJob backupJobModel, Map config, Map opts);
+
+	ServiceResponse validateBackupJob(BackupJob backupJobModel, Map config, Map opts);
+
+	ServiceResponse createBackupJob(BackupJob backupJobModel, Map opts);
+
+	ServiceResponse cloneBackupJob(BackupJob sourceBackupJobModel, BackupJob backupJobModel, Map opts);
+
+	ServiceResponse addToBackupJob(BackupJob backupJobModel, Map opts);
+
+	ServiceResponse deleteBackupJob(BackupJob backupJobModel, Map opts);
+
 	ServiceResponse executeBackupJob(BackupJob backupJob, Map opts);
-	ServiceResponse cancelBackupJob();
 
 
 }

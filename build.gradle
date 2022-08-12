@@ -6,8 +6,7 @@ buildscript {
     dependencies {
         classpath "com.github.jengelman.gradle.plugins:shadow:6.0.0"
         classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
-
-    }
+	}
 }
 
 
@@ -28,6 +27,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 if (isReleaseVersion) {
     apply plugin: "io.github.gradle-nexus.publish-plugin"
@@ -79,20 +79,41 @@ subprojects { project ->
         tasks.withType(io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository).configureEach {
             shouldRunAfter(tasks.withType(Sign))
         }
-    }
+	}
+
+
 
 	// Copying plugin jar to plugins folder will make the plugin available to the morpheus appliance
 	tasks.register('copyToMorpheus', Copy) {
+		println("Copying ${"${layout.projectDirectory.dir("./build/libs")}/${project.name}-${version}-all.jar"} to ${layout.projectDirectory.dir("../plugins")}")
+		from("${layout.projectDirectory.dir("./build/libs")}/${project.name}-${version}-all.jar")
+		into(layout.projectDirectory.dir("../plugins"))
+	}
+
+	tasks.register('copyJarToMorpheus', Copy) {
 		println("Copying ${"${layout.projectDirectory.dir("./build/libs")}/${project.name}-${version}.jar"} to ${layout.projectDirectory.dir("../plugins")}")
 		from("${layout.projectDirectory.dir("./build/libs")}/${project.name}-${version}.jar")
 		into(layout.projectDirectory.dir("../plugins"))
 	}
 
+	tasks.register('moveToPlugin') {
+		doLast {
+			ant.move file: "${buildDir}/libs/${project.name}-${version}-all.jar",
+				todir: "../plugins"
+		}
+	}
+
 	// Runs assemble and copyToMorpheus
 	tasks.register('publishToMorpheus') {
+		dependsOn tasks.shadowJar
+		dependsOn 'moveToPlugin'
+		tasks.findByName('moveToPlugin').mustRunAfter 'shadowJar'
+	}
+
+	tasks.register('publishJarToMorpheus') {
 		dependsOn 'assemble'
-		dependsOn 'copyToMorpheus'
-		tasks.findByName('copyToMorpheus').mustRunAfter 'assemble'
+		dependsOn 'copyJarToMorpheus'
+		tasks.findByName('copyToMorpheus').mustRunAfter 'shadowJar'
 	}
 }
 
@@ -112,21 +133,6 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
-}
-
-tasks.register('copyToMorpheus', Copy) {
-	from(layout.buildDirectory.dir('build/libs'))
-	// includes
-	if(project.hasProperty("includePattern")) {
-		include includePattern
-	}
-	into(layout.projectDirectory.dir("../plugins"))
-}
-
-tasks.register('publishToMorpheus') {
-	dependsOn 'assemble'
-	dependsOn 'copyToMorpheus'
-	tasks.findByName('copyToMorpheus').mustRunAfter 'assemble'
 }
 
 tasks.withType(JavaExec) {

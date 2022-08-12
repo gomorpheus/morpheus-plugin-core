@@ -35,11 +35,7 @@ import java.util.List;
  * }.onDelete {removeItems ->
  *     morpheusContext.network.removeMissingZones(poolServer.integration.id, removeItems)
  * }.onAdd { itemsToAdd ->
- *     while (itemsToAdd?.size() > 0) {
- *         List chunkedAddList = itemsToAdd.take(50)
- *         itemsToAdd = itemsToAdd.drop(50)
- *         addMissingZones(poolServer, chunkedAddList)
- *     }
+ *     addMissingZones(poolServer, itemsToAdd)
  * }.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkDomainSyncProjection,Map>> updateItems ->
  *     return morpheusContext.network.listNetworkDomainsById(updateItems.collect{it.existingItem.id} as Collection<Long>)
  * }.onUpdate { List<SyncTask.UpdateItem<NetworkDomain,Map>> updateItems ->
@@ -98,7 +94,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 
 
-	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction) {
+	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>, UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction) {
 		this.onLoadObjectDetailsFunction = onLoadObjectDetailsFunction;
 		return this;
 	}

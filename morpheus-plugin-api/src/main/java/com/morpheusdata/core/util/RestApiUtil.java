@@ -73,7 +73,10 @@ import org.xml.sax.SAXParseException;
  *
  * @author David Estes
  * @since 0.8.0
+ *
+ * This utility is deprecated. Use {@link HttpApiClient} which is more efficient for API communications.
  */
+@Deprecated
 public class RestApiUtil {
 	static Logger log = LoggerFactory.getLogger(RestApiUtil.class);
 
@@ -93,7 +96,8 @@ public class RestApiUtil {
 		rtn.setData(data);
 
 		try {
-			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
+			URIBuilder uriBuilder = new URIBuilder(url);
+			uriBuilder.setPath(path);
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
 					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey).toString());
@@ -123,6 +127,8 @@ public class RestApiUtil {
 				default:
 					throw new Exception("method was not specified");
 			}
+			log.info("calling api: {}", request.getURI());
+
 			if(username != null && username.length() > 0 && password != null && password.length() > 0) {
 				String creds = username + ":" + password;
 				String credHeader = "Basic " + Base64.getEncoder().encodeToString(creds.getBytes());
@@ -218,7 +224,6 @@ public class RestApiUtil {
 
 				CloseableHttpResponse response = null;
 				try {
-
 					response = (CloseableHttpResponse)client.execute(request);
 					if(response.getStatusLine().getStatusCode() <= 399) {
 						for(Header header : response.getAllHeaders()) {

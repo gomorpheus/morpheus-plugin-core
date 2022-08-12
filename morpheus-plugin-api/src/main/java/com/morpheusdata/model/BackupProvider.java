@@ -2,12 +2,15 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Date;
+import java.util.Map;
+
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class BackupProvider extends MorpheusModel {
 	
 	protected Boolean enabled = true;
 	protected String serviceUrl;
+	protected String serviceToken;
 	protected String host;
 	protected String port;
 	protected String username;
@@ -21,6 +24,9 @@ public class BackupProvider extends MorpheusModel {
 	protected String name;
 	protected String typeName;
 	protected String lastUpdated;
+
+	protected Boolean credentialLoaded = false;
+	protected Map credentialData;
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupProviderType type;
@@ -48,6 +54,15 @@ public class BackupProvider extends MorpheusModel {
 	public void setServiceUrl(String serviceUrl) {
 		markDirty("serviceUrl", serviceUrl, this.serviceUrl);
 		this.serviceUrl = serviceUrl;
+	}
+
+	public String getServiceToken() {
+		return serviceToken;
+	}
+
+	public void setServiceToken(String serviceToken) {
+		this.serviceToken = serviceToken;
+		markDirty("serviceToken", serviceToken, this.serviceToken);
 	}
 
 	public String getHost() {
@@ -183,5 +198,23 @@ public class BackupProvider extends MorpheusModel {
 	public void setAccount(Account account) {
 		markDirty("account", account, this.account);
 		this.account = account;
+	}
+
+	public Boolean getCredentialLoaded() {
+		return credentialLoaded;
+	}
+
+	public void setCredentialLoaded(Boolean credentialLoaded) {
+		this.credentialLoaded = credentialLoaded;
+		markDirty("credentialLoaded", credentialLoaded, this.credentialLoaded);
+	}
+
+	public Map getCredentialData() {
+		return credentialData;
+	}
+
+	public void setCredentialData(Map credentialData) {
+		this.credentialData = credentialData;
+		markDirty("credentialData", credentialData, this.credentialData);
 	}
 }

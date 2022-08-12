@@ -372,6 +372,7 @@ public class Instance extends InstanceIdentityProjection {
 		stopping,
 		starting,
 		suspending,
-		pendingRemoval
+		pendingRemoval,
+		unknown
 	}
 }

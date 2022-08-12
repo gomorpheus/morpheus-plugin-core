@@ -78,7 +78,7 @@ public class Backup extends MorpheusModel {
 	//general
 	protected String internalId;
 	protected String externalId;
-	protected String config;
+
 	protected String restoreConfig;
 	protected String dateDay;
 	protected Integer retentionCount;
@@ -544,15 +544,6 @@ public class Backup extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		markDirty("externalId", externalId, this.externalId);
 		this.externalId = externalId;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getRestoreConfig() {

@@ -56,6 +56,14 @@ public class ServiceResponse<T> {
 	}
 
 	/**
+	 * Helper to initialize a base response with initial data.
+	 * @return A generic respose assuming the repsonse is an error if not converted to a success response.
+	 */
+	public static ServiceResponse prepare(Object data) {
+		return new ServiceResponse(false, null, null, data);
+	}
+
+	/**
 	 * Helper to build an error response from a generic map.
 	 * @return A success or error response based on the boolean value of success in the map.
 	 */

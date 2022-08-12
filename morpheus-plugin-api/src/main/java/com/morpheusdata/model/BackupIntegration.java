@@ -1,26 +1,26 @@
 package com.morpheusdata.model;
 
-import java.util.List;
+import com.morpheusdata.core.backup.BackupTypeProvider;
 
 public class BackupIntegration extends MorpheusModel {
 
-	protected String backupTypeCode;
+	protected BackupTypeProvider backupTypeProvider;
 	protected String containerTypeCode;
 	protected String provisionTypeCode;
 
-	public BackupIntegration(String backupTypeCode, String containerTypeCode, String provisionTypeCode) {
-		this.backupTypeCode = backupTypeCode;
+	public BackupIntegration(BackupTypeProvider backupTypeProvider, String provisionTypeCode, String containerTypeCode) {
+		this.backupTypeProvider = backupTypeProvider;
 		this.containerTypeCode = containerTypeCode;
 		this.provisionTypeCode = provisionTypeCode;
 	}
 
-	public String getBackupTypeCode() {
-		return backupTypeCode;
+	public BackupTypeProvider getBackupTypeProvider() {
+		return backupTypeProvider;
 	}
 
-	public void setBackupTypeCode(String backupTypeCode) {
-		this.backupTypeCode = backupTypeCode;
-		markDirty("backupTypeCode", backupTypeCode, this.backupTypeCode);
+	public void setBackupTypeProvider(BackupTypeProvider backupTypeProvider) {
+		this.backupTypeProvider = backupTypeProvider;
+		markDirty("backupTypeCode", backupTypeProvider, this.backupTypeProvider);
 	}
 
 	public String getContainerTypeCode() {

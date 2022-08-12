@@ -10,7 +10,6 @@ import com.morpheusdata.model.BackupIntegration
 import com.morpheusdata.model.BackupProviderType
 import com.morpheusdata.model.BackupType
 import com.morpheusdata.model.Icon
-import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.ReplicationType
 
 class DigitalOceanBackupProvider implements BackupProvider {

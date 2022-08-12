@@ -15,7 +15,6 @@ public class BackupResult extends MorpheusModel {
 	protected String containerFormat; //container,vm,all
 	protected User createdBy;
 	// protected StorageBucket storageProvider;
-	protected String config;
 	//executor
 	protected Long executeServerId;
 	protected String executorIpAddress;
@@ -162,14 +161,6 @@ public class BackupResult extends MorpheusModel {
 	// 	this.storageProvider = storageProvider;
 	// }
 
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
-	}
 
 	public Long getExecuteServerId() {
 		return executeServerId;
@@ -628,10 +619,5 @@ public class BackupResult extends MorpheusModel {
 	public void setLastUpdated(Date lastUpdated) {
 		markDirty("lastUpdated", lastUpdated, this.lastUpdated);
 		this.lastUpdated = lastUpdated;
-	}
-
-	public Map getConfigMap() {
-		// TODO:
-		return Collections.emptyMap();
 	}
 }

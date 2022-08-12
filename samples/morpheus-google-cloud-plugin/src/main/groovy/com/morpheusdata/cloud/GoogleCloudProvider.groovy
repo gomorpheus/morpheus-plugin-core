@@ -1,20 +1,14 @@
 package com.morpheusdata.cloud
 
-import com.morpheusdata.core.backup.BackupProvider;
+
 import com.morpheusdata.core.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.ProvisioningProvider
-import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.*
 import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.StringEntity
-import io.reactivex.Observable
 
 @Slf4j
 class GoogleCloudProvider implements CloudProvider {
@@ -151,7 +145,7 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<BackupProvider> getAvailableBackupProviders() {
+	Collection<com.morpheusdata.core.backup.BackupProvider> getAvailableBackupProviders() {
 		return null
 	}
 

@@ -22,6 +22,8 @@ public class BackupRestore extends MorpheusModel {
 	protected Long backupId;
 	protected Long containerId;
 
+	protected  Boolean restoreToNew;
+
 	public Account getAccount() {
 		return account;
 	}
@@ -148,4 +150,12 @@ public class BackupRestore extends MorpheusModel {
 		this.containerId = containerId;
 	}
 
+	public Boolean getRestoreToNew() {
+		return restoreToNew;
+	}
+
+	public void setRestoreToNew(Boolean restoreToNew) {
+		this.restoreToNew = restoreToNew;
+		markDirty("restoreToNew", restoreToNew, this.restoreToNew);
+	}
 }

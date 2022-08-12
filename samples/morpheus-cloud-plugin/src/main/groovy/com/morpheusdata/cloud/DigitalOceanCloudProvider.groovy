@@ -210,7 +210,7 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<BackupProvider> getAvailableBackupProviders() {
-		return plugin.getProvidersByType(BackupProvider) as Collection<BackupProvider>
+		return plugin.getProvidersByType(BackupProvider) as Collection<com.morpheusdata.core.backup.BackupProvider>
 	}
 
 	@Override
