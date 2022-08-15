@@ -14,6 +14,26 @@ public class ServicePlanIdentityProjection extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String externalId;
+	protected Boolean deleted = false;
+	protected String category;
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+		markDirty("deleted", deleted);
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+		markDirty("category", category);
+	}
 
 	public String getCode() {
 		return code;

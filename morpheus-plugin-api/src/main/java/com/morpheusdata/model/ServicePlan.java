@@ -15,11 +15,9 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public Account account;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account owner;
-	public String category;
 	public String description;
 	public String visibility = "public"; //['public', 'private'];
 	public Boolean active = true;
-	public Boolean deleted = false;
 	public Boolean upgradeable = false;
 	public Date dateCreated;
 	public Date lastUpdated;

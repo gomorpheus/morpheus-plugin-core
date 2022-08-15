@@ -21,7 +21,9 @@ public class StorageVolumeType extends MorpheusModel {
 	protected Boolean hasDatastore = true;
 	protected Boolean allowSearch = false;
 	protected String volumeCategory = "disk";
-
+	protected Boolean resizable = false;
+	protected Boolean planResizable = false; // used to override resizable if the user can't resize the volume but plan changes will resize the volume;
+	protected Long minStorage = null;
 	public String getName() {
 		return name;
 	}
@@ -135,5 +137,29 @@ public class StorageVolumeType extends MorpheusModel {
 
 	public void setVolumeCategory(String volumeCategory) {
 		this.volumeCategory = volumeCategory;
+	}
+
+	public Boolean getResizable() {
+		return resizable;
+	}
+
+	public void setResizable(Boolean resizable) {
+		this.resizable = resizable;
+	}
+
+	public Boolean getPlanResizable() {
+		return planResizable;
+	}
+
+	public void setPlanResizable(Boolean planResizable) {
+		this.planResizable = planResizable;
+	}
+
+	public Long getMinStorage() {
+		return minStorage;
+	}
+
+	public void setMinStorage(Long minStorage) {
+		this.minStorage = minStorage;
 	}
 }
