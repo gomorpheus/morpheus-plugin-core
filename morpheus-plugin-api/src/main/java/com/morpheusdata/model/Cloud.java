@@ -23,7 +23,6 @@ public class Cloud extends CloudIdentityProjection {
 	protected String location;
 	protected String timezone;
 	//	public ComputeZoneType zoneType;
-	protected String config;
 	protected Date dateCreated;
 	protected Date lastUpdated;
 	//	public ComputeAclChain chain;
@@ -126,10 +125,6 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getTimezone() {
 		return timezone;
-	}
-
-	public String getConfig() {
-		return config;
 	}
 
 	public Date getDateCreated() {
@@ -426,11 +421,6 @@ public class Cloud extends CloudIdentityProjection {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 		markDirty("timezone", timezone);
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public void setDateCreated(Date dateCreated) {
