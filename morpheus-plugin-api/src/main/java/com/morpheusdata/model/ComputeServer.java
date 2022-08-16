@@ -57,6 +57,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Float usedCpu;
 	protected Long coresPerSocket;
 	protected Boolean managed;
+	protected Boolean singleTenant;
 	protected ComputeServerType computeServerType;
 	protected Double hourlyPrice = 0D;
 	protected String internalIp;
@@ -395,6 +396,14 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public void setLayout(ComputeTypeLayout layout) {
 		this.layout = layout;
+	}
+
+	public Boolean getSingleTenant() {
+		return singleTenant;
+	}
+
+	public void setSingleTenant(Boolean singleTenant) {
+		this.singleTenant = singleTenant;
 	}
 
 	public enum PowerState {
