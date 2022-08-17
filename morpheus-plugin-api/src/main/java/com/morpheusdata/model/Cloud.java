@@ -75,7 +75,8 @@ public class Cloud extends CloudIdentityProjection {
 	protected String securityMode = "off"; //host firewall.. off or internal
 	//	public NetworkSecurityServer securityServer; //integrated security service
 	protected String networkSecurityMode; // internal (to manage internal firewall for VMs) (ignored if securityServer is set - not used
-	//	public NetworkServer networkServer; //virtual or physical network provider
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected NetworkServer networkServer; //virtual or physical network provider
 	protected String backupMode = "internal"; //if backups are off,run by morpheus or a provider
 	//	public BackupProvider backupProvider; //integrated backup provider
 	//flags on if a cloud is ok to allow these types of provision - for ex, kvm needs a kvm host, kube mode need a master and 1 or more workers
@@ -383,6 +384,14 @@ public class Cloud extends CloudIdentityProjection {
 
 	public void setAccountCredentialData(Map accountCredentialData) {
 		this.accountCredentialData = accountCredentialData;
+	}
+
+	public NetworkServer getNetworkServer() {
+		return networkServer;
+	}
+
+	public void setNetworkServer(NetworkServer networkServer) {
+		this.networkServer = networkServer;
 	}
 
 	public enum Status {
