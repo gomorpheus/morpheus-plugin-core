@@ -22,6 +22,7 @@ public class Network extends NetworkIdentityProjection {
 	public Cloud cloud;
 	protected Long zonePoolId;
 	protected NetworkType type;
+	protected String networkType = "vlan"; //old field - replaced with type domain
 	protected String displayName;
 	protected String interfaceName;
 	protected String bridgeName;
@@ -481,5 +482,13 @@ public class Network extends NetworkIdentityProjection {
 
 	public void setParentNetwork(NetworkIdentityProjection parentNetwork) {
 		this.parentNetwork = parentNetwork;
+	}
+
+	public String getNetworkType() {
+		return networkType;
+	}
+
+	public void setNetworkType(String networkType) {
+		this.networkType = networkType;
 	}
 }

@@ -28,6 +28,8 @@ public class NetworkType extends MorpheusModel {
 	private Boolean canAssignPool = false;
 	private Boolean deletable = false;
 	private Boolean hasCidr = true;
+	protected Boolean hasNetworkServer = false;
+	protected Boolean cidrRequired = false;
 	private List<NetworkSubnetType> subnetTypes = new ArrayList<>();
 	private List<OptionType> optionTypes = new ArrayList<>();
 
@@ -191,5 +193,21 @@ public class NetworkType extends MorpheusModel {
 	public void setNetworkSubnetTypes(List<NetworkSubnetType> subnetTypes) {
 		this.subnetTypes = subnetTypes;
 		markDirty("subnetTypes", subnetTypes);
+	}
+
+	public Boolean getHasNetworkServer() {
+		return hasNetworkServer;
+	}
+
+	public void setHasNetworkServer(Boolean hasNetworkServer) {
+		this.hasNetworkServer = hasNetworkServer;
+	}
+
+	public Boolean getCidrRequired() {
+		return cidrRequired;
+	}
+
+	public void setCidrRequired(Boolean cidrRequired) {
+		this.cidrRequired = cidrRequired;
 	}
 }
