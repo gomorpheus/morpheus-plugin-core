@@ -32,7 +32,8 @@ public class SyncList<Existing, Master> {
 
 	static Logger log = LoggerFactory.getLogger(SyncList.class);
 
-	interface MatchFunction<Existing, Master> {
+	@FunctionalInterface
+	public interface MatchFunction<Existing, Master> {
 		boolean compare(Existing a, Master b);
 	}
 

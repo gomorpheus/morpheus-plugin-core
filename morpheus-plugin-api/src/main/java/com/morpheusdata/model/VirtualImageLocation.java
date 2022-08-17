@@ -29,6 +29,8 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 	@JsonIgnore
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
+	protected String owner;
+	protected Boolean isPublic;
 
 	public String getCode() {
 		return code;
@@ -103,4 +105,20 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	 * @param controllers
 	 */
 	public void setControllers(List<StorageControllerIdentityProjection> controllers) { this.controllers = controllers; }
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public Boolean getPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(Boolean aPublic) {
+		isPublic = aPublic;
+	}
 }

@@ -21,6 +21,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String description;
 	protected String uniqueId;
 	protected String category;
+	protected String externalType;
 	protected Boolean isPublic;
 	protected String platform;
 	protected String bucketId;
@@ -40,6 +41,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean virtioSupported = true;
 	protected Boolean deleted = false;
 	protected Boolean userUploaded = false;
+	protected Boolean userDefined = false;
 	protected Boolean isSysprep = false;
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
@@ -330,5 +332,21 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setUserUploaded(Boolean userUploaded) {
 		this.userUploaded = userUploaded;
+	}
+
+	public String getExternalType() {
+		return externalType;
+	}
+
+	public void setExternalType(String externalType) {
+		this.externalType = externalType;
+	}
+
+	public Boolean getUserDefined() {
+		return userDefined;
+	}
+
+	public void setUserDefined(Boolean userDefined) {
+		this.userDefined = userDefined;
 	}
 }
