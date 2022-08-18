@@ -181,6 +181,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkSubnetType> getSubnetTypes() {
+		return null
+	}
+
+	@Override
 	Collection<StorageVolumeType> getStorageVolumeTypes() {
 		return null
 	}

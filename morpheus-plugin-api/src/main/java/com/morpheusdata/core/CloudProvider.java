@@ -70,6 +70,12 @@ public interface CloudProvider extends PluginProvider {
 	Collection<NetworkType> getNetworkTypes();
 
 	/**
+	 * Provides a Collection of {@link NetworkSubnetType} related to this CloudProvider
+	 * @return Collection of NetworkSubnetType
+	 */
+	Collection<NetworkSubnetType> getSubnetTypes();
+
+	/**
 	 * Provides a Collection of {@link StorageVolumeType} related to this CloudProvider
 	 * @return Collection of StorageVolumeType
 	 */

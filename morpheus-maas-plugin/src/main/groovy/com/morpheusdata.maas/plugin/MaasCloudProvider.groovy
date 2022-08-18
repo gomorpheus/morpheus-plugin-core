@@ -13,6 +13,7 @@ import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.ComputeZonePool
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.Network
+import com.morpheusdata.model.NetworkSubnetType
 import com.morpheusdata.model.NetworkType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.PlatformType
@@ -133,6 +134,11 @@ class MaasCloudProvider implements CloudProvider {
 
 	@Override
 	Collection<NetworkType> getNetworkTypes() {
+		return null
+	}
+
+	@Override
+	Collection<NetworkSubnetType> getSubnetTypes() {
 		return null
 	}
 

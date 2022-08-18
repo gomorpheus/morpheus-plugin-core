@@ -41,6 +41,7 @@ public class Network extends NetworkIdentityProjection {
 	protected String vswitchName;
 	protected String tenantName;
 	protected Boolean dhcpServer = false;
+	protected Boolean hasFloatingIps = false;
 	protected String dhcpIp;
 	protected String gateway;
 	protected String netmask;
@@ -490,5 +491,13 @@ public class Network extends NetworkIdentityProjection {
 
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
+	}
+
+	public Boolean getHasFloatingIps() {
+		return hasFloatingIps;
+	}
+
+	public void setHasFloatingIps(Boolean hasFloatingIps) {
+		this.hasFloatingIps = hasFloatingIps;
 	}
 }

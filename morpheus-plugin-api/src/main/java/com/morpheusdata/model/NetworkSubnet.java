@@ -4,6 +4,9 @@ import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a NetworkSubnet that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
  * used during provisioning of compute or services. They also can be used to allow the user to specify network subnet specific information
@@ -60,6 +63,16 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected Boolean assignPublicIp = false;
 	protected NetworkSubnet.Status status = NetworkSubnet.Status.AVAILABLE;
 	protected Long networkId;
+	protected Boolean hasFloatingIps = false;
+	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
+
+	public Boolean getHasFloatingIps() {
+		return hasFloatingIps;
+	}
+
+	public void setHasFloatingIps(Boolean hasFloatingIps) {
+		this.hasFloatingIps = hasFloatingIps;
+	}
 
 	public enum Status {
 		PROVISIONING,
@@ -410,4 +423,11 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 		markDirty("networkId", networkId);
 	}
 
+	public List<ComputeZonePool> getAssignedZonePools() {
+		return assignedZonePools;
+	}
+
+	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+		this.assignedZonePools = assignedZonePools;
+	}
 }

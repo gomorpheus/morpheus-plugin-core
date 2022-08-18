@@ -404,6 +404,11 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Collection<NetworkSubnetType> getSubnetTypes() {
+		return null
+	}
+
+	@Override
 	Collection<StorageVolumeType> getStorageVolumeTypes() {
 		def datastoreVolumeType = new StorageVolumeType([
 				code: 'vmware-plugin-datastore',
