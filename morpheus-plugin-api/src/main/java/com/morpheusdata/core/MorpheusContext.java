@@ -269,6 +269,13 @@ public interface MorpheusContext {
 	 */
 	MorpheusAccountCredentialService getAccountCredential();
 
+	/**
+	 * Returns the SecurityGroup Service
+	 *
+	 * @return An instance of the SecurityGroup Service
+	 */
+	MorpheusSecurityGroupService getSecurityGroup();
+
 	//Common methods used across various contexts
 
 	/**

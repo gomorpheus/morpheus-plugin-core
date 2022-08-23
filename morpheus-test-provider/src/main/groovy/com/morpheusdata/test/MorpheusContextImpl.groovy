@@ -8,6 +8,7 @@ import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
+import com.morpheusdata.core.MorpheusSecurityGroupService
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
@@ -368,6 +369,11 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusAccountCredentialService getAccountCredential() {
+		return null
+	}
+
+	@Override
+	MorpheusSecurityGroupService getSecurityGroup() {
 		return null
 	}
 }
