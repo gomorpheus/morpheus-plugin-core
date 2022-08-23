@@ -2,9 +2,9 @@ buildscript {
 	repositories {
 		mavenLocal()
 		mavenCentral()
-		maven { url "http://nexus.bertramlabs.com/content/repositories/snapshots" }
-		maven { url "http://nexus.bertramlabs.com/content/repositories/releases" }
-		maven { url "http://nexus.bertramlabs.com/content/repositories/publicReleases" }
+		maven { url "https://nexus.bertramlabs.com/content/repositories/snapshots" }
+		maven { url "https://nexus.bertramlabs.com/content/repositories/releases" }
+		maven { url "https://nexus.bertramlabs.com/content/repositories/publicReleases" }
 	}
 	dependencies {
 		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
@@ -27,9 +27,9 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {
 	mavenLocal()
 	mavenCentral()
-	maven { url "http://nexus.bertramlabs.com/content/repositories/snapshots" }
-	maven { url "http://nexus.bertramlabs.com/content/repositories/releases" }
-	maven { url "http://nexus.bertramlabs.com/content/repositories/publicReleases" }
+	maven { url "https://nexus.bertramlabs.com/content/repositories/snapshots" }
+	maven { url "https://nexus.bertramlabs.com/content/repositories/releases" }
+	maven { url "https://nexus.bertramlabs.com/content/repositories/publicReleases" }
 }
 
 configurations {
