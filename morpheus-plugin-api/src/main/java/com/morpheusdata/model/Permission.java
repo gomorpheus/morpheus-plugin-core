@@ -14,6 +14,7 @@ public class Permission extends MorpheusModel {
 
 	protected String name;
 	protected String code;
+	protected String subCategory;
 	protected List<AccessType> availableAccessTypes;
 
 	public enum ResourceType {
@@ -42,6 +43,13 @@ public class Permission extends MorpheusModel {
 		this.availableAccessTypes = availableAccessTypes;
 	}
 
+	public Permission(String name, String code, List<AccessType> availableAccessTypes, String subCategory) {
+		this.name = name;
+		this.code = code;
+		this.subCategory = subCategory;
+		this.availableAccessTypes = availableAccessTypes;
+	}
+
 	public Permission(String code, List<AccessType> availableAccessTypes) {
 		this.name = code;
 		this.code = code;
@@ -62,6 +70,10 @@ public class Permission extends MorpheusModel {
 			types.add(accessType.name());
 		}
 		return types;
+	}
+
+	public static Permission build(String name, String code,String subCategory, List<AccessType> availableAccessTypes) {
+		return new Permission(name, code, availableAccessTypes,subCategory);
 	}
 
 	public static Permission build(String name, String code, List<AccessType> availableAccessTypes) {
