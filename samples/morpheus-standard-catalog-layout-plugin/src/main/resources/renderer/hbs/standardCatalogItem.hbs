@@ -19,7 +19,9 @@
 			<div class="catalog-item-configuration {{#hasWiki}}with-item-content{{/hasWiki}}">
 				{{#orderForm}}
 					<div class="actions text-right">
-
+							<button class="button" type="submit">Add to Order</button>
+							<input type="hidden" class="order-now" name="orderNow" value="false">
+							<button class="button order-now" type="submit">Order Now</button>
 					</div>
 				{{/orderForm}}
 			</div>
