@@ -57,7 +57,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Float usedCpu;
 	protected Long coresPerSocket;
 	protected Boolean managed;
-	protected Boolean singleTenant;
+	protected Boolean singleTenant = false;
 	protected ComputeServerType computeServerType;
 	protected Double hourlyPrice = 0D;
 	protected String internalIp;
