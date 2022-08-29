@@ -15,6 +15,8 @@ public interface MorpheusSecurityGroupService {
 
 	MorpheusSecurityGroupLocationService getLocation();
 
+	MorpheusSecurityGroupRuleService getRule();
+
 	/**
 	 * Fetch the SecurityGroups given a list of ids
 	 * @param ids list of ids

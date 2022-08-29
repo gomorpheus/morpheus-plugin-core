@@ -41,11 +41,9 @@ public class SecurityGroup extends SecurityGroupIdentityProjection {
 	protected String rawData;
 	protected Integer priority;
 
-//	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
-//	protected List<SecurityGroupRule> rules = new ArrayList<>();
-
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SecurityGroupLocation> locations = new ArrayList<>();
+	protected List<SecurityGroupRule> rules = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -245,5 +243,13 @@ public class SecurityGroup extends SecurityGroupIdentityProjection {
 
 	public void setLocations(List<SecurityGroupLocation> locations) {
 		this.locations = locations;
+	}
+
+	public List<SecurityGroupRule> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<SecurityGroupRule> rules) {
+		this.rules = rules;
 	}
 }
