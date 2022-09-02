@@ -26,6 +26,7 @@ public class NetworkUtility {
 	static private Pattern ip4AddressPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	static private Pattern ip4CidrPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$");
 	static private Pattern ip6AddressPattern = Pattern.compile("^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))?$");
+	static private Pattern ip6CidrPattern = Pattern.compile("^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))$");
 
 
 	static public Boolean validateIpAddr(String addr) {
@@ -39,7 +40,7 @@ public class NetworkUtility {
 	}
 
 	static public Boolean validateIpAddrOrCidrOrRange(String addr, Boolean includeIPv6) {
-		return validateCidr(addr) || validateIpAddr(addr, includeIPv6) || validateIpRange(addr, includeIPv6);
+		return validateCidr(addr, includeIPv6) || validateIpAddr(addr, includeIPv6) || validateIpRange(addr, includeIPv6);
 	}
 
 	static public Boolean validateIpAddrOrCidrOrRange(String addr) {
@@ -77,7 +78,7 @@ public class NetworkUtility {
 
 
 	static public Boolean validateIpAddrOrCidr(String addr, Boolean includeIPv6) {
-		return validateCidr(addr) || validateIpAddr(addr, includeIPv6);
+		return validateCidr(addr, includeIPv6) || validateIpAddr(addr, includeIPv6);
 	}
 
 	static public Boolean validateIpAddrOrCidr(String addr) {
@@ -85,7 +86,24 @@ public class NetworkUtility {
 	}
 
 	static public Boolean validateCidr(String addr) {
+		return validateCidr(addr, false);
+	}
+	
+	static public Boolean validateCidr(String addr, Boolean includeIPv6) {
+		if(includeIPv6) {
+			return validateIpv4Cidr(addr) || validateIpv6Cidr(addr);
+		} else {
+			return validateIpv4Cidr(addr);
+		}
+	}
+	
+	static public Boolean validateIpv4Cidr(String addr) {
 		Matcher matcher = ip4CidrPattern.matcher(addr);
+		return matcher.matches();
+	}
+	
+	static public Boolean validateIpv6Cidr(String addr) {
+		Matcher matcher = ip6CidrPattern.matcher(addr);
 		return matcher.matches();
 	}
 
