@@ -13,6 +13,11 @@ import java.util.List;
 public interface MorpheusSecurityGroupRuleService {
 
 	MorpheusSecurityGroupRuleLocationService getLocation();
+	MorpheusSecurityGroupRuleApplicationService getApplication();
+	MorpheusSecurityGroupRuleDestinationService getDestination();
+	MorpheusSecurityGroupRuleProfileService getProfile();
+	MorpheusSecurityGroupRuleScopeService getScope();
+	MorpheusSecurityGroupRuleSourceService getSource();
 
 	/**
 	 * Fetch the SecurityGroupRuleIdentityProjections for a SecurityGroup
