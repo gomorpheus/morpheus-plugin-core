@@ -12,8 +12,8 @@ class InfobloxPlugin extends Plugin {
 	@Override
 	void initialize() {
 		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheus)
-		this.pluginProviders.put("infoblox2", infobloxProvider)
-		this.setName("Infoblox2")
+		this.pluginProviders.put("infoblox", infobloxProvider)
+		this.setName("Infoblox")
 	}
 
 	/**

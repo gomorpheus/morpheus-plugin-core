@@ -73,7 +73,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	@Override
 	String getCode() {
-		return 'infoblox2'
+		return 'infoblox'
 	}
 
 	/**
@@ -84,7 +84,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	 */
 	@Override
 	String getName() {
-		return 'Infoblox2'
+		return 'Infoblox'
 	}
 
 	/**
