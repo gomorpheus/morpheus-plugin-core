@@ -12,7 +12,9 @@ class InfobloxPlugin extends Plugin {
 	@Override
 	void initialize() {
 		InfobloxProvider infobloxProvider = new InfobloxProvider(this, morpheus)
+		InfobloxOptionSourceProvider optionSourceProvider = new InfobloxOptionSourceProvider(this,morpheus)
 		this.pluginProviders.put("infoblox", infobloxProvider)
+		this.pluginProviders.put(optionSourceProvider.getCode(),optionSourceProvider)
 		this.setName("Infoblox")
 	}
 

@@ -10,7 +10,6 @@ import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.AccountIntegration
 import com.morpheusdata.model.Icon
-import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkDomainRecord
 import com.morpheusdata.model.NetworkPool
@@ -213,7 +212,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
 
 						break
 					case 'AAAA':
@@ -226,7 +225,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
 
 						break
 					case 'CNAME':
@@ -239,7 +238,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
 
 						break
 					case 'TXT':
@@ -252,7 +251,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
 						break
 					case 'MX':
 						apiPath = getServicePath(poolServer.serviceUrl) + 'record:mx'
@@ -264,7 +263,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 							body.extattrs = extraAttributes
 						}
 
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,body:body), 'POST')
 						break
 				}
 
@@ -281,7 +280,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} catch(e) {
 			log.error("provisionServer error: ${e}", e)
 		} finally {
-			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 			client.shutdownClient()
 		}
 		return rtn
@@ -299,14 +298,14 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 
 						apiPath = getServicePath(poolServer.serviceUrl) + record.externalId
 						//we have an A Record to delete
-						def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+						def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 								contentType:ContentType.APPLICATION_JSON), 'DELETE')
 						log.info("deleteRecord results: ${results}")
 						if(results.success) {
 							rtn.success = true
 						}
 					} finally {
-						client.callApi(poolServer.serviceUrl, getServicePath(serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+						client.callApi(poolServer.serviceUrl, getServicePath(serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 						client.shutdownClient()
 					}
 
@@ -370,7 +369,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} catch(e) {
 			log.error("refreshNetworkPoolServer error: ${e}", e)
 		} finally {
-			infobloxClient.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+			infobloxClient.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 
 			infobloxClient.shutdownClient()
 		}
@@ -600,7 +599,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if(pageId != null)
 				pageQuery['_page_id'] = pageId
 			//load results
-			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'],
+			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'],
 																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
@@ -745,7 +744,28 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					shortHostname = hostname.substring(0,suffixIndex)
 				}
 			}
+			def body
 			def networkView = networkPool.externalId.tokenize('/')[3]
+			if(poolServer.serviceMode == 'dhcp' && networkPoolIp.macAddress) {
+				def body = [
+						name             : shortHostname,
+						view             : networkView,
+						ipv4addrs        : [
+								[configure_for_dhcp: true, mac: networkPoolIp.macAddress, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.externalId}".toString()]
+						],
+						configure_for_dns: false
+				]
+			} else {
+				def body = [
+						name             : shortHostname,
+						view             : networkView,
+						ipv4addrs        : [
+								[configure_for_dhcp: false, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.externalId}".toString()]
+						],
+						configure_for_dns: false
+				]
+			}
+
 			def body = [
 					name             : shortHostname,
 					view             : networkView,
@@ -761,7 +781,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			}
 
 			log.debug("body: ${body}")
-			def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
+			def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
 					body: body), 'POST')
 			if (results.success) {
 				def ipPath = results.content.substring(1, results.content.length() - 1)
@@ -789,7 +809,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					if (extraAttributes) {
 						body.extattrs = extraAttributes
 					}
-					results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
+					results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
 							body: body, contentType: ContentType.APPLICATION_JSON), 'POST')
 					if (!results.success) {
 						log.warn("A Record Creation Failed")
@@ -813,7 +833,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						if (extraAttributes) {
 							body.extattrs = extraAttributes
 						}
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers: ['Content-Type': 'application/json'], ignoreSSL: poolServer.ignoreSsl,
 								body: body), 'POST')
 						if (!results.success) {
 							log.warn("PTR Record Creation Failed")
@@ -833,7 +853,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				return ServiceResponse.error("Error allocating host record to the specified ip: ${resultContent?.text}", null, networkPoolIp)
 			}
 		} finally {
-			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 			client.shutdownClient()
 		}
 	}
@@ -852,7 +872,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				name:hostname
 			]
 			log.debug("body: ${body}")
-			def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+			def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																												body:body), 'PUT')
 			if(results.success) {
 				def ipPath = results.content.substring(1, results.content.length() - 1)
@@ -863,7 +883,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				return ServiceResponse.error(results.error ?: 'Error Updating Host Record', null, networkPoolIp)
 			}
 		} finally {
-			client.callApi(serviceUrl, getServicePath(serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+			client.callApi(serviceUrl, getServicePath(serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 			client.shutdownClient()
 		}
 	}
@@ -876,18 +896,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if(poolIp.externalId) {
 				def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 				def apiPath = getServicePath(poolServer.serviceUrl) + poolIp.externalId
-				def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+				def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																													contentType:ContentType.APPLICATION_JSON), 'DELETE')
 				if(results?.success && !results.hasErrors()) {
 					if(poolIp.internalId) {
 						apiPath = getServicePath(poolServer.serviceUrl) + poolIp.internalId
 						//we have an A Record to delete
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl), 'DELETE')
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl), 'DELETE')
 					}
 					if(poolIp.ptrId) {
 						apiPath = getServicePath(poolServer.serviceUrl) + poolIp.ptrId
 						//we have an A Record to delete
-						results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+						results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																														contentType:ContentType.APPLICATION_JSON), 'DELETE')
 						log.info("Clearing out PTR Record ${results?.success}")
 					}
@@ -899,7 +919,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				return ServiceResponse.error("Record not associated with corresponding record in target provider", null, poolIp)
 			}
 		} finally {
-			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
+			client.callApi(poolServer.serviceUrl, getServicePath(poolServer.serviceUrl) + 'logout', poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions([headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl]), 'POST')
 			client.shutdownClient()
 		}
 	}
@@ -938,7 +958,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		def serviceUrl = cleanServiceUrl(poolServer.serviceUrl)
 		def apiPath = getServicePath(poolServer.serviceUrl) + path
 		log.debug("url: ${serviceUrl} path: ${apiPath}")
-		def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
+		def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl,
 																											contentType:ContentType.APPLICATION_JSON), 'GET')
 		rtn.success = results?.success && !results?.hasErrors()
 		log.debug("getItem results: ${results}")
@@ -968,7 +988,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 					pageQuery['_page_id'] = pageId
 				}
 				//load results
-				def results = client.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], queryParams: pageQuery,
+				def results = client.callJsonApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], queryParams: pageQuery,
 																													contentType: ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
 				log.debug("listNetworks results: ${results.toMap()}")
 				if(results?.success && !results?.hasErrors()) {
@@ -1000,7 +1020,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} else {
 			def pageQuery = parseNetworkFilter(poolServer.networkFilter)
 			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results': maxResults.toString()]
-			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
+			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
 																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 
@@ -1033,7 +1053,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				if(pageId != null)
 					pageQuery['_page_id'] = pageId
 				//load results
-				def results = client.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], queryParams:pageQuery,
+				def results = client.callJsonApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], queryParams:pageQuery,
 																													contentType:ContentType.APPLICATION_JSON, ignoreSSL: poolServer.ignoreSsl), 'GET')
 				log.debug("listZones results: ${results}")
 				if(results?.success && !results?.hasErrors()) {
@@ -1065,7 +1085,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 		} else {
 			def pageQuery = parseZoneFilter(poolServer.zoneFilter)
 			pageQuery += ['_return_as_object':'1', '_return_fields+':'extattrs', '_max_results':maxResults.toString()]
-			def results = client.callApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
+			def results = client.callApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'], ignoreSSL: poolServer.ignoreSsl, queryParams:pageQuery,
 																												contentType:ContentType.APPLICATION_JSON), 'GET')
 			rtn.success = results?.success && !results?.hasErrors()
 			if(rtn.success) {
@@ -1207,7 +1227,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			if(pageId != null)
 				pageQuery['_page_id'] = pageId
 			//load results
-			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.serviceUsername, poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'],
+			def results = client.callJsonApi(serviceUrl, apiPath, poolServer.credentialData?.username ?: poolServer.serviceUsername, poolServer.credentialData?.password ?: poolServer.servicePassword, new HttpApiClient.RequestOptions(headers:['Content-Type':'application/json'],
 																												queryParams:pageQuery, ignoreSSL: poolServer.ignoreSsl), 'GET')
 			log.debug("listIp4 results: {}",results)
 			if(results?.success && !results?.hasErrors()) {
@@ -1269,15 +1289,18 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 	List<OptionType> getIntegrationOptionTypes() {
 		return [
 				new OptionType(code: 'infoblox.serviceUrl', name: 'Service URL', inputType: OptionType.InputType.TEXT, fieldName: 'serviceUrl', fieldLabel: 'API Url', fieldContext: 'domain', displayOrder: 0),
-				new OptionType(code: 'infoblox.serviceUsername', name: 'Service Username', inputType: OptionType.InputType.TEXT, fieldName: 'serviceUsername', fieldLabel: 'Username', fieldContext: 'domain', displayOrder: 1),
-				new OptionType(code: 'infoblox.servicePassword', name: 'Service Password', inputType: OptionType.InputType.PASSWORD, fieldName: 'servicePassword', fieldLabel: 'Password', fieldContext: 'domain', displayOrder: 2),
-				new OptionType(code: 'infoblox.throttleRate', name: 'Throttle Rate', inputType: OptionType.InputType.NUMBER, defaultValue: 0, fieldName: 'serviceThrottleRate', fieldLabel: 'Throttle Rate', fieldContext: 'domain', displayOrder: 3),
-				new OptionType(code: 'infoblox.ignoreSsl', name: 'Ignore SSL', inputType: OptionType.InputType.CHECKBOX, defaultValue: 0, fieldName: 'ignoreSsl', fieldLabel: 'Disable SSL SNI Verification', fieldContext: 'domain', displayOrder: 4),
-				new OptionType(code: 'infoblox.inventoryExisting', name: 'Inventory Existing', inputType: OptionType.InputType.CHECKBOX, defaultValue: 0, fieldName: 'inventoryExisting', fieldLabel: 'Inventory Existing', fieldContext: 'config', displayOrder: 5),
-				new OptionType(code: 'infoblox.networkFilter', name: 'Network Filter', inputType: OptionType.InputType.TEXT, fieldName: 'networkFilter', fieldLabel: 'Network Filter', fieldContext: 'domain', displayOrder: 6),
-				new OptionType(code: 'infoblox.zoneFilter', name: 'Zone Filter', inputType: OptionType.InputType.TEXT, fieldName: 'zoneFilter', fieldLabel: 'Zone Filter', fieldContext: 'domain', displayOrder: 7),
-				new OptionType(code: 'infoblox.tenantMatch', name: 'Tenant Match Attribute', inputType: OptionType.InputType.TEXT, fieldName: 'tenantMatch', fieldLabel: 'Tenant Match Attribute', fieldContext: 'domain', displayOrder: 8),
-				new OptionType(code: 'infoblox.extraAttributes', name: 'Extra Attributes', inputType: OptionType.InputType.TEXTAREA, fieldName: 'extraAttributes', fieldLabel: 'Extra Attributes', fieldContext: 'config', displayOrder: 9, helpText: "Accepts a JSON input of custom attributes that can be saved on Host Record in Infoblox. These Must be first defined as extra attributes in Infoblox and values can be injected for the user creating the record and the date of assignment. The available injectable attributes are: userId, username, and dateCreated. They can be injected with <%=%>.")
+				new OptionType(code: 'infoblox.credentials', name: 'Credentials', inputType: OptionType.InputType.CREDENTIAL, fieldName: 'type', fieldLabel: 'Credentials', fieldContext: 'credential', required: true, displayOrder: 1, defaultValue: 'local',optionSource: 'credentials',config: '{"credentialTypes":["username-password"]}'),
+
+				new OptionType(code: 'infoblox.serviceUsername', name: 'Service Username', inputType: OptionType.InputType.TEXT, fieldName: 'serviceUsername', fieldLabel: 'Username', fieldContext: 'domain', displayOrder: 2,localCredential: true),
+				new OptionType(code: 'infoblox.servicePassword', name: 'Service Password', inputType: OptionType.InputType.PASSWORD, fieldName: 'servicePassword', fieldLabel: 'Password', fieldContext: 'domain', displayOrder: 3,localCredential: true),
+				new OptionType(code: 'infoblox.throttleRate', name: 'Throttle Rate', inputType: OptionType.InputType.NUMBER, defaultValue: 0, fieldName: 'serviceThrottleRate', fieldLabel: 'Throttle Rate', fieldContext: 'domain', displayOrder: 4),
+				new OptionType(code: 'infoblox.ignoreSsl', name: 'Ignore SSL', inputType: OptionType.InputType.CHECKBOX, defaultValue: 0, fieldName: 'ignoreSsl', fieldLabel: 'Disable SSL SNI Verification', fieldContext: 'domain', displayOrder: 5),
+				new OptionType(code: 'infoblox.inventoryExisting', name: 'Inventory Existing', inputType: OptionType.InputType.CHECKBOX, defaultValue: 0, fieldName: 'inventoryExisting', fieldLabel: 'Inventory Existing', fieldContext: 'config', displayOrder: 6),
+				new OptionType(code: 'infoblox.networkFilter', name: 'Network Filter', inputType: OptionType.InputType.TEXT, fieldName: 'networkFilter', fieldLabel: 'Network Filter', fieldContext: 'domain', displayOrder: 7),
+				new OptionType(code: 'infoblox.zoneFilter', name: 'Zone Filter', inputType: OptionType.InputType.TEXT, fieldName: 'zoneFilter', fieldLabel: 'Zone Filter', fieldContext: 'domain', displayOrder: 8),
+				new OptionType(code: 'infoblox.tenantMatch', name: 'Tenant Match Attribute', inputType: OptionType.InputType.TEXT, fieldName: 'tenantMatch', fieldLabel: 'Tenant Match Attribute', fieldContext: 'domain', displayOrder: 9),
+				new OptionType(code: 'infoblox.ipMode', name: 'IP Mode', inputType: OptionType.InputType.SELECT, fieldName: 'serviceMode', fieldLabel: 'IP Mode', fieldContext: 'domain', optionSource: 'infobloxModeTypeList' , displayOrder: 10),
+				new OptionType(code: 'infoblox.extraAttributes', name: 'Extra Attributes', inputType: OptionType.InputType.TEXTAREA, fieldName: 'extraAttributes', fieldLabel: 'Extra Attributes', fieldContext: 'config', displayOrder: 11, helpText: "Accepts a JSON input of custom attributes that can be saved on Host Record in Infoblox. These Must be first defined as extra attributes in Infoblox and values can be injected for the user creating the record and the date of assignment. The available injectable attributes are: userId, username, and dateCreated. They can be injected with <%=%>.")
 		]
 	}
 

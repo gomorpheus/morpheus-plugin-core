@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.Map;
+
 public class AccountIntegration extends MorpheusModel {
 
 	protected String uuid;
@@ -28,6 +30,10 @@ public class AccountIntegration extends MorpheusModel {
 	protected String servicePublicKey;
 	protected String authPrivateKey;
 	protected String authPublicKey;
+
+	protected Map credentialData;
+	protected Boolean credentialLoaded = false;
+
 
 	public String getUuid() {
 		return uuid;
@@ -262,6 +268,23 @@ public class AccountIntegration extends MorpheusModel {
 		this.authPublicKey = authPublicKey;
 		markDirty("authPublicKey", authPublicKey);
 	}
+
+	public Map getCredentialData() {
+		return credentialData;
+	}
+
+	public void setCredentialData(Map credentialData) {
+		this.credentialData = credentialData;
+	}
+
+	public Boolean getCredentialLoaded() {
+		return credentialLoaded;
+	}
+
+	public void setCredentialLoaded(Boolean credentialLoaded) {
+		this.credentialLoaded = credentialLoaded;
+	}
+
 
 	public enum Status {
 		ok,

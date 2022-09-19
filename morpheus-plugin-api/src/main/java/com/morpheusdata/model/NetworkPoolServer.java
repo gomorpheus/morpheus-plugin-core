@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Represents an instance of an IPAM integration server. This integration type contains status fields, connection information
@@ -44,6 +45,9 @@ public class NetworkPoolServer extends MorpheusModel {
 	protected AccountIntegration integration;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
+
+	protected Map credentialData;
+	protected Boolean credentialLoaded = false;
 
 	public void setAccountId(Long id) {
 		this.account = new Account();
@@ -281,5 +285,22 @@ public class NetworkPoolServer extends MorpheusModel {
 
 	public void setServiceThrottleRate(Long serviceThrottleRate) {
 		this.serviceThrottleRate = serviceThrottleRate;
+	}
+
+
+	public Map getCredentialData() {
+		return credentialData;
+	}
+
+	public void setCredentialData(Map credentialData) {
+		this.credentialData = credentialData;
+	}
+
+	public Boolean getCredentialLoaded() {
+		return credentialLoaded;
+	}
+
+	public void setCredentialLoaded(Boolean credentialLoaded) {
+		this.credentialLoaded = credentialLoaded;
 	}
 }

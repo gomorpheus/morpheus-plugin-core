@@ -29,6 +29,7 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	protected String fqdn;
 	protected String domainName;
 	protected String hostname;
+	protected String macAddress;
 	protected String internalId;
 	protected String ptrId;
 	protected Date dateCreated;
@@ -257,5 +258,13 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 		markDirty("createdBy",createdBy);
+	}
+
+	public String getMacAddress() {
+		return macAddress;
+	}
+
+	public void setMacAddress(String macAddress) {
+		this.macAddress = macAddress;
 	}
 }

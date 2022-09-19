@@ -41,6 +41,9 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	//bluecat field for configuration
 	protected String configuration;
 
+	//referenceIds
+	protected String internalId;
+
 	//windows domain join stuff
 	protected String domainUsername;
 	protected String domainPassword;
@@ -298,5 +301,13 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 
 	public void setGuestPassword(String guestPassword) {
 		this.guestPassword = guestPassword;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
 	}
 }
