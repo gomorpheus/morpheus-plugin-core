@@ -747,7 +747,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 			def body
 			def networkView = networkPool.externalId.tokenize('/')[3]
 			if(poolServer.serviceMode == 'dhcp' && networkPoolIp.macAddress) {
-				def body = [
+				body = [
 						name             : shortHostname,
 						view             : networkView,
 						ipv4addrs        : [
@@ -756,7 +756,7 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 						configure_for_dns: false
 				]
 			} else {
-				def body = [
+				body = [
 						name             : shortHostname,
 						view             : networkView,
 						ipv4addrs        : [
@@ -766,14 +766,6 @@ class InfobloxProvider implements IPAMProvider, DNSProvider {
 				]
 			}
 
-			def body = [
-					name             : shortHostname,
-					view             : networkView,
-					ipv4addrs        : [
-							[configure_for_dhcp: false, ipv4addr: networkPoolIp.ipAddress ?: "func:nextavailableip:${networkPool.externalId}".toString()]
-					],
-					configure_for_dns: false
-			]
 			def extraAttributes
 			if (poolServer.configMap?.extraAttributes) {
 				extraAttributes = generateExtraAttributes(poolServer, [username: networkPoolIp.createdBy?.username, userId: networkPoolIp.createdBy?.id, dateCreated: MorpheusUtils.formatDate(new Date())])
