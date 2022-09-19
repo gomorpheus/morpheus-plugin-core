@@ -17,7 +17,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'asset-pipeline'
 
 group = 'com.morpheusdata'
-version = '1.0.3'
+version = '1.1.0'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -69,7 +69,17 @@ jar {
 	manifest {
 		attributes(
 				'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
-				'Plugin-Version': version
+				'Plugin-Version': version,
+				'Morpheus-Name': 'Infoblox',
+				'Morpheus-Organization': 'morpheus',
+				'Morpheus-Code': 'infoblox-plugin',
+				'Morpheus-Description': 'Plugin for Infoblox IPAM/DNS',
+				'Morpheus-Logo': 'assets/infoblox.svg',
+				'Morpheus-Logo-Dark': 'assets/infoblox-dark.svg',
+				'Morpheus-Color': '#ffffff',
+				'Morpheus-Labels': 'Plugin, Networking, Network',
+				'Morpheus-Repo': 'https://github.com/gomorpheus/morpheus-plugin-core',
+				'Morpheus-Min-Appliance-Version': "5.5.2"
 		)
 	}
 }
