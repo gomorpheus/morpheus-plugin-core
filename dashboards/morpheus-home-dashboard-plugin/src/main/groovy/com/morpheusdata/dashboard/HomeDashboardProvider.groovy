@@ -63,8 +63,9 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.enabled = true
 		rtn.sourceType = 'system'
 		rtn.templatePath = 'hbs/home-dashboard'
+		rtn.scriptPath = 'home-dashboard.js'
 		//add items
-		def dashboardItemTypes = ['dashboard-item-instance-count']
+		def dashboardItemTypes = ['dashboard-item-instance-count', 'dashboard-item-job-execution-stats', 'dashboard-item-backup-stats']
 		def currentRow = 0
 		def currentColumn = 0
 		def dashboardItems = []

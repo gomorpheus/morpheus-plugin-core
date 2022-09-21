@@ -1,6 +1,6 @@
 /**
- * a counter widget that loads data
- * @author bdwheeler
+ * a simple status widget that compares values and has a settings component
+ * @author aclement
  */
 class InstanceCountWidget extends React.Component {
   
@@ -164,9 +164,7 @@ class InstanceCountWidget extends React.Component {
 //register it
 Morpheus.components.register('instanceCountWidget', InstanceCountWidget);
 
-$(document).ready(function() {
-	ReactDOM.render(
-  	<InstanceCountWidget/>,
-  	document.querySelector('#instance-count-widget')
-	);
+$(document).ready(function () {
+	const root = ReactDOM.createRoot(document.querySelector('#instance-count-widget'));
+	root.render(<InstanceCountWidget/>)
 });

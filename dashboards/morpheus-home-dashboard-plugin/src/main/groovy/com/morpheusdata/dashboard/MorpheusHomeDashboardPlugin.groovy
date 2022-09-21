@@ -20,6 +20,10 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 		//add the dashboard item types
 		InstanceCountItemProvider instanceCountProvider = new InstanceCountItemProvider(this, morpheus)
 		this.pluginProviders.put(instanceCountProvider.code, instanceCountProvider)
+		JobExecutionStatsItemProvider jobExecutionStatsItemProvider = new JobExecutionStatsItemProvider(this, morpheus)
+		this.pluginProviders.put(jobExecutionStatsItemProvider.code, jobExecutionStatsItemProvider)
+		BackupStatsItemProvider backupStatsItemProvider = new BackupStatsItemProvider(this, morpheus)
+		this.pluginProviders.put(backupStatsItemProvider.code, backupStatsItemProvider)
 		//add the dashboard
 		HomeDashboardProvider homeDashboardProvider = new HomeDashboardProvider(this, morpheus)
 		this.pluginProviders.put(homeDashboardProvider.code, homeDashboardProvider)
