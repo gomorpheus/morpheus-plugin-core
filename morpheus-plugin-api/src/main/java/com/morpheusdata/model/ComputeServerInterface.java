@@ -3,6 +3,8 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,7 +23,9 @@ public class ComputeServerInterface extends MorpheusModel {
 	protected String uniqueId;
 	protected String publicIpAddress;
 	protected String publicIpv6Address;
+	@Deprecated
 	protected String ipAddress;
+	@Deprecated
 	protected String ipv6Address;
 	protected String ipSubnet;
 	protected String ipv6Subnet;
@@ -41,6 +45,8 @@ protected String networkPosition;
 	protected NetworkPool networkPool;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
+	protected List<NetAddress> addresses = new ArrayList<>();
+
 	public ComputeServerInterfaceType type;
 protected String ipMode; //dhcp/static/pool
 	protected Boolean replaceHostRecord;
@@ -81,14 +87,6 @@ protected String ipMode; //dhcp/static/pool
 
 	public String getPublicIpv6Address() {
 		return publicIpv6Address;
-	}
-
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	public String getIpv6Address() {
-		return ipv6Address;
 	}
 
 	public String getIpSubnet() {
@@ -217,16 +215,6 @@ protected String ipMode; //dhcp/static/pool
 		markDirty("publicIpv6Address", publicIpv6Address);
 	}
 
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-		markDirty("ipAddress", ipAddress);
-	}
-
-	public void setIpv6Address(String ipv6Address) {
-		this.ipv6Address = ipv6Address;
-		markDirty("ipv6Address", ipv6Address);
-	}
-
 	public void setIpSubnet(String ipSubnet) {
 		this.ipSubnet = ipSubnet;
 		markDirty("ipSubnet", ipSubnet);
@@ -335,5 +323,71 @@ protected String ipMode; //dhcp/static/pool
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
+	}
+
+	public List<NetAddress> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<NetAddress> addresses) {
+		this.addresses = addresses;
+	}
+
+	@Deprecated
+	String getIpAddress() {
+		String val = null;
+		for(NetAddress address : this.addresses) {
+			if(address.getType() == NetAddress.AddressType.IPV4) {
+				val = address.address;
+			}
+		}
+		return val;
+	}
+
+	@Deprecated
+	String getIpv6Address() {
+		String val = null;
+		for(NetAddress address : this.addresses) {
+			if(address.getType() == NetAddress.AddressType.IPV6) {
+				val = address.address;
+			}
+		}
+		return val;
+	}
+
+	@Deprecated
+	void setIpAddress(String ipAddress) {
+		NetAddress address = null;
+		for(NetAddress tmpAddrss : this.addresses) {
+			if(tmpAddrss.getType() == NetAddress.AddressType.IPV4) {
+				address = tmpAddrss;
+			}
+		}
+
+		if(address != null) {
+			if(ipAddress != null) {
+				address.address = ipAddress;
+			} else {
+				this.addresses.remove(address);
+			}
+		} else if(ipAddress != null) {
+			this.addresses.add(new NetAddress(NetAddress.AddressType.IPV4,ipAddress));
+		}
+	}
+
+	@Deprecated
+	void setIpv6Address(String ipv6Address) {
+		NetAddress address = null;
+		for(NetAddress tmpAddrss : this.addresses) {
+			if(tmpAddrss.getType() == NetAddress.AddressType.IPV6) {
+				address = tmpAddrss;
+			}
+		}
+
+		if(address != null) {
+			address.address = ipAddress;
+		} else {
+			this.addresses.add(new NetAddress(NetAddress.AddressType.IPV6,ipAddress));
+		}
 	}
 }
