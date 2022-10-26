@@ -132,7 +132,20 @@ public class HttpApiClient {
 
 			sleepIfNecessary();
 			lastCallTime = new Date();
-			URIBuilder uriBuilder = new URIBuilder(url + "/" + path);
+			URIBuilder uriBuilder = new URIBuilder(url);
+			String existingPath = uriBuilder.getPath();
+			// retain path on base url if one exists
+			if(path != null && path.length() > 0) {
+				if(existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
+					if(existingPath.endsWith("/") && path.startsWith("/")) {
+						existingPath = existingPath.substring(0, existingPath.length() - 1);
+					} else if(!existingPath.endsWith("/") && !path.startsWith("/")) {
+						existingPath += "/";
+					}
+					path = existingPath + path;
+				}
+				uriBuilder.setPath(path);
+			}
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
 					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey).toString());
