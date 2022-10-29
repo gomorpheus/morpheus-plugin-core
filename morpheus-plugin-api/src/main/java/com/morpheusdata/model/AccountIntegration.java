@@ -40,6 +40,8 @@ public class AccountIntegration extends MorpheusModel {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 
+	protected AccountIntegrationType integrationType;
+
 
 	public String getUuid() {
 		return uuid;
@@ -297,6 +299,14 @@ public class AccountIntegration extends MorpheusModel {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public AccountIntegrationType getIntegrationType() {
+		return integrationType;
+	}
+
+	public void setIntegrationType(AccountIntegrationType integrationType) {
+		this.integrationType = integrationType;
 	}
 
 

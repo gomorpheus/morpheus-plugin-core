@@ -341,6 +341,9 @@ public class NetworkUtility {
 
 	static public String getDomainRecordFqdn(String name, String domain) {
 		String rtn = null;
+		if(name == null) {
+			return null;
+		}
 		if (name.contains(domain)) {
 			rtn = getFqdnDomainName(name);
 		} else {
