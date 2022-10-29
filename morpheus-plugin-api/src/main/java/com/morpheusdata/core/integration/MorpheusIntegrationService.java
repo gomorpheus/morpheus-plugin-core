@@ -1,6 +1,10 @@
 package com.morpheusdata.core.integration;
 
 
+import com.morpheusdata.model.AccountIntegration;
+import com.morpheusdata.model.NetworkPoolServer;
+import io.reactivex.Completable;
+
 /**
  * Holds context methods for interacting with common integration type operations. This could be used for updating
  * integration type statuses or accessing object models that typically relate to integrations.
@@ -15,4 +19,23 @@ public interface MorpheusIntegrationService {
 	 * @return the inventory context
 	 */
 	MorpheusAccountInventoryService getAccountInventory();
+
+	/**
+	 * Used for updating the status of a {@link NetworkPoolServer} integration.
+	 * @param integration the integration with which we want to update the status.
+	 * @param status the status of the pool server (ok,syncing,error)
+	 * @param message the status message for more details. typically only used when status is 'error'.
+	 *
+	 * @return a Completable for notification or subscription
+	 */
+	Completable updateAccountIntegrationStatus(AccountIntegration integration, AccountIntegration.Status status, String message);
+
+	/**
+	 * Used for updating the status of a {@link NetworkPoolServer} integration.
+	 * @param integration the integration with which we want to update the status.
+	 * @param status the status string of the pool server (ok,syncing,error)
+	 *
+	 * @return the on complete state
+	 */
+	Completable updateAccountIntegrationStatus(AccountIntegration integration, AccountIntegration.Status status);
 }

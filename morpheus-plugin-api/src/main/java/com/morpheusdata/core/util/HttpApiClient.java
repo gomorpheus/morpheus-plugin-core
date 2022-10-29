@@ -123,18 +123,19 @@ public class HttpApiClient {
 
 	}
 
-	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
+	public ServiceResponse callApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
-
+		URIBuilder uriBuilder = new URIBuilder(url);
 		try {
 
 			sleepIfNecessary();
 			lastCallTime = new Date();
-			URIBuilder uriBuilder = new URIBuilder(url);
+
 			String existingPath = uriBuilder.getPath();
 			// retain path on base url if one exists
+			String newPath = path;
 			if(path != null && path.length() > 0) {
 				if(existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
 					if(existingPath.endsWith("/") && path.startsWith("/")) {
@@ -142,9 +143,9 @@ public class HttpApiClient {
 					} else if(!existingPath.endsWith("/") && !path.startsWith("/")) {
 						existingPath += "/";
 					}
-					path = existingPath + path;
+					newPath = existingPath + path;
 				}
-				uriBuilder.setPath(path);
+				uriBuilder.setPath(newPath);
 			}
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
 				for(String queryKey : opts.queryParams.keySet()) {
@@ -310,8 +311,15 @@ public class HttpApiClient {
 						log.warn("path: {} error: {} - {}",path,rtn.getErrorCode(),rtn.getContent());
 					}
 				} catch(Exception ex) {
-					log.error("Error occurred processing the response for {}/{} : {}",url,path,ex.getMessage(), ex);
-					rtn.setError("Error occurred processing the response for " + url + "/" + path + " : " + ex.getMessage());
+					try {
+						log.error("Error occurred processing the response for {} : {}",uriBuilder.build().toString(),ex.getMessage(), ex);
+						rtn.setError("Error occurred processing the response for " + uriBuilder.build().toString() + " : " + ex.getMessage());
+					} catch(URISyntaxException uie) {
+						log.error("Error occurred processing the response for {} : {}","invalid uri",ex.getMessage(), ex);
+						rtn.setError("Error occurred processing the response for invalid uri  : " + ex.getMessage());
+
+					}
+
 					rtn.setSuccess(false);
 				} finally {
 					lastCallTime = new Date();

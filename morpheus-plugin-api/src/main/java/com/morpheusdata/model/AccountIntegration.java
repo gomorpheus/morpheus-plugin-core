@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Map;
 
 public class AccountIntegration extends MorpheusModel {
@@ -33,6 +36,9 @@ public class AccountIntegration extends MorpheusModel {
 
 	protected Map credentialData;
 	protected Boolean credentialLoaded = false;
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
 
 
 	public String getUuid() {
@@ -283,6 +289,14 @@ public class AccountIntegration extends MorpheusModel {
 
 	public void setCredentialLoaded(Boolean credentialLoaded) {
 		this.credentialLoaded = credentialLoaded;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 
