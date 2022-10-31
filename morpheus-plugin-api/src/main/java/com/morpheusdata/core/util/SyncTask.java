@@ -7,6 +7,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observables.ConnectableObservable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +53,10 @@ import java.util.List;
  * @param <Model> The Model Class that the Projection Class is a subset of. This is the Class that needs to be updated
  *                with changes
  */
+
 public class SyncTask<Projection, ApiItem, Model> {
+
+	private static Logger log = LoggerFactory.getLogger(SyncTask.class);
 
 	private final List<MatchFunction<Projection, ApiItem>> matchFunctions = new ArrayList<>();
 	private OnDeleteFunction<Projection> onDeleteFunction;
@@ -63,6 +68,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 	private OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction;
 	private OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
+	private OnErrorfunction onErrorfunction;
 
 	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
 		this.domainRecords = domainRecords.publish().autoConnect(2);
@@ -94,6 +100,11 @@ public class SyncTask<Projection, ApiItem, Model> {
 
 	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetails(OnLoadObjectDetailsFunction<UpdateItemDto<Projection, ApiItem>,UpdateItem<Model, ApiItem>> onLoadObjectDetailsFunction) {
 		this.onLoadObjectDetailsFunction = onLoadObjectDetailsFunction;
+		return this;
+	}
+
+	public SyncTask<Projection, ApiItem, Model>  onError(OnErrorfunction onErrorfunction) {
+		this.onErrorfunction = onErrorfunction;
 		return this;
 	}
 
@@ -142,6 +153,11 @@ public class SyncTask<Projection, ApiItem, Model> {
 	@FunctionalInterface
 	public interface OnLoadObjectDetailsFunction<UpdateItemProjection,UpdateItem> {
 		Observable<UpdateItem> method(List<UpdateItemProjection> itemsToLoad);
+	}
+
+	@FunctionalInterface
+	public interface OnErrorfunction {
+		void method(Throwable t);
 	}
 
 	private Boolean matchesExisting(Projection domainMatch) {
@@ -219,6 +235,12 @@ public class SyncTask<Projection, ApiItem, Model> {
 			.observeOn(Schedulers.io())
 			.doOnNext((List<Projection> itemsToDelete) -> {
 				this.onDeleteFunction.method(itemsToDelete);
+			}).doOnError( (Throwable t) -> {
+				if(onErrorfunction != null) {
+					onErrorfunction.method(t);
+				} else {
+					log.error("Error During SyncTask Delete Operation {}",t.getMessage(),t);
+				}
 			})
 		);
 
@@ -237,7 +259,11 @@ public class SyncTask<Projection, ApiItem, Model> {
 			.doOnComplete( ()-> {
 				addMissing();
 			}).doOnError( (Throwable t) -> {
-				//log.error;
+				if(onErrorfunction != null) {
+					onErrorfunction.method(t);
+				} else {
+					log.error("Error During SyncTask Operation {}",t.getMessage(),t);
+				}
 			})
 		);
 

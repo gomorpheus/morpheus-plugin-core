@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -451,17 +452,17 @@ public class HttpApiClient {
 			HttpClientBuilder clientBuilder = HttpClients.custom();
 
 
-			if(opts.connectionTimeout != null || opts.readTimeout != null) {
-				RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
-				if(opts.connectionTimeout != null) {
-					reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
-					reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
-				}
-				if(opts.readTimeout != null) {
-					reqConfigBuilder.setSocketTimeout(opts.readTimeout);
-				}
-				clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
+			RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
+			reqConfigBuilder.setCookieSpec(CookieSpecs.STANDARD);
+			if(opts.connectionTimeout != null) {
+				reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
+				reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
 			}
+			if(opts.readTimeout != null) {
+				reqConfigBuilder.setSocketTimeout(opts.readTimeout);
+			}
+			clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
+
 
 			clientBuilder.setDefaultCookieStore(cookieStore);
 			clientBuilder.setHostnameVerifier(new X509HostnameVerifier() {
