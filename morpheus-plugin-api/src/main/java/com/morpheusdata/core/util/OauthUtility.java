@@ -32,7 +32,7 @@ class OauthUtility {
 
 		String requestTimestamp = Long.toString(System.currentTimeMillis() / 1000L);
 		//build auth query params for signing
-		LinkedHashMap<String,String> queryHeaders = new LinkedHashMap<>();
+		LinkedHashMap<CharSequence,CharSequence> queryHeaders = new LinkedHashMap<>();
 		if(requestOpts.queryParams != null) {
 			for(String queryKey : requestOpts.queryParams.keySet()) {
 				queryHeaders.put(queryKey,requestOpts.queryParams.get(queryKey));
@@ -80,9 +80,9 @@ class OauthUtility {
 
 		String requestTimestamp = Long.toString(System.currentTimeMillis() / 1000L);
 		//build auth query params for signing
-		LinkedHashMap<String,String> queryHeaders = new LinkedHashMap<>();
+		LinkedHashMap<CharSequence,CharSequence> queryHeaders = new LinkedHashMap<>();
 		if(requestOpts.queryParams != null) {
-			for(String queryKey : requestOpts.queryParams.keySet()) {
+			for(CharSequence queryKey : requestOpts.queryParams.keySet()) {
 				queryHeaders.put(queryKey,requestOpts.queryParams.get(queryKey));
 			}
 		}
@@ -118,20 +118,20 @@ class OauthUtility {
 	}
 
 
-	static private String buildQueryString(Map<String,String> query) {
-		Map<String, String> copy = new TreeMap<>(query); //sorts it
-		ArrayList<String> items = new ArrayList<>();
-		for (Map.Entry<String, String> entry : copy.entrySet()) {
+	static private String buildQueryString(Map<CharSequence,CharSequence> query) {
+		Map<CharSequence, CharSequence> copy = new TreeMap<>(query); //sorts it
+		ArrayList<CharSequence> items = new ArrayList<>();
+		for (Map.Entry<CharSequence, CharSequence> entry : copy.entrySet()) {
 			items.add(encodeOauth(entry.getKey()) + "=" + encodeOauth(entry.getValue()));
 		}
 		return String.join("&",items);
 	}
 
-	static private String encodeOauth(String str) {
+	static private CharSequence encodeOauth(CharSequence str) {
 		String rtn = "";
 		if(str != null) {
 			try {
-				rtn = java.net.URLEncoder.encode(str, "UTF-8");
+				rtn = java.net.URLEncoder.encode(str.toString(), "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				log.error("Error encoding URL {}",e.getMessage(),e);
 			}

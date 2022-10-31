@@ -149,8 +149,8 @@ public class HttpApiClient {
 				uriBuilder.setPath(newPath);
 			}
 			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
-				for(String queryKey : opts.queryParams.keySet()) {
-					uriBuilder.addParameter(queryKey, opts.queryParams.get(queryKey).toString());
+				for(CharSequence queryKey : opts.queryParams.keySet()) {
+					uriBuilder.addParameter(queryKey.toString(), opts.queryParams.get(queryKey).toString());
 				}
 			}
 
@@ -201,8 +201,8 @@ public class HttpApiClient {
 			}
 
 			if(opts.headers != null && !opts.headers.isEmpty()) {
-				for (String headerKey : opts.headers.keySet()) {
-					request.addHeader(headerKey, opts.headers.get(headerKey));
+				for (CharSequence headerKey : opts.headers.keySet()) {
+					request.addHeader(headerKey.toString(), opts.headers.get(headerKey).toString());
 				}
 			}
 
@@ -420,7 +420,7 @@ public class HttpApiClient {
 		return rtn;
 	}
 
-	public Map<String,String> addRequiredHeader(Map<String,String> headers, String name, String value) {
+	public Map<CharSequence,CharSequence> addRequiredHeader(Map<CharSequence,CharSequence> headers, String name, String value) {
 		if(headers == null) {
 			headers = new LinkedHashMap<>();
 		}
@@ -638,8 +638,8 @@ public class HttpApiClient {
 	public static class RequestOptions {
 		public Object body;
 		public String contentType; //bodyType originally
-		public Map<String,String> headers;
-		public Map<String,String> queryParams;
+		public Map<CharSequence,CharSequence> headers;
+		public Map<CharSequence,CharSequence> queryParams;
 		public Boolean suppressLog = true;
 		public Boolean ignoreSSL=true;
 		public Integer timeout = 30000;
