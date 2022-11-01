@@ -1,6 +1,7 @@
 package com.morpheusdata.task
 
 import com.morpheusdata.core.*
+import com.morpheusdata.model.Icon
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType
 
@@ -229,6 +230,16 @@ class AwsBillingExportProvider implements TaskProvider {
 		
 
 		return [sourceAccessKey,sourceSecretKey,stsAssumeRole,useHostCredentials,sourceBucket,sourceBucketRegion, targetBucket,targetBucketRegion, awsBillingPeriod,awsReportFolder,awsReportName,awsUsageAccountIds]
+	}
+
+	/**
+	 * Returns the Task Type Icon for display when a user is browsing tasks
+	 * @since 0.12.7
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	@Override
+	Icon getIcon() {
+		return new Icon(path:"awsBillingExport.png", darkPath: "awsBillingExport.png", hidpiPath: "awsBillingExport@2x.png", darkHidpiPath: "awsBillingExport@2x.png")
 	}
 
 }

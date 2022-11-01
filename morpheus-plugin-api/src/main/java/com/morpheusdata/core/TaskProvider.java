@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.Icon;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.TaskType;
 
@@ -66,4 +67,11 @@ public interface TaskProvider extends PluginProvider {
 	 * @return a List of OptionType
 	 */
 	List<OptionType> getOptionTypes();
+
+	/**
+	 * Returns the Task Type Icon for display when a user is browsing tasks
+	 * @since 0.12.7
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	Icon getIcon();
 }
