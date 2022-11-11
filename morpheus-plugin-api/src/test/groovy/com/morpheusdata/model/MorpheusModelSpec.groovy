@@ -23,7 +23,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 31
+		props.size() == 35
 		and: "property of parent is included"
 		props['id'] == 1
 	}
@@ -36,7 +36,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 47
+		props.size() == 50
 		and: "private properties are unavailable"
 		props['description'] == null
 	}

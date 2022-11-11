@@ -120,5 +120,17 @@ class NetworkUtilitySpec extends Specification {
 	}
 
 
+	void "getNextIpv6Address"() {
+		expect:
+		res == NetworkUtility.getNextIpv6Address(ip, cnt,end)
+
+		where:
+		ip               | end                                    | cnt           | res
+		'ff80:0:0:0:0:0:0:0001' | 'ff80:ffff:ffff:ffff:ffff:ffff:ffff'   | 0             | 'ff80:0000:0000:0000:0000:0000:0000:0001'
+		'ff80:0:0:0:0:0:0:0001' | 'ff80:ffff:ffff:ffff:ffff:ffff:ffff'   | 1             | 'ff80:0000:0000:0000:0000:0000:0000:0002'
+		'ff80:0:0:0:0:0:0:0001' | 'ff80:ffff:ffff:ffff:ffff:ffff:ffff'   | 300           | 'ff80:0000:0000:0000:0000:0000:0000:012d'
+		'ff80:0:0:0:0:0:0:0001' | 'ff80:ffff:ffff:ffff:ffff:ffff:ffff'   | 65535           | 'ff80:0000:0000:0000:0000:0000:0001:0001'
+		'ff80:0:0:0:0:0:0:0001' | 'ff80:0000:0000:0000:0000:0000:0000:ffff'   | 65535           | null
+	}
 }
 

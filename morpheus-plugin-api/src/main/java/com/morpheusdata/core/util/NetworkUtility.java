@@ -414,6 +414,67 @@ public class NetworkUtility {
 		return InetAddress.getByAddress(newAddress).getHostAddress();
 	}
 
+	static public String getNextIpv6Address(String ipAddress,Integer increment, String endAddress) {
+		String[] ipArgs = ipAddress.split(":");
+		String[] ipEndArgs = endAddress.split(":");
+		Integer[] ipNumbers = new Integer[8];
+		Integer[] endIpNumbers = new Integer[8];
+
+		int counter=0;
+		for(String ipArg : ipArgs) {
+			if(ipArg.length() > 0) {
+				ipNumbers[counter] = Integer.parseInt(ipArg,16);
+			} else {
+				ipNumbers[counter] = 0;
+			}
+			counter++;
+		}
+		counter=0;
+		for(String ipArg : ipEndArgs) {
+			if(ipArg.length() > 0) {
+				endIpNumbers[counter] = Integer.parseInt(ipArg,16);
+			} else {
+				endIpNumbers[counter] = 0;
+			}
+			counter++;
+		}
+
+		ipNumbers[7] += increment;
+		for(counter=7;counter>=0;counter--) {
+
+			if(ipNumbers[counter] <= 0xFFFF) {
+				break;
+			} else {
+				ipNumbers[counter-1] += ipNumbers[counter] / 0xFFFF;
+				ipNumbers[counter] = ipNumbers[counter] % 0xFFFF;
+			}
+
+		}
+
+		for(counter=0;counter<8;counter++) {
+			if(ipNumbers[counter] > endIpNumbers[counter]) {
+				return null; //ip went over the line
+			} else if(ipNumbers[counter] < endIpNumbers[counter]) {
+				break; //we are within
+			}
+		}
+
+		ArrayList<String> finalAddressArgs = new ArrayList<>();
+		for(Integer ipNumber : ipNumbers) {
+			String ipSegment = Integer.toHexString(ipNumber);
+			if(ipSegment.length() == 1) {
+				ipSegment = "000" + ipSegment;
+			} else if(ipSegment.length() == 2) {
+				ipSegment = "00" + ipSegment;
+			} else if(ipSegment.length() == 3) {
+				ipSegment = "0" + ipSegment;
+			}
+			finalAddressArgs.add(ipSegment);
+		}
+		String finalAddress = String.join(":",finalAddressArgs);
+		return finalAddress;
+	}
+
 
 	static public Integer getMinPort(String portRange) {
 		if (portRange.contains("-")) {

@@ -70,7 +70,7 @@ class SyncTaskSpec extends Specification {
 		itemsAdded == ['ghi']
 	}
 
-	void "add-update-remove with Strings.. blocking"() {
+	void "add-update-remove with Strings blocking"() {
 		given:
 		List itemsAdded = []
 		List itemsUpdated = []
@@ -131,7 +131,7 @@ class SyncTaskSpec extends Specification {
 		itemsAdded == ['ghi']
 	}
 
-	void "add-update-remove with Strings.. observe"() {
+	void "add-update-remove with Strings observe"() {
 		given:
 		List itemsAdded = []
 		List itemsUpdated = []
