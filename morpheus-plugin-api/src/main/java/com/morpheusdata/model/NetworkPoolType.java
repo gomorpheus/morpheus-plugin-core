@@ -35,6 +35,8 @@ public class NetworkPoolType extends MorpheusModel{
 
 	protected Boolean hostRecordEditable = true;
 
+	private Boolean ipv6Pool = false;
+
 
 	/**
 	 * Fetches the unique code pertaining to this particular network pool type. Morpheus uses codes for easier reference instead
@@ -134,5 +136,16 @@ public class NetworkPoolType extends MorpheusModel{
 
 	public void setHostRecordEditable(Boolean hostRecordEditable) {
 		this.hostRecordEditable = hostRecordEditable;
+	}
+
+	/**
+	 * Defines whether or not this pool type represents an IPv6 pool vs an IPv4
+	 */
+	public Boolean getIpv6Pool() {
+		return ipv6Pool;
+	}
+
+	public void setIpv6Pool(Boolean ipv6Pool) {
+		this.ipv6Pool = ipv6Pool;
 	}
 }

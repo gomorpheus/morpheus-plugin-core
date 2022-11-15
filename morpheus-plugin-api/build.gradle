@@ -36,6 +36,7 @@ dependencies {
 	api 'org.apache.httpcomponents:httpclient:4.5.13'
 	api 'org.apache.httpcomponents:httpcore:4.4.15'
 	api 'org.apache.httpcomponents:httpmime:4.5.13'
+	api 'com.github.seancfoley:ipaddress:5.3.4'
 	api "org.slf4j:slf4j-parent:$slf4jVersion"
 	api 'com.github.jknack:handlebars:4.2.0'
     api "org.slf4j:slf4j-api:1.7.26"

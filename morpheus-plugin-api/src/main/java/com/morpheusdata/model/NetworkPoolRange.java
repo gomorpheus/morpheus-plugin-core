@@ -9,6 +9,8 @@ public class NetworkPoolRange extends MorpheusModel {
 
 	protected String startAddress;
 	protected String endAddress;
+	protected String startIPv6Address;
+	protected String endIPv6Address;
 	protected String internalId;
 	protected String externalId;
 	protected String description;
@@ -18,6 +20,7 @@ public class NetworkPoolRange extends MorpheusModel {
 	protected Date lastUpdated;
 	protected Boolean readOnly = false;
 	protected String cidr;
+	protected String cidrIPv6;
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkPool networkPool;
@@ -137,5 +140,29 @@ public class NetworkPoolRange extends MorpheusModel {
 
 	public void setCidr(String cidr) {
 		this.cidr = cidr;
+	}
+
+	public String getStartIPv6Address() {
+		return startIPv6Address;
+	}
+
+	public void setStartIPv6Address(String startIPv6Address) {
+		this.startIPv6Address = startIPv6Address;
+	}
+
+	public String getEndIPv6Address() {
+		return endIPv6Address;
+	}
+
+	public void setEndIPv6Address(String endIPv6Address) {
+		this.endIPv6Address = endIPv6Address;
+	}
+
+	public String getCidrIPv6() {
+		return cidrIPv6;
+	}
+
+	public void setCidrIPv6(String cidrIPv6) {
+		this.cidrIPv6 = cidrIPv6;
 	}
 }

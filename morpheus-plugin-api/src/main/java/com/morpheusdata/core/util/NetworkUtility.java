@@ -1,12 +1,16 @@
 package com.morpheusdata.core.util;
 
 import com.morpheusdata.model.*;
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -414,9 +418,20 @@ public class NetworkUtility {
 		return InetAddress.getByAddress(newAddress).getHostAddress();
 	}
 
+	static public String getIpEndAddressFromCidr(String cidr) throws AddressStringException {
+		IPAddressString ipv6String = new IPAddressString(cidr);
+		return ipv6String.toSequentialRange().getUpper().toCanonicalString();
+	}
+
+	static public String getIpStartAddressFromCidr(String cidr) throws AddressStringException {
+		IPAddressString ipv6String = new IPAddressString(cidr);
+		return ipv6String.toSequentialRange().getLower().toCanonicalString();
+	}
+
 	static public String getNextIpv6Address(String ipAddress,Integer increment, String endAddress) {
 		String[] ipArgs = ipAddress.split(":");
 		String[] ipEndArgs = endAddress.split(":");
+
 		Integer[] ipNumbers = new Integer[8];
 		Integer[] endIpNumbers = new Integer[8];
 
@@ -424,10 +439,20 @@ public class NetworkUtility {
 		for(String ipArg : ipArgs) {
 			if(ipArg.length() > 0) {
 				ipNumbers[counter] = Integer.parseInt(ipArg,16);
+				counter++;
 			} else {
-				ipNumbers[counter] = 0;
+				//we have to fill it in
+				Integer fillInLen = 8 - (ipArgs.length - 1);
+				for(int x=0;x<fillInLen;x++) {
+					ipNumbers[counter++] = 0;
+				}
+
 			}
-			counter++;
+		}
+		if(counter < 8 ) {
+			for(;counter<8;counter++) {
+				ipNumbers[counter]=0;
+			}
 		}
 		counter=0;
 		for(String ipArg : ipEndArgs) {
