@@ -15,7 +15,9 @@ import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
 import com.morpheusdata.core.MorpheusUsageService
 import com.morpheusdata.core.MorpheusWikiPageService
+import com.morpheusdata.core.MorpheusWorkloadService
 import com.morpheusdata.core.backup.MorpheusBackupJobService
+import com.morpheusdata.core.backup.MorpheusBackupProviderService
 import com.morpheusdata.core.backup.MorpheusBackupService
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
@@ -176,6 +178,16 @@ class MorpheusContextImpl implements MorpheusContext {
 	}
 
 	@Override
+	MorpheusReferenceDataService getReferenceData() {
+		return null
+	}
+
+	@Override
+	MorpheusBackupProviderService getBackupProvider() {
+		return null
+	}
+
+	@Override
 	MorpheusOsTypeService getOsType() {
 		return osTypeContext
 	}
@@ -203,6 +215,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusComputeServerService getComputeServer() {
 		return computeServerContext
+	}
+
+	@Override
+	MorpheusWorkloadService getWorkload() {
+		return null
 	}
 
 	@Override
@@ -295,6 +312,11 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo) {
+		return null
+	}
+
+	@Override
+	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo, Boolean guestExec) {
 		return null
 	}
 
