@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class NetworkPoolRange extends MorpheusModel {
@@ -14,7 +15,7 @@ public class NetworkPoolRange extends MorpheusModel {
 	protected String internalId;
 	protected String externalId;
 	protected String description;
-	protected Integer addressCount = 0;
+	protected BigInteger addressCount = new BigInteger("0");
 	protected Boolean active = true;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -47,7 +48,7 @@ public class NetworkPoolRange extends MorpheusModel {
 		return description;
 	}
 
-	public Integer getAddressCount() {
+	public BigInteger getAddressCount() {
 		return addressCount;
 	}
 
@@ -96,7 +97,7 @@ public class NetworkPoolRange extends MorpheusModel {
 		markDirty("description", description);
 	}
 
-	public void setAddressCount(Integer addressCount) {
+	public void setAddressCount(BigInteger addressCount) {
 		this.addressCount = addressCount;
 		markDirty("addressCount", addressCount);
 	}

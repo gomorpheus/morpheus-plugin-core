@@ -5,6 +5,7 @@ import com.morpheusdata.core.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -241,7 +242,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	 *
 	 * @return numerical count of number of ip addresses available within the current block.
 	 */
-	public Integer getIpCount() {
+	public BigInteger getIpCount() {
 		return ipCount;
 	}
 
@@ -249,7 +250,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	 * Sets the Total number of ip addresses in the current block range based on the CIDR. This is not factoring in existing reservations.
 	 * @param ipCount numerical count of number of ip addresses available within the current block.
 	 */
-	public void setIpCount(Integer ipCount) {
+	public void setIpCount(BigInteger ipCount) {
 		this.ipCount = ipCount;
 		markDirty("ipCount", ipCount);
 	}
@@ -260,7 +261,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	 * set this directly based on information from the target API, and others have to calculate this based on synced IP records.
 	 * @return total number of free ip addresses that can be allocated on this Network Pool
 	 */
-	public Integer getIpFreeCount() {
+	public BigInteger getIpFreeCount() {
 		return ipFreeCount;
 	}
 
@@ -269,7 +270,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	 * set this directly based on information from the target API, and others have to calculate this based on synced IP records.
 	 * @param ipFreeCount total number of free ip addresses that can be allocated on this Network Pool
 	 */
-	public void setIpFreeCount(Integer ipFreeCount) {
+	public void setIpFreeCount(BigInteger ipFreeCount) {
 		this.ipFreeCount = ipFreeCount;
 		markDirty("ipFreeCount", ipFreeCount);
 	}
@@ -394,8 +395,8 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	protected String dnsSearchPath;
 	protected Boolean dhcpServer;
 	protected String subnetAddress;
-	protected Integer ipCount = 0;
-	protected Integer ipFreeCount = 0;
+	protected BigInteger ipCount = new BigInteger("0");
+	protected BigInteger ipFreeCount = new BigInteger("0");
 	protected Boolean poolEnabled = false;
 	protected String refType;
 	protected String refId;
