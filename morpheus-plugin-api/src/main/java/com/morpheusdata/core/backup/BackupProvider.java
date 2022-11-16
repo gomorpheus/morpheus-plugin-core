@@ -39,6 +39,8 @@ public interface BackupProvider extends PluginProvider {
 
 	Boolean getHasJobs();
 
+	String getDefaultJobType();
+
 	Boolean getHasOptionalJob();
 
 	Boolean getHasReplication();

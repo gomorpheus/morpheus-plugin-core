@@ -8,6 +8,7 @@ import com.morpheusdata.model.BackupResult;
 import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.Replication;
+import com.morpheusdata.model.Account;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
 
 import io.reactivex.Observable;
@@ -78,6 +79,24 @@ public interface MorpheusBackupService {
 	Observable<Backup> listById(Collection<Long> ids);
 
 	/**
+	 * Lists all {@link Backup} objects by a specified {@link BackupJob } and active status.
+	 * @param backupJobId ID of a {@link BackupJob}
+	 * @param active filter the active or inactive state of the backup results
+	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
+	 */
+
+	Observable<Backup> listByBackupJobIdAndActive(Long backupJobId, Boolean active);
+
+	/**
+	 * Lists all {@link Backup} objects by a specified {@link Account} and {@link BackupJob } and active status.
+	 * @param accountId ID of an {@link Account}
+	 * @param backupJobId ID of a {@link BackupJob}
+	 * @param active filter the active or inactive state of the backup results
+	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
+	 */
+	Observable<Backup> listByAccountIdAndBackupJobIdAndActive(Long accountId, Long backupJobId, Boolean active);
+
+	/**
 	 * Removes Missing Backup on the Morpheus side. This accepts the Projection Object instead of the main Object.
 	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
 	 * <p><strong>Example:</strong></p>
@@ -111,5 +130,13 @@ public interface MorpheusBackupService {
 	 * @return the Single Observable containing the resulting Backup Object
 	 */
 	Single<Backup> save(Backup backup);
+
+	/**
+	 * Initiates the execution of a backup {@link Backup}. Be mindful this is an RxJava implementation and must be subscribed
+	 * to for any action to actually take place.
+	 * @param backupId the ID of the {@link Backup} to begin execution.
+	 * @return the Single Observable containing the success or failure of the backup execution call
+	 */
+	Single<Boolean> executeBackup(Long backupId);
 
 }
