@@ -12,7 +12,7 @@ import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Network
-import com.morpheusdata.model.UsersConfiguration
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.response.ServiceResponse
 import com.morpheusdata.vmware.plugin.utils.*

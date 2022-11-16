@@ -26,8 +26,8 @@ repositories {
 	mavenCentral()
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
 
 configurations {
 	provided
@@ -55,6 +55,9 @@ dependencies {
 	testImplementation 'org.objenesis:objenesis:2.6'
 	testImplementation "org.spockframework:spock-core:$spockVersion"
 	testImplementation 'cglib:cglib-nodep:3.2.12'
+	testImplementation("com.bertramlabs.plugins:karman-core:${karmanVersion}") {
+		exclude module: 'groovy-all'
+	}
 	implementation('com.toastcoders:yavijava:6.0.05') {
 		transitive = false
 		exclude module: 'dom4j'

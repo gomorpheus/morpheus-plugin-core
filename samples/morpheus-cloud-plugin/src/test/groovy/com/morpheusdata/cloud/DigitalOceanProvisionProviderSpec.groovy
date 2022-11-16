@@ -12,7 +12,7 @@ import com.morpheusdata.model.Instance
 import com.morpheusdata.model.KeyPair
 import com.morpheusdata.model.NetworkConfiguration
 import com.morpheusdata.model.ServicePlan
-import com.morpheusdata.model.UsersConfiguration
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.response.ServiceResponse

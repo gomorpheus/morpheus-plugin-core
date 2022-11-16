@@ -12,8 +12,9 @@ import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
 import com.morpheusdata.model.Instance
 import com.morpheusdata.model.Network
-import com.morpheusdata.model.UsersConfiguration
+import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.model.Workload
+import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.response.ServiceResponse
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -237,10 +238,10 @@ class MaasProvisionProviderSpec extends Specification {
 		ComputeServer server = new ComputeServer(cloud: cloud, account: cloudAccount)
 		Instance instance = new Instance(id: 777)
 		Workload workload = new Workload(server: server, account: containerAccount, instance: instance)
-		Map runConfig = [:]
+		WorkloadRequest workloadRequest = new WorkloadRequest()
 
 		when:
-		def resp = service.runWorkload(workload, runConfig)
+		def resp = service.runWorkload(workload, workloadRequest)
 
 		then:
 		resp.success
