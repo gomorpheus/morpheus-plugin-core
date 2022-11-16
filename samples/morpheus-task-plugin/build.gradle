@@ -12,8 +12,8 @@ group = 'com.morpheusdata'
 version '1.2.1'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
 
 repositories {
 	mavenLocal()

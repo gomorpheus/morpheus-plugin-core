@@ -49,6 +49,11 @@ class DigitalOceanBackupProvider implements BackupProvider {
 	}
 
 	@Override
+	boolean isPlugin() {
+		return true
+	}
+
+	@Override
 	Icon getIcon() {
 		return null
 	}
@@ -105,6 +110,11 @@ class DigitalOceanBackupProvider implements BackupProvider {
 
 	@Override
 	Boolean getHasJobs() {
+		return null
+	}
+
+	@Override
+	String getDefaultJobType() {
 		return null
 	}
 

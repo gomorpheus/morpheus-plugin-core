@@ -19,8 +19,8 @@ apply plugin: 'asset-pipeline'
 group = 'com.morpheusdata'
 version '1.2.1'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 repositories {

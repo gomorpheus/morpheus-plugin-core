@@ -58,8 +58,8 @@ if (isReleaseVersion) {
 }
 
 subprojects { project ->
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '1.11'
+    targetCompatibility = '1.11'
     if(project.name != 'morpheus-plugin-docs' && project.name != 'morpheus-plugin-site' && project.name != 'samples' && project.name != 'dashboards' && !project.name.endsWith('plugin') && project.name != 'vendor') {
         apply plugin: 'java'
         apply plugin: 'maven-publish'
