@@ -68,6 +68,9 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 	public Boolean getHasJobs() { return false; };
 
 	@Override
+	public String getDefaultJobType() { return "new"; };
+
+	@Override
 	public Boolean getHasOptionalJob() { return false; }
 
 	@Override
