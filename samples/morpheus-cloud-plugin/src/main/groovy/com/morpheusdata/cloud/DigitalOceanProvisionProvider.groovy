@@ -426,7 +426,7 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 			]
 			rtn = apiService.performDropletAction(dropletId, body, apiKey)
 			if(rtn.success) {
-				StorageVolume existingVolume = server.volumes?.first()
+				StorageVolume existingVolume = server.volumes?.getAt(0)
 				if (existingVolume) {
 					existingVolume.maxStorage = resizeRequest.maxStorage
 					morpheus.storageVolume.save([existingVolume]).blockingGet()

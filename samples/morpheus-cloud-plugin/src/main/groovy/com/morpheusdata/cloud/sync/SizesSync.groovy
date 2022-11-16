@@ -90,7 +90,7 @@ class SizesSync {
 		morpheusContext.servicePlan.save(plansToUpdate).blockingGet()
 	}
 
-	private getNameForSize(sizeData) {
+	def getNameForSize(sizeData) {
 		def memoryName = sizeData.memory < 1000 ? "${sizeData.memory} MB" : "${sizeData.memory.div(1024l)} GB"
 		"Plugin Droplet ${sizeData.vcpus} CPU, ${memoryName} Memory, ${sizeData.disk} GB Storage"
 	}

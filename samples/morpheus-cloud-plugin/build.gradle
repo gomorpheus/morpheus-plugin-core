@@ -44,6 +44,7 @@ dependencies {
 	// Include morpheus-core and it's dependencies
 	testImplementation project(':morpheus-plugin-api')
 	testImplementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+	testImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
 	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
 
 	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
@@ -52,6 +53,9 @@ dependencies {
 	testImplementation 'org.objenesis:objenesis:2.6'
 	testImplementation "org.spockframework:spock-core:$spockVersion"
 	testImplementation 'cglib:cglib-nodep:3.2.12'
+	testImplementation("com.bertramlabs.plugins:karman-core:${karmanVersion}") {
+		exclude module: 'groovy-all'
+	}
 }
 
 sourceSets {
@@ -132,6 +136,3 @@ tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 }
 
 tasks.assemble.dependsOn tasks.shadowJar
-assets {
-	packagePlugin = false //set to true if this is a library
-}

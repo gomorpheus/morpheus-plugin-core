@@ -15,6 +15,8 @@ import com.morpheusdata.model.ServicePlan
 import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
+import com.morpheusdata.model.provisioning.WorkloadRequest
+import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
 import groovy.json.JsonSlurper
 import io.reactivex.Observable
@@ -45,7 +47,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 	MorpheusComputeServerService computeServerContext
 
 	def setup() {
-		Plugin plugin = Mock(Plugin)
+		Plugin plugin = new DigitalOceanPlugin()
 		context = Mock(MorpheusContext)
 		cloudContext = Mock(MorpheusCloudService)
 		virtualImageContext = Mock(MorpheusVirtualImageService)
@@ -194,6 +196,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
 		ServicePlan plan = new ServicePlan(externalId: 'plan1')
 		Workload workload = new Workload(plan: plan)
+		WorkloadRequest workloadRequest = new WorkloadRequest()
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
 		Map serverOpts = [
 				'name'             : 'droplet1',
@@ -221,7 +224,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def createServerJson = slurper.parseText(createServerResponse)
 
 		when:
-		def resp = provider.runWorkload(workload, serverOpts)
+		def resp = provider.runWorkload(workload, workloadRequest, serverOpts)
 
 		then:
 		2 * computeServerContext.save(*_) >> Single.just(true)
@@ -238,6 +241,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [doApiKey: 'abc123'])
 		ServicePlan plan = new ServicePlan(externalId: 'plan1')
 		Workload workload = new Workload(plan: plan)
+		WorkloadRequest workloadRequest = new WorkloadRequest()
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
 		Map serverOpts = [:]
 		String createServerResponse = """
@@ -247,7 +251,7 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		def createServerJson = slurper.parseText(createServerResponse)
 
 		when:
-		def resp = provider.runWorkload(workload, serverOpts)
+		def resp = provider.runWorkload(workload, workloadRequest, serverOpts)
 
 		then:
 		1 * computeServerContext.save(*_) >> Single.just(true)
@@ -262,11 +266,12 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		given:
 		Cloud cloud = new Cloud(name: 'Digital Ocean', configMap: [:])
 		Workload workload = new Workload()
+		WorkloadRequest workloadRequest = new WorkloadRequest()
 		workload.server = new ComputeServer(name: 'serv1', externalId: 'drop1111', cloud: cloud)
 		Map serverOpts = [:]
 
 		when:
-		def resp = provider.runWorkload(workload, serverOpts)
+		def resp = provider.runWorkload(workload, workloadRequest, serverOpts)
 
 		then:
 		0 * apiService.makeApiCall(_, _)
@@ -283,10 +288,12 @@ class DigitalOceanProvisionProviderSpec extends Specification {
 		workload.server = server
 		ServicePlan plan = new ServicePlan(externalId: 'plan_123')
 		Instance instance = new Instance(id: 42)
+		ResizeRequest resizeRequest = new ResizeRequest()
+		resizeRequest.plan = plan
 		Map opts = [:]
 
 		when:
-		def resp = provider.resizeWorkload(instance, workload, plan, opts)
+		def resp = provider.resizeWorkload(instance, workload, resizeRequest, opts)
 
 		then:
 		resp.success

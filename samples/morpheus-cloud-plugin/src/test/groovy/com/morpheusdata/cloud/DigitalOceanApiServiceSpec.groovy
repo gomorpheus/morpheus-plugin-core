@@ -24,7 +24,7 @@ class DigitalOceanApiServiceSpec extends Specification {
 						]
 				]
 		]
-		WorkloadResponse expected = new WorkloadResponse(externalId: '1111', publicIp: '10.10.10.10', privateIp: '192.168.0.10')
+		WorkloadResponse expected = new WorkloadResponse(externalId: '1111', publicIp: '10.10.10.10', privateIp: '192.168.0.10', success:true)
 
 		when:
 		def resp = service.dropletToWorkloadResponse(droplet)
@@ -33,6 +33,5 @@ class DigitalOceanApiServiceSpec extends Specification {
 		resp.externalId == expected.externalId
 		resp.publicIp == expected.publicIp
 		resp.privateIp == expected.privateIp
-		resp.status == expected.status
 	}
 }
