@@ -61,35 +61,9 @@ class VmwareProvisionProviderSpec extends Specification {
 		service.getName() == 'Vmware Plugin'
 	}
 
-	void "getAuthConfig - opts"() {
-		given:
-		def options = [serviceUrl: '1.1.1.1', serviceUsername: 'u1', servicePassword: 'password']
-
-		when:
-		def config = VmwareProvisionProvider.getAuthConfig(options)
-
-		then:
-		config.apiUrl == 'https://1.1.1.1/sdk'
-		config.apiUsername == 'u1'
-		config.apiPassword == 'password'
-	}
-
-	void "getAuthConfig - Cloud"() {
-		given:
-		Cloud cloud = new Cloud(serviceUrl: '1.1.1.1', serviceUsername: 'u1', servicePassword: 'password')
-
-		when:
-		def config = plugin.getAuthConfig(cloud)
-
-		then:
-		config.apiUrl == 'https://1.1.1.1/sdk'
-		config.apiUsername == 'u1'
-		config.apiPassword == 'password'
-	}
-
 	void "getApiUrl"() {
 		expect:
-		apiUrl == plugin.getVmwareApiUrl(url)
+		apiUrl == service.getVmwareApiUrl(url)
 
 		where:
 		url | apiUrl
@@ -97,4 +71,6 @@ class VmwareProvisionProviderSpec extends Specification {
 		'http://vmware.io'  | 'http://vmware.io/sdk'
 		'https://vmware.io' | 'https://vmware.io/sdk'
 	}
+
+
 }

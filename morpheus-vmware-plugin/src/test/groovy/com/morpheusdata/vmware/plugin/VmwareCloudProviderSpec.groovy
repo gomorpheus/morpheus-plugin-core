@@ -50,7 +50,7 @@ class VmwareCloudProviderSpec extends Specification {
 		def optionTypes = service.getOptionTypes()
 
 		then:
-		optionTypes.size() == 7
+		optionTypes.size() == 17
 	}
 
 	void "getComputeServerTypes"() {
@@ -58,6 +58,6 @@ class VmwareCloudProviderSpec extends Specification {
 		def serverTypes = service.getComputeServerTypes()
 
 		then:
-		serverTypes.size() == 2
+		serverTypes.size() == 5
 	}
 }
