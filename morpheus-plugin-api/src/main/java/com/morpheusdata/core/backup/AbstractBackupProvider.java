@@ -8,8 +8,10 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Provides a standard set of methods for interacting with backup providers.
- * @since 0.12.2
+ * Provides a standard set of methods for a {@link BackupProvider}. A backup provider is the primary connection to the
+ * external provider services. The backup provider supplies providers for provision types and/or container types via
+ * the {@link BackupTypeProvider BackupTypeProviders} implemented within the provider.
+ * @since 0.13.4
  * @author Dustin DeYoung
  */
 public abstract class AbstractBackupProvider implements BackupProvider {
@@ -106,19 +108,42 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 	@Override
 	public Boolean getRestoreNewEnabled() { return false; };
 
+	/**
+	 * Add a scoped backup provider. A {@link com.morpheusdata.model.BackupIntegration } links the provider
+	 * to the provision or container type. Morpheus will use this associated to determine
+	 * 	 * the available providers when executing an operation in the backup services.
+	 * @param backupIntegration a backup integration referencing the provider type and the provision
+	 *                             and/or container types
+	 */
 	public void addScopedProvider(com.morpheusdata.model.BackupIntegration backupIntegration) {
 		scopedProviders.add(backupIntegration);
 	}
 
+	/**
+	 * Add a scoped backup provider. Registers a {@link BackupTypeProvider} and the associated
+	 * provision and/or container types with morpheus. Morpheus will use this associated to determine
+	 * the available providers when executing an operation in the backup services.
+	 * @param backupTypeProvider the backup type provider to register
+	 * @param provisionTypeCode the provision type code to be associated with the backup type provider
+	 * @param containerTypeCode the container type code to be associated with the backup the provider
+	 */
 	public void addScopedProvider(BackupTypeProvider backupTypeProvider, String provisionTypeCode, String containerTypeCode) {
 		com.morpheusdata.model.BackupIntegration scopedProvider = new com.morpheusdata.model.BackupIntegration(backupTypeProvider,  provisionTypeCode, containerTypeCode);
 		scopedProviders.add(scopedProvider);
 	}
 
+	/**
+	 * Get the list of {@link com.morpheusdata.model.BackupIntegration BackupIntegrations} associated with this backup provider
+	 * @return a list of {@link com.morpheusdata.model.BackupIntegration BackupIntegrations}
+	 */
 	public Collection<com.morpheusdata.model.BackupIntegration> getScopedProviders() {
 		return scopedProviders;
 	}
 
+	/**
+	 * Get the list of {@link BackupTypeProvider BackupTypeProviders} associated with this backup provider
+	 * @return a list of {@link BackupTypeProvider BackupTypeProviders}
+	 */
 	public Collection<BackupTypeProvider> getBackupProviders() {
 		ArrayList<BackupTypeProvider> backupTypeProviders = new ArrayList<>();
 		for(com.morpheusdata.model.BackupIntegration scopedProvider:scopedProviders) {
@@ -151,8 +176,12 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 		return ServiceResponse.success();
 	}
 
-
 	// backup jobs
+	/**
+	 * Get the {@link BackupJobProvider} responsible for all backup job operations in this backup provider
+	 * The {@link DefaultBackupJobProvider} can be used if the provider would like morpheus to handle all job operations.
+	 * @return the {@link BackupJobProvider} for this backup provider
+	 */
 	public abstract BackupJobProvider getBackupJobProvider();
 	
 	@Override

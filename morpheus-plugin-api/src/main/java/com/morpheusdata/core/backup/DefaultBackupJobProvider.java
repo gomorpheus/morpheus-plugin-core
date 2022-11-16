@@ -15,6 +15,13 @@ import io.reactivex.schedulers.Schedulers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Default backup job provider which delegates the backup operations back to morpheus. Use this as the backup
+ * job provider in a backup provider when the provider does not have the concept of scheduled batch backup operations,
+ * or it is desired for morpheus to handle the scheduling and running of batch backup operations.
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 class DefaultBackupJobProvider implements BackupJobProvider {
 
 	static Logger log = LoggerFactory.getLogger(DefaultBackupJobProvider.class);
@@ -79,6 +86,10 @@ class DefaultBackupJobProvider implements BackupJobProvider {
 					(Backup backup) -> {
 						try {
 							log.debug("Executing backup {}", backup.getId());
+							/**
+							 * send the backup execution operation back to morpheus and route the operation
+							 * to the appropriate provider.
+							 */
 							morpheus.getBackup().executeBackup(backup.getId()).blockingGet();
 						} catch(Exception ex) {
 							log.error("Failed to execute backup {}", backup.getId());
