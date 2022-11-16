@@ -7,6 +7,8 @@ import inet.ipaddr.IPAddressString;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -426,6 +428,11 @@ public class NetworkUtility {
 	static public String getIpStartAddressFromCidr(String cidr) throws AddressStringException {
 		IPAddressString ipv6String = new IPAddressString(cidr);
 		return ipv6String.toSequentialRange().getLower().toCanonicalString();
+	}
+
+	static public BigInteger getIpCountFromCidr(String cidr) throws AddressStringException  {
+		IPAddressString ipv6String = new IPAddressString(cidr);
+		return ipv6String.toSequentialRange().getCount();
 	}
 
 	static public String getNextIpv6Address(String ipAddress,Integer increment, String endAddress) {
