@@ -6,6 +6,11 @@ import com.morpheusdata.response.ServiceResponse;
 
 import java.util.*;
 
+/**
+ *
+ * @since 0.12.2
+ * @author Dustin DeYoung
+ */
 public interface BackupProvider extends PluginProvider {
 
 	// Associations between cloud type and backup providers

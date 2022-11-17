@@ -8,6 +8,13 @@ import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Map;
 
+/**
+ * Provides a standard set of methods for a {@link com.morpheusdata.core.backup.BackupProvider}. A backup provider is the primary connection to the
+ * external provider services. The backup provider supplies providers for provision types and/or container types via
+ * the {@link BackupTypeProvider BackupTypeProviders} implemented within the provider.
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public abstract class AbstractBackupTypeProvider implements BackupTypeProvider {
 
 	Plugin plugin;
@@ -30,14 +37,30 @@ public abstract class AbstractBackupTypeProvider implements BackupTypeProvider {
 		return plugin;
 	}
 
+	/**
+	 * Get the backup provider which will be responsible for all the operations related to backup executions.
+	 * @return a {@link BackupExecutionProvider} providing methods for backup execution.
+	 */
 	public abstract BackupExecutionProvider getExecutionProvider();
 
+	/**
+	 * Set the backup provider which will be responsible for all the operations related to backup executions.
+	 * @param executionProvider a {@link BackupExecutionProvider} providing methods for backup execution.
+	 */
 	public void setExecutionProvider(BackupExecutionProvider executionProvider) {
 		this.executionProvider = executionProvider;
 	}
 
+	/**
+	 * Get the backup provider which will be responsible for all the operations related to backup restore.
+	 * @return a {@link BackupRestoreProvider} providing methods for backup restore operations.
+	 */
 	public abstract BackupRestoreProvider getRestoreProvider();
 
+	/**
+	 * Get the backup provider which will be responsible for all the operations related to backup restore.
+	 * @param restoreProvider a {@link BackupRestoreProvider} providing methods for backup restore operations.
+	 */
 	public void setRestoreProvider(BackupRestoreProvider restoreProvider) {
 		this.restoreProvider = restoreProvider;
 	}

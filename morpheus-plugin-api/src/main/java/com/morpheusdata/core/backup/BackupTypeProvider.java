@@ -7,6 +7,11 @@ import com.morpheusdata.response.ServiceResponse;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ *
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public interface BackupTypeProvider extends PluginProvider {
 
 	String getContainerType();
