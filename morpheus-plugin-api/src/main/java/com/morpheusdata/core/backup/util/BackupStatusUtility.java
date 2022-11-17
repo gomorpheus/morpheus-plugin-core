@@ -1,6 +1,6 @@
 package com.morpheusdata.core.backup.util;
 
-class BackupStatusUtility {
+public class BackupStatusUtility {
 	public static String START_REQUESTED = "START_REQUESTED";
 	public static String INITIALIZING = "INITIALIZING";
 	public static String IN_PROGRESS = "IN_PROGRESS";
