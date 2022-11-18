@@ -103,18 +103,7 @@ subprojects { project ->
 		}
 	}
 
-	// Runs assemble and copyToMorpheus
-	tasks.register('publishToMorpheus') {
-		dependsOn tasks.shadowJar
-		dependsOn 'moveToPlugin'
-		tasks.findByName('moveToPlugin').mustRunAfter 'shadowJar'
-	}
-
-	tasks.register('publishJarToMorpheus') {
-		dependsOn 'assemble'
-		dependsOn 'copyJarToMorpheus'
-		tasks.findByName('copyToMorpheus').mustRunAfter 'shadowJar'
-	}
+	
 }
 
 repositories {
