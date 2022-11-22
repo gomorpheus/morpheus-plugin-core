@@ -32,7 +32,7 @@ configurations {
 
 dependencies {
 	provided project(':morpheus-plugin-api')
-	provided('com.morpheusdata:cypher-core:0.5.1')
+	provided('com.morpheusdata:cypher-core:0.10.0')
 	provided("com.bertramlabs.plugins:hcl4j:0.3.4")
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"

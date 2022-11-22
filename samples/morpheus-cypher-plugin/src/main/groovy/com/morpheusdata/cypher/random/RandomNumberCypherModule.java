@@ -67,4 +67,13 @@ public class RandomNumberCypherModule implements CypherModule {
 
 		return usage.toString();
 	}
+
+	/**
+     * The readFromDatastore method is used to determine if Cypher should read from the value stored within the {@link Datastore} on read requests
+     * @return if this returns false then Cypher read requests are always executed through the module and do not read from a value that exists within the {@link Datastore}.
+     */
+    @Override
+    Boolean readFromDatastore() {
+        return true
+    }
 }
