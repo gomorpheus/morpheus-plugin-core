@@ -34,6 +34,8 @@ include::Views.adoc[]
 
 include::OptionSources.adoc[]
 
+include::Credentials.adoc[]
+
 include::Testing.adoc[]
 
 include::Seeding.adoc[]
