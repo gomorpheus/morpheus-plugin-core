@@ -44,6 +44,5 @@ A task can be run in one of three contexts:
 
 ==== Task Logo
 
-A custom logo can be used in the Morpheus UI by placing an image at `src/assets/images/{task-code}.png`.
-Recommended file size is 180 x 60 px.
+A custom logo can be used in the Morpheus UI by defining the `Icon` object in the new `TaskProvider.getIcon()` interface method. Before this was simply a hard coded icon referenced by a code name. Both dark mode and light mode icons can be defined.
 
