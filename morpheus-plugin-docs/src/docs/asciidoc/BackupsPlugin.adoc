@@ -1,0 +1,64 @@
+=== Backups Plugin
+
+Backups are a big part of self-service workload management. Allowing a customer to backup their application and especially restore it on the fly are critical to creating a complete self-service solution. This is why Morpheus integrates with several best-in-class backup solutions like Veeam, Rubrik, Commvault, and more. Morpheus even provides its own basic backup providers for those customers still looking for a final solution.
+
+=== Setup
+
+Creating a BackupPlugin typically involves registration of at least 2 different types of providers. This is because a Backup Provider also can have many backup types. For example some backup solutions, like Rubrik, can backup vms on many cloud types and they each have different relevant APIs. The best example plugin to look at is currently the https://github.com/gomorpheus/morpheus-rubrik-plugin["Rubrik Backup Provider"] Plugin. The beginning of the `RubrikBackupProvider` can be seen below.
+
+[source,groovy]
+----
+@Slf4j
+class RubrikBackupProvider extends AbstractBackupProvider {
+
+	static String LOCK_NAME = 'backups.rubrik'
+
+	ApiService apiService
+
+	SlaDomainService SlaDomainService
+
+	BackupJobProvider backupJobProvider;
+
+	RubrikBackupProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		super(plugin, morpheusContext)
+		apiService = new ApiService()
+
+		// vmware
+		RubrikVmwareBackupProvider vmwareBackupProvider = new RubrikVmwareBackupProvider(plugin, morpheus)
+		plugin.pluginProviders.put(vmwareBackupProvider.code, vmwareBackupProvider)
+		addScopedProvider(vmwareBackupProvider, "vmware", null)
+		// hyperv
+		// aws
+		// nutanix
+	}
+
+	@Override
+	String getCode() {
+		return 'rubrik'
+	}
+
+	@Override
+	String getName() {
+		return 'Rubrik'
+	}
+
+	@Override
+	Icon getIcon() {
+		return new Icon(path:"rubrik.svg", darkPath: "rubrik-dark.svg")
+	}
+
+	...
+}
+----
+
+**NOTE:** It is helpful to use the `AbstractBackupProvider` instead of manually implementing every single method defined in the `BackupProvider` interface.
+
+Earlier, it was mentioned that two types of providers are typically needed. This can be seen in the constructor of the `RubrikBackupProvider`. A `RubrikVmwareBackupProvider` is created and scoped by a provision type code to the main provider.
+
+
+Like most other integrations a periodic refresh method is called to sync in any necessary data for the integration to work. It is ideal to use a `SyncTask` in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
+
+There are various service interfaces provided for implementing the backup behavior as well as the restore behavor of a backup type. These are done by implementing the `BackupExecutionProvider` and `BackupRestoreProvider` respectively. Each `BackupTypeProvider` that is implemented, allows one to define which `BackupExecutionProvider` and `BackupRestoreProvider`.
+
+
+	
