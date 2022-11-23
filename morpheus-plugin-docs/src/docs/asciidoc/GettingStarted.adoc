@@ -21,7 +21,7 @@ Create a new project with a `build.gradle` file. We will use the shadowjar plugi
 [source,groovy]
 ----
 plugins {
-    id "com.bertramlabs.asset-pipeline" version "3.4.4"
+    id "com.bertramlabs.asset-pipeline" version "4.0.0"
     id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
@@ -41,13 +41,17 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    provided
+}
+
 dependencies {
-    compileOnly 'com.morpheusdata:morpheus-plugin-api:0.12.4' //use 0.13.1 for 5.5.x
-    compileOnly 'org.codehaus.groovy:groovy-all:3.0.7'
+    provided 'com.morpheusdata:morpheus-plugin-api:0.12.5' //use 0.13.4 for 5.5.x
+    provided 'org.codehaus.groovy:groovy-all:3.0.9'
 
     /*
      When using custom libraries, use the gradle `implementation` directive
-     instead of `compileOnly`.
+     instead of `provided`.
      This will allow shadowJar to package the library into the resulting plugin and keep it
      isolated within the same classloader.
      */
@@ -66,6 +70,15 @@ jar {
         attributes(
             'Plugin-Class': 'com.example.MyPlugin', //Reference to Plugin class
             'Plugin-Version': archiveVersion.get() // Get version defined in gradle
+            'Morpheus-Name': 'Plugin Name',
+            'Morpheus-Organization': 'My Organization',
+            'Morpheus-Code': 'plugin-code',
+            'Morpheus-Description': 'My Plugin Description',
+            'Morpheus-Logo': 'assets/myplugin.svg',
+            'Morpheus-Logo-Dark': 'assets/myplugin-dark.svg',
+            'Morpheus-Labels': 'Plugin, Stuff',
+            'Morpheus-Repo': 'https://github.com/myorg/myrepo',
+            'Morpheus-Min-Appliance-Version': "5.5.2"
         )
     }
 }
