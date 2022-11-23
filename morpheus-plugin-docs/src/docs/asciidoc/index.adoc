@@ -55,3 +55,5 @@ include::ApprovalsPlugin.adoc[]
 include::IPAMPlugins.adoc[]
 
 include::CloudPlugins.adoc[]
+
+include::BackupPlugins.adoc[]
