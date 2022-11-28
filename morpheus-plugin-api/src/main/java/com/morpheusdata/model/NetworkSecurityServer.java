@@ -5,8 +5,7 @@ import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
 
-public class NetworkSecurityServer {
-	public String name;
+public class NetworkSecurityServer extends MorpheusModel {
 	public NetworkSecurityServerType type;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public NetworkServer networkServer; //if its a network and security server link;
@@ -28,7 +27,6 @@ public class NetworkSecurityServer {
 	public String status = "ok"; //ok, error, warning, offline;
 	public String statusMessage;
 	public Date statusDate;
-	public String config;
 	public String networkFilter;
 	public String tenantMatch;
 	public Date dateCreated;
