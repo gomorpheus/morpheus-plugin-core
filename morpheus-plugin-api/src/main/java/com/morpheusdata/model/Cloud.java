@@ -73,7 +73,9 @@ public class Cloud extends CloudIdentityProjection {
 	protected String containerMode = "docker";
 	protected String storageMode = "standard";
 	protected String securityMode = "off"; //host firewall.. off or internal
-	//	public NetworkSecurityServer securityServer; //integrated security service
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected NetworkSecurityServer securityServer; //integrated security service
 	protected String networkSecurityMode; // internal (to manage internal firewall for VMs) (ignored if securityServer is set - not used
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkServer networkServer; //virtual or physical network provider
@@ -306,6 +308,10 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getSecurityMode() {
 		return securityMode;
+	}
+
+	public NetworkSecurityServer getSecurityServer() {
+		return securityServer;
 	}
 
 	public String getNetworkSecurityMode() {
@@ -655,6 +661,11 @@ public class Cloud extends CloudIdentityProjection {
 	public void setSecurityMode(String securityMode) {
 		this.securityMode = securityMode;
 		markDirty("securityMode", securityMode);
+	}
+
+	public void setSecurityServer(NetworkSecurityServer securityServer) {
+		this.securityServer = securityServer;
+		markDirty("securityServer", securityServer);
 	}
 
 	public void setNetworkSecurityMode(String networkSecurityMode) {
