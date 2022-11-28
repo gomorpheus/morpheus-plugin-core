@@ -1,5 +1,6 @@
 package com.morpheusdata.cypher.random;
 
+import com.morpheusdata.model.Datastore;
 import com.morpheusdata.cypher.Cypher;
 import com.morpheusdata.cypher.CypherMeta;
 import com.morpheusdata.cypher.CypherModule;
