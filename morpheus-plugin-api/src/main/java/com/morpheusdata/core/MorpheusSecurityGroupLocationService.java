@@ -1,6 +1,8 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.ComputeZonePool;
 import com.morpheusdata.model.SecurityGroupLocation;
+import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
 import com.morpheusdata.model.projection.SecurityGroupLocationIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -15,9 +17,12 @@ public interface MorpheusSecurityGroupLocationService {
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the Cloud associated with the SecurityGroupLocation
 	 * @param cloudId the id of the Cloud
+	 * @param computeZonePoolId (optional) id of the {@link ComputeZonePool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
+	 * @param category (optional) category name that the SecurityGroupLocation must have
+	 *
 	 * @return Observable stream of sync projection
 	 */
-	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId);
+	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId, Long computeZonePoolId, String category);
 
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the refId and refType associated with the SecurityGroupLocation
