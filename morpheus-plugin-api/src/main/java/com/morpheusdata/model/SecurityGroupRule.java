@@ -28,12 +28,12 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
     protected String source; // used by morpheus for comparison
     protected String sourceType = "cidr"; //cidr, group, tier, all
     @JsonSerialize(using= ModelAsIdOnlySerializer.class)
-    protected SecurityGroup sourceGroup;
+    protected SecurityGroupIdentityProjection sourceGroup;
     //destination
     protected String destination; // used by morpheus for comparison
     protected String destinationType = "instance"; //cidr, group, tier, instance
     @JsonSerialize(using= ModelAsIdOnlySerializer.class)
-    protected SecurityGroup destinationGroup;
+    protected SecurityGroupIdentityProjection destinationGroup;
     //applied targets
     protected String appliedTarget;
     protected String appliedTargetType;
@@ -243,7 +243,7 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 	 * The source SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 * @return The source SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 */
-    public SecurityGroup getSourceGroup() {
+    public SecurityGroupIdentityProjection getSourceGroup() {
         return sourceGroup;
     }
 
@@ -251,7 +251,7 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 	 * The source SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 * @param sourceGroup The source SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 */
-    public void setSourceGroup(SecurityGroup sourceGroup) {
+    public void setSourceGroup(SecurityGroupIdentityProjection sourceGroup) {
         this.sourceGroup = sourceGroup;
     }
 
@@ -291,7 +291,7 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 	 * The destination SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 * @return The destination SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 */
-    public SecurityGroup getDestinationGroup() {
+    public SecurityGroupIdentityProjection getDestinationGroup() {
         return destinationGroup;
     }
 
@@ -299,7 +299,7 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 	 * The destination SecurityGroup may be set. Some clouds refer to other SecurityGroups (like Amazon)
 	 * @param destinationGroup
 	 */
-    public void setDestinationGroup(SecurityGroup destinationGroup) {
+    public void setDestinationGroup(SecurityGroupIdentityProjection destinationGroup) {
         this.destinationGroup = destinationGroup;
     }
 

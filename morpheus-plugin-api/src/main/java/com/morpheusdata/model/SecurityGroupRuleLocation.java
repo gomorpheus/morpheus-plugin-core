@@ -1,11 +1,13 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.SecurityGroupIdentityProjection;
+import com.morpheusdata.model.projection.SecurityGroupRuleIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class SecurityGroupRuleLocation extends MorpheusModel {
 
-    protected SecurityGroupRule securityGroupRule;
+    protected SecurityGroupRuleIdentityProjection securityGroupRule;
     protected String code;
     protected String category;
     protected String name;
@@ -19,17 +21,18 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
     protected String source;
     protected String sourceType = "cidr"; //cidr, group, tier, all
     @JsonSerialize(using= ModelAsIdOnlySerializer.class)
-    protected SecurityGroup sourceGroup;
+    protected SecurityGroupIdentityProjection sourceGroup;
     //destination
     protected String destination;
     protected String destinationType = "instance"; //cidr, group, tier, instance
     @JsonSerialize(using= ModelAsIdOnlySerializer.class)
-    protected SecurityGroup destinationGroup;
+    protected SecurityGroupIdentityProjection destinationGroup;
     //application
     protected String applicationType = "port"; //port or service or protocol group
     protected String application;
     protected String portRange;
     protected String sourcePortRange;
+	protected String destinationPortRange;
     protected String protocol;
     protected String icmpType;
     //detailed ports
@@ -144,11 +147,11 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
         this.sourceType = sourceType;
     }
 
-    public SecurityGroup getSourceGroup() {
+    public SecurityGroupIdentityProjection getSourceGroup() {
         return sourceGroup;
     }
 
-    public void setSourceGroup(SecurityGroup sourceGroup) {
+    public void setSourceGroup(SecurityGroupIdentityProjection sourceGroup) {
         this.sourceGroup = sourceGroup;
     }
 
@@ -168,11 +171,11 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
         this.destinationType = destinationType;
     }
 
-    public SecurityGroup getDestinationGroup() {
+    public SecurityGroupIdentityProjection getDestinationGroup() {
         return destinationGroup;
     }
 
-    public void setDestinationGroup(SecurityGroup destinationGroup) {
+    public void setDestinationGroup(SecurityGroupIdentityProjection destinationGroup) {
         this.destinationGroup = destinationGroup;
     }
 
@@ -208,7 +211,16 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
         this.sourcePortRange = sourcePortRange;
     }
 
-    public String getProtocol() {
+	public String getDestinationPortRange() {
+		return destinationPortRange;
+	}
+
+	public void setDestinationPortRange(String destinationPortRange) {
+		this.destinationPortRange = destinationPortRange;
+	}
+
+
+	public String getProtocol() {
         return protocol;
     }
 
@@ -386,11 +398,11 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
         this.syncSource = syncSource;
     }
 
-    public SecurityGroupRule getSecurityGroupRule() {
+    public SecurityGroupRuleIdentityProjection getSecurityGroupRule() {
         return securityGroupRule;
     }
 
-    public void setSecurityGroupRule(SecurityGroupRule securityGroupRule) {
+    public void setSecurityGroupRule(SecurityGroupRuleIdentityProjection securityGroupRule) {
         this.securityGroupRule = securityGroupRule;
     }
 }
