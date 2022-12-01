@@ -2,6 +2,8 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeZonePool;
 import com.morpheusdata.model.SecurityGroupLocation;
+import com.morpheusdata.model.SecurityGroupRule;
+import com.morpheusdata.model.SecurityGroupRuleLocation;
 import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
 import com.morpheusdata.model.projection.SecurityGroupLocationIdentityProjection;
 import io.reactivex.Observable;
@@ -48,11 +50,23 @@ public interface MorpheusSecurityGroupLocationService {
 	Single<Boolean> save(List<SecurityGroupLocation> securityGroupLocations);
 
 	/**
-	 * Create and return a new SecurityGroupLocation in Morpheus
+	 * Create and return a new SecurityGroupLocation in Morpheus.
+	 * If securityGroup is not specified, then the hash is used to locate an existing SecurityGroup in Morpheus and
+	 * it will then be associated with this SecurityGroupLocation. If the parent SecurityGroup is still not found, a new
+	 * one will be created
 	 * @param securityGroupLocation new SecurityGroupLocation to persist
 	 * @return the SecurityGroupLocation
 	 */
 	Single<SecurityGroupLocation> create(SecurityGroupLocation securityGroupLocation);
+
+	/**
+	 * Adds, removes, and updates SecurityGroupRules and SecurityGroupRuleLocations for the SecurityGroup associated with
+	 * the SecurityGroupLocation
+	 * @param securityGroupLocation the SecurityGroupLocation for which to sync the rules
+	 * @param rules the list of SecurityGroupRuleLocations which represent the desired state
+	 * @return whether the sync was successful
+	 */
+	Single<Boolean> syncRules(SecurityGroupLocation securityGroupLocation, List<SecurityGroupRuleLocation> rules);
 
 	/**
 	 * Remove SecurityGroupLocations from Morpheus
