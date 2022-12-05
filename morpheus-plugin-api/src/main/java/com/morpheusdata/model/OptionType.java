@@ -1027,6 +1027,7 @@ public class OptionType extends MorpheusModel {
 		NUMBER("number"),
 		TEXTAREA("textarea"),
 		SELECT("select"),
+		MULTI_SELECT("multiSelect"),
 		CHECKBOX("checkbox"),
 		RADIO("radio"),
 		CREDENTIAL("credential"),
