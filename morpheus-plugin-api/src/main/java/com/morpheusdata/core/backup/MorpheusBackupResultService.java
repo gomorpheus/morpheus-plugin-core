@@ -2,6 +2,7 @@ package com.morpheusdata.core.backup;
 
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupResult;
 import com.morpheusdata.model.projection.BackupResultIdentityProjection;
 
@@ -10,6 +11,11 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Context methods for interacting with {@link BackupResult BackupResults} in Morpheus
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public interface MorpheusBackupResultService {
 
 	/**
