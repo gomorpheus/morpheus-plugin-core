@@ -3,12 +3,19 @@ package com.morpheusdata.core.backup;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupJob;
 import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.BackupProviderType;
 import com.morpheusdata.model.projection.BackupJobIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Context methods for interacting with {@link BackupJob} in Morpheus. Backup Jobs contain one or more backups and optional
+ * have a schedule to automatically run the job at a recurring interval.
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public interface MorpheusBackupJobService {
 	/**
 	 * Returns the BackupContext used for performing updates or queries on {@link Backup} related assets within Morpheus.
@@ -34,7 +41,7 @@ public interface MorpheusBackupJobService {
 
 	/**
 	 * Removes missing Backup Jobs on the Morpheus side. This accepts the Projection Object instead of the main Object.
-	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
+	 * It is important to note this is an Observer pattern and must be subscribed to in order for the action to occur
 	 * <p><strong>Example:</strong></p>
 	 * <pre>{@code
 	 * morpheusContext.getBackupJob().remove(removeItems).blockingGet()

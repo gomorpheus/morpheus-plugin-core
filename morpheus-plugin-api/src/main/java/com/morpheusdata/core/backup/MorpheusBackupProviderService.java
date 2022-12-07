@@ -9,7 +9,10 @@ import io.reactivex.Single;
 import java.util.Collection;
 
 /**
- * Context methods for dealing with {@link BackupProvider} in Morpheus
+ * Context methods for interacting with {@link BackupProvider} in Morpheus. A backup provider is the primary integration
+ * point between morpheus and an external service.
+ * @since 0.13.4
+ * @author Dustin DeYoung
  */
 public interface MorpheusBackupProviderService {
 

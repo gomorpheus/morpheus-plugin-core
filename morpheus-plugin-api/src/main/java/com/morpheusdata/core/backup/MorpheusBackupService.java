@@ -16,6 +16,11 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Context methods for interacting with {@link Backup Backups} in Morpheus
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public interface MorpheusBackupService {
 
 	/**
@@ -84,7 +89,6 @@ public interface MorpheusBackupService {
 	 * @param active filter the active or inactive state of the backup results
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
-
 	Observable<Backup> listByBackupJobIdAndActive(Long backupJobId, Boolean active);
 
 	/**

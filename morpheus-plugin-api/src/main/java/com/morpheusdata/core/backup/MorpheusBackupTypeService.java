@@ -2,6 +2,7 @@ package com.morpheusdata.core.backup;
 
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.Backup;
+import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
 import com.morpheusdata.model.projection.BackupTypeIdentityProjection;
@@ -11,6 +12,11 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 
+/**
+ * Context methods for interacting with {@link BackupType BackupTypes} in Morpheus
+ * @since 0.13.4
+ * @author Dustin DeYoung
+ */
 public interface MorpheusBackupTypeService {
 
 	//ORM Object Methods

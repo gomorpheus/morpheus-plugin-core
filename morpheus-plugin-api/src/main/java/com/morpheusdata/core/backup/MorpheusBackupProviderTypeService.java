@@ -8,7 +8,9 @@ import io.reactivex.Single;
 import java.util.Collection;
 
 /**
- * Context methods for dealing with {@link BackupProviderType} in Morpheus
+ * Context methods for interacting with {@link BackupProviderType} in Morpheus
+ * @since 0.13.4
+ * @author Dustin DeYoung
  */
 public interface MorpheusBackupProviderTypeService {
 
