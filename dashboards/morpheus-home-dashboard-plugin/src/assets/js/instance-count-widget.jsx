@@ -1,6 +1,6 @@
 /**
- * a simple status widget that compares values and has a settings component
- * @author aclement
+ * instance count by status
+ * @author bdwheeler
  */
 class InstanceCountWidget extends React.Component {
   
