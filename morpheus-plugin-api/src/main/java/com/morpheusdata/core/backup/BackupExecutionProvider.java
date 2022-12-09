@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Provides an interface for defining a backup execution provider. A backup execution provider handles all operations
- * related to backup creation and execution.
+ * related to a backup creation and execution.
  * @since 0.12.2
  * @author Dustin DeYoung
  */
@@ -20,7 +20,7 @@ public interface BackupExecutionProvider {
 
 	/**
 	 * Add additional configurations to a backup. Morpheus will handle all basic configuration details, this is a
-	 * convient way to add additional configuration details specific to this backup provider.
+	 * convenient way to add additional configuration details specific to this backup provider.
 	 * @param backupModel the current backup the configurations are applied to.
 	 * @param config the configuration supplied by external inputs.
 	 * @param opts optional parameters used for configuration.
@@ -87,7 +87,8 @@ public interface BackupExecutionProvider {
 	 * the backup execution including the status and a reference to the output that can be used in any future operations.
 	 * @param backupResultModel
 	 * @param opts
-	 * @return
+	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
+	 * of 'false' will halt the further execution process.
 	 */
 	ServiceResponse prepareBackupResult(BackupResult backupResultModel, Map opts);
 
@@ -109,7 +110,8 @@ public interface BackupExecutionProvider {
 	 * @param backupResult the reference to the results of the backup execution including the last known status. Set the
 	 *                     status to a canceled/succeeded/failed value from one of the {@link BackupStatusUtility} values
 	 *                     to end the execution process.
-	 * @return
+	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
+	 * of 'false' will halt the further execution process.n
 	 */
 	ServiceResponse refreshBackupResult(BackupResult backupResult);
 
