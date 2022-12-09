@@ -15,6 +15,7 @@ public class DashboardItemType extends MorpheusModel {
 	//view info
 	protected String uiSize; //xs-1,s-1,m-1,l-1,xl-1
 	protected String uiType; //widget class etc.
+	protected String uiSection; //area to group with.
 	protected String scriptPath;
 	protected String templatePath;
 	//options
@@ -100,6 +101,14 @@ public class DashboardItemType extends MorpheusModel {
 
 	public void setUiType(String uiType) {
 		this.uiType = uiType;
+	}
+
+	public String getUiSection() {
+		return uiSection;
+	}
+
+	public void setUiSection(String uiSection) {
+		this.uiSection = uiSection;
 	}
 
 	public String getScriptPath() {

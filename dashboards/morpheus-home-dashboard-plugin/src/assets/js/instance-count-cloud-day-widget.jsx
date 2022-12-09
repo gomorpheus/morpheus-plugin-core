@@ -191,7 +191,7 @@ class InstanceCountCloudDayWidget extends React.Component {
       }
     };
     //set the size
-    chartConfig.size = { height:128, width:540 };
+    chartConfig.size = { height:140, width:530 };
     //set the legend
     chartConfig.legend = { show:true, align:'left' };
     //set the tooltip

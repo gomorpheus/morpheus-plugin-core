@@ -65,26 +65,42 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.templatePath = 'hbs/home-dashboard'
 		rtn.scriptPath = 'home-dashboard.js'
 		//add items
-		def dashboardItemTypes = ['dashboard-item-instance-count', 
-			'dashboard-item-instance-count-cloud-day', 
-			'dashboard-item-job-execution-stats', 
-			'dashboard-item-backup-stats'
+		def dashboardItemGroups = [
+			instances:[
+				'dashboard-item-instance-count', 
+				'dashboard-item-instance-count-cloud', 
+				'dashboard-item-instance-count-cloud-day'
+			],
+			jobs:[
+				'dashboard-item-job-execution-stats'
+			],
+			backups:[
+				'dashboard-item-backup-stats'
+			]
 		]
 		def currentRow = 0
 		def currentColumn = 0
 		def dashboardItems = []
-		dashboardItemTypes.each{ row ->
-			def itemType = getMorpheus().getDashboard().getDashboardItemType(row).blockingGet()
-			if(itemType) {
-				def addItem = new DashboardItem()
-				addItem.type = itemType
-				addItem.itemRow = currentRow
-				addItem.itemColumn = currentColumn
-				//no config
-				dashboardItems << addItem
+		dashboardItemGroups.each { key, value ->
+			currentRow = 0
+			currentColumn = 0
+			value.each { row ->
+				def itemType = getMorpheus().getDashboard().getDashboardItemType(row).blockingGet()
+				if(itemType) {
+					def addItem = new DashboardItem()
+					addItem.type = itemType
+					addItem.itemRow = currentRow
+					addItem.itemColumn = currentColumn
+					addItem.itemGroup = key
+					//no config
+					dashboardItems << addItem
+					//increment
+					currentColumn++
+				}
 			}
-			rtn.dashboardItems = dashboardItems
 		}
+		//return the items
+		rtn.dashboardItems = dashboardItems
 		return rtn
 	}
 

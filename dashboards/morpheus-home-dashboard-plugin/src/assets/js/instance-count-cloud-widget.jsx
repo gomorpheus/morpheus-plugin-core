@@ -2,7 +2,7 @@
  * instance count by status
  * @author bdwheeler
  */
-class InstanceCountWidget extends React.Component {
+class InstanceCountCloudWidget extends React.Component {
   
   constructor(props) {
     super(props);
@@ -37,7 +37,7 @@ class InstanceCountWidget extends React.Component {
     //call api for data...
     var apiFilter;
     var apiOptions = {};
-    Morpheus.api.instances.count('group(status:count(id))').then(this.setData);
+    Morpheus.api.instances.count('group(zoneId:count(id))').then(this.setData);
   }
 
   setData(results) {
@@ -74,7 +74,7 @@ class InstanceCountWidget extends React.Component {
     //config
     //base config
     var chartConfig = {
-      bindto: '#instance-count-chart-' + chartId,
+      bindto: '#instance-count-cloud-chart-' + chartId,
       data: {
         columns: [],
         type: 'pie',
@@ -94,10 +94,10 @@ class InstanceCountWidget extends React.Component {
     chartConfig.tooltip = { contents:Morph.chartConfigs ? Morph.chartConfigs.tooltip : '' };
     //additional config?
     //generate it
-    var instanceCountChart = c3.generate(chartConfig);
+    var widgetChart = c3.generate(chartConfig);
     //store it
     var newState = {};
-    newState.instanceCountChart = instanceCountChart;
+    newState.widgetChart = widgetChart;
     this.setState(newState);
     this.updateChart();
   }
@@ -123,17 +123,17 @@ class InstanceCountWidget extends React.Component {
         console.log('status: ' + rowName + ' color: ' + chartData.colors[rowName]);
       }
       //load chart
-      var instanceCountChart = this.state.instanceCountChart;
-      instanceCountChart.load(chartData);
+      var widgetChart = this.state.widgetChart;
+      widgetChart.load(chartData);
       //update the title
-      var newCount = this.state.data.total ? this.state.data.total : '0';
+      var newCount = this.state.data.length ? this.state.data.length : '0';
       $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count').text(newCount);
-      //$('.c3-chart-arcs-title', $(instanceCountChart.element)).text(newCount); 
+      //$('.c3-chart-arcs-title', $(widgetChart.element)).text(newCount); 
     } else {
       //clear chart data
-      var instanceCountChart = this.state.instanceCountChart;
-      if(instanceCountChart)
-        instanceCountChart.unload();
+      var widgetChart = this.state.widgetChart;
+      if(widgetChart)
+        widgetChart.unload();
     }
   }
 
@@ -145,7 +145,7 @@ class InstanceCountWidget extends React.Component {
       <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
         <div className="dashboard-widget-header">
           <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          <p>Instance Status</p>
+          <p>Instances by Cloud</p>
         </div>
         <div className="dashboard-widget-body">
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
@@ -164,9 +164,9 @@ class InstanceCountWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('instanceCountWidget', InstanceCountWidget);
+Morpheus.components.register('instanceCountCloudWidget', InstanceCountCloudWidget);
 
 $(document).ready(function () {
-	const root = ReactDOM.createRoot(document.querySelector('#instance-count-widget'));
-	root.render(<InstanceCountWidget/>)
+	const root = ReactDOM.createRoot(document.querySelector('#instance-count-cloud-widget'));
+	root.render(<InstanceCountCloudWidget/>)
 });
