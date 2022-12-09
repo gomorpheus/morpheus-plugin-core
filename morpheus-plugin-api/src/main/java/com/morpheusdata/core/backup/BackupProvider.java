@@ -132,7 +132,7 @@ public interface BackupProvider extends PluginProvider {
 
 	/**
 	 * The main refresh method called periodically by Morpheus to sync any necessary objects from the integration.
-	 * This can call sub services for better organization, and it is recommended that {@link com.morpheusdata.core.util.SyncTask} is used.
+	 * This can call sub services for better organization. It is recommended that {@link com.morpheusdata.core.util.SyncTask} is used.
 	 * @param backupProvider the current instance of the backupProvider being refreshed
 	 * @return the success state of the refresh
 	 */
