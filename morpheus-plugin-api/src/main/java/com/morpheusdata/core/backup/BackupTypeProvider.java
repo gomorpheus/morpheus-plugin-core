@@ -102,11 +102,10 @@ public interface BackupTypeProvider extends PluginProvider {
 	public ServiceResponse refresh(Map authConfig, com.morpheusdata.model.BackupProvider backupProvider);
 
 	/**
-	 * Clean up all data created by the plugin. This is called during the integration removal process.
+	 * Clean up all data created by the backup type provider.
 	 * @param backupProvider the provider to be cleaned up
 	 * @param opts additional options
-	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
-	 * cleanup process has failed and will halt any further processing in the core system.
+	 * @return a {@link ServiceResponse} object
 	 */
 	ServiceResponse clean(com.morpheusdata.model.BackupProvider backupProvider, Map opts);
 
