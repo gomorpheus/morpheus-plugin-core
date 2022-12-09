@@ -67,7 +67,7 @@ public interface ProvisioningProvider extends PluginProvider {
 
 	/**
 	 * Determines if this provision type has networks that can be selected or not.
-	 * @return Boolean representation of whether or not this provision type has datastores
+	 * @return Boolean representation of whether or not this provision type has networks
 	 */
 	public Boolean hasNetworks();
 
