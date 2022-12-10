@@ -84,7 +84,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	Boolean getHasCopyToStore();
 
 	/**
-	 * A list of {@link OptionType OptionTypes} for use in the integration create and edit forms.
+	 * A list of {@link OptionType OptionTypes} for use in the backup create and edit forms.
 	 * @return a list of option types
 	 */
 	Collection<OptionType> getOptionTypes();
