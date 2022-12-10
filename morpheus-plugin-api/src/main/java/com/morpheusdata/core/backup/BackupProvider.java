@@ -28,187 +28,160 @@ public interface BackupProvider extends PluginProvider {
 
 	/**
 	 * Returns a viewset for reference custom inputs when setting up a backup provider during add instance.
-	 * This is the old way and is no longer being used
+	 * This is the old way and is no longer being used.
 	 * @deprecated
-	 * @return
 	 */
 	String getViewSet();
 
 	/**
 	 * Sets the enabled state of the provider for consumer use.
-	 * NOTE: This may go away as this should be implied by the installation state of the plugin
-	 * @return if this provider is usable.
+	 * NOTE: This may go away as it should be implied by the installation state of the plugin
 	 */
 	Boolean getEnabled();
 
 	/**
-	 * Is this backup provider creatable by the end user. This could be false for providers that may be
+	 * The backup provider is creatable by the end user. This could be false for providers that may be
 	 * forced by specific CloudProvider plugins, for example.
-	 * @return the creatable state
 	 */
 	Boolean getCreatable();
 
 	/**
-	 * Does this provider allow the end user to download a backup. Some backup providers can allow the
+	 * The backup provider allows the end user to download a backup. Some backup providers can allow the
 	 * user to download the backup archive file.
-	 * @return whether the backup can be downloaded.
 	 */
 	Boolean getDownloadEnabled();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider can add a workload backup to an existing job.
 	 */
 	Boolean getHasAddToJob();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports backups. For example, a backup provider may be intended for disaster recovery failover
+	 * only and may not directly support backups.
 	 */
 	Boolean getHasBackups();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider has the ability to cancel an in-progress backup.
 	 */
 	Boolean hasCancelBackup();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports cloning a job from an existing job.
 	 */
 	Boolean getHasCloneJob();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports copying the backup to a separate datastore (export).
 	 */
 	Boolean getHasCopyToStore();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports creating new jobs.
 	 */
 	Boolean getHasCreateJob();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports running multiple workload backups within an encapsulating job.
 	 */
 	Boolean getHasJobs();
 
 	/**
-	 *
-	 * @return
+	 * The default job type of the provider. The basic options are: new, clone, addTo, none
 	 */
 	String getDefaultJobType();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports backups outside an encapsulating job.
 	 */
 	Boolean getHasOptionalJob();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports replication.
 	 */
 	Boolean getHasReplication();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports replication groups.
 	 */
 	Boolean getHasReplicationGroups();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports multiple repositories for storage of backup assets. This is used for the display and
+	 * selection of repositories during backup configuration steps.
 	 */
 	Boolean getHasRepositories();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports retention counts for maintaining the desired number of backups.
 	 */
 	Boolean getHasRetentionCount();
 
 	/**
-	 *
-	 * @return
+	 * The backup provider supports scheduled backups. This is primarily used for display of hte schedules and providing
+	 * options during the backup configuration steps.
 	 */
 	Boolean getHasSchedule();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean getHasServers();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean getHasSites();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean hasStorageProvider();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean getHasStreamToStore();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean getRestoreExistingEnabled();
 
 	/**
 	 *
-	 * @return
 	 */
 	Boolean getRestoreNewEnabled();
 
 	/**
 	 *
-	 * @return
 	 */
 	Collection<OptionType> getOptionTypes();
 
 	/**
 	 *
-	 * @return
 	 */
 	Collection<OptionType> getReplicationGroupOptionTypes();
 
 	/**
 	 *
-	 * @return
 	 */
 	Collection<OptionType> getReplicationOptionTypes();
 
 	/**
 	 *
-	 * @return
 	 */
 	Collection<OptionType> getBackupJobOptionTypes();
 
 	/**
 	 *
-	 * @return
 	 */
 	Collection<OptionType> getBackupOptionTypes();
 
 	/**
 	 *
-	 * @return
-	 */
+s	 */
 	Collection<OptionType> getInstanceReplicationGroupOptionTypes();
 
 	/**

@@ -25,7 +25,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	String getContainerType();
 
 	/**
-	 * Determines if this backup type supports copying the backup to a data store (export).
+	 * Determines if this backup type supports copying the backup to a datastore (export).
 	 * @return boolean indicating copy to store is supported
 	 */
 	Boolean getCopyToStore();
