@@ -124,64 +124,74 @@ public interface BackupProvider extends PluginProvider {
 	 */
 	Boolean getHasSchedule();
 
+	// TODO: verify doc
 	/**
-	 *
+	 * The backup provider supports backup servers.
 	 */
 	Boolean getHasServers();
 
+	// TODO: verify doc
 	/**
-	 *
+	 * The backup provider supports backup sites.
 	 */
 	Boolean getHasSites();
 
 	/**
-	 *
+	 * The backup provider supports multiple storage providers.
 	 */
 	Boolean hasStorageProvider();
 
+	// TODO: verify doc
 	/**
-	 *
+	 * The backup provider supports streaming directly to the datastore.
 	 */
 	Boolean getHasStreamToStore();
 
 	/**
-	 *
+	 * The backup provider supports restoring to an existing workload.
 	 */
 	Boolean getRestoreExistingEnabled();
 
 	/**
-	 *
+	 * The backup provider supports restoring to a new workload.
 	 */
 	Boolean getRestoreNewEnabled();
 
 	/**
-	 *
+	 * Get the list of option types for the backup provider. The option types are used for creating and updating an
+	 * instance of the backup provider.
 	 */
 	Collection<OptionType> getOptionTypes();
 
 	/**
-	 *
+	 * Get the list of replication group option types for the backup provider. The option types are used for creating and updating
+	 * replication groups.
 	 */
 	Collection<OptionType> getReplicationGroupOptionTypes();
 
 	/**
-	 *
+	 * Get the list of replication option types for the backup provider. The option types are used for creating and updating
+	 * replications.
 	 */
 	Collection<OptionType> getReplicationOptionTypes();
 
 	/**
-	 *
+	 * Get the list of backup job option types for the backup provider. The option types are used for creating and updating
+	 * backup jobs.
 	 */
 	Collection<OptionType> getBackupJobOptionTypes();
 
 	/**
-	 *
+	 * Get the list of backup option types for the backup provider. The option types are used for creating and updating
+	 * backups.
 	 */
 	Collection<OptionType> getBackupOptionTypes();
 
+	// TODO: verify doc
 	/**
-	 *
-s	 */
+	 * Get the list of replication group option types for the backup provider. The option types are used for creating
+	 * replications on an instance during provisioning.
+	 */
 	Collection<OptionType> getInstanceReplicationGroupOptionTypes();
 
 	/**
