@@ -34,10 +34,30 @@ class InstanceCountCloudWidget extends React.Component {
   }
 
   loadData() {
-    //call api for data...
-    var apiFilter;
-    var apiOptions = {};
-    Morpheus.api.instances.count('group(zoneId:count(id))').then(this.setData);
+    var self = this;
+    //call api for data..
+    var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
+    optionSourceService.fetch('clouds', {}, function(results) {
+      var zoneList = results.data;
+      //load instance stats
+      var apiData = [];
+      var apiFilter;
+      var apiOptions = {};
+      Morpheus.api.instances.count('group(provisionZoneId:count(id))').then(function(results) {
+        if(results.success == true && results.items) {
+          //set zone names
+          for(var index in results.items) {
+            var row = results.items[index];
+            var rowKey = row.name //[0]; //zone id
+            var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
+            var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
+            row.id = rowKey
+            row.name = rowZoneName;
+          }
+        }
+        self.setData(results);
+      });
+    });
   }
 
   setData(results) {
@@ -115,19 +135,17 @@ class InstanceCountCloudWidget extends React.Component {
       for(var index in this.state.data.items) {
         var dataRow = this.state.data.items[index];
         var addRow = [];
-        var rowName = dataRow.name.name;
-        addRow[0] = rowName;
+        addRow[0] = dataRow.name;
         addRow[1] = dataRow.value;
         chartData.columns.push(addRow);
-        chartData.colors[rowName] = Morph.chartConfigs.statusColor(rowName);
-        console.log('status: ' + rowName + ' color: ' + chartData.colors[rowName]);
+        chartData.colors[index] = Morph.chartConfigs.colors.chartSetOne[index];
       }
       //load chart
       var widgetChart = this.state.widgetChart;
       widgetChart.load(chartData);
       //update the title
-      var newCount = this.state.data.length ? this.state.data.length : '0';
-      $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count').text(newCount);
+      var newCount = this.state.data.items.length ? this.state.data.items.length : '0';
+      $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count .count-value').text(newCount);
       //$('.c3-chart-arcs-title', $(widgetChart.element)).text(newCount); 
     } else {
       //clear chart data
@@ -149,10 +167,11 @@ class InstanceCountCloudWidget extends React.Component {
         </div>
         <div className="dashboard-widget-body">
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
-            
+            <span className='count-value'></span>
+            <span className='count-label'>clouds</span>
           </div>
           <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
-            <div id={'instance-count-chart-' + this.state.chartId} className={'donut-chart-widget' + (showChart ? '' : ' hidden')} style={{position:'relative'}}></div>
+            <div id={'instance-count-cloud-chart-' + this.state.chartId} className={'donut-chart-widget' + (showChart ? '' : ' hidden')} style={{position:'relative'}}></div>
           </div>
           <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
         </div>

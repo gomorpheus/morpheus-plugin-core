@@ -120,14 +120,13 @@ class InstanceCountWidget extends React.Component {
         addRow[1] = dataRow.value;
         chartData.columns.push(addRow);
         chartData.colors[rowName] = Morph.chartConfigs.statusColor(rowName);
-        console.log('status: ' + rowName + ' color: ' + chartData.colors[rowName]);
       }
       //load chart
       var instanceCountChart = this.state.instanceCountChart;
       instanceCountChart.load(chartData);
       //update the title
       var newCount = this.state.data.total ? this.state.data.total : '0';
-      $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count').text(newCount);
+      $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count .count-value').text(newCount);
       //$('.c3-chart-arcs-title', $(instanceCountChart.element)).text(newCount); 
     } else {
       //clear chart data
@@ -149,7 +148,8 @@ class InstanceCountWidget extends React.Component {
         </div>
         <div className="dashboard-widget-body">
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
-            
+            <span className='count-value'></span>
+            <span className='count-label'>instances</span>
           </div>
           <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
             <div id={'instance-count-chart-' + this.state.chartId} className={'donut-chart-widget' + (showChart ? '' : ' hidden')} style={{position:'relative'}}></div>
