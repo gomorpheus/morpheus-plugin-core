@@ -13,6 +13,7 @@ class InstanceCountCloudWidget extends React.Component {
       data:null,
       chartId: Morpheus.utils.generateGuid()
     };
+    this.state.chartConfig = this.configureChart();
     //apply state config
     if(props.autoRefresh == false)
       this.state.autoRefresh = false;
@@ -22,8 +23,9 @@ class InstanceCountCloudWidget extends React.Component {
   }
 
   componentDidMount() {
-    this.configureChart();
+    //load the data
     this.loadData();
+    //configure auto refresh
     $(document).on('morpheus:refresh', this.refreshData);
   }
 
@@ -67,7 +69,18 @@ class InstanceCountCloudWidget extends React.Component {
     newState.data.config = results.config;
     newState.data.meta = results.meta;
     //set the data list
-    newState.data.items = results.items;
+    var items = [];
+    if(results.items) {
+      for(var index in results.items) {
+        var dataRow = results.items[index];
+        var addRow = [];
+        var rowName = dataRow.name;
+        addRow[0] = rowName;
+        addRow[1] = dataRow.value;
+        items.push(addRow);
+      }
+    }
+    newState.data.items = items;
     //set the count and total
     newState.data.count = 0;
     if(results.count)
@@ -77,6 +90,7 @@ class InstanceCountCloudWidget extends React.Component {
       newState.data.total = results.total;
     //mark it loaded
     newState.loaded = true;
+    newState.data.loaded = true;
     newState.date = Date.now();
     newState.error = false;
     newState.errorMessage = null;
@@ -84,80 +98,24 @@ class InstanceCountCloudWidget extends React.Component {
     this.setState(newState);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    this.updateChart();
-  }
-
   configureChart() {
-    var chartId = this.state.chartId;
     var self = this;
-    //config
-    //base config
     var chartConfig = {
-      bindto: '#instance-count-cloud-chart-' + chartId,
-      data: {
-        columns: [],
-        type: 'pie',
-        colors: {}
-      },
-      pie: {
-        label: {
-          show: false
-        }
-      }
+      size: { height: 140, width: 160 },
+      legend: { show:false }
     };
-    //set the size
-    chartConfig.size = { height:140, width:160 };
-    //set the legend
-    chartConfig.legend = { show:false };
     //set the tooltip
-    chartConfig.tooltip = { contents:Morph.chartConfigs ? Morph.chartConfigs.tooltip : '' };
-    //additional config?
-    //generate it
-    var widgetChart = c3.generate(chartConfig);
-    //store it
-    var newState = {};
-    newState.widgetChart = widgetChart;
-    this.setState(newState);
-    this.updateChart();
-  }
-
-  updateChart() {
-    //load the data
-    if(this.state.data && this.state.loaded == true) {
-      var chartId = this.state.chartId;
-      //build up the timeseries data
-      var chartData = { 
-        columns: [],
-        unload: true,
-        colors: {}
-      };
-      for(var index in this.state.data.items) {
-        var dataRow = this.state.data.items[index];
-        var addRow = [];
-        addRow[0] = dataRow.name;
-        addRow[1] = dataRow.value;
-        chartData.columns.push(addRow);
-        chartData.colors[index] = Morph.chartConfigs.colors.chartSetOne[index];
-      }
-      //load chart
-      var widgetChart = this.state.widgetChart;
-      widgetChart.load(chartData);
-      //update the title
-      var newCount = this.state.data.items.length ? this.state.data.items.length : '0';
-      $('#dashboard-widget-' + chartId + ' .dashboard-widget-chart-count .count-value').text(newCount);
-      //$('.c3-chart-arcs-title', $(widgetChart.element)).text(newCount); 
-    } else {
-      //clear chart data
-      var widgetChart = this.state.widgetChart;
-      if(widgetChart)
-        widgetChart.unload();
-    }
+    chartConfig.tooltip = { show:true, contents:Morpheus.chart.pieValueTooltip, format:{ title:Morpheus.chart.fixedTooltipTitle('Clouds') } };
+    //done
+    return chartConfig;
   }
 
   render() {
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
+    var countValue = '';
+    if(showChart == true)
+      countValue = this.state.data.total ? this.state.data.total : '0';
     return (
       <div className="widget-container widget-sm">
       <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
@@ -167,11 +125,11 @@ class InstanceCountCloudWidget extends React.Component {
         </div>
         <div className="dashboard-widget-body">
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
-            <span className='count-value'></span>
+            <span className='count-value'>{countValue}</span>
             <span className='count-label'>clouds</span>
           </div>
           <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
-            <div id={'instance-count-cloud-chart-' + this.state.chartId} className={'donut-chart-widget' + (showChart ? '' : ' hidden')} style={{position:'relative'}}></div>
+            <PieChartWidget data={this.state.data} config={this.state.chartConfig} emptyMessage=" "/>
           </div>
           <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
         </div>
