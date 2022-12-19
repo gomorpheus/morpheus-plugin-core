@@ -106,7 +106,7 @@ class LogCountWidget extends React.Component {
       <div className="widget-container widget-lg">
         <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
           <div className="dashboard-widget-header">
-            <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+            <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
             <p>Log History</p>
           </div>
           <div className="dashboard-widget-body">

@@ -13,6 +13,7 @@ class InstanceCountCloudDayWidget extends React.Component {
       data:null,
       chartId: Morpheus.utils.generateGuid()
     };
+    this.state.chartConfig = this.configureChart();
     //apply state config
     if(props.autoRefresh == false)
       this.state.autoRefresh = false;
@@ -20,21 +21,14 @@ class InstanceCountCloudDayWidget extends React.Component {
     this.loadData = this.loadData.bind(this);
     this.setData = this.setData.bind(this);
     this.refreshData = this.refreshData.bind(this);
-    this.updateChart = this.updateChart.bind(this);
   }
 
   componentDidMount() {
     this.timeFormat = d3.timeFormat('%-m/%d');
-    //configure it
-    this.configureChart();
     //load the data
     this.loadData();
     //configure auto refresh
     $(document).on('morpheus:refresh', this.refreshData);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    this.updateChart();
   }
 
   //data methods
@@ -153,19 +147,23 @@ class InstanceCountCloudDayWidget extends React.Component {
   }
 
   configureChart() {
-    var chartId = this.state.chartId;
     var self = this;
     var chartConfig = {
-      bindto: '#instance-count-cloud-day-chart-' + chartId,
       padding: {
         top: 10,
         bottom: 0,
         right: 25
       },
       data: {
-        x: 'x',
-        columns: [],
-        colors: {}
+        x: 'x'
+      },
+      legend: { 
+        show: true,
+        align: 'left'
+      },
+      size: { 
+        height:140, 
+        width:530 
       },
       axis: {
         x: {
@@ -190,80 +188,10 @@ class InstanceCountCloudDayWidget extends React.Component {
         }
       }
     };
-    //set the size
-    chartConfig.size = { height:140, width:530 };
-    //set the legend
-    chartConfig.legend = { show:true, align:'left' };
     //set the tooltip
-    chartConfig.tooltip = { horizontal:true, contents:(Morph.chartConfigs ? Morph.chartConfigs.tooltip : '') };
+    chartConfig.tooltip = { show:true, horizontal:true, contents:(Morph.chartConfigs ? Morph.chartConfigs.tooltip : '') };
     //additional config?
-    //generate it
-    var widgetChart = c3.generate(chartConfig);
-    //store it
-    var newState = {};
-    newState.chartConfig = chartConfig;
-    newState.widgetChart = widgetChart;
-    this.setState(newState);
-    this.updateChart();
-  }
-
-  updateChart() {
-    var loaded = this.state.data && this.state.loaded == true;
-    //load the data
-    if(this.state.data && this.state.loaded == true) {
-      var chartId = this.state.chartId;
-      var rawData = this.state.data;
-      //build up the timeseries data
-      var chartData = { 
-        columns: [],
-        unload: true,
-        colors: {}
-      };
-      //axis items
-      if(rawData.axisItems) {
-        for(var index in rawData.axisItems) {
-          var axisRow = rawData.axisItems[index];
-          chartData.columns.push(axisRow);
-        }
-      }
-      //data items
-      var seriesCount = 0;
-      for(var index in rawData.items) {
-        seriesCount++;
-        var dataRow = rawData.items[index];
-        chartData.columns.push(dataRow);
-        chartData.colors[dataRow[0]] = Morph.chartConfigs.colors.chartSetOne[index];
-      }
-      //add types
-      if(rawData.types)
-        chartData.types = rawData.types;
-      //load history chart
-      var widgetChart = this.state.widgetChart;
-      //add groups
-      if(rawData.groups)
-        widgetChart.groups(rawData.groups);
-      //update the ranges
-      var rangeUpdate = {};
-      rangeUpdate.max = {};
-      
-      //get the max y value
-      var maxValue = 0;
-      if(rawData.maxValue)
-        maxValue = rawData.maxValue;
-      rangeUpdate.max.y = maxValue;
-      //apply the range
-      widgetChart.axis.range(rangeUpdate);
-      //set the new data
-      widgetChart.load(chartData);
-      //refresh it - cuz c3 has bugs on drawing charts
-      Morpheus.chartService.flushChart(widgetChart, 400);
-      //done
-    } else {
-      //clear chart data
-      var widgetChart = this.state.widgetChart;
-      if(widgetChart)
-        widgetChart.unload();
-    }
+    return chartConfig;
   }
 
   render() {
@@ -279,8 +207,7 @@ class InstanceCountCloudDayWidget extends React.Component {
             <p>Daily Cloud Instances</p>
           </div>
           <div className="dashboard-widget-body">
-            <div id={'instance-count-cloud-day-chart-' + this.state.chartId} className={'stacked-chart stacked-chart-widget' + (showChart ? '' : ' hidden')}></div>
-            <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
+            <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
           </div>
         </div>
       </div>
