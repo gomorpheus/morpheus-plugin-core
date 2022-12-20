@@ -10,10 +10,8 @@ class InstanceCountWidget extends React.Component {
     this.state = {
       loaded:false,
       autoRefresh:true,
-      data:null,
-      chartId: Morpheus.utils.generateGuid()
+      data:null
     };
-    this.state.chartConfig = this.configureChart();
     //apply state config
     if(props.autoRefresh == false)
       this.state.autoRefresh = false;
@@ -23,10 +21,25 @@ class InstanceCountWidget extends React.Component {
   }
 
   componentDidMount() {
-    //load the data
     this.loadData();
     //configure auto refresh
     $(document).on('morpheus:refresh', this.refreshData);
+  }
+
+  componentWillUnmount() {
+    $(document).off('morpheus:refresh', this.refreshData);
+  }
+
+  configureChart() {
+    var self = this;
+    var chartConfig = {
+      size: { height: 140, width: 160 },
+      legend: { show:false }
+    };
+    //set the tooltip
+    chartConfig.tooltip = { show:true, contents:Morpheus.chart.pieValueTooltip, format:{ title:Morpheus.chart.fixedTooltipTitle('Status') } };
+    //done
+    return chartConfig;
   }
 
   //data methods
@@ -43,89 +56,46 @@ class InstanceCountWidget extends React.Component {
   }
 
   setData(results) {
-    //set it
-    var newState = {};
-    newState.data = {};
-    newState.data.config = results.config;
-    newState.data.meta = results.meta;
-    //set the data list
-    var items = [];
-    var colors = {};
-    if(results.items) {
-      for(var index in results.items) {
-        var dataRow = results.items[index];
-        var addRow = [];
-        var rowName = dataRow.name.name;
-        addRow[0] = rowName;
-        addRow[1] = dataRow.value;
-        items.push(addRow);
-        colors[rowName] = Morph.chartConfigs.statusColor(rowName);
-      }
-    }
-    newState.data.items = items;
-    newState.data.colors = colors;
-    //set the count and total
-    newState.data.count = 0;
+    // PieChart expects data in this format: {columns:[['name', value],['name2', value2]]}
+    let count = 0;
     if(results.count)
-      newState.data.count = results.count;
-    newState.data.total = 0;
-    if(results.total)
-      newState.data.total = results.total;
-    //mark it loaded
-    newState.loaded = true;
-    newState.data.loaded = true;
-    newState.date = Date.now();
-    newState.error = false;
-    newState.errorMessage = null;
-    //update the state
-    this.setState(newState);
+      count = results.count;
+
+    let cols = results.items.map (item => {
+      return [item.name.name, item.value]
+    })
+    this.setState({data: {columns:cols}, count:count})
+  }
+  renderHeader() {
+    return (<React.Fragment><svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>Instance Status</React.Fragment>)
   }
 
-  configureChart() {
-    var self = this;
-    var chartConfig = {
-      size: { height: 140, width: 160 },
-      legend: { show:false }
-    };
-    //set the tooltip
-    chartConfig.tooltip = { show:true, contents:Morpheus.chart.pieValueTooltip, format:{ title:Morpheus.chart.fixedTooltipTitle('Status') } };
-    //done
-    return chartConfig;
-  }
 
   render() {
-    var showChart = this.state.data && this.state.loaded == true;
+    let Widget = Morpheus.components.get('Widget');
+    let PieChart = Morpheus.components.get('PieChart');
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-    var countValue = '';
-    if(showChart == true)
-      countValue = this.state.data.total ? this.state.data.total : '0';
-    //render it
+    var showChart = this.state.data && this.state.loaded == true;
     return (
-      <div className="widget-container widget-sm">
-        <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
-          <div className="dashboard-widget-header">
-            <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-            <p>Instance Status</p>
-          </div>
-          <div className="dashboard-widget-body">
-            <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
-              <span className='count-value'>{countValue}</span>
+        <Widget title={this.renderHeader()}>
+          <div className="flex">
+            <div className={'dashboard-widget-chart-count'}>
+              <span className='count-value'>{this.state.count}</span>
               <span className='count-label'>instances</span>
             </div>
-            <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
-              <PieChartWidget data={this.state.data} config={this.state.chartConfig} emptyMessage=" "/>
-            </div>
-            <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
+            <PieChart data={this.state.data} config={this.configureChart()}/>
           </div>
-        </div>
-      </div>
-    );
+        </Widget>
+      )
   }
 
 }
 
 //register it
-Morpheus.components.register('instanceCountWidget', InstanceCountWidget);
+Morpheus.components.register('dashboard-item-instance-count', InstanceCountWidget);
+
+//register it
+// Morpheus.components.register('instanceCountWidget', InstanceCountWidget);
 
 $(document).ready(function () {
 	const root = ReactDOM.createRoot(document.querySelector('#instance-count-widget'));

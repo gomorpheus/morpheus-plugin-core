@@ -10,10 +10,8 @@ class InstanceCountCloudWidget extends React.Component {
     this.state = {
       loaded:false,
       autoRefresh:true,
-      data:null,
-      chartId: Morpheus.utils.generateGuid()
+      data:null
     };
-    this.state.chartConfig = this.configureChart();
     //apply state config
     if(props.autoRefresh == false)
       this.state.autoRefresh = false;
@@ -23,79 +21,13 @@ class InstanceCountCloudWidget extends React.Component {
   }
 
   componentDidMount() {
-    //load the data
     this.loadData();
     //configure auto refresh
     $(document).on('morpheus:refresh', this.refreshData);
   }
 
-  //data methods
-  refreshData() {
-    if(this.state.autoRefresh == true)
-      this.loadData();
-  }
-
-  loadData() {
-    var self = this;
-    //call api for data..
-    var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
-    optionSourceService.fetch('clouds', {}, function(results) {
-      var zoneList = results.data;
-      //load instance stats
-      var apiData = [];
-      var apiFilter;
-      var apiOptions = {};
-      Morpheus.api.instances.count('group(provisionZoneId:count(id))').then(function(results) {
-        if(results.success == true && results.items) {
-          //set zone names
-          for(var index in results.items) {
-            var row = results.items[index];
-            var rowKey = row.name //[0]; //zone id
-            var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
-            var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
-            row.id = rowKey
-            row.name = rowZoneName;
-          }
-        }
-        self.setData(results);
-      });
-    });
-  }
-
-  setData(results) {
-    //set it
-    var newState = {};
-    newState.data = {};
-    newState.data.config = results.config;
-    newState.data.meta = results.meta;
-    //set the data list
-    var items = [];
-    if(results.items) {
-      for(var index in results.items) {
-        var dataRow = results.items[index];
-        var addRow = [];
-        var rowName = dataRow.name;
-        addRow[0] = rowName;
-        addRow[1] = dataRow.value;
-        items.push(addRow);
-      }
-    }
-    newState.data.items = items;
-    //set the count and total
-    newState.data.count = 0;
-    if(results.count)
-      newState.data.count = results.count;
-    newState.data.total = 0;
-    if(results.total)
-      newState.data.total = results.total;
-    //mark it loaded
-    newState.loaded = true;
-    newState.data.loaded = true;
-    newState.date = Date.now();
-    newState.error = false;
-    newState.errorMessage = null;
-    //update the state
-    this.setState(newState);
+  componentWillUnmount() {
+    $(document).off('morpheus:refresh', this.refreshData);
   }
 
   configureChart() {
@@ -110,31 +42,75 @@ class InstanceCountCloudWidget extends React.Component {
     return chartConfig;
   }
 
-  render() {
+  //data methods
+  refreshData() {
+    if(this.state.autoRefresh == true)
+      this.loadData();
+  }
+
+  loadData() {
+    var self = this;
+    //call api for data..
+    var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
+    optionSourceService.fetch('clouds', {}, (zonesResult) => {
+      var zoneList = zonesResult.data;
+      //load instance stats
+      var apiData = [];
+      var apiFilter;
+      var apiOptions = {};
+      Morpheus.api.instances.count('group(provisionZoneId:count(id))').then((results) => {
+        if(results.success == true && results.items) {
+          //set zone names
+          this.setData(zoneList, results)
+          
+        }
+      });
+    });
+  }
+
+  setData(zoneList, results) {
+    let items = results.items.map( row => {
+      var rowZone = Morpheus.data.findNameValueDataById(zoneList, row.name);
+      row.id = row.name
+      row.name = rowZone ? rowZone.name : 'zone-' + row.name
+      return [row.name, row.value]
+    });
+    let count = results.count || 0
+
+    this.setState({
+      loaded: true,
+      date: Date.now(),
+      error: false,
+      data: {columns:items},
+      count:count
+    })
+  }
+
+  renderHeader() {
+    return (<React.Fragment><svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>Instance By Cloud</React.Fragment>)
+  }
+  renderNoData() {
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-    var countValue = '';
-    if(showChart == true)
-      countValue = this.state.data.total ? this.state.data.total : '0';
+    if (!showChart) {
+      return (<div className={'widget-no-data'}>{emptyMessage}</div>)
+    }
+  }
+
+  render() {
+    let Widget = Morpheus.components.get('Widget');
+    let PieChart = Morpheus.components.get('PieChart');
     return (
-      <div className="widget-container widget-sm">
-      <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
-        <div className="dashboard-widget-header">
-          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          <p>Instances by Cloud</p>
-        </div>
-        <div className="dashboard-widget-body">
-          <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
-            <span className='count-value'>{countValue}</span>
+      <Widget title={this.renderHeader()}>
+        <div className="flex">
+          <div className={'dashboard-widget-chart-count'}>
+            <span className='count-value'>{this.state.count}</span>
             <span className='count-label'>clouds</span>
           </div>
-          <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
-            <PieChartWidget data={this.state.data} config={this.state.chartConfig} emptyMessage=" "/>
-          </div>
-          <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
+          <PieChart data={this.state.data} config={this.configureChart()}/>
         </div>
-      </div>
-      </div>
+        {this.renderNoData()}
+      </Widget>
     );
   }
 

@@ -138,10 +138,10 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.maxValue = Morpheus.utils.getNextBaseTen(newState.data.maxValue);
     //set loaded
     newState.loaded = true;
-    newState.data.loaded = true;
     newState.date = Date.now();
     newState.error = false;
     newState.errorMessage = null;
+    console.log(newState)
     //update the state
     this.setState(newState);
   }
@@ -194,23 +194,29 @@ class InstanceCountCloudDayWidget extends React.Component {
     return chartConfig;
   }
 
-  render() {
-    //setup
+  renderHeader() {
+    return (<React.Fragment>
+      <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+      Daily Cloud Instances
+    </React.Fragment>)
+  }
+
+  renderNoData() {
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-    //render
+    if (!showChart) {
+      return (<div className={'widget-no-data'}>{emptyMessage}</div>)
+    }
+  }
+
+  render() {
+    let Widget = Morpheus.components.get('Widget');
+    let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
     return (
-      <div className="widget-container widget-lg">
-        <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
-          <div className="dashboard-widget-header">
-            <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-            <p>Daily Cloud Instances</p>
-          </div>
-          <div className="dashboard-widget-body">
-            <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
-          </div>
-        </div>
-      </div>
+      <Widget title={this.renderHeader()}>
+        <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
+        {this.renderNoData()}
+      </Widget>
     );
   }
 
