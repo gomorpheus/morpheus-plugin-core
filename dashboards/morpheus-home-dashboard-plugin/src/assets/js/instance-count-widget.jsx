@@ -64,7 +64,7 @@ class InstanceCountWidget extends React.Component {
     let cols = results.items.map (item => {
       return [item.name.name, item.value]
     })
-    this.setState({data: {columns:cols}, count:count})
+    this.setState({data: {columns:cols, loaded:true}, count:count})
   }
   renderHeader() {
     return (<React.Fragment><svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>Instance Status</React.Fragment>)

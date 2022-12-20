@@ -86,7 +86,17 @@ class JobExecutionStatsWidget extends React.Component {
 		}
 	}
 
+	renderHeader() {
+	    return (<React.Fragment>
+	    		<svg className="icon">
+					<use href="/assets/navigation/provisioning/executions.svg"></use>
+				</svg>
+				Job executions ({this.state.max})
+				</React.Fragment>)
+	  }
+
 	render() {
+		const Widget = Morpheus.components.get('Widget');
 		const showChart = this.state.data && this.state.loaded == true;
 		const emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
 		const successfulLabel = Morpheus.utils.message('gomorpheus.successful')
@@ -96,54 +106,44 @@ class JobExecutionStatsWidget extends React.Component {
 		const successPercent = this.state.data?.successPercent ? this.state.data.successPercent : 0
 		const failPercent = this.state.data?.failPercent ? this.state.data.failPercent : 0
 		const filters = {
-			max: {
-				currentValue: this.state.max,
+			update: this.updateFilterValue,
+			opts: [{
+				label:'max',
+				fieldName:'max',
+				value: this.state.max,
 				type: "number",
 				min: 0,
 				max: this.state.totalInDb
-			}
+			}]
 		}
+
 		return (
-			<div className="widget-container widget-sm">
-				<SettingsWidget filters={filters} updateFilterValue={this.updateFilterValue}></SettingsWidget>
-				<div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
-					<a href="/provisioning/executions">
-						<div className="dashboard-widget-header">
-							<svg className="icon">
-								<use href="/assets/navigation/provisioning/executions.svg"></use>
+			<Widget settings={filters} title={this.renderHeader()}>
+				<div style={{float: 'left', width: '100%'}}>
+					<div id={'job-execution-stats-chart-' + this.state.chartId}
+						 className={'line-chart-widget' + (showChart ? '' : ' hidden')}
+						 style={{position: 'relative', marginTop: '10px'}}>
+						<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px'}}>
+							<span>{successfulLabel}</span><span style={{float: 'right'}}>{successfulCount}</span>
+						</div>
+						<div id="job-success-line" className="job-success-line"
+							 style={{backgroundColor: '#e7e7e6', height: '2px'}}>
+							<svg width={successPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
+								<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.green}></line>
 							</svg>
-							<p>Job executions ({this.state.max})</p>
 						</div>
-					</a>
-					<div className="dashboard-widget-body">
-						<div style={{float: 'left', width: '100%'}}>
-							<div id={'job-execution-stats-chart-' + this.state.chartId}
-								 className={'line-chart-widget' + (showChart ? '' : ' hidden')}
-								 style={{position: 'relative', marginTop: '10px'}}>
-								<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px'}}>
-									<span>{successfulLabel}</span><span style={{float: 'right'}}>{successfulCount}</span>
-								</div>
-								<div id="job-success-line" className="job-success-line"
-									 style={{backgroundColor: '#e7e7e6', height: '2px'}}>
-									<svg width={successPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
-										<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.green}></line>
-									</svg>
-								</div>
-								<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px', marginTop: '20px'}}>
-									<span>{failedLabel}</span><span style={{float: 'right'}}>{failedCount}</span>
-								</div>
-								<div id="job-fail-line" className="job-fail-line"
-									 style={{backgroundColor: '#e7e7e6', height: '2px'}}>
-									<svg width={failPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
-										<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.red}></line>
-									</svg>
-								</div>
-							</div>
+						<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px', marginTop: '20px'}}>
+							<span>{failedLabel}</span><span style={{float: 'right'}}>{failedCount}</span>
 						</div>
-						<div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
+						<div id="job-fail-line" className="job-fail-line"
+							 style={{backgroundColor: '#e7e7e6', height: '2px'}}>
+							<svg width={failPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
+								<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.red}></line>
+							</svg>
+						</div>
 					</div>
 				</div>
-			</div>
+			</Widget>
 		);
 	}
 }

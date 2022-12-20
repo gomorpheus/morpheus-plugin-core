@@ -97,51 +97,38 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.total = 0;
     newState.data.maxValue = 0;
     newState.data.totals = [];
-    //apply results
-    if(results.items) {
-      //add the x axis periods
-      var axisRow = ['x'];
-      var groupSet = [];
-      //add results
-      if(results.items) {
-        for(var index in results.items) {
-          var row = results.items[index];
-          var rowName = Morpheus.utils.slice(row.name, 25);
-          var dataRow = [rowName];
-          groupSet.push(rowName);
-          //make the xaxis
-          for(var valueIndex in row.values) {
-            var valueRow = row.values[valueIndex];
-            if(index == 0) {
-              var axisValue = valueRow[0] // * 1000 - already in milliseconds;
-              //console.log('ts - ' + axisValue);
-              axisRow.push(axisValue);
-              newState.data.totals[valueIndex] = 0;
-            }
-            var rowItem = parseFloat(valueRow[1]);
-            dataRow.push(rowItem);
-            newState.data.totals[valueIndex] += rowItem;
-            newState.data.total += rowItem;
-            if(newState.data.totals[valueIndex] > newState.data.maxValue)
-              newState.data.maxValue = newState.data.totals[valueIndex];
-          }
-          newState.data.items.push(dataRow);
-          newState.data.types[rowName] = 'area';
-        }
-        //add axis row
-        newState.data.axisItems.push(axisRow);
-        //add groups
-        newState.data.groups.push(groupSet);
-      }
+
+    let data = {
+      x:'x',
+      columns:[],
+      axis:{range:{max:{y:0}}},
+      groups:[[]],
+      types:{},
+      colors:{}
     }
-    //set axis config
-    newState.data.maxValue = Morpheus.utils.getNextBaseTen(newState.data.maxValue);
-    //set loaded
-    newState.loaded = true;
-    newState.date = Date.now();
-    newState.error = false;
-    newState.errorMessage = null;
-    console.log(newState)
+    let maxValue = 0
+
+
+    if(results.items) {
+      //make axis column
+      data.columns.push(['x'].concat(results.items[0].values.map(val => val[0])))
+      //make value columns
+      results.items.forEach((row, index) => {
+        let name = Morpheus.utils.slice(row.name, 25);
+        let values = row.values.map(val => parseFloat(val[1]))
+        let rowMax = Math.max(values)
+        rowMax > maxValue? maxValue = rowMax:null
+        
+        data.groups[0].push(name);
+        data.types[name] = 'area';
+        data.columns.push([name].concat(values));
+        data.colors[name] = Morph.chartConfigs.colors.chartSetOne[index];
+      })
+      data.axis.range.max.y = maxValue;
+    }
+    newState.data = data
+    newState.data.loaded = true
+    newState.loaded = true
     //update the state
     this.setState(newState);
   }
@@ -162,8 +149,7 @@ class InstanceCountCloudDayWidget extends React.Component {
         align: 'left'
       },
       size: { 
-        height:140, 
-        width:530 
+        height:140
       },
       axis: {
         x: {

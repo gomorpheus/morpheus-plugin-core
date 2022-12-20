@@ -81,7 +81,7 @@ class InstanceCountCloudWidget extends React.Component {
       loaded: true,
       date: Date.now(),
       error: false,
-      data: {columns:items},
+      data: {columns:items, loaded: true},
       count:count
     })
   }

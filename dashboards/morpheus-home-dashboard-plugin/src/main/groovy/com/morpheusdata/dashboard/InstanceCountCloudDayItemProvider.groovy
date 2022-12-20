@@ -56,7 +56,7 @@ class InstanceCountCloudDayItemProvider extends AbstractDashboardItemTypeProvide
 		rtn.category = 'instance'
 		rtn.title = 'instance count by cloud and day'
 		rtn.description = 'instance count by cloud and day'
-		rtn.uiSize = 's-2'
+		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/instance-count-cloud-day-widget'
 		rtn.scriptPath = 'instance-count-cloud-day-widget.js'
 		return rtn

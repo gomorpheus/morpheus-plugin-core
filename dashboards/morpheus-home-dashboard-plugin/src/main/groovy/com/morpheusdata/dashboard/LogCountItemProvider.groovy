@@ -57,7 +57,7 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'log count'
 		rtn.title = 'log count'
 		rtn.description = 'log count'
-		rtn.uiSize = 'l-1'
+		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/log-count-widget'
 		rtn.scriptPath = 'log-count-widget.js'
 		return rtn

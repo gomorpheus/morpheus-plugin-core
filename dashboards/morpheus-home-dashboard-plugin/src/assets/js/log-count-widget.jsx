@@ -94,29 +94,28 @@ class LogCountWidget extends React.Component {
     //update the state
     this.setState(newState);
   }
+    renderHeader() {
+      return (<React.Fragment>
+          <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
+          Log History
+        </React.Fragment>)
+    }
 
   render() {
+    const Widget = Morpheus.components.get('Widget');
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
     var chartConfig = {
-      size: { height:140, width:520 },
+      size: { height:140},
       bar: { width: 9 }
     }
+
     return (
-      <div className="widget-container widget-lg">
-        <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget">
-          <div className="dashboard-widget-header">
-            <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
-            <p>Log History</p>
-          </div>
-          <div className="dashboard-widget-body">
-            <div className="log-view">
-              <LogChart logData={this.state.data} loaded={this.state.loaded} config={chartConfig}/>
-            </div>
-            <div className={'widget-no-data' + (showChart ? ' hidden' : '')}>{emptyMessage}</div>
-          </div>
+      <Widget title={this.renderHeader()}>
+        <div className="log-view">
+          <LogChart logData={this.state.data} loaded={this.state.loaded} config={chartConfig} fullWidth={true}/>
         </div>
-      </div>
+      </Widget>
     );
   }
 
