@@ -71,6 +71,9 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-instance-count-cloud', 
 				'dashboard-item-instance-count-cloud-day'
 			],
+			clouds:[
+				'dashboard-item-cloud-count-type'
+			],
 			logs:[
 				'dashboard-item-log-count'
 			],

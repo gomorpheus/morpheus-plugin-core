@@ -29,6 +29,8 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			this.pluginProviders.put(instanceCountCloudDayProvider.code, instanceCountCloudDayProvider)
 			LogCountItemProvider logCountProvider = new LogCountItemProvider(this, morpheus)
 			this.pluginProviders.put(logCountProvider.code, logCountProvider)
+			CloudCountTypeItemProvider cloudCountTypeProvider = new CloudCountTypeItemProvider(this, morpheus)
+			this.pluginProviders.put(cloudCountTypeProvider.code, cloudCountTypeProvider)
 			JobExecutionStatsItemProvider jobExecutionStatsItemProvider = new JobExecutionStatsItemProvider(this, morpheus)
 			this.pluginProviders.put(jobExecutionStatsItemProvider.code, jobExecutionStatsItemProvider)
 			BackupStatsItemProvider backupStatsItemProvider = new BackupStatsItemProvider(this, morpheus)
