@@ -78,7 +78,8 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-log-count'
 			],
 			jobs:[
-				'dashboard-item-job-execution-stats'
+				'dashboard-item-job-execution-stats',
+				'dashboard-item-task-failures'
 			],
 			backups:[
 				'dashboard-item-backup-stats'

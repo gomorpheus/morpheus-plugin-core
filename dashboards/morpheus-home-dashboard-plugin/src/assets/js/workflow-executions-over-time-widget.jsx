@@ -2,7 +2,7 @@
  * instanct count by cloud and day
  * @author bdwheeler
  */
-class InstanceCountCloudDayWidget extends React.Component {
+class WorkflowExecutionsDayWidget extends React.Component {
   
   constructor(props) {
     super(props);
@@ -11,7 +11,8 @@ class InstanceCountCloudDayWidget extends React.Component {
       loaded:false,
       autoRefresh:true,
       data:null,
-      days: 3
+      days:3,
+      chartId: Morpheus.utils.generateGuid()
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -47,47 +48,44 @@ class InstanceCountCloudDayWidget extends React.Component {
     var now = new Date();
     var self = this;
     //call api for data..
-    var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
-    optionSourceService.fetch('clouds', {}, function(results) {
-      var zoneList = results.data;
-      var apiData = [];
-      var apiPromises = [];
-      var chartDays = self.state.days;
-      //execute for 7 days
-      for(var dayCounter = (chartDays - 1); dayCounter >= 0; dayCounter--) {
-        //get a day worth of data
-        var startDate = new Date();
-        startDate.setDate(startDate.getDate() - dayCounter);
-        startDate.setHours(0, 0, 0, 0);
-        var endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + 1);
-        var apiQuery = 'group(zoneId:count(parentRefId))'
-        apiQuery = apiQuery + ' startDate < ' + endDate.toISOString();
-        apiQuery = apiQuery + ' and (endDate = null or endDate > ' + startDate.toISOString() + ')';
-        var apiOptions = { apiDate:startDate.getTime() };
-        var apiPromise = Morpheus.api.usage.count(apiQuery, apiOptions).then(function(results) {
-          if(results.success == true && results.items) {
-            for(var index in results.items) {
-              var row = results.items[index];
-              var rowKey = row.name //[0]; //zone id
-              var rowValue = row.value //[1]; //count
-              var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
-              var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
-              var rowDate = new Date();
-              if(results.config.options.apiDate)
-                rowDate.setTime(results.config.options.apiDate);
-              var dataRow = [rowDate.getTime(), rowValue];
-              Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
-            }
+    var apiData = [];
+    var apiPromises = [];
+    var chartDays = this.state.days || 7;
+    //execute for 7 days
+    for(var dayCounter = (chartDays - 1); dayCounter >= 0; dayCounter--) {
+      //get a day worth of data
+      var startDate = new Date();
+      startDate.setDate(startDate.getDate() - dayCounter);
+      startDate.setHours(0, 0, 0, 0);
+      var endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      var apiQuery = 'group(status:count(id))'
+      apiQuery = apiQuery + ' startDate < ' + endDate.toISOString();
+      apiQuery = apiQuery + ' and (endDate = null or endDate > ' + startDate.toISOString() + ')';
+      var apiOptions = { apiDate:startDate.getTime() };
+      var apiPromise = Morpheus.api.executions.workflows.count(apiQuery, apiOptions).then(function(results) {
+        console.log(results)
+        if(results.success == true && results.executions) {
+          for(var index in results.items) {
+            var row = results.items[index];
+            var rowKey = row.name //[0]; //zone id
+            var rowValue = row.value //[1]; //count
+            var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
+            var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
+            var rowDate = new Date();
+            if(results.config.options.apiDate)
+              rowDate.setTime(results.config.options.apiDate);
+            var dataRow = [rowDate.getTime(), rowValue];
+            Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
           }
-        });
-        apiPromises.push(apiPromise);
-      }
-      //once all loaded
-      $.when.apply($, apiPromises).done(function(results) {
-        var newData = { items:apiData };
-        self.setData(newData);
+        }
       });
+      apiPromises.push(apiPromise);
+    }
+    //once all loaded
+    $.when.apply($, apiPromises).done(function(results) {
+      var newData = { items:apiData };
+      self.setData(newData);
     });
   }
 
@@ -107,21 +105,19 @@ class InstanceCountCloudDayWidget extends React.Component {
     let data = {
       x:'x',
       columns:[],
-      axis:{
-        range:{max:{y:0}}
-      },
+      axis:{range:{max:{y:10}}},
       groups:[[]],
       types:{},
       colors:{}
     }
-    let maxValue = 0
+    let maxValue = 10
 
 
-    if(results.items) {
+    if(results.jobExecutions) {
       //make axis column
       data.columns.push(['x'].concat(results.items[0].values.map(val => val[0])))
       //make value columns
-      results.items.forEach((row, index) => {
+      results.jobExecutions.forEach((row, index) => {
         let name = Morpheus.utils.slice(row.name, 25);
         let values = row.values.map(val => parseFloat(val[1]))
         let rowMax = Math.max(values)
@@ -157,7 +153,7 @@ class InstanceCountCloudDayWidget extends React.Component {
         align: 'left'
       },
       size: { 
-        height:118
+        height:140
       },
       axis: {
         x: {
@@ -165,6 +161,7 @@ class InstanceCountCloudDayWidget extends React.Component {
           tick: {
             fit: false,
             outer: false,
+            count: 7,
             format: function(x) { // x comes in as a time string.
               return self.timeFormat(x);
             }
@@ -206,14 +203,14 @@ class InstanceCountCloudDayWidget extends React.Component {
 
   render() {
     let Widget = Morpheus.components.get('Widget');
-    let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
     let Pills = Morpheus.components.get('Pills');
     let Pill = Morpheus.components.get('Pill');
+    let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
     return (
       <Widget>
         <WidgetHeader>
-          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          Daily Cloud Instances
+         <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+      Daily Task Executions
         </WidgetHeader>
         <Pills align="center">
           <Pill isActive={this.isPillActive(3)} setActive={this.setActive(3)}>3 Days</Pill>
@@ -229,9 +226,9 @@ class InstanceCountCloudDayWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('instanceCountCloudDayWidget', InstanceCountCloudDayWidget);
+Morpheus.components.register('WorkflowExecutionsDayWidget', WorkflowExecutionsDayWidget);
 
 $(document).ready(function () {
-	const root = ReactDOM.createRoot(document.querySelector('#instance-count-cloud-day-widget'));
-	root.render(<InstanceCountCloudDayWidget/>)
+  const root = ReactDOM.createRoot(document.querySelector('#workflow-execution-ot-widget'));
+  root.render(<WorkflowExecutionsDayWidget/>)
 });

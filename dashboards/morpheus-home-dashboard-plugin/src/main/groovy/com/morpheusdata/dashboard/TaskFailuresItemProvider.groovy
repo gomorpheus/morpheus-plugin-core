@@ -12,17 +12,16 @@ import groovy.util.logging.Slf4j
 
 /**
  * Provides an interface and standard set of methods for creating custom dashboards
- * 
  * @since 0.13
  * @author bdwheeler
  */
 @Slf4j
-class CloudCountTypeItemProvider extends AbstractDashboardItemTypeProvider {
+class TaskFailuresItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	CloudCountTypeItemProvider(Plugin plugin, MorpheusContext context) {
+	TaskFailuresItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +38,12 @@ class CloudCountTypeItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-cloud-count-type'
+		return 'dashboard-item-task-failures'
 	}
 
 	@Override
 	String getName() {
-		return 'Cloud count by type'
+		return 'Task Failures'
 	}
 
 	@Override
@@ -54,12 +53,12 @@ class CloudCountTypeItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'cloud'
-		rtn.title = 'cloud count by type'
-		rtn.description = 'cloud count by type'
-		rtn.uiSize = ''
-		rtn.templatePath = 'hbs/cloud-count-type-widget'
-		rtn.scriptPath = 'cloud-count-type-widget.js'
+		rtn.category = 'automation'
+		rtn.title = 'task failures'
+		rtn.description = 'task failures'
+		rtn.uiSize = 'md'
+		rtn.templatePath = 'hbs/generic-react-widget'
+		rtn.scriptPath = 'tasks/task-failures.js'
 		return rtn
 	}
 

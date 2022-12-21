@@ -35,6 +35,12 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			this.pluginProviders.put(jobExecutionStatsItemProvider.code, jobExecutionStatsItemProvider)
 			BackupStatsItemProvider backupStatsItemProvider = new BackupStatsItemProvider(this, morpheus)
 			this.pluginProviders.put(backupStatsItemProvider.code, backupStatsItemProvider)
+			TaskExecutionsOverTimeItemProvider taskExecutionsOverTimeItemProvider = new TaskExecutionsOverTimeItemProvider(this, morpheus)
+			this.pluginProviders.put(taskExecutionsOverTimeItemProvider.code, taskExecutionsOverTimeItemProvider)
+			WorkflowExecutionsOverTimeItemProvider workflowExecutionsOverTimeItemProvider = new WorkflowExecutionsOverTimeItemProvider(this, morpheus)
+			this.pluginProviders.put(workflowExecutionsOverTimeItemProvider.code, workflowExecutionsOverTimeItemProvider)
+			TaskFailuresItemProvider taskFailuresItemProvider = new TaskFailuresItemProvider(this, morpheus)
+			this.pluginProviders.put(taskFailuresItemProvider.code, taskFailuresItemProvider)
 			//add the dashboard
 			HomeDashboardProvider homeDashboardProvider = new HomeDashboardProvider(this, morpheus)
 			this.pluginProviders.put(homeDashboardProvider.code, homeDashboardProvider)
