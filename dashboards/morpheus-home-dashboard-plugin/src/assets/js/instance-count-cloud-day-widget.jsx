@@ -11,7 +11,7 @@ class InstanceCountCloudDayWidget extends React.Component {
       loaded:false,
       autoRefresh:true,
       data:null,
-      chartId: Morpheus.utils.generateGuid()
+      days: 3
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -31,6 +31,12 @@ class InstanceCountCloudDayWidget extends React.Component {
     $(document).on('morpheus:refresh', this.refreshData);
   }
 
+  componentDidUpdate(prevProps,prevState) {
+    if (prevState.days !== this.state.days) {
+      this.loadData()
+    }
+  }
+
   //data methods
   refreshData() {
     if(this.state.autoRefresh == true)
@@ -46,7 +52,7 @@ class InstanceCountCloudDayWidget extends React.Component {
       var zoneList = results.data;
       var apiData = [];
       var apiPromises = [];
-      var chartDays = 7;
+      var chartDays = self.state.days;
       //execute for 7 days
       for(var dayCounter = (chartDays - 1); dayCounter >= 0; dayCounter--) {
         //get a day worth of data
@@ -101,7 +107,9 @@ class InstanceCountCloudDayWidget extends React.Component {
     let data = {
       x:'x',
       columns:[],
-      axis:{range:{max:{y:0}}},
+      axis:{
+        range:{max:{y:0}}
+      },
       groups:[[]],
       types:{},
       colors:{}
@@ -157,7 +165,6 @@ class InstanceCountCloudDayWidget extends React.Component {
           tick: {
             fit: false,
             outer: false,
-            count: 7,
             format: function(x) { // x comes in as a time string.
               return self.timeFormat(x);
             }
@@ -180,13 +187,6 @@ class InstanceCountCloudDayWidget extends React.Component {
     return chartConfig;
   }
 
-  renderHeader() {
-    return (<React.Fragment>
-      <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-      Daily Cloud Instances
-    </React.Fragment>)
-  }
-
   renderNoData() {
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
@@ -195,11 +195,31 @@ class InstanceCountCloudDayWidget extends React.Component {
     }
   }
 
+  isPillActive(days) {
+    return this.state.days === days
+  }
+  setActive(days) {
+    return function() {
+      this.setState({days:days})
+    }.bind(this)
+  }
+
   render() {
     let Widget = Morpheus.components.get('Widget');
     let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
+    let Pills = Morpheus.components.get('Pills');
+    let Pill = Morpheus.components.get('Pill');
     return (
-      <Widget title={this.renderHeader()}>
+      <Widget>
+        <WidgetHeader>
+          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+          Daily Cloud Instances
+        </WidgetHeader>
+        <Pills align="center">
+          <Pill isActive={this.isPillActive(3)} setActive={this.setActive(3)}>3 Days</Pill>
+          <Pill isActive={this.isPillActive(7)} setActive={this.setActive(7)}>1 Week</Pill>
+          <Pill isActive={this.isPillActive(30)} setActive={this.setActive(30)}>1 Month</Pill>
+        </Pills>
         <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
         {this.renderNoData()}
       </Widget>

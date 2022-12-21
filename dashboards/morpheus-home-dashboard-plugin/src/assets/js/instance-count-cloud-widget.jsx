@@ -86,9 +86,6 @@ class InstanceCountCloudWidget extends React.Component {
     })
   }
 
-  renderHeader() {
-    return (<React.Fragment><svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>Instance By Cloud</React.Fragment>)
-  }
   renderNoData() {
     var showChart = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
@@ -101,7 +98,11 @@ class InstanceCountCloudWidget extends React.Component {
     let Widget = Morpheus.components.get('Widget');
     let PieChart = Morpheus.components.get('PieChart');
     return (
-      <Widget title={this.renderHeader()}>
+      <Widget>
+        <WidgetHeader>
+          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+          Instance By Cloud
+        </WidgetHeader>
         <div className="flex">
           <div className={'dashboard-widget-chart-count'}>
             <span className='count-value'>{this.state.count}</span>

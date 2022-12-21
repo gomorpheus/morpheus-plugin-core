@@ -94,12 +94,6 @@ class LogCountWidget extends React.Component {
     //update the state
     this.setState(newState);
   }
-    renderHeader() {
-      return (<React.Fragment>
-          <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
-          Log History
-        </React.Fragment>)
-    }
 
   render() {
     const Widget = Morpheus.components.get('Widget');
@@ -111,7 +105,11 @@ class LogCountWidget extends React.Component {
     }
 
     return (
-      <Widget title={this.renderHeader()}>
+      <Widget>
+        <WidgetHeader>
+          <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
+          Log History
+        </WidgetHeader>
         <div className="log-view">
           <LogChart logData={this.state.data} loaded={this.state.loaded} config={chartConfig} fullWidth={true}/>
         </div>

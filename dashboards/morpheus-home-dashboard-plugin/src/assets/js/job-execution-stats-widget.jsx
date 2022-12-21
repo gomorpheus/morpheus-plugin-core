@@ -86,15 +86,6 @@ class JobExecutionStatsWidget extends React.Component {
 		}
 	}
 
-	renderHeader() {
-	    return (<React.Fragment>
-	    		<svg className="icon">
-					<use href="/assets/navigation/provisioning/executions.svg"></use>
-				</svg>
-				Job executions ({this.state.max})
-				</React.Fragment>)
-	  }
-
 	render() {
 		const Widget = Morpheus.components.get('Widget');
 		const showChart = this.state.data && this.state.loaded == true;
@@ -118,7 +109,13 @@ class JobExecutionStatsWidget extends React.Component {
 		}
 
 		return (
-			<Widget settings={filters} title={this.renderHeader()}>
+			<Widget settings={filters}>
+				<WidgetHeader>
+					<svg className="icon">
+						<use href="/assets/navigation/provisioning/executions.svg"></use>
+					</svg>
+					Job executions ({this.state.max})
+				</WidgetHeader>
 				<div style={{float: 'left', width: '100%'}}>
 					<div id={'job-execution-stats-chart-' + this.state.chartId}
 						 className={'line-chart-widget' + (showChart ? '' : ' hidden')}

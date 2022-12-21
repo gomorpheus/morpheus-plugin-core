@@ -76,15 +76,6 @@ class BackupStatsWidget extends React.Component {
 		this.setState(newState);
 	}
 
-	renderHeader() {
-		return (<React.Fragment>
-			<svg className="icon">
-				<use href="/assets/dashboard.svg#backup"></use>
-			</svg>
-			Backups ({this.state.days} {this.state.days == 1 ? "Day" : "Days"})
-		</React.Fragment>)
-	}
-
 
 	render() {
 
@@ -110,7 +101,13 @@ class BackupStatsWidget extends React.Component {
 						}]
 		}
 		return (
-			<Widget settings={filters} title={this.renderHeader()}>
+			<Widget settings={filters}>
+				<WidgetHeader>
+					<svg className="icon">
+						<use href="/assets/dashboard.svg#backup"></use>
+					</svg>
+					Backups ({this.state.days} {this.state.days == 1 ? "Day" : "Days"})
+				</WidgetHeader>
 				<div id={'backup-stats-chart-' + this.state.widgetId}
 					className={'line-chart-widget' + (showChart ? '' : ' hidden')}
 					style={{position: 'relative', marginTop: '10px'}}>

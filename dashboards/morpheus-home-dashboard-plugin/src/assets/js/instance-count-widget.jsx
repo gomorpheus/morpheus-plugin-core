@@ -66,9 +66,6 @@ class InstanceCountWidget extends React.Component {
     })
     this.setState({data: {columns:cols, loaded:true}, count:count})
   }
-  renderHeader() {
-    return (<React.Fragment><svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>Instance Status</React.Fragment>)
-  }
 
 
   render() {
@@ -77,7 +74,11 @@ class InstanceCountWidget extends React.Component {
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
     var showChart = this.state.data && this.state.loaded == true;
     return (
-        <Widget title={this.renderHeader()}>
+        <Widget>
+          <WidgetHeader>
+            <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
+            Instance Status
+          </WidgetHeader>
           <div className="flex">
             <div className={'dashboard-widget-chart-count'}>
               <span className='count-value'>{this.state.count}</span>
