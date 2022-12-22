@@ -25,7 +25,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	String getContainerType();
 
 	/**
-	 * Determines if this backup type supports copying the backup to a data store (export).
+	 * Determines if this backup type supports copying the backup to a datastore (export).
 	 * @return boolean indicating copy to store is supported
 	 */
 	Boolean getCopyToStore();
@@ -84,7 +84,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	Boolean getHasCopyToStore();
 
 	/**
-	 * A list of {@link OptionType OptionTypes} for use in the integration create and edit forms.
+	 * A list of {@link OptionType OptionTypes} for use in the backup create and edit forms.
 	 * @return a list of option types
 	 */
 	Collection<OptionType> getOptionTypes();
@@ -102,11 +102,10 @@ public interface BackupTypeProvider extends PluginProvider {
 	public ServiceResponse refresh(Map authConfig, com.morpheusdata.model.BackupProvider backupProvider);
 
 	/**
-	 * Clean up all data created by the plugin. This is called during the integration removal process.
+	 * Clean up all data created by the backup type provider.
 	 * @param backupProvider the provider to be cleaned up
 	 * @param opts additional options
-	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
-	 * cleanup process has failed and will halt any further processing in the core system.
+	 * @return a {@link ServiceResponse} object
 	 */
 	ServiceResponse clean(com.morpheusdata.model.BackupProvider backupProvider, Map opts);
 
