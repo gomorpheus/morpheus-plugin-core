@@ -72,7 +72,7 @@ class TaskFailWidget extends React.Component {
     var showTable = this.state.data && this.state.loaded == true;
     var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
     return (
-      <Widget>
+      <Widget scrollBody={true}>
         <WidgetHeader>
           <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
           Task Fails
