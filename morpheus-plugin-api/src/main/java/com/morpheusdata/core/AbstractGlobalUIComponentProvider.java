@@ -11,6 +11,7 @@ public abstract class AbstractGlobalUIComponentProvider implements GlobalUICompo
 		if(renderer == null) {
 			renderer = new HandlebarsRenderer("renderer", getPlugin().getClassLoader());
 			renderer.registerAssetHelper(getPlugin().getName());
+			renderer.registerI18nHelper(getPlugin(),getMorpheus());
 		}
 		return renderer;
 	}

@@ -5,10 +5,13 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * HandlebarsRenderer implements the Renderer interface.
@@ -117,6 +120,14 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 		engine.registerHelper("nonce", (Helper<Object>) (context, options) -> requestService.getNonceToken() );
 	}
 
+
+	public void registerI18nHelper(Plugin plugin, MorpheusContext morpheus) {
+		engine.registerHelper("i18n", (Helper<String>) (context, options) -> {
+			String defaultMessage = options.hash.get("default") != null ? options.hash.get("default").toString() : null;
+			return morpheus.getWebRequest().getMessage(context,null,defaultMessage,morpheus.getWebRequest().getLocale());
+		});
+
+	}
 	/**
 	 * Returns an error response with the exception message in the response html
 	 * @param e the exception

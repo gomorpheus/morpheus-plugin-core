@@ -18,6 +18,7 @@ public abstract class AbstractAppTabProvider implements AppTabProvider {
 			renderer = new HandlebarsRenderer("renderer", getPlugin().getClassLoader());
 			renderer.registerAssetHelper(getPlugin().getName());
 			renderer.registerNonceHelper(getMorpheus().getWebRequest());
+			renderer.registerI18nHelper(getPlugin(),getMorpheus());
 		}
 		return renderer;
 	}

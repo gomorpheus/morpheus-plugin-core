@@ -7,15 +7,17 @@ import com.morpheusdata.web.Dispatcher;
 import com.morpheusdata.web.PluginController;
 import com.morpheusdata.web.Route;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the base implementation of a Plugin Manager responsible for loading all plugins on the Morpheus classpath
@@ -24,7 +26,7 @@ import java.util.jar.Manifest;
  * @author David Estes
  */
 public class PluginManager {
-
+	static Logger log = LoggerFactory.getLogger(PluginManager.class);
 	private ArrayList<Plugin> plugins = new ArrayList<>();
 	private MorpheusContext morpheus;
 	private Dispatcher dispatcher;
@@ -173,5 +175,117 @@ public class PluginManager {
 
 	public Renderer<?> getRenderer() {
 		return this.renderer;
+	}
+
+	/**
+	 * Returns all i18n Properties by locale for all loaded plugins
+	 * @param locale This is the Locale with which we want to scope i18n localization lookup
+	 * @return the merged Properties of all loaded plugins
+	 */
+	public Properties getMergedPluginProperties(Locale locale)  {
+		Properties properties = new Properties();
+		for(Plugin plugin : this.plugins) {
+			try {
+				Properties pluginProperties = getProperties(plugin,locale);
+				if(pluginProperties != null) {
+					properties.putAll(pluginProperties);
+				}
+			} catch(IOException io) {
+				log.error("Error Loading Message Properties files from Plugin: {} - {}",plugin.getName(),io.getMessage(),io);
+			}
+		}
+		return properties;
+	}
+
+	/**
+	 * Returns a list of all i18n Properties for the plugin to be dynamically loaded for lookup in Morpheus
+	 * @param locale the Locale of properties to be loaded. If not found the default will also be loaded
+	 * @return Properties list
+	 */
+	public Properties getProperties(Plugin plugin, final Locale locale) throws IOException {
+		Properties properties = null;
+		URL i18nManifest = plugin.getClassLoader().getResource("i18n/i18n.manifest");
+		if(i18nManifest == null) {
+			return null; //if no manifest we dont have anything to do here
+		}
+		String[] fileList = null;
+		InputStream is = null;
+		try {
+
+			is = i18nManifest.openStream();
+			String manifestConents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+			fileList = manifestConents.split("\n");
+
+		} catch(IOException ignore) {
+			/*ignore*/
+		} finally {
+			if(is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+		if(fileList != null) {
+			ArrayList<String> filteredList = filterFileList(fileList,locale);
+			filteredList.sort((o1, o2) -> {
+				long firstUnderscoreCount = o1.chars().filter(ch -> ch == '_').count();
+				long secondUnderscoreCount = o2.chars().filter(ch -> ch == '_').count();
+
+				if (firstUnderscoreCount == secondUnderscoreCount) {
+					return 0;
+				} else {
+					return firstUnderscoreCount > secondUnderscoreCount ? 1 : -1;
+				}
+			});
+			if(filteredList.size() > 0) {
+				properties = new Properties();
+				loadI18nFromResources(plugin, properties, filteredList);
+
+			}
+		}
+		return properties;
+	}
+
+	private void loadI18nFromResources(Plugin plugin, Properties properties, ArrayList<String> fileList) throws IOException {
+		for(String fileName : fileList) {
+			URL fileObject = plugin.getClassLoader().getResource("i18n/" + fileName);
+			InputStream is = null;
+			try {
+				if(fileObject != null) {
+					is = fileObject.openStream();
+					properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
+				}
+			} finally {
+				if(is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}
+		}
+	}
+
+	private ArrayList<String> filterFileList(String[] fileList, Locale locale) {
+		ArrayList<String> finalResources = new ArrayList<>();
+		for(String file : fileList) {
+			if(file.indexOf('_') > -1) {
+				if(file.endsWith("_" + locale.toString() + ".properties")) {
+					finalResources.add(file);
+				}
+				else if(file.endsWith("_" + locale.getLanguage() + "_" + locale.getCountry() + ".properties")) {
+					finalResources.add(file);
+				}
+				else if(file.endsWith("_" + locale.getLanguage() + ".properties")) {
+					finalResources.add(file);
+				}
+			} else {
+				finalResources.add(file);
+			}
+		}
+		return finalResources;
 	}
 }
