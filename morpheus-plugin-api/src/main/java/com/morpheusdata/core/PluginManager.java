@@ -95,7 +95,7 @@ public class PluginManager {
 		if(plugin.getControllers().size() > 0 && !plugin.hasCustomRender()) {
 			this.renderer.addTemplateLoader(pluginClassLoader);
 		}
-		for(Plugin tmpPlugin : plugins) {
+		for(Plugin tmpPlugin : plugins.toArray(new Plugin[plugins.size()])) {
 			if(tmpPlugin.getCode() == plugin.getCode()) {
 				//we have 2 plugins  we need to remove one
 				deregisterPlugin(tmpPlugin);
