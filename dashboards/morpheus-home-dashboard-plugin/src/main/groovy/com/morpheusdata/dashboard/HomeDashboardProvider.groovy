@@ -66,6 +66,9 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.scriptPath = 'home-dashboard.js'
 		//add items
 		def dashboardItemGroups = [
+			main:[
+				'dashboard-item-user-favorites', 
+			],
 			instances:[
 				'dashboard-item-instance-count', 
 				'dashboard-item-instance-count-cloud', 
@@ -85,12 +88,15 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-backup-stats'
 			]
 		]
+		def currentGroupRow = 0
 		def currentRow = 0
 		def currentColumn = 0
 		def dashboardItems = []
+		//iterate groups
 		dashboardItemGroups.each { key, value ->
 			currentRow = 0
 			currentColumn = 0
+			//iterate items
 			value.each { row ->
 				def itemType = getMorpheus().getDashboard().getDashboardItemType(row).blockingGet()
 				if(itemType) {
@@ -99,12 +105,14 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 					addItem.itemRow = currentRow
 					addItem.itemColumn = currentColumn
 					addItem.itemGroup = key
+					addItem.groupRow = currentGroupRow
 					//no config
 					dashboardItems << addItem
 					//increment
 					currentColumn++
 				}
 			}
+			currentGroupRow++
 		}
 		//return the items
 		rtn.dashboardItems = dashboardItems

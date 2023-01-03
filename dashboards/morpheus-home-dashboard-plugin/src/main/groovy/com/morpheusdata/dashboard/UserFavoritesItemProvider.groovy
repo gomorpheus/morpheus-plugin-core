@@ -17,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class InstanceCountCloudItemProvider extends AbstractDashboardItemTypeProvider {
+class UserFavoritesItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	InstanceCountCloudItemProvider(Plugin plugin, MorpheusContext context) {
+	UserFavoritesItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +39,12 @@ class InstanceCountCloudItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-instance-count-cloud'
+		return 'dashboard-item-user-favorites'
 	}
 
 	@Override
 	String getName() {
-		return 'Instance count by cloud'
+		return 'User favorites'
 	}
 
 	@Override
@@ -54,12 +54,12 @@ class InstanceCountCloudItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'instance'
-		rtn.title = 'instance count by cloud'
-		rtn.description = 'instance count by cloud'
-		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/instance-count-cloud-widget'
-		rtn.scriptPath = 'instance-count-cloud-widget.js'
+		rtn.category = 'user'
+		rtn.title = 'user favorites'
+		rtn.description = 'user favorites'
+		rtn.uiSize = 'md'
+		rtn.templatePath = 'hbs/user-favorites-widget'
+		rtn.scriptPath = 'user-favorites-widget.js'
 		return rtn
 	}
 

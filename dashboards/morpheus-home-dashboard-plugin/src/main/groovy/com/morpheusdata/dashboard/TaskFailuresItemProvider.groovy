@@ -56,7 +56,7 @@ class TaskFailuresItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'automation'
 		rtn.title = 'task failures'
 		rtn.description = 'task failures'
-		rtn.uiSize = 'md'
+		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/generic-react-widget'
 		rtn.scriptPath = 'tasks/task-failures.js'
 		return rtn

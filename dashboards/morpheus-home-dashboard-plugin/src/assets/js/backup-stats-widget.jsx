@@ -1,5 +1,5 @@
 /**
- * a counter widget that loads data
+ counter widget that loads data
  * @author bdwheeler
  */
 class BackupStatsWidget extends React.Component {
@@ -78,54 +78,50 @@ class BackupStatsWidget extends React.Component {
 
 
 	render() {
-
-		let Widget = Morpheus.components.get('Widget');
-	
+		//setup
 		const showChart = this.state.data && this.state.loaded == true;
-		const emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-		const successfulLabel = Morpheus.utils.message('gomorpheus.successful')
-		const failedLabel = Morpheus.utils.message('gomorpheus.failed')
-		const successfulCount = this.state.data?.successful ? this.state.data.successful : 0
-		const failedCount = this.state.data?.failed ? this.state.data.failed : 0
-		const successPercent = this.state.data?.successPercent ? this.state.data.successPercent : 0
-		const failPercent = this.state.data?.failPercent ? this.state.data.failPercent : 0
+		var widgetTitle = 'Backups ' + this.state.days + (this.state.days == 1 ? 'Day' : 'Days');
+		//data
+		const successfulLabel = Morpheus.utils.message('gomorpheus.successful');
+		const failedLabel = Morpheus.utils.message('gomorpheus.failed');
+		const successfulCount = this.state.data?.successful ? this.state.data.successful : 0;
+		const failedCount = this.state.data?.failed ? this.state.data.failed : 0;
+		const successPercent = this.state.data?.successPercent ? this.state.data.successPercent : 0;
+		const failPercent = this.state.data?.failPercent ? this.state.data.failPercent : 0;
 		const filters = {
 			update: this.updateFilterValue,
-			opts: [{
-							label:'Days',
-							fieldName:'days',
-							value: this.state.days,
-							type: "number",
-							min: 0,
-							max: 30
-						}]
+			opts: [
+				{ label:'Days',
+					fieldName:'days',
+					value: this.state.days,
+					type: "number",
+					min: 0,
+					max: 30
+				}
+			]
 		}
+		//render
 		return (
 			<Widget settings={filters}>
-				<WidgetHeader>
-					<svg className="icon">
-						<use href="/assets/dashboard.svg#backup"></use>
-					</svg>
-					Backups ({this.state.days} {this.state.days == 1 ? "Day" : "Days"})
-				</WidgetHeader>
+				<WidgetHeader icon="/assets/dashboard.svg#backup" title={widgetTitle}/>
 				<div id={'backup-stats-chart-' + this.state.widgetId}
-					className={'line-chart-widget' + (showChart ? '' : ' hidden')}
-					style={{position: 'relative', marginTop: '10px'}}>
-					<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px'}}>
-						<span>{successfulLabel}</span><span style={{float: 'right'}}>{successfulCount}</span>
+						className={'line-chart-widget' + (showChart ? '' : ' hidden')}
+						style={{position:'relative', marginTop:'10px'}}>
+					<div style={{fontSize:'15px', marginLeft:'7px', marginRight:'12px'}}>
+						<span>{successfulLabel}</span><span style={{float:'right'}}>{successfulCount}</span>
 					</div>
 					<div id="backup-success-line" className="backup-success-line"
-						style={{backgroundColor: '#e7e7e6', height: '2px'}}>
-						<svg width={successPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
+							style={{backgroundColor:'#e7e7e6', height:'2px'}}>
+						<svg width={successPercent + '%'} height="3px" style={{top:'-12px', position:'relative'}}>
 							<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.green}></line>
 						</svg>
 					</div>
-					<div style={{fontSize: '15px', marginLeft: '7px', marginRight: '12px', marginTop: '20px'}}>
-						<span>{failedLabel}</span><span style={{float: 'right'}}>{failedCount}</span>
+					<div style={{fontSize:'15px', marginLeft:'7px', marginRight:'12px', marginTop:'20px'}}>
+						<span>{failedLabel}</span><span style={{float:'right'}}>{failedCount}</span>
 					</div>
 					<div id="backup-fail-line" className="backup-fail-line"
-						style={{backgroundColor: '#e7e7e6', height: '2px'}}>
-						<svg width={failPercent + '%'} height="3px" style={{top: "-12px", position: "relative"}}>
+							style={{backgroundColor:'#e7e7e6', height:'2px'}}>
+						<svg width={failPercent + '%'} height="3px" style={{top:'-12px', position:'relative'}}>
 							<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.red}></line>
 						</svg>
 					</div>
@@ -137,8 +133,7 @@ class BackupStatsWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('backupStatsWidget', BackupStatsWidget);
-
+Morpheus.components.register('backup-stats-widget', BackupStatsWidget);
 
 $(document).ready(function () {
 	const root = ReactDOM.createRoot(document.querySelector('#backup-stats-widget'));

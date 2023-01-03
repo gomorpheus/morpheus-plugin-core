@@ -56,7 +56,7 @@ class TaskExecutionsOverTimeItemProvider extends AbstractDashboardItemTypeProvid
 		rtn.category = 'automation'
 		rtn.title = 'tasks by status and day'
 		rtn.description = 'tasks by status and day'
-		rtn.uiSize = 'md'
+		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/task-execution-ot-widget'
 		rtn.scriptPath = 'task-executions-over-time-widget.js'
 		return rtn

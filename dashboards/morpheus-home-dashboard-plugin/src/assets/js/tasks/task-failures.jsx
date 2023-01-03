@@ -1,5 +1,5 @@
 /**
- * a test widget
+ * a list of task failures
  * @author bdwheeler
  */
 class TaskFailWidget extends React.Component {
@@ -8,10 +8,9 @@ class TaskFailWidget extends React.Component {
     super(props);
     //set state
     this.state = {
-      loaded:false,
-      autoRefresh:true,
-      data:null,
-      chartId: Morpheus.utils.generateGuid()
+      loaded: false,
+      autoRefresh: true,
+      data: null
     };
     //dataType
     this.state.type = 'instance-favorite' //instance-user, app-favorite, app-user
@@ -66,38 +65,34 @@ class TaskFailWidget extends React.Component {
   }
 
   render() {
-    let Widget = Morpheus.components.get('Widget');
+    //setup
     var itemList = this.state.data || [];
-
     var showTable = this.state.data && this.state.loaded == true;
-    var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
+    //render
     return (
       <Widget scrollBody={true}>
-        <WidgetHeader>
-          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          Task Fails
-        </WidgetHeader>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Task Failures"/>
         <table className="widget-table">
-      <thead>
-        <tr>
-          <th>Task</th>
-          <th>Message</th>
-          <th>Target</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        { itemList.map(row => (
-          <tr key={row.id}>
-            <td><a href={row.link}>{row.name}</a></td>
-            <td>{row.message}</td>
-            <td>{row.target}</td>
-            <td>{row.startDate}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-      <LoadingWidget isLoading={!this.state.loaded} />
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Message</th>
+              <th>Target</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            { itemList.map(row => (
+              <tr key={row.id}>
+                <td><a href={row.link}>{row.name}</a></td>
+                <td>{row.message}</td>
+                <td>{row.target}</td>
+                <td>{row.startDate}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <LoadingWidget isLoading={!this.state.loaded}/>
       </Widget>
     );
   }
@@ -105,11 +100,9 @@ class TaskFailWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('TaskFailWidget', TaskFailWidget);
-
+Morpheus.components.register('task-fail-widget', TaskFailWidget);
 
 $(document).ready(function () {
   const root = ReactDOM.createRoot(document.querySelector('#dashboard-item-task-failures'));
   root.render(<TaskFailWidget/>)
 });
-

@@ -8,10 +8,10 @@ class InstanceCountCloudDayWidget extends React.Component {
     super(props);
     //set state
     this.state = {
-      loaded:false,
-      autoRefresh:true,
-      data:null,
-      days: 3
+      loaded: false,
+      autoRefresh: true,
+      data: null,
+      days: 7
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -21,6 +21,7 @@ class InstanceCountCloudDayWidget extends React.Component {
     this.loadData = this.loadData.bind(this);
     this.setData = this.setData.bind(this);
     this.refreshData = this.refreshData.bind(this);
+    this.onPillChange = this.onPillChange.bind(this);
   }
 
   componentDidMount() {
@@ -103,40 +104,51 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.total = 0;
     newState.data.maxValue = 0;
     newState.data.totals = [];
-
-    let data = {
-      x:'x',
-      columns:[],
-      axis:{
-        range:{max:{y:0}}
-      },
-      groups:[[]],
-      types:{},
-      colors:{}
-    }
-    let maxValue = 0
-
-
+    //apply results
     if(results.items) {
-      //make axis column
-      data.columns.push(['x'].concat(results.items[0].values.map(val => val[0])))
-      //make value columns
-      results.items.forEach((row, index) => {
-        let name = Morpheus.utils.slice(row.name, 25);
-        let values = row.values.map(val => parseFloat(val[1]))
-        let rowMax = Math.max(values)
-        rowMax > maxValue? maxValue = rowMax:null
-        
-        data.groups[0].push(name);
-        data.types[name] = 'area';
-        data.columns.push([name].concat(values));
-        data.colors[name] = Morph.chartConfigs.colors.chartSetOne[index];
-      })
-      data.axis.range.max.y = maxValue;
+      //add the x axis periods
+      var axisRow = ['x'];
+      var groupSet = [];
+      //add results
+      if(results.items) {
+        for(var index in results.items) {
+          var row = results.items[index];
+          var rowName = Morpheus.utils.slice(row.name, 25);
+          var dataRow = [rowName];
+          groupSet.push(rowName);
+          //make the xaxis
+          for(var valueIndex in row.values) {
+            var valueRow = row.values[valueIndex];
+            if(index == 0) {
+              var axisValue = valueRow[0] // * 1000 - already in milliseconds;
+              //console.log('ts - ' + axisValue);
+              axisRow.push(axisValue);
+              newState.data.totals[valueIndex] = 0;
+            }
+            var rowItem = parseFloat(valueRow[1]);
+            dataRow.push(rowItem);
+            newState.data.totals[valueIndex] += rowItem;
+            newState.data.total += rowItem;
+            if(newState.data.totals[valueIndex] > newState.data.maxValue)
+              newState.data.maxValue = newState.data.totals[valueIndex];
+          }
+          newState.data.items.push(dataRow);
+          newState.data.types[rowName] = 'area';
+        }
+        //add axis row
+        newState.data.axisItems.push(axisRow);
+        //add groups
+        newState.data.groups.push(groupSet);
+      }
     }
-    newState.data = data
-    newState.data.loaded = true
-    newState.loaded = true
+    //set axis config
+    newState.data.maxValue = Morpheus.utils.getNextBaseTen(newState.data.maxValue);
+    //set loaded
+    newState.loaded = true;
+    newState.data.loaded = true;
+    newState.date = Date.now();
+    newState.error = false;
+    newState.errorMessage = null;
     //update the state
     this.setState(newState);
   }
@@ -150,14 +162,9 @@ class InstanceCountCloudDayWidget extends React.Component {
         right: 25
       },
       data: {
-        x: 'x'
-      },
-      legend: { 
-        show: true,
-        align: 'left'
-      },
-      size: { 
-        height:118
+        x: 'x',
+        columns: [],
+        colors: {}
       },
       axis: {
         x: {
@@ -165,6 +172,7 @@ class InstanceCountCloudDayWidget extends React.Component {
           tick: {
             fit: false,
             outer: false,
+            count: 7,
             format: function(x) { // x comes in as a time string.
               return self.timeFormat(x);
             }
@@ -181,47 +189,34 @@ class InstanceCountCloudDayWidget extends React.Component {
         }
       }
     };
+    //set the size
+    chartConfig.size = { height:128, width:540 };
+    //set the legend
+    chartConfig.legend = { show:true, align:'left' };
     //set the tooltip
     chartConfig.tooltip = { show:true, horizontal:true, contents:(Morph.chartConfigs ? Morph.chartConfigs.tooltip : '') };
     //additional config?
     return chartConfig;
   }
 
-  renderNoData() {
-    var showChart = this.state.data && this.state.loaded == true;
-    var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-    if (!showChart) {
-      return (<div className={'widget-no-data'}>{emptyMessage}</div>)
-    }
-  }
-
-  isPillActive(days) {
-    return this.state.days === days
-  }
-  setActive(days) {
-    return function() {
-      this.setState({days:days})
-    }.bind(this)
+  onPillChange(value) {
+    var newState = {};
+    newState.days = value;
+    this.setState(newState);
   }
 
   render() {
-    let Widget = Morpheus.components.get('Widget');
-    let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
-    let Pills = Morpheus.components.get('Pills');
-    let Pill = Morpheus.components.get('Pill');
+    //setup
+    var pillList = [
+      {name:'1 Week', value:7},
+      {name:'1 Month', value:30}
+    ];
+    //render
     return (
       <Widget>
-        <WidgetHeader>
-          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          Daily Cloud Instances
-        </WidgetHeader>
-        <Pills align="center">
-          <Pill isActive={this.isPillActive(3)} setActive={this.setActive(3)}>3 Days</Pill>
-          <Pill isActive={this.isPillActive(7)} setActive={this.setActive(7)}>1 Week</Pill>
-          <Pill isActive={this.isPillActive(30)} setActive={this.setActive(30)}>1 Month</Pill>
-        </Pills>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Daily Cloud Instances"/>
+        <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
         <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
-        {this.renderNoData()}
       </Widget>
     );
   }
@@ -229,7 +224,7 @@ class InstanceCountCloudDayWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('instanceCountCloudDayWidget', InstanceCountCloudDayWidget);
+Morpheus.components.register('instance-count-cloud-day-widget', InstanceCountCloudDayWidget);
 
 $(document).ready(function () {
 	const root = ReactDOM.createRoot(document.querySelector('#instance-count-cloud-day-widget'));

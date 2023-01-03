@@ -12,12 +12,10 @@ class SettingsWidget extends React.Component {
 			showFilters: false,
 			showIcon: false
 		};
-
 		this.toggleFilters = this.toggleFilters.bind(this);
 		this.toggleIcon = this.toggleIcon.bind(this);
 		this.buildFilter = this.buildFilter.bind(this)
 	}
-
 
 	toggleFilters() {
 		this.setState({showFilters: !this.state.showFilters})
@@ -41,10 +39,10 @@ class SettingsWidget extends React.Component {
 					   }}/>
 			</div>)
 		}
-
 	}
 
 	render() {
+		//setup
 		let filters = ""
 		if(this.state.filters) {
 			const filterArray = Object.keys(this.state.filters)
@@ -53,6 +51,7 @@ class SettingsWidget extends React.Component {
 			})
 		}
 		const opacity = (this.state.showIcon || this.state.showFilters) ? "100%" : "40%";
+		//render
 		return (
 			<div style={{position: "relative", zIndex: 10}}>
 				{(
@@ -70,11 +69,9 @@ class SettingsWidget extends React.Component {
 					</div>
 				)}
 			</div>
-
 		);
 	}
 }
+
 //register it
-Morpheus.components.register('settingsWidget', SettingsWidget);
-
-
+Morpheus.components.register('settings-widget', SettingsWidget);

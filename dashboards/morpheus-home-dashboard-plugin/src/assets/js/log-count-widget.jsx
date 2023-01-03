@@ -1,5 +1,5 @@
 /**
- * a test widget
+ * a log count by status widget
  * @author bdwheeler
  */
 class LogCountWidget extends React.Component {
@@ -19,6 +19,7 @@ class LogCountWidget extends React.Component {
       options: searchOptions,
       data:null
     };
+    this.state.chartConfig = this.configureChart();
     //apply state config
     if(props.autoRefresh == false)
       this.state.autoRefresh = false;
@@ -50,6 +51,7 @@ class LogCountWidget extends React.Component {
     var newState = {};
     newState.data = results;
     newState.loaded = true;
+    newState.data.loaded = true;
     newState.date = Date.now();
     newState.error = false;
     newState.errorMessage = null;
@@ -95,23 +97,24 @@ class LogCountWidget extends React.Component {
     this.setState(newState);
   }
 
-  render() {
-    const Widget = Morpheus.components.get('Widget');
-    var showChart = this.state.data && this.state.loaded == true;
-    var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
+  configureChart() {
     var chartConfig = {
-      size: { height:140},
-      bar: { width: 9 }
+      size: { height:140, width:520 },
+      bar: { width: 8 }
     }
+    //done
+    return chartConfig;
+  }
 
+  render() {
+    //setup
+    var showChart = this.state.data && this.state.loaded == true;
+    //render
     return (
       <Widget>
-        <WidgetHeader>
-          <svg className="icon"><use href="/assets/dashboard.svg#logs"></use></svg>
-          Log History
-        </WidgetHeader>
+        <WidgetHeader icon="/assets/dashboard.svg#logs" title="Log History"/>
         <div className="log-view">
-          <LogChart logData={this.state.data} loaded={this.state.loaded} config={chartConfig} fullWidth={true}/>
+          <LogChart logData={this.state.data} loaded={this.state.loaded} config={this.state.chartConfig}/>
         </div>
       </Widget>
     );
@@ -120,17 +123,9 @@ class LogCountWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('logCountWidget', LogCountWidget);
+Morpheus.components.register('log-count-widget', LogCountWidget);
 
 $(document).ready(function () {
   const root = ReactDOM.createRoot(document.querySelector('#log-count-widget'));
   root.render(<LogCountWidget/>)
 });
-
-
-/*$(document).ready(function() {
-  ReactDOM.render(
-    <TestWidget/>,
-    document.querySelector('#test-widget')
-  );
-});*/

@@ -56,7 +56,7 @@ class WorkflowExecutionsOverTimeItemProvider extends AbstractDashboardItemTypePr
 		rtn.category = 'automation'
 		rtn.title = 'workflows by status and day'
 		rtn.description = 'workflows by status and day'
-		rtn.uiSize = 'md'
+		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/workflow-execution-ot-widget'
 		rtn.scriptPath = 'workflow-executions-over-time-widget.js'
 		return rtn

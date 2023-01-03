@@ -1,5 +1,5 @@
 /**
- * instanct count by cloud and day
+ * task executions by day
  * @author bdwheeler
  */
 class TaskExecutionsDayWidget extends React.Component {
@@ -8,11 +8,10 @@ class TaskExecutionsDayWidget extends React.Component {
     super(props);
     //set state
     this.state = {
-      loaded:false,
-      autoRefresh:true,
-      data:null,
-      days:3,
-      chartId: Morpheus.utils.generateGuid()
+      loaded: false,
+      autoRefresh: true,
+      data: null,
+      days: 7
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -22,6 +21,7 @@ class TaskExecutionsDayWidget extends React.Component {
     this.loadData = this.loadData.bind(this);
     this.setData = this.setData.bind(this);
     this.refreshData = this.refreshData.bind(this);
+    this.onPillChange = this.onPillChange.bind(this);
   }
 
   componentDidMount() {
@@ -101,7 +101,6 @@ class TaskExecutionsDayWidget extends React.Component {
     newState.data.total = 0;
     newState.data.maxValue = 0;
     newState.data.totals = [];
-
     let data = {
       x:'x',
       columns:[],
@@ -110,9 +109,7 @@ class TaskExecutionsDayWidget extends React.Component {
       types:{},
       colors:{}
     }
-    let maxValue = 10
-
-
+    let maxValue = 10;
     if(results.jobExecutions) {
       //make axis column
       data.columns.push(['x'].concat(results.items[0].values.map(val => val[0])))
@@ -184,41 +181,25 @@ class TaskExecutionsDayWidget extends React.Component {
     return chartConfig;
   }
 
-  renderNoData() {
-    var showChart = this.state.data && this.state.loaded == true;
-    var emptyMessage = this.state.emptyMessage ? this.state.emptyMessage : Morpheus.utils.message('gomorpheus.label.noData');
-    if (!showChart) {
-      return (<div className={'widget-no-data'}>{emptyMessage}</div>)
-    }
-  }
-
-  isPillActive(days) {
-    return this.state.days === days
-  }
-  setActive(days) {
-    return function() {
-      this.setState({days:days})
-    }.bind(this)
+  onPillChange(value) {
+    var newState = {};
+    newState.days = value;
+    this.setState(newState);
   }
 
   render() {
-    let Widget = Morpheus.components.get('Widget');
-    let Pills = Morpheus.components.get('Pills');
-    let Pill = Morpheus.components.get('Pill');
-    let TimeSeriesChart = Morpheus.components.get('TimeSeriesChart');
+    //setup
+    var pillList = [
+      {name:'3 Days', value:3},
+      {name:'1 Week', value:7},
+      {name:'1 Month', value:30}
+    ];
+    //render
     return (
       <Widget>
-        <WidgetHeader>
-          <svg className="icon"><use href="/assets/dashboard.svg#provisioning"></use></svg>
-          Daily Task Executions
-        </WidgetHeader>
-        <Pills align="center">
-          <Pill isActive={this.isPillActive(3)} setActive={this.setActive(3)}>3 Days</Pill>
-          <Pill isActive={this.isPillActive(7)} setActive={this.setActive(7)}>1 Week</Pill>
-          <Pill isActive={this.isPillActive(30)} setActive={this.setActive(30)}>1 Month</Pill>
-        </Pills>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Daily Task Executions"/>
+        <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
         <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
-        {this.renderNoData()}
       </Widget>
     );
   }
@@ -226,7 +207,7 @@ class TaskExecutionsDayWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('TaskExecutionsDayWidget', TaskExecutionsDayWidget);
+Morpheus.components.register('task-executions-day-widget', TaskExecutionsDayWidget);
 
 $(document).ready(function () {
   const root = ReactDOM.createRoot(document.querySelector('#task-execution-ot-widget'));

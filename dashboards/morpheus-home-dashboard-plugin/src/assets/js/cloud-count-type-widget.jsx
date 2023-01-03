@@ -97,19 +97,17 @@ class CloudCountTypeWidget extends React.Component {
     //setup
     //render
     return(
-      <div className="widget-container widget-md">
-        <div id={'dashboard-widget-' + this.state.chartId} className="dashboard-widget chart-legend-right">
-          <WidgetHeader title="Cloud Types"/>
-          <DonutChartWidget tooltip="morpheus-value" data={this.state.data} config={this.state.chartConfig}/>
-        </div>
-      </div>
+      <Widget widgetClass="chart-legend-right">
+        <WidgetHeader icon="/assets/dashboard.svg#infrastructure" title="Cloud Types"/>
+        <DonutChartWidget tooltip="morpheus-value" data={this.state.data} config={this.state.chartConfig}/>
+      </Widget>
     );
   }
 
 }
 
 //register it
-Morpheus.components.register('cloudCountTypeWidget', CloudCountTypeWidget);
+Morpheus.components.register('cloud-count-type-widget', CloudCountTypeWidget);
 
 $(document).ready(function() {
 	const root = ReactDOM.createRoot(document.querySelector('#cloud-count-type-widget'));
