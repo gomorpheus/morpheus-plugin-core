@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -102,6 +103,7 @@ public class PluginManager {
 			}
 		}
 		plugins.add(plugin);
+		cachedLocaleProperties.clear();
 		return plugin;
 	}
 
@@ -139,6 +141,7 @@ public class PluginManager {
 		plugin.onDestroy();
 		this.renderer.removeTemplateLoader(plugin.getClassLoader());
 		plugins.remove(plugin);
+		cachedLocaleProperties.clear();
 	}
 
 	/**
@@ -183,12 +186,18 @@ public class PluginManager {
 		return this.renderer;
 	}
 
+
+	public ConcurrentHashMap<Locale,Properties> cachedLocaleProperties = new ConcurrentHashMap<>();
+
 	/**
 	 * Returns all i18n Properties by locale for all loaded plugins
 	 * @param locale This is the Locale with which we want to scope i18n localization lookup
 	 * @return the merged Properties of all loaded plugins
 	 */
 	public Properties getMergedPluginProperties(Locale locale)  {
+		if(cachedLocaleProperties != null && cachedLocaleProperties.containsKey(locale)) {
+			return cachedLocaleProperties.get(locale);
+		}
 		Properties properties = new Properties();
 		for(Plugin plugin : this.plugins) {
 			try {
@@ -196,6 +205,7 @@ public class PluginManager {
 				if(pluginProperties != null) {
 					properties.putAll(pluginProperties);
 				}
+				cachedLocaleProperties.put(locale,properties);
 			} catch(IOException io) {
 				log.error("Error Loading Message Properties files from Plugin: {} - {}",plugin.getName(),io.getMessage(),io);
 			}
