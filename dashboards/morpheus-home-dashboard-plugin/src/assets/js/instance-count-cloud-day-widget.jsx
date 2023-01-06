@@ -202,7 +202,7 @@ class InstanceCountCloudDayWidget extends React.Component {
   onPillChange(value) {
     var newState = {};
     newState.days = value;
-    this.setState(newState);
+    this.setState(newState, this.loadData);
   }
 
   render() {

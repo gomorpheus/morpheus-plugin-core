@@ -32,12 +32,6 @@ class TaskExecutionsDayWidget extends React.Component {
     $(document).on('morpheus:refresh', this.refreshData);
   }
 
-  componentDidUpdate(prevProps,prevState) {
-    if (prevState.days !== this.state.days) {
-      this.loadData()
-    }
-  }
-
   //data methods
   refreshData() {
     if(this.state.autoRefresh == true)
@@ -184,7 +178,7 @@ class TaskExecutionsDayWidget extends React.Component {
   onPillChange(value) {
     var newState = {};
     newState.days = value;
-    this.setState(newState);
+    this.setState(newState, this.loadData);
   }
 
   render() {

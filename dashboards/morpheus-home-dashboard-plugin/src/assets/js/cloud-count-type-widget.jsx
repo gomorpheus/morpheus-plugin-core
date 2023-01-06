@@ -98,7 +98,7 @@ class CloudCountTypeWidget extends React.Component {
     //render
     return(
       <Widget widgetClass="chart-legend-right">
-        <WidgetHeader icon="/assets/infrastructure/clouds.svg##Layer_1" title="Cloud Types"/>
+        <WidgetHeader icon="/assets/infrastructure/clouds.svg#Layer_1" title="Cloud Types"/>
         <DonutChartWidget tooltip="morpheus-value" data={this.state.data} config={this.state.chartConfig}/>
       </Widget>
     );

@@ -37,8 +37,7 @@ class JobExecutionStatsWidget extends React.Component {
     if(this.state.days != value) {
       var newState = {};
       newState.days = value;
-      this.setState(newState);
-      this.loadData();
+      this.setState(newState, this.loadData);
     }
   }
 
