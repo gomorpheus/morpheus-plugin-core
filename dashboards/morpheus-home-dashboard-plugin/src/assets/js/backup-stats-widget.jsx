@@ -5,130 +5,123 @@
 class BackupStatsWidget extends React.Component {
 
 	constructor(props) {
-		super(props);
-		//set state
-		this.state = {
-			loaded: false,
-			autoRefresh: true,
-			data: null,
-			days: 1,
-			widgetId: Morpheus.utils.generateGuid(),
-			showSettings: false
-		};
-		//apply state config
-		if (props.autoRefresh == false)
-			this.state.autoRefresh = false;
-		//bind methods
-		this.setData = this.setData.bind(this);
-		this.refreshData = this.refreshData.bind(this);
-		this.updateFilterValue = this.updateFilterValue.bind(this);
-	}
+    super(props);
+    //set state
+    this.state = {
+      loaded: false,
+      autoRefresh: true,
+      data: null,
+      days: 1
+    };
+    //apply state config
+    if (props.autoRefresh == false)
+      this.state.autoRefresh = false;
+    //bind methods
+    this.setData = this.setData.bind(this);
+    this.refreshData = this.refreshData.bind(this);
+    this.onPillChange = this.onPillChange.bind(this);
+  }
 
-	componentDidMount() {
-		this.loadData();
-		$(document).on('morpheus:refresh', this.refreshData);
-	}
+  componentDidMount() {
+    this.loadData();
+    $(document).on('morpheus:refresh', this.refreshData);
+  }
 
-	//data methods
-	refreshData() {
-		if (this.state.autoRefresh == true)
-			this.loadData();
-	}
+  //data methods
+  refreshData() {
+    if(this.state.autoRefresh == true)
+      this.loadData();
+  }
 
-	loadData() {
-		//call api for data...
-		var apiFilter;
-		var apiOptions = {};
-		Morpheus.api.backups.count('', {numDays: this.state.days}).then(this.setData)
-	}
+  onPillChange(value) {
+    if(this.state.days != value) {
+      var newState = {};
+      newState.days = value;
+      this.setState(newState);
+      this.loadData();
+    }
+  }
 
+  loadData() {
+    //call api for data...
+    var apiQuery = 'group(lastStatus:count(id)) lastStatus != null';
+    var apiOptions = {};
+    //set date range
+    var dayCounter = this.state.days;
+    var startDate = new Date();
+    if(dayCounter > 1)
+      startDate.setDate(startDate.getDate() - dayCounter);
+    startDate.setHours(0, 0, 0, 0);
+    apiQuery = apiQuery + ' and lastResult.startDate > ' + startDate.toISOString();
+    //execute it
+    Morpheus.api.backups.search(apiQuery, apiOptions).then(this.setData);
+  }
 
-	updateFilterValue(fieldName, newValue) {
-		if(fieldName && newValue) {
-			const newState = {};
-			newState[fieldName] = newValue;
-			this.setState(newState);
-		}
-	}
+  setData(results) {
+    //set it
+    var newState = {};
+    newState.data = {};
+    newState.data.config = results.config;
+    newState.data.meta = results.meta;
+    newState.data.items = results.items;
+    //aggregate data for display
+    var chartData = {};
+    chartData.total = 0;
+    chartData.items = [];
+    //success and fail rows
+    var successRow = { name:Morpheus.utils.message('gomorpheus.successful'), value:0, color:Morph.chartConfigs.colors.green, percent:0 };
+    var failRow = { name:Morpheus.utils.message('gomorpheus.failed'), value:0, color:Morph.chartConfigs.colors.red, percent:0 };
+    chartData.items.push(successRow);
+    chartData.items.push(failRow);
+    newState.data.chartData = chartData;
+    //if we have values
+    if(results.items) {
+      chartData.loaded = true;
+      //iterate items for values
+      for(var index in results.items) {
+        var row = results.items[index];
+        if(row[0] == 'SUCCEEDED') {
+          successRow.value = row[1];
+          chartData.total += row[1];
+        } else if(row[0] == 'FAILED') {
+          failRow.value += row[1];
+          chartData.total += row[1];
+        }
+      }
+      //calc percents
+      if(chartData.total > 0) {
+        successRow.percent = successRow.value / chartData.total * 100;
+        failRow.percent = 100 - successRow.percent;
+      }
+    }
+    //mark it loaded
+    newState.loaded = true;
+    newState.data.loaded = true;
+    newState.date = Date.now();
+    newState.error = false;
+    newState.errorMessage = null;
+    //update the state
+    this.setState(newState);
+  }
 
-	setData(results) {
-		//set it
-		var newState = {};
-		newState.data = {};
-		newState.data.config = results.config;
-		//set the data list
-		//aggregate data for display
-		newState.data.successful = results.data.successCount
-		newState.data.failed = results.data.failedCount
-		newState.data.totalResuts = results.data.total
-		newState.data.successPercent = 0
-		newState.data.failPercent = 0
-		if(newState.data.totalResuts && newState.data.totalResuts != 0) {
-			newState.data.successPercent = newState.data.successful / newState.data.totalResuts * 100
-			newState.data.failPercent = 100 - newState.data.successPercent
-		}
-		//mark it loaded
-		newState.loaded = true;
-		newState.date = Date.now();
-		newState.error = false;
-		newState.errorMessage = null;
-		//update the state
-		this.setState(newState);
-	}
-
-
-	render() {
-		//setup
-		const showChart = this.state.data && this.state.loaded == true;
-		var widgetTitle = 'Backups ' + this.state.days + (this.state.days == 1 ? 'Day' : 'Days');
-		//data
-		const successfulLabel = Morpheus.utils.message('gomorpheus.successful');
-		const failedLabel = Morpheus.utils.message('gomorpheus.failed');
-		const successfulCount = this.state.data?.successful ? this.state.data.successful : 0;
-		const failedCount = this.state.data?.failed ? this.state.data.failed : 0;
-		const successPercent = this.state.data?.successPercent ? this.state.data.successPercent : 0;
-		const failPercent = this.state.data?.failPercent ? this.state.data.failPercent : 0;
-		const filters = {
-			update: this.updateFilterValue,
-			opts: [
-				{ label:'Days',
-					fieldName:'days',
-					value: this.state.days,
-					type: "number",
-					min: 0,
-					max: 30
-				}
-			]
-		}
-		//render
-		return (
-			<Widget settings={filters}>
-				<WidgetHeader icon="/assets/dashboard.svg#backup" title={widgetTitle}/>
-				<div id={'backup-stats-chart-' + this.state.widgetId}
-						className={'line-chart-widget' + (showChart ? '' : ' hidden')}
-						style={{position:'relative', marginTop:'10px'}}>
-					<div style={{fontSize:'15px', marginLeft:'7px', marginRight:'12px'}}>
-						<span>{successfulLabel}</span><span style={{float:'right'}}>{successfulCount}</span>
-					</div>
-					<div id="backup-success-line" className="backup-success-line"
-							style={{backgroundColor:'#e7e7e6', height:'2px'}}>
-						<svg width={successPercent + '%'} height="3px" style={{top:'-12px', position:'relative'}}>
-							<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.green}></line>
-						</svg>
-					</div>
-					<div style={{fontSize:'15px', marginLeft:'7px', marginRight:'12px', marginTop:'20px'}}>
-						<span>{failedLabel}</span><span style={{float:'right'}}>{failedCount}</span>
-					</div>
-					<div id="backup-fail-line" className="backup-fail-line"
-							style={{backgroundColor:'#e7e7e6', height:'2px'}}>
-						<svg width={failPercent + '%'} height="3px" style={{top:'-12px', position:'relative'}}>
-							<line x2="100%" y2="0" strokeWidth="6" stroke={Morph.chartConfigs.colors.red}></line>
-						</svg>
-					</div>
-				</div>
-			</Widget>
-		);
-	}
+  render() {
+    //setup
+    var pillList = [
+      {name:'1 Day', value:1},
+      {name:'1 Week', value:7},
+      {name:'1 Month', value:30}
+    ];
+    //data
+    var chartData = this.state.loaded == true && this.state.data ? this.state.data.chartData : {};
+    //render
+    return (
+      <Widget>
+        <WidgetHeader icon="/assets/dashboard.svg#backup" title={Morpheus.utils.message('gomorpheus.label.backups')}/>
+        <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
+        <ColorBarWidget data={chartData}/>
+      </Widget>
+    );
+  }
 
 }
 
