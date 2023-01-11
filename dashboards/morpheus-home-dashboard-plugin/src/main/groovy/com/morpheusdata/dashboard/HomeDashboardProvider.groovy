@@ -67,6 +67,7 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		//add items
 		def dashboardItemGroups = [
 			main:[
+				'dashboard-item-current-alarms',
 				'dashboard-item-user-favorites', 
 			],
 			instances:[
@@ -75,7 +76,8 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-instance-count-cloud-day'
 			],
 			clouds:[
-				'dashboard-item-cloud-count-type'
+				'dashboard-item-cloud-count-type',
+				'dashboard-item-cloud-workload-count'
 			],
 			logs:[
 				'dashboard-item-log-count'
