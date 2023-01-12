@@ -52,6 +52,8 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			this.pluginProviders.put(workflowExecutionsOverTimeItemProvider.code, workflowExecutionsOverTimeItemProvider)
 			TaskFailuresItemProvider taskFailuresItemProvider = new TaskFailuresItemProvider(this, morpheus)
 			this.pluginProviders.put(taskFailuresItemProvider.code, taskFailuresItemProvider)
+			TaskExecutionStatsItemProvider taskExecutionStatsProvider = new TaskExecutionStatsItemProvider(this, morpheus)
+			this.pluginProviders.put(taskExecutionStatsProvider.code, taskExecutionStatsProvider)
 			//health
 			CurrentAlarmsItemProvider currentAlarmsProvider = new CurrentAlarmsItemProvider(this, morpheus)
 			this.pluginProviders.put(currentAlarmsProvider.code, currentAlarmsProvider)

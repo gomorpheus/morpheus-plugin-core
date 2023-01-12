@@ -49,43 +49,39 @@ class InstanceCountCloudDayWidget extends React.Component {
     var self = this;
     //call api for data..
     var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
-    optionSourceService.fetch('clouds', {}, function(results) {
-      var zoneList = results.data;
+    optionSourceService.fetch('clouds', {}, function(cloudResults) {
+      var zoneList = cloudResults.data;
       var apiData = [];
-      var apiPromises = [];
       var chartDays = self.state.days;
       //execute for 7 days
-      for(var dayCounter = (chartDays - 1); dayCounter >= 0; dayCounter--) {
-        //get a day worth of data
-        var startDate = new Date();
-        startDate.setDate(startDate.getDate() - dayCounter);
-        startDate.setHours(0, 0, 0, 0);
-        var endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + 1);
-        var apiQuery = 'group(zoneId:count(parentRefId))'
-        apiQuery = apiQuery + ' startDate < ' + endDate.toISOString();
-        apiQuery = apiQuery + ' and (endDate = null or endDate > ' + startDate.toISOString() + ')';
-        var apiOptions = { apiDate:startDate.getTime() };
-        var apiPromise = Morpheus.api.usage.count(apiQuery, apiOptions).then(function(results) {
-          if(results.success == true && results.items) {
-            for(var index in results.items) {
-              var row = results.items[index];
-              var rowKey = row.name //[0]; //zone id
-              var rowValue = row.value //[1]; //count
-              var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
-              var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
-              var rowDate = new Date();
-              if(results.config.options.apiDate)
-                rowDate.setTime(results.config.options.apiDate);
-              var dataRow = [rowDate.getTime(), rowValue];
-              Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
+      var startDate = new Date();
+      startDate.setDate(startDate.getDate() - (chartDays - 1));
+      startDate.setHours(0, 0, 0, 0);
+      var apiQuery = 'group(zoneId:count(parentRefId))';
+      var apiOptions = { startDate:startDate.toISOString(), 'range.type':'days', 'range.count':chartDays };
+      //execute it
+      Morpheus.api.usage.count(apiQuery, apiOptions).then(function(results) {
+        if(results.success == true && results.items) {
+          for(var dayIndex in results.items) {
+            var dayRow = results.items[dayIndex];
+            var rowDate = new Date(dayRow.startDate);
+            if(dayRow.items) {
+              //iterate the items for the day
+              for(var index in dayRow.items) {
+                var row = dayRow.items[index];
+                var rowKey = row.name //[0]; //zone id
+                var rowValue = row.value //[1]; //count
+                var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
+                if(rowZone || rowValue > 0) {
+                  var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
+                  var dataRow = [rowDate.getTime(), rowValue];
+                  Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
+                }
+              }
             }
           }
-        });
-        apiPromises.push(apiPromise);
-      }
-      //once all loaded
-      $.when.apply($, apiPromises).done(function(results) {
+        }
+        //set the data
         var newData = { items:apiData };
         self.setData(newData);
       });
@@ -110,36 +106,34 @@ class InstanceCountCloudDayWidget extends React.Component {
       var axisRow = ['x'];
       var groupSet = [];
       //add results
-      if(results.items) {
-        for(var index in results.items) {
-          var row = results.items[index];
-          var rowName = Morpheus.utils.slice(row.name, 25);
-          var dataRow = [rowName];
-          groupSet.push(rowName);
-          //make the xaxis
-          for(var valueIndex in row.values) {
-            var valueRow = row.values[valueIndex];
-            if(index == 0) {
-              var axisValue = valueRow[0] // * 1000 - already in milliseconds;
-              //console.log('ts - ' + axisValue);
-              axisRow.push(axisValue);
-              newState.data.totals[valueIndex] = 0;
-            }
-            var rowItem = parseFloat(valueRow[1]);
-            dataRow.push(rowItem);
-            newState.data.totals[valueIndex] += rowItem;
-            newState.data.total += rowItem;
-            if(newState.data.totals[valueIndex] > newState.data.maxValue)
-              newState.data.maxValue = newState.data.totals[valueIndex];
+      for(var index in results.items) {
+        var row = results.items[index];
+        var rowName = Morpheus.utils.slice(row.name, 25);
+        var dataRow = [rowName];
+        groupSet.push(rowName);
+        //make the xaxis
+        for(var valueIndex in row.values) {
+          var valueRow = row.values[valueIndex];
+          if(index == 0) {
+            var axisValue = valueRow[0] // * 1000 - already in milliseconds;
+            //console.log('ts - ' + axisValue);
+            axisRow.push(axisValue);
+            newState.data.totals[valueIndex] = 0;
           }
-          newState.data.items.push(dataRow);
-          newState.data.types[rowName] = 'area';
+          var rowItem = parseFloat(valueRow[1]);
+          dataRow.push(rowItem);
+          newState.data.totals[valueIndex] += rowItem;
+          newState.data.total += rowItem;
+          if(newState.data.totals[valueIndex] > newState.data.maxValue)
+            newState.data.maxValue = newState.data.totals[valueIndex];
         }
-        //add axis row
-        newState.data.axisItems.push(axisRow);
-        //add groups
-        newState.data.groups.push(groupSet);
+        newState.data.items.push(dataRow);
+        newState.data.types[rowName] = 'area';
       }
+      //add axis row
+      newState.data.axisItems.push(axisRow);
+      //add groups
+      newState.data.groups.push(groupSet);
     }
     //set axis config
     newState.data.maxValue = Morpheus.utils.getNextBaseTen(newState.data.maxValue);
