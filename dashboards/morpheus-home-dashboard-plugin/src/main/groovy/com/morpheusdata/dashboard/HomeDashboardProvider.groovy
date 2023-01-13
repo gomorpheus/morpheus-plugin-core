@@ -66,9 +66,13 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.scriptPath = 'home-dashboard.js'
 		//add items
 		def dashboardItemGroups = [
+			top:[
+				'dashboard-item-environment-count'
+			],
 			main:[
-				'dashboard-item-current-alarms',
 				'dashboard-item-user-favorites', 
+				'dashboard-item-current-alarms',
+				'dashboard-item-current-health'
 			],
 			instances:[
 				'dashboard-item-instance-count', 

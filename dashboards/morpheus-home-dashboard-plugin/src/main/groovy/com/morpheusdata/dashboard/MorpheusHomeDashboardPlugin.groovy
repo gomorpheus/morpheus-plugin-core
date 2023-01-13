@@ -57,6 +57,10 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			//health
 			CurrentAlarmsItemProvider currentAlarmsProvider = new CurrentAlarmsItemProvider(this, morpheus)
 			this.pluginProviders.put(currentAlarmsProvider.code, currentAlarmsProvider)
+			EnvironmentCountItemProvider environmentCountProvider = new EnvironmentCountItemProvider(this, morpheus)
+			this.pluginProviders.put(environmentCountProvider.code, environmentCountProvider)
+			CurrentHealthItemProvider currentHealthProvider = new CurrentHealthItemProvider(this, morpheus)
+			this.pluginProviders.put(currentHealthProvider.code, currentHealthProvider)
 			//add the dashboard
 			HomeDashboardProvider homeDashboardProvider = new HomeDashboardProvider(this, morpheus)
 			this.pluginProviders.put(homeDashboardProvider.code, homeDashboardProvider)
