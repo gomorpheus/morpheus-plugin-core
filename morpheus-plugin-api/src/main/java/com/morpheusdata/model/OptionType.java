@@ -1031,6 +1031,8 @@ public class OptionType extends MorpheusModel {
 		CHECKBOX("checkbox"),
 		RADIO("radio"),
 		CREDENTIAL("credential"),
+		TYPEAHEAD("typeahead"),
+		MULTI_TYPEAHEAD("multiTypeahead"),
 		CODE_EDITOR("code-editor");
 
 		private final String value;

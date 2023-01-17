@@ -12,6 +12,7 @@ public class ReferenceDataSyncProjection extends MorpheusModel {
 	protected String internalId;
 	protected String externalId;
 	protected String name;
+	protected String category;
 
 	public String getExternalId() {
 		return externalId;
@@ -38,5 +39,14 @@ public class ReferenceDataSyncProjection extends MorpheusModel {
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
 		markDirty("internalId", internalId, this.internalId);
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+		markDirty("category", category);
 	}
 }

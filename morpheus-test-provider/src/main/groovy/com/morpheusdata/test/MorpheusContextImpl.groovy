@@ -36,6 +36,7 @@ import com.morpheusdata.core.MorpheusVirtualImageService
 import com.morpheusdata.core.MorpheusOperationNotificationService
 import com.morpheusdata.core.MorpheusStorageVolumeService
 import com.morpheusdata.core.MorpheusMetadataTagService
+import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService
 import com.morpheusdata.core.policy.MorpheusPolicyService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.core.web.MorpheusWebRequestService
@@ -76,6 +77,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	protected MorpheusSnapshotService snapshotService
 	protected MorpheusBackupServiceImpl backupService
 	protected MorpheusDashboardService dashboardService
+	protected MorpheusLoadBalancerService loadBalancerService
 	protected MorpheusReferenceDataService referenceDataService
 
 
@@ -99,6 +101,7 @@ class MorpheusContextImpl implements MorpheusContext {
 	    snapshotService = new MorpheusSnapshotServiceImpl()
 		backupService = new MorpheusBackupServiceImpl()
 		dashboardService = new MorpheusDashboardServiceImpl()
+		loadBalancerService = new MorpheusLoadBalancerServiceImpl()
     }
 
     MorpheusContextImpl(MorpheusCloudService cloudContext, MorpheusNetworkService networkContext, MorpheusTaskService taskContext, MorpheusVirtualImageService virtualImageContext) {
@@ -283,6 +286,11 @@ class MorpheusContextImpl implements MorpheusContext {
 	@Override
 	MorpheusWebRequestService getWebRequest() {
 		return null
+	}
+
+	@Override
+	MorpheusLoadBalancerService getLoadBalancer() {
+		return this.loadBalancerService
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
+import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
@@ -289,6 +290,12 @@ public interface MorpheusContext {
 	 * @return An instance of the MorpheusDashboardService
 	 */
 	MorpheusDashboardService getDashboard();
+
+	/**
+	 * Returns the MorpheusLoadBalancerService
+	 * @return An instance of the MorpheusLoadBalancerService
+	 */
+	MorpheusLoadBalancerService getLoadBalancer();
 
 	/**
 	 * Returns the MorpheusReferenceDataService

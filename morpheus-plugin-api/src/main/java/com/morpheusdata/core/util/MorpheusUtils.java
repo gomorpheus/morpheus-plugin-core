@@ -181,4 +181,22 @@ public class MorpheusUtils {
 		return compareResult;
 	}
 
+	/**
+	 * This utility method is used to compare an object to various forms of boolean truth.  Values usually come from
+	 * submitted web forms and have different values for boolean truth
+	 * @param val
+	 * @return
+	 */
+	static Boolean parseBooleanConfig(Object val) {
+		if (val instanceof Boolean) {
+			return val == (Boolean)val;
+		}
+		else if (val instanceof CharSequence) {
+			CharSequence value = (CharSequence)val;
+			return value.equals("true") || value.equals("on") || value.equals("yes");
+		}
+		else {
+			return false;
+		}
+	}
 }
