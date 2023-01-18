@@ -17,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
+class LogTrendsItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	LogCountItemProvider(Plugin plugin, MorpheusContext context) {
+	LogTrendsItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +39,12 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-log-count'
+		return 'dashboard-item-log-trends'
 	}
 
 	@Override
 	String getName() {
-		return 'Log count'
+		return 'Log trends'
 	}
 
 	@Override
@@ -54,12 +54,12 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'log count'
-		rtn.title = 'log count'
-		rtn.description = 'log count'
+		rtn.category = 'log trends'
+		rtn.title = 'log trends'
+		rtn.description = 'log trends'
 		rtn.uiSize = 'lg'
-		rtn.templatePath = 'hbs/logs/log-count-widget'
-		rtn.scriptPath = 'logs/log-count-widget.js'
+		rtn.templatePath = 'hbs/logs/log-trends-widget'
+		rtn.scriptPath = 'logs/log-trends-widget.js'
 		return rtn
 	}
 

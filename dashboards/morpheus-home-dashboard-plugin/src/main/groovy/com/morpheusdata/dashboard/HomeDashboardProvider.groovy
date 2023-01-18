@@ -80,22 +80,24 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-instance-count-cloud-day'
 			],
 			clouds:[
+				'dashboard-item-group-workload-count',
 				'dashboard-item-cloud-count-type',
 				'dashboard-item-cloud-workload-count'
 			],
 			logs:[
-				'dashboard-item-log-count'
+				'dashboard-item-log-count',
+				'dashboard-item-log-trends'
 			],
 			jobs:[
-				'dashboard-item-job-execution-stats'
-			],
-			tasks:[
-				'dashboard-item-task-execution-stats',
-				'dashboard-item-task-failures'
-			],
-			backups:[
-				'dashboard-item-backup-stats'
-			]
+				'dashboard-item-job-execution-stats',
+				'dashboard-item-backup-stats',
+				'dashboard-item-task-execution-stats'
+			]//,
+			//tasks:[
+				//'dashboard-item-task-failures'
+			//]//,
+			//backups:[
+			//]
 		]
 		def currentGroupRow = 0
 		def currentRow = 0

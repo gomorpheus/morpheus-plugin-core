@@ -38,10 +38,9 @@ class InstanceCountCloudWidget extends React.Component {
     var self = this;
     //call api for data..
     var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
-    optionSourceService.fetch('clouds', {}, function(results) {
-      var zoneList = results.data;
+    optionSourceService.fetch('clouds', {}, function(zoneResults) {
+      var zoneList = zoneResults.data;
       //load instance stats
-      var apiData = [];
       var apiFilter;
       var apiOptions = {};
       Morpheus.api.instances.count('group(provisionZoneId:count(id))').then(function(results) {
@@ -115,6 +114,7 @@ class InstanceCountCloudWidget extends React.Component {
     var countValue = '';
     if(showChart == true)
       countValue = this.state.data.total ? this.state.data.total : '0';
+    //render
     return (
       <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instances by Cloud"/>

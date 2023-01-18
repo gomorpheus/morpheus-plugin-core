@@ -17,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
+class GroupWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	LogCountItemProvider(Plugin plugin, MorpheusContext context) {
+	GroupWorkloadCountItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +39,12 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-log-count'
+		return 'dashboard-item-group-workload-count'
 	}
 
 	@Override
 	String getName() {
-		return 'Log count'
+		return 'Group workload counts'
 	}
 
 	@Override
@@ -54,12 +54,12 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'log count'
-		rtn.title = 'log count'
-		rtn.description = 'log count'
-		rtn.uiSize = 'lg'
-		rtn.templatePath = 'hbs/logs/log-count-widget'
-		rtn.scriptPath = 'logs/log-count-widget.js'
+		rtn.category = 'group'
+		rtn.title = 'group workload count'
+		rtn.description = 'group workload count'
+		rtn.uiSize = 'sm'
+		rtn.templatePath = 'hbs/groups/group-workload-count-widget'
+		rtn.scriptPath = 'groups/group-workload-count-widget.js'
 		return rtn
 	}
 
