@@ -1,9 +1,13 @@
 package com.morpheusdata.dashboard
 
+import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
+import com.morpheusdata.model.DashboardItem
 import com.morpheusdata.model.DashboardItemType
+import com.morpheusdata.views.HTMLResponse
+import com.morpheusdata.views.ViewModel
+import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
 
 /**
@@ -13,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
+class UserFavoritesItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-    BackupStatsItemProvider(Plugin plugin, MorpheusContext context) {
+	UserFavoritesItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -35,12 +39,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-backup-stats'
+		return 'dashboard-item-user-favorites'
 	}
 
 	@Override
 	String getName() {
-		return 'Backup statistics'
+		return 'User favorites'
 	}
 
 	@Override
@@ -50,12 +54,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'backups'
-		rtn.title = 'backup statistics'
-		rtn.description = 'backup statistics'
-		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/backup-stats-widget'
-		rtn.scriptPath = 'backup-stats-widget.js'
+		rtn.category = 'user'
+		rtn.title = 'user favorites'
+		rtn.description = 'user favorites'
+		rtn.uiSize = 'md'
+		rtn.templatePath = 'hbs/user-favorites-widget'
+		rtn.scriptPath = 'user-favorites-widget.js'
 		return rtn
 	}
 

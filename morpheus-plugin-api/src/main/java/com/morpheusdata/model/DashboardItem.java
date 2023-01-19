@@ -6,6 +6,8 @@ public class DashboardItem extends MorpheusModel {
 	protected DashboardItemType type;
 	protected Integer itemRow;
 	protected Integer itemColumn;
+	protected String itemGroup;
+	protected Integer groupRow;
 	protected String config;
 	
 	//filters
@@ -38,6 +40,24 @@ public class DashboardItem extends MorpheusModel {
 	public void setItemColumn(Integer itemColumn) {
 		markDirty("itemColumn", itemColumn);
 		this.itemColumn = itemColumn;
+	}
+
+	public String getItemGroup() {
+		return itemGroup;
+	}
+
+	public void setItemGroup(String itemGroup) {
+		markDirty("itemGroup", itemGroup);
+		this.itemGroup = itemGroup;
+	}
+
+	public Integer getGroupRow() {
+		return groupRow;
+	}
+
+	public void setGroupRow(Integer groupRow) {
+		markDirty("groupRow", groupRow);
+		this.groupRow = groupRow;
 	}
 
 	public String getConfig() {

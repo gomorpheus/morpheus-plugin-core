@@ -1,9 +1,13 @@
 package com.morpheusdata.dashboard
 
+import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
+import com.morpheusdata.model.DashboardItem
 import com.morpheusdata.model.DashboardItemType
+import com.morpheusdata.views.HTMLResponse
+import com.morpheusdata.views.ViewModel
+import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
 
 /**
@@ -13,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
+class EnvironmentCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-    BackupStatsItemProvider(Plugin plugin, MorpheusContext context) {
+	EnvironmentCountItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -35,12 +39,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-backup-stats'
+		return 'dashboard-item-environment-count'
 	}
 
 	@Override
 	String getName() {
-		return 'Backup statistics'
+		return 'Environment count'
 	}
 
 	@Override
@@ -50,12 +54,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'backups'
-		rtn.title = 'backup statistics'
-		rtn.description = 'backup statistics'
-		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/backup-stats-widget'
-		rtn.scriptPath = 'backup-stats-widget.js'
+		rtn.category = 'environment'
+		rtn.title = 'environment count'
+		rtn.description = 'environment count'
+		rtn.uiSize = 'xxl widget-short'
+		rtn.templatePath = 'hbs/environment-count-widget'
+		rtn.scriptPath = 'environment-count-widget.js'
 		return rtn
 	}
 

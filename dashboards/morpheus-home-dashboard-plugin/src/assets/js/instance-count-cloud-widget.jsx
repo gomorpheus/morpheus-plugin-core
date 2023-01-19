@@ -2,7 +2,7 @@
  * instance count by status
  * @author bdwheeler
  */
-class InstanceCountWidget extends React.Component {
+class InstanceCountCloudWidget extends React.Component {
   
   constructor(props) {
     super(props);
@@ -10,8 +10,7 @@ class InstanceCountWidget extends React.Component {
     this.state = {
       loaded:false,
       autoRefresh:true,
-      data:null,
-      chartId: Morpheus.utils.generateGuid()
+      data:null
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -36,10 +35,29 @@ class InstanceCountWidget extends React.Component {
   }
 
   loadData() {
-    //call api for data...
-    var apiFilter;
-    var apiOptions = {};
-    Morpheus.api.instances.count('group(status:count(id))').then(this.setData);
+    var self = this;
+    //call api for data..
+    var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
+    optionSourceService.fetch('clouds', {}, function(zoneResults) {
+      var zoneList = zoneResults.data;
+      //load instance stats
+      var apiFilter;
+      var apiOptions = {};
+      Morpheus.api.instances.count('group(provisionZoneId:count(id))').then(function(results) {
+        if(results.success == true && results.items) {
+          //set zone names
+          for(var index in results.items) {
+            var row = results.items[index];
+            var rowKey = row.name //[0]; //zone id
+            var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
+            var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
+            row.id = rowKey
+            row.name = rowZoneName;
+          }
+        }
+        self.setData(results);
+      });
+    });
   }
 
   setData(results) {
@@ -50,20 +68,17 @@ class InstanceCountWidget extends React.Component {
     newState.data.meta = results.meta;
     //set the data list
     var items = [];
-    var colors = {};
     if(results.items) {
       for(var index in results.items) {
         var dataRow = results.items[index];
         var addRow = [];
-        var rowName = dataRow.name.name;
+        var rowName = dataRow.name;
         addRow[0] = rowName;
         addRow[1] = dataRow.value;
         items.push(addRow);
-        colors[rowName] = Morph.chartConfigs.statusColor(rowName);
       }
     }
     newState.data.items = items;
-    newState.data.colors = colors;
     //set the count and total
     newState.data.count = 0;
     if(results.count)
@@ -88,24 +103,25 @@ class InstanceCountWidget extends React.Component {
       legend: { show:false }
     };
     //set the tooltip
-    chartConfig.tooltip = { show:true, contents:Morpheus.chart.pieValueTooltip, format:{ title:Morpheus.chart.fixedTooltipTitle('Status') } };
+    chartConfig.tooltip = { show:true, contents:Morpheus.chart.pieValueTooltip, format:{ title:Morpheus.chart.fixedTooltipTitle('Clouds') } };
     //done
     return chartConfig;
   }
 
   render() {
+    //setup
     var showChart = this.state.data && this.state.loaded == true;
     var countValue = '';
     if(showChart == true)
       countValue = this.state.data.total ? this.state.data.total : '0';
-    //render it
+    //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instance Status"/>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instances by Cloud"/>
         <div>
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
             <span className='count-value'>{countValue}</span>
-            <span className='count-label'>instances</span>
+            <span className='count-label'>clouds</span>
           </div>
           <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
             <PieChartWidget data={this.state.data} config={this.state.chartConfig}/>
@@ -118,9 +134,9 @@ class InstanceCountWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('instance-count-widget', InstanceCountWidget);
+Morpheus.components.register('instance-count-cloud-widget', InstanceCountCloudWidget);
 
 $(document).ready(function () {
-	const root = ReactDOM.createRoot(document.querySelector('#instance-count-widget'));
-	root.render(<InstanceCountWidget/>)
+	const root = ReactDOM.createRoot(document.querySelector('#instance-count-cloud-widget'));
+	root.render(<InstanceCountCloudWidget/>)
 });

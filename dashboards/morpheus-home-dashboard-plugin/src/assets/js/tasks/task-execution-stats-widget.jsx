@@ -1,10 +1,10 @@
 /**
- counter widget that loads data
+ * a task execution summary widget
  * @author bdwheeler
  */
-class BackupStatsWidget extends React.Component {
+class TaskExecutionStatsWidget extends React.Component {
 
-	constructor(props) {
+  constructor(props) {
     super(props);
     //set state
     this.state = {
@@ -43,7 +43,7 @@ class BackupStatsWidget extends React.Component {
 
   loadData() {
     //call api for data...
-    var apiQuery = 'group(lastStatus:count(id)) lastStatus != null';
+    var apiQuery = 'group(status:count(id))';
     var apiOptions = {};
     //set date range
     var dayCounter = this.state.days;
@@ -51,9 +51,9 @@ class BackupStatsWidget extends React.Component {
     if(dayCounter > 1)
       startDate.setDate(startDate.getDate() - dayCounter);
     startDate.setHours(0, 0, 0, 0);
-    apiQuery = apiQuery + ' and lastResult.startDate > ' + startDate.toISOString();
+    apiQuery = apiQuery + ' startDate > ' + startDate.toISOString();
     //execute it
-    Morpheus.api.backups.search(apiQuery, apiOptions).then(this.setData);
+    Morpheus.api.executions.tasks.search(apiQuery, apiOptions).then(this.setData);
   }
 
   setData(results) {
@@ -79,10 +79,10 @@ class BackupStatsWidget extends React.Component {
       //iterate items for values
       for(var index in results.items) {
         var row = results.items[index];
-        if(row[0] == 'SUCCEEDED') {
+        if(row[0] == 'success') {
           successRow.value = row[1];
           chartData.total += row[1];
-        } else if(row[0] == 'FAILED') {
+        } else if(row[0] == 'error' || row[0] == 'failed') {
           failRow.value += row[1];
           chartData.total += row[1];
         }
@@ -115,7 +115,7 @@ class BackupStatsWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#backup" title={Morpheus.utils.message('gomorpheus.label.backups')}/>
+        <WidgetHeader icon="/assets/navigation/provisioning/executions.svg#Layer_1" title={Morpheus.utils.message('gomorpheus.label.taskExecutions')}/>
         <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
         <ColorBarWidget data={chartData}/>
       </Widget>
@@ -125,9 +125,9 @@ class BackupStatsWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('backup-stats-widget', BackupStatsWidget);
+Morpheus.components.register('task-execution-stats-widget', TaskExecutionStatsWidget);
 
 $(document).ready(function () {
-	const root = ReactDOM.createRoot(document.querySelector('#backup-stats-widget'));
-	root.render(<BackupStatsWidget/>)
+  const root = ReactDOM.createRoot(document.querySelector('#task-execution-stats-widget'));
+  root.render(<TaskExecutionStatsWidget/>)
 });

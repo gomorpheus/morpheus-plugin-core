@@ -13,12 +13,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
+class TaskExecutionStatsItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-    BackupStatsItemProvider(Plugin plugin, MorpheusContext context) {
+    TaskExecutionStatsItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -35,12 +35,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-backup-stats'
+		return 'dashboard-item-task-execution-stats'
 	}
 
 	@Override
 	String getName() {
-		return 'Backup statistics'
+		return 'Task execution statistics'
 	}
 
 	@Override
@@ -50,12 +50,12 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'backups'
-		rtn.title = 'backup statistics'
-		rtn.description = 'backup statistics'
+		rtn.category = 'tasks'
+		rtn.title = 'task execution statistics'
+		rtn.description = 'task execution statistics'
 		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/backup-stats-widget'
-		rtn.scriptPath = 'backup-stats-widget.js'
+		rtn.templatePath = 'hbs/tasks/task-execution-stats-widget'
+		rtn.scriptPath = 'tasks/task-execution-stats-widget.js'
 		return rtn
 	}
 

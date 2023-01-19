@@ -53,7 +53,7 @@ class JobExecutionStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'jobs'
 		rtn.title = 'job execution statistics'
 		rtn.description = 'job execution statistics'
-		rtn.uiSize = 's-1'
+		rtn.uiSize = 'sm'
 		rtn.templatePath = 'hbs/job-execution-stats-widget'
 		rtn.scriptPath = 'job-execution-stats-widget.js'
 		return rtn

@@ -65,22 +65,68 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		rtn.templatePath = 'hbs/home-dashboard'
 		rtn.scriptPath = 'home-dashboard.js'
 		//add items
-		def dashboardItemTypes = ['dashboard-item-instance-count', 'dashboard-item-job-execution-stats', 'dashboard-item-backup-stats']
+		def dashboardItemGroups = [
+			top:[
+				'dashboard-item-environment-count'
+			],
+			main:[
+				'dashboard-item-user-favorites', 
+				'dashboard-item-current-alarms',
+				'dashboard-item-current-health'
+			],
+			instances:[
+				'dashboard-item-instance-count', 
+				'dashboard-item-instance-count-cloud', 
+				'dashboard-item-instance-count-cloud-day'
+			],
+			clouds:[
+				'dashboard-item-group-workload-count',
+				'dashboard-item-cloud-count-type',
+				'dashboard-item-cloud-workload-count'
+			],
+			logs:[
+				'dashboard-item-log-count',
+				'dashboard-item-log-trends'
+			],
+			jobs:[
+				'dashboard-item-job-execution-stats',
+				'dashboard-item-backup-stats',
+				'dashboard-item-task-execution-stats'
+			]//,
+			//tasks:[
+				//'dashboard-item-task-failures'
+			//]//,
+			//backups:[
+			//]
+		]
+		def currentGroupRow = 0
 		def currentRow = 0
 		def currentColumn = 0
 		def dashboardItems = []
-		dashboardItemTypes.each{ row ->
-			def itemType = getMorpheus().getDashboard().getDashboardItemType(row).blockingGet()
-			if(itemType) {
-				def addItem = new DashboardItem()
-				addItem.type = itemType
-				addItem.itemRow = currentRow
-				addItem.itemColumn = currentColumn
-				//no config
-				dashboardItems << addItem
+		//iterate groups
+		dashboardItemGroups.each { key, value ->
+			currentRow = 0
+			currentColumn = 0
+			//iterate items
+			value.each { row ->
+				def itemType = getMorpheus().getDashboard().getDashboardItemType(row).blockingGet()
+				if(itemType) {
+					def addItem = new DashboardItem()
+					addItem.type = itemType
+					addItem.itemRow = currentRow
+					addItem.itemColumn = currentColumn
+					addItem.itemGroup = key
+					addItem.groupRow = currentGroupRow
+					//no config
+					dashboardItems << addItem
+					//increment
+					currentColumn++
+				}
 			}
-			rtn.dashboardItems = dashboardItems
+			currentGroupRow++
 		}
+		//return the items
+		rtn.dashboardItems = dashboardItems
 		return rtn
 	}
 
