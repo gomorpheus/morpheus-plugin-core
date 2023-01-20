@@ -102,7 +102,7 @@ class CurrentAlarmsWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#alert" title={Morpheus.utils.message('gomorpheus.label.alarms')}/>
+        <WidgetHeader icon="/assets/dashboard.svg#alert" title={Morpheus.utils.message('gomorpheus.label.alarms')} link="/operations/alarms"/>
         <div>
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')}>
             <span className={'count-value' + countColor}>{countValue}</span>

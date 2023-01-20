@@ -92,6 +92,9 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 				'dashboard-item-job-execution-stats',
 				'dashboard-item-backup-stats',
 				'dashboard-item-task-execution-stats'
+			],
+			activity:[
+				'dashboard-item-recent-activity'
 			]//,
 			//tasks:[
 				//'dashboard-item-task-failures'

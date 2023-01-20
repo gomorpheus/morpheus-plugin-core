@@ -117,7 +117,7 @@ class InstanceCountCloudWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instances by Cloud"/>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instances by Cloud" link="/provisioning/instances"/>
         <div>
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
             <span className='count-value'>{countValue}</span>

@@ -208,7 +208,7 @@ class InstanceCountCloudDayWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Daily Cloud Instances"/>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Daily Cloud Instances" link="/provisioning/instances"/>
         <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
         <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
       </Widget>

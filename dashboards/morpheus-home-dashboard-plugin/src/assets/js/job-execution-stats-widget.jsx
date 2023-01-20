@@ -115,7 +115,7 @@ class JobExecutionStatsWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/navigation/provisioning/executions.svg#Layer_1" title={Morpheus.utils.message('gomorpheus.label.jobExecutions')}/>
+        <WidgetHeader icon="/assets/navigation/provisioning/executions.svg#Layer_1" title={Morpheus.utils.message('gomorpheus.label.jobExecutions')} link="/provisioning/job-executions"/>
         <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
         <ColorBarWidget data={chartData}/>
       </Widget>

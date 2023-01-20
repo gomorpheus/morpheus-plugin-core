@@ -101,7 +101,7 @@ class InstanceCountWidget extends React.Component {
     //render it
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instance Status"/>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instance Status" link="/provisioning/instances"/>
         <div>
           <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
             <span className='count-value'>{countValue}</span>

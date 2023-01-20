@@ -21,6 +21,9 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			//set the name
 			this.setName("Morpheus Home Dashboard")
 			//add the dashboard item types
+			//activity
+			RecentActivityItemProvider recentActivityProvider = new RecentActivityItemProvider(this, morpheus)
+			this.pluginProviders.put(recentActivityProvider.code, recentActivityProvider)
 			//user
 			UserFavoritesItemProvider userFavoritesProvider = new UserFavoritesItemProvider(this, morpheus)
 			this.pluginProviders.put(userFavoritesProvider.code, userFavoritesProvider)

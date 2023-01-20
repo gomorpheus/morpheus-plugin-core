@@ -1,8 +1,8 @@
 /**
- counter widget that loads data
+ * alarm counts and open alarm table
  * @author bdwheeler
  */
-class LogTrendsWidget extends React.Component {
+class RecentActivityWidget extends React.Component {
 
   constructor(props) {
     super(props);
@@ -20,20 +20,11 @@ class LogTrendsWidget extends React.Component {
     //bind methods
     this.setData = this.setData.bind(this);
     this.refreshData = this.refreshData.bind(this);
-    this.onPillChange = this.onPillChange.bind(this);
   }
 
   componentDidMount() {
     this.loadData();
     $(document).on('morpheus:refresh', this.refreshData);
-  }
-
-  onPillChange(value) {
-    if(this.state.type != value) {
-      var newState = {};
-      newState.type = value;
-      this.setState(newState, this.loadData);
-    }
   }
 
   //data methods
@@ -44,22 +35,9 @@ class LogTrendsWidget extends React.Component {
 
   loadData() {
     //call api for data...
-    var apiQuery;
-    var apiOptions = { minDocCount:1 };
-    switch(this.state.type) {
-      case 'warning':
-        apiQuery = 'level = WARNING';
-        break;
-      case 'error':
-        apiQuery = 'level = ERROR';
-        break;
-      case 'all':
-      default:
-        apiQuery = '';
-        break;
-      
-    }
-    Morpheus.api.logs.trends(apiQuery, apiOptions).then(this.setData);
+    var apiQuery = '';
+    var apiOptions = { max:5 };
+    Morpheus.api.activity.recent(apiQuery, apiOptions).then(this.setData);
   }
 
   setData(results) {
@@ -70,7 +48,7 @@ class LogTrendsWidget extends React.Component {
     newState.data.offset = results.offset;
     newState.data.max = results.max;
     //set the data list
-    newState.data.items = results.data;
+    newState.data.items = results.activity;
     //mark it loaded
     newState.loaded = true;
     newState.data.loaded = true;
@@ -86,23 +64,24 @@ class LogTrendsWidget extends React.Component {
     var isLoaded = this.state.data && this.state.data.loaded == true;
     var itemList = isLoaded == true && this.state.data.items ? this.state.data.items : [];
     var showTable = isLoaded == true && itemList.length > 0;
-    //pills
-    var pillList = [
-      {name:'All', value:'all'},
-      {name:'Errors', value:'error'},
-      {name:'Warnings', value:'warning'}
-    ];
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#logs" title="Log trends" link="/monitoring/logs"/>
-        <WidgetPills pills={pillList} defaultValue={this.state.type} align="center" onPillChange={this.onPillChange}/>
+        <WidgetHeader icon="/assets/dashboard.svg#logs" title="Activity" link="/operations/activity"/>
         <div className="dashboard-widget-content">
           <table className={'widget-table' + (showTable ? '' : ' hidden')}>
             <tbody>
               { itemList.map(row => (
                 <tr key={row.id}>
-                  <td>{row.message ? row.message : ''}</td>
+                  <td className="nowrap">
+                    <svg className="icon">
+                      <use href={'/assets/dashboard.svg#' + (row.success == false ? 'alert' : row.activityType.toLowerCase())}/>
+                    </svg>
+                    {row.name ? row.name : row.activityType}
+                  </td>
+                  <td className="nowrap">
+                    {row.message ? row.message : ''}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -117,9 +96,9 @@ class LogTrendsWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('log-trends-widget', LogTrendsWidget);
+Morpheus.components.register('recent-activity-widget', RecentActivityWidget);
 
 $(document).ready(function () {
-  const root = ReactDOM.createRoot(document.querySelector('#log-trends-widget'));
-  root.render(<LogTrendsWidget/>)
+  const root = ReactDOM.createRoot(document.querySelector('#recent-activity-widget'));
+  root.render(<RecentActivityWidget/>)
 });

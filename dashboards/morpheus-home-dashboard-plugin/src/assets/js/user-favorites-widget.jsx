@@ -35,11 +35,11 @@ class UserFavoritesWidget extends React.Component {
 
   loadData() {
     //call api for data...
-    var apiFilter;
-    var apiOptions = {};
+    var apiQuery = '';
+    var apiOptions = {max:5, favorites:'true'};
     switch(this.state.type) {
       case 'instance-favorite':
-        Morpheus.api.instances.search('favorites = true').then(this.setData);    
+        Morpheus.api.instances.search(apiQuery, apiOptions).then(this.setData);    
         break;
     }
   }
@@ -72,6 +72,7 @@ class UserFavoritesWidget extends React.Component {
       {name:'Clouds', value:'cloud-favorite'},
       {name:'Workflows', value:'workflow-favorite'}
     ];
+    var currentPill = Morpheus.data.findMatchingItems(pillList, 'value', this.state.type);
     //render
     return (
       <Widget>
@@ -89,9 +90,11 @@ class UserFavoritesWidget extends React.Component {
             <tbody>
               { itemList.map(row => (
                 <tr key={row.id}>
-                  <td>{row.name}</td>
-                  <td>{row.instanceType ? row.instanceType.name : ''}</td>
-                  <td><TableCellInstanceIpAddress data={row} showName={false}/></td>
+                  <td className="nowrap">
+                    <ResourceLink type="instance" value={row.id} content={Morpheus.utils.clipLongText(row.name, 32)}/>
+                  </td>
+                  <td className="nowrap">{row.instanceType ? row.instanceType.name : ''}</td>
+                  <td className="nowrap col-md"><TableCellInstanceIpAddress data={row} showName={false} max={1}/></td>
                 </tr>
               ))}
             </tbody>

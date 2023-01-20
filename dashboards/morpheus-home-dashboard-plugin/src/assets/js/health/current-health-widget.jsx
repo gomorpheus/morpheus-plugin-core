@@ -78,7 +78,7 @@ class CurrentHealthWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title={Morpheus.utils.message('gomorpheus.label.systemStatus')}/>
+        <WidgetHeader icon="/assets/dashboard.svg#provisioning" title={Morpheus.utils.message('gomorpheus.label.systemStatus')} link="/admin/health"/>
         <div className={'dashboard-widget-body body-space' + (showChart ? '' : ' hidden')}>
           <table className="widget-table">
             <tbody>
