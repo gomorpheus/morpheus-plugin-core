@@ -68,7 +68,7 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-			'Plugin-Class': 'com.morpheusdata.infoblox.InfobloxPlugin',
+			'Plugin-Class': 'com.morpheusdata.bigip.BigIpPlugin',
 			'Plugin-Version': version
 		)
 	}
@@ -97,7 +97,7 @@ publishing {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
 					name 'morpheus-bigip-plugin'
-					description 'Morpheus Core provides the core framework for implementing extension plugins for the morpheus platform'
+					description 'This plugin adds the integration for the F5 bigip load balancer integration into the morpheus appliance.'
 					url 'https://github.com/bertramdev/morpheus-bigip-plugin'
 					scm {
 						url 'https://github.com/bertramdev/morpheus-core'

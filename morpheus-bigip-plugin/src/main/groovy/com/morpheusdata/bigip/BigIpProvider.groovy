@@ -147,7 +147,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'Name',
 			code:'plugin.bigip.policy.name',
 			fieldName:'name',
-			diplayOrder:0,
+			displayOrder:0,
 			fieldLabel:'Name',
 			required:true,
 			inputType:OptionType.InputType.TEXT,
