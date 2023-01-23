@@ -48,6 +48,11 @@ class DigitalOceanCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Icon getCircularIcon() {
+		return null
+	}
+
+	@Override
 	String getCode() {
 		return 'digital-ocean-plugin'
 	}

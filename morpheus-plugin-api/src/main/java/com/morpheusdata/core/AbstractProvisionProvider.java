@@ -12,6 +12,8 @@ import java.util.Map;
 
 public abstract class AbstractProvisionProvider implements ProvisioningProvider {
 
+	public Icon getCircularIcon() { return null; }
+
 	@Override
 	public Boolean hasComputeZonePools() {
 		return false;

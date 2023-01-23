@@ -188,6 +188,11 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Icon getCircularIcon() {
+		return null
+	}
+
+	@Override
 	String getCode() {
 		return 'maas-cloud'
 	}

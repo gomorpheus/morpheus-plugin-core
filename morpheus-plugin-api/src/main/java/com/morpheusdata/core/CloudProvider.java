@@ -31,6 +31,13 @@ public interface CloudProvider extends PluginProvider {
 	Icon getIcon();
 
 	/**
+	 * Returns the circular Cloud logo for display when a user needs to view or add this cloud. SVGs are preferred.
+	 * @since 0.13.6
+	 * @return Icon
+	 */
+	Icon getCircularIcon();
+
+	/**
 	 * Provides a Collection of OptionType inputs that define the required input fields for defining a cloud integration
 	 * @return Collection of OptionType
 	 */

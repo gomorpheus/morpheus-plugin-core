@@ -21,6 +21,14 @@ import java.util.Map;
 public interface ProvisioningProvider extends PluginProvider {
 
 	/**
+	 * Provide an icon to be displayed for ServicePlans, VM detail page, etc.
+	 * where a circular icon is displayed
+	 * @since 0.13.6
+	 * @return Icon
+	 */
+	public Icon getCircularIcon();
+
+	/**
 	 * Provides a Collection of OptionType inputs that need to be made available to various provisioning Wizards
 	 * @return Collection of OptionTypes
 	 */

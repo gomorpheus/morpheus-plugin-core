@@ -41,6 +41,11 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
+	Icon getCircularIcon() {
+		return null
+	}
+
+	@Override
 	String getName() {
 		return 'Google Plugin'
 	}
