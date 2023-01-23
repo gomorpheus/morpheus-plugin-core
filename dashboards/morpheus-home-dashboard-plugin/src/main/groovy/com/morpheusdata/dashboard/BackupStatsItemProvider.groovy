@@ -54,8 +54,8 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.title = 'backup statistics'
 		rtn.description = 'backup statistics'
 		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/backup-stats-widget'
-		rtn.scriptPath = 'backup-stats-widget.js'
+		rtn.templatePath = 'hbs/backups/backup-stats-widget'
+		rtn.scriptPath = 'backups/backup-stats-widget.js'
 		return rtn
 	}
 

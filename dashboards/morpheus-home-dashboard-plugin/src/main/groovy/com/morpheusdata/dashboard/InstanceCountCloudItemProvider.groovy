@@ -58,8 +58,8 @@ class InstanceCountCloudItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.title = 'instance count by cloud'
 		rtn.description = 'instance count by cloud'
 		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/instance-count-cloud-widget'
-		rtn.scriptPath = 'instance-count-cloud-widget.js'
+		rtn.templatePath = 'hbs/instances/instance-count-cloud-widget'
+		rtn.scriptPath = 'instances/instance-count-cloud-widget.js'
 		return rtn
 	}
 

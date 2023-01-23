@@ -58,8 +58,8 @@ class InstanceCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.title = 'instance count'
 		rtn.description = 'instance count'
 		rtn.uiSize = 'sm'
-		rtn.templatePath = 'hbs/instance-count-widget'
-		rtn.scriptPath = 'instance-count-widget.js'
+		rtn.templatePath = 'hbs/instances/instance-count-widget'
+		rtn.scriptPath = 'instances/instance-count-widget.js'
 		return rtn
 	}
 
