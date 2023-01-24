@@ -1,6 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.model.NetworkLoadBalancer;
+import com.morpheusdata.model.NetworkLoadBalancerMember;
 import com.morpheusdata.model.NetworkLoadBalancerPool;
 import com.morpheusdata.model.projection.LoadBalancerPoolIdentityProjection;
 import io.reactivex.Observable;
@@ -58,4 +59,11 @@ public interface MorpheusLoadBalancerPoolService {
 	 * @return
 	 */
 	Single<NetworkLoadBalancerPool> findByLoadBalancerAndExternalId(NetworkLoadBalancer loadBalancer, String externalId);
+
+	/**
+	 * This method is used to grab the persisted pool members for a given load balancer pool
+	 * @param pool
+	 * @return
+	 */
+	Observable<NetworkLoadBalancerMember> getPoolMembers(NetworkLoadBalancerPool pool);
 }

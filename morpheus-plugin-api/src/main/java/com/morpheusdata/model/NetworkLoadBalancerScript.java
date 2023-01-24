@@ -12,6 +12,7 @@ public class NetworkLoadBalancerScript extends LoadBalancerScriptIdentityProject
 	protected String name;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected User createdBy;
+	protected String category;
 	protected String visibility = "public"; //['public', 'private']
 	protected String description;
 	protected String internalId;
@@ -59,6 +60,15 @@ public class NetworkLoadBalancerScript extends LoadBalancerScriptIdentityProject
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
 		markDirty("visibility", visibility);
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+		markDirty("category", category);
 	}
 
 	public String getDescription() {

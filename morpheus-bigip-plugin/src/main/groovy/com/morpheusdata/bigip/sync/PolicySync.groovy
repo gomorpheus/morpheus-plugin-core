@@ -32,7 +32,7 @@ class PolicySync {
 
 			// grab master items from the bigip api
 			def objCategory = "f5.policy.${loadBalancer.id}"
-			def apiItems = plugin.provider.listPolicies(loadBalancer, objCategory)
+			def apiItems = plugin.provider.listPolicies(loadBalancer)
 
 			// Add sync logic for adds/updates/removes
 			Observable domainRecords = svc.listSyncProjections(loadBalancer.id, objCategory)

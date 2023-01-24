@@ -42,7 +42,7 @@ class InstanceSync {
 				for (instance in addItems) {
 					def addConfig = [internalId:instance.selfLink, externalId:instance.fullPath, vipAddress:instance.vipAddress,
 									 active:instance.enabled, vipProtocol:instance.ipProtocol, vipPort:instance.vipPort,
-									 vipName:instance.name, loadBalancer:loadBalancer, source:'sync', partition:instance.partition]
+									 vipName:instance.name, loadBalancer:loadBalancer, partition:instance.partition]
 					def add = new NetworkLoadBalancerInstance(addConfig)
 					add.setConfigMap(instance)
 

@@ -26,6 +26,6 @@ class BigIpPlugin extends Plugin {
 	}
 
 	BigIpProvider getProvider() {
-		return getProviderByCode(code)
+		return getProviderByCode(BigIpProvider.PROVIDER_CODE)
 	}
 }

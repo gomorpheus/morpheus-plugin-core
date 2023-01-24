@@ -57,7 +57,7 @@ class HealthMonitorSync {
 					add.setConfigMap(monitor)
 
 					// handle parent monitors
-					def parentMonitor = svc.findByExternalId(monitor.defaultsFrom)
+					def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
 					if (parentMonitor)
 						add.addConfigProperty('monitor.id', parentMonitor.id)
 

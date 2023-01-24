@@ -616,8 +616,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'name',
 			code:'plugin.bigip.node.name',
 			fieldName:'name',
-			displayOrer:1,
-			fieldLanel:'Name',
+			displayOrder:1,
+			fieldLabel:'Name',
 			required:true,
 			inputType:OptionType.InputType.TEXT
 		)
@@ -725,7 +725,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	@Override
 	ServiceResponse refresh(NetworkLoadBalancer loadBalancer) {
 		ServiceResponse rtn = new ServiceResponse(success: false)
-		log.info "syncing load balancer: ${loadBalancer.code}"
+		log.info "syncing load balancer: ${loadBalancer.name}"
 
 		try {
 			def apiUrl = getApiUrl(loadBalancer)
@@ -877,7 +877,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			path:endpointPath,
 			username:apiConfig.username,
 			password:apiConfig.password,
-			urlParams:['expandSubcollections':'true'],
+			//urlParams:['expandSubcollections':'true'],
 			authToken:apiConfig.authToken
 		]
 		def results = callApi(params, 'GET')
@@ -978,8 +978,10 @@ class BigIpProvider implements LoadBalancerProvider {
 		if (results.success) {
 			for (policy in results.data.items) {
 				params.path = "${endpointPath}/${BigIpUtility.extractReferenceId(policy.reference?.link)}"
+				params.urlParams = ['expandSubcollections':'true']
 				def detailResults = callApi(params, 'GET')
-				rtn.persistencePolicies.addAll(detailResults.data.items)
+				if (detailResults.success && detailResults.data?.items)
+					rtn.persistencePolicies.addAll(detailResults.data.items)
 			}
 			rtn.success = true
 			rtn.authToken = apiConfig.authToken
@@ -1184,7 +1186,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		}
 
 		HttpApiClient httpClient = new HttpApiClient()
-		HttpApiClient.RequestOptions reqOpts = mew HttpApiClient.RequestOptions(ignoreSSL:true)
+		HttpApiClient.RequestOptions reqOpts = new HttpApiClient.RequestOptions(ignoreSSL:true)
 		reqOpts.headers = headers
 
 		if (params.body)

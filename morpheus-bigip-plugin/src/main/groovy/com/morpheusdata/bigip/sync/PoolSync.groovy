@@ -82,9 +82,12 @@ class PoolSync {
 
 	protected syncPoolMembers(NetworkLoadBalancerPool pool, List poolMemberList) {
 		log.info("Syncing pool memebers for pool ${pool.name}: ${poolMemberList}")
+		def poolSvc = morpheusContext.loadBalancer.pool
 		def nodeSvc = morpheusContext.loadBalancer.node
 
-		SyncTask<NetworkLoadBalancerMember, Map, NetworkLoadBalancerMember> syncTask = new SyncTask<>(pool.members, poolMemberList)
+		SyncTask<NetworkLoadBalancerMember, Map, NetworkLoadBalancerMember> syncTask = new SyncTask<>(
+			poolSvc.getPoolMembers(pool), poolMemberList
+		)
 		syncTask.addMatchFunction { NetworkLoadBalancerMember existingItem, Map syncItem ->
 			existingItem.externalId == syncItem.fullPath
 		}.addMatchFunction { NetworkLoadBalancerMember existingItem, Map syncItem ->

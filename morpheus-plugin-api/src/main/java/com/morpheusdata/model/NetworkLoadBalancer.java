@@ -13,6 +13,7 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;
 
+	protected String name;
 	protected String description;
 	protected String visibility = "private"; //['public', 'private']
 	protected String internalId;
@@ -63,6 +64,15 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	public void setOwner(Account owner) {
 		this.owner = owner;
 		markDirty("owner", owner);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
 	}
 
 	public String getDescription() {
