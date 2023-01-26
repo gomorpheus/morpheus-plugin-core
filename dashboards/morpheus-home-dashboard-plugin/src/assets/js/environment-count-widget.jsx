@@ -72,7 +72,7 @@ class EnvironmentCountWidget extends React.Component {
     return (
       <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Environment"/>
-        <div className={'dashboard-widget-body' + (showChart ? '' : ' hidden')}>
+        <div className={'dashboard-widget-content' + (showChart ? '' : ' hidden')}>
           <div className="row">
             <div className="col-sm-2 dashboard-widget-count count-rows">
               <span className="count-value">{countData.groups}</span>

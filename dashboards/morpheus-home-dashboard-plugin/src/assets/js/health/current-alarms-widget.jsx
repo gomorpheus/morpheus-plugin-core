@@ -112,8 +112,8 @@ class CurrentAlarmsWidget extends React.Component {
             <table className="widget-table">
               <thead>
                 <tr>
-                  <th>Resource</th>
-                  <th>Info</th>
+                  <th className="col-lg">Resource</th>
+                  <th className="col-lg">Info</th>
                   <th>Duration</th>
                 </tr>
               </thead>

@@ -82,7 +82,7 @@ class CloudWorkloadCountWidget extends React.Component {
         position: 'inset', 
         inset: { anchor:'top-left', x:100, y:0, step:100 }
       },
-      size: { height: 128, width: 320 },
+      size: { height:140, width:260 },
       donut: {
         position: 'left'
       }

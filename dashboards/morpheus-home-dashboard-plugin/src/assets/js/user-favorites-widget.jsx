@@ -82,9 +82,9 @@ class UserFavoritesWidget extends React.Component {
           <table className="widget-table">
             <thead>
               <tr>
-                <th>Instance</th>
+                <th className="col-lg">Instance</th>
                 <th>Type</th>
-                <th>Address</th>
+                <th className="col-md">Address</th>
               </tr>
             </thead>
             <tbody>
@@ -94,7 +94,7 @@ class UserFavoritesWidget extends React.Component {
                     <ResourceLink type="instance" value={row.id} content={Morpheus.utils.clipLongText(row.name, 32)}/>
                   </td>
                   <td className="nowrap">{row.instanceType ? row.instanceType.name : ''}</td>
-                  <td className="nowrap col-md"><TableCellInstanceIpAddress data={row} showName={false} max={1}/></td>
+                  <td className="nowrap"><TableCellInstanceIpAddress data={row} showName={false} max={1}/></td>
                 </tr>
               ))}
             </tbody>

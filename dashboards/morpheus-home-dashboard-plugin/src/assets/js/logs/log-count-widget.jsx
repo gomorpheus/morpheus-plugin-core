@@ -99,8 +99,15 @@ class LogCountWidget extends React.Component {
 
   configureChart() {
     var chartConfig = {
-      size: { height:155, width:520 },
-      bar: { width: 8 }
+      padding: {
+        top: 10,
+        bottom: 0,
+        right: 10
+      },
+      size: { height:150, width:540 },
+      bar: { 
+        width: 8 
+      }
     }
     //done
     return chartConfig;
@@ -111,7 +118,7 @@ class LogCountWidget extends React.Component {
     var showChart = this.state.data && this.state.loaded == true;
     //render
     return (
-      <Widget bodyClass="top-space">
+      <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#logs" title="Log History" link="/monitoring/logs"/>
         <div className="log-view">
           <LogChart logData={this.state.data} loaded={this.state.loaded} config={this.state.chartConfig}/>

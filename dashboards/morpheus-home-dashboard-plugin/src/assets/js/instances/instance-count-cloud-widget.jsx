@@ -118,12 +118,12 @@ class InstanceCountCloudWidget extends React.Component {
     return (
       <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Instances by Cloud" link="/provisioning/instances"/>
-        <div>
-          <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')} style={{float:'left', width:'30%'}}>
+        <div className="dashboard-widget-content">
+          <div className={'dashboard-widget-chart-count' + (showChart ? '' : ' hidden')}>
             <span className='count-value'>{countValue}</span>
             <span className='count-label'>clouds</span>
           </div>
-          <div className="dashboard-widget-chart-body" style={{float:'left', width:'70%'}}>
+          <div className="dashboard-widget-chart-body">
             <PieChartWidget data={this.state.data} config={this.state.chartConfig}/>
           </div>
         </div>

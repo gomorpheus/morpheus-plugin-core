@@ -117,7 +117,9 @@ class BackupStatsWidget extends React.Component {
       <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#backup" title={Morpheus.utils.message('gomorpheus.label.backups')} link="/backups"/>
         <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
-        <ColorBarWidget data={chartData}/>
+        <div class="dashboard-widget-content top-space">
+          <ColorBarWidget data={chartData}/>
+        </div>
       </Widget>
     );
   }

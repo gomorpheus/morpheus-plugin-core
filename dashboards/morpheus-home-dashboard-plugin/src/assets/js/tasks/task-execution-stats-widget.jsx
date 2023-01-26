@@ -117,7 +117,9 @@ class TaskExecutionStatsWidget extends React.Component {
       <Widget>
         <WidgetHeader icon="/assets/navigation/provisioning/executions.svg#Layer_1" title={Morpheus.utils.message('gomorpheus.label.taskExecutions')} link="/provisioning/executions"/>
         <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
-        <ColorBarWidget data={chartData}/>
+        <div class="dashboard-widget-content top-space">
+          <ColorBarWidget data={chartData}/>
+        </div>
       </Widget>
     );
   }
