@@ -24,6 +24,7 @@ class PoolSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip pools")
 		try {
 			// get the load balancer pool service to interact with database
 			def svc = morpheusContext.loadBalancer.pool
@@ -45,7 +46,7 @@ class PoolSync {
 			}.onAdd { addItems ->
 				def adds = []
 				for (pool in addItems) {
-					def objCategory = "f5.pool.${loadBalancer.id}"
+					def objCategory = BigIpUtility.getObjCategory('pool', loadBalancer.id)
 					def addConfig = [internalId:pool.selfLink, externalId:pool.fullPath, name:pool.name, category:objCategory,
 									 enabled:true, loadBalancer:loadBalancer, vipBalance: BigIpUtility.decodeLoadBalancingMode(pool.loadBalancingMode),
 									 allowNat:pool.allowNat, allowSnat:pool.allowSnat, vipClientIpMode:pool.ipTosToClient,
@@ -82,11 +83,10 @@ class PoolSync {
 
 	protected syncPoolMembers(NetworkLoadBalancerPool pool, List poolMemberList) {
 		log.info("Syncing pool memebers for pool ${pool.name}: ${poolMemberList}")
-		def poolSvc = morpheusContext.loadBalancer.pool
 		def nodeSvc = morpheusContext.loadBalancer.node
 
 		SyncTask<NetworkLoadBalancerMember, Map, NetworkLoadBalancerMember> syncTask = new SyncTask<>(
-			poolSvc.getPoolMembers(pool), poolMemberList
+			Observable.fromIterable(pool.members), poolMemberList
 		)
 		syncTask.addMatchFunction { NetworkLoadBalancerMember existingItem, Map syncItem ->
 			existingItem.externalId == syncItem.fullPath
@@ -101,8 +101,9 @@ class PoolSync {
 				def nodeId = item.fullPath.substring(0, portIndex)
 				def portNumber = item.fullPath.substring(portIndex + 1).toInteger()
 				def node = nodeSvc.findByLoadBalancerAndExternalId(pool.loadBalancer, item.fullPath).blockingGet()
-				if (node) {
-					def addConfig = [externalId: item.fullPath, node:node, pool:pool, port:portNumber]
+				if (node.value.isPresent()) {
+					def nodeModel = node.value.get()
+					def addConfig = [externalId: item.fullPath, node:nodeModel, pool:pool, port:portNumber]
 					adds << new NetworkLoadBalancerMember(addConfig)
 				}
 			}

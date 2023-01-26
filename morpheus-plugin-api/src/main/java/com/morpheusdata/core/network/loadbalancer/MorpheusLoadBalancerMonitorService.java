@@ -8,6 +8,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Interface for interacting with the morpheus backend database in regards to load balancer health monitor domain objects
@@ -58,7 +59,7 @@ public interface MorpheusLoadBalancerMonitorService {
 	 * @param externalId
 	 * @return
 	 */
-	Single<NetworkLoadBalancerMonitor> findByExternalId(String externalId);
+	Single<Optional<NetworkLoadBalancerMonitor>> findByExternalId(String externalId);
 
 	/**
 	 * Use this method to query the database for load balancer health monitors

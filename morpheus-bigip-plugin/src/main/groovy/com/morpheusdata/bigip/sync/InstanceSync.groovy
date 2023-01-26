@@ -5,8 +5,11 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.NetworkLoadBalancer
 import com.morpheusdata.model.NetworkLoadBalancerInstance
-import com.morpheusdata.model.NetworkLoadBalancerPool
+import com.morpheusdata.model.NetworkLoadBalancerPolicy
+import com.morpheusdata.model.NetworkLoadBalancerProfile
+import com.morpheusdata.model.NetworkLoadBalancerRule
 import com.morpheusdata.model.projection.LoadBalancerInstanceIdentityProjection
+import com.morpheusdata.model.projection.LoadBalancerPolicyIdentityProjection
 import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
@@ -25,6 +28,7 @@ class InstanceSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip virtual servers")
 		try {
 			// get the load balancer instance service to interact with database
 			def svc = morpheusContext.loadBalancer.instance
@@ -37,6 +41,12 @@ class InstanceSync {
 			SyncTask<LoadBalancerInstanceIdentityProjection, Map, NetworkLoadBalancerInstance> syncTask = new SyncTask<>(domainRecords, apiItems.virtualServers)
 			syncTask.addMatchFunction { LoadBalancerInstanceIdentityProjection domainItem, Map cloudItem ->
 				return domainItem.externalId == cloudItem.fullPath
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<LoadBalancerInstanceIdentityProjection, Map>> updateItems ->
+				Map<Long, SyncTask.UpdateItemDto<LoadBalancerInstanceIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+				svc.listById(updateItems?.collect { it.existingItem.id }).map { NetworkLoadBalancerInstance instance ->
+					SyncTask.UpdateItemDto<LoadBalancerInstanceIdentityProjection, Map> matchedItem = updateItemMap[instance.id]
+					return new SyncTask.UpdateItem<LoadBalancerInstanceIdentityProjection, Map>(existingItem:instance, masterItem:matchedItem.masterItem)
+				}
 			}.onAdd { addItems ->
 				def adds = []
 				for (instance in addItems) {
@@ -56,7 +66,7 @@ class InstanceSync {
 				svc.create(adds).blockingGet()
 
 				// after adds, perform a usage restart on the load balancer
-				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id)
+				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id, true)
 
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkLoadBalancerInstance, Map>> updateItems ->
 				List<NetworkLoadBalancerInstance> itemsToUpdate = new ArrayList<NetworkLoadBalancerInstance>()
@@ -97,17 +107,35 @@ class InstanceSync {
 	protected syncVirtualServerProfiles(NetworkLoadBalancer loadBalancer, NetworkLoadBalancerInstance existingVip, Map source) {
 		def profileSvc = morpheusContext.loadBalancer.profile
 		def doUpdate = false
-		// check profiles
-		if (existingVip.profiles?.size() != source.profilesReference?.items?.size()) {
-			existingVip.profiles?.clear()
-			for (sourceProfile in source.profilesReference.items) {
-				def profile = profileSvc.findByExternalIdAndLoadBalancer(sourceProfile.fullPath, loadBalancer).blockingGet()
-				if (profile) {
-					existingVip.addToProfiles(profile)
+
+		// Build a sync task to handle the virtual server profiles
+		def sourceProfiles
+		if (source.profilesReference?.items?.size() > 0)
+			sourceProfiles = source.profilesReference.items
+		else
+			sourceProfiles = []
+
+		SyncTask<NetworkLoadBalancerProfile, Map, NetworkLoadBalancerProfile> syncTask = new SyncTask<>(
+			Observable.fromIterable(existingVip.profiles), sourceProfiles
+		)
+		syncTask.addMatchFunction { NetworkLoadBalancerProfile existingItem, Map syncItem ->
+			existingItem.externalId == syncItem.fullPath
+		}.onAdd { addItems ->
+			for (item in addItems) {
+				def profile = profileSvc.findByExternalIdAndLoadBalancer(item.fullPath, loadBalancer).blockingGet()
+				if (profile.value.isPresent()) {
+					existingVip.addToProfiles(profile.value.get())
 					doUpdate = true
 				}
 			}
+		}.onDelete { removeItems ->
+			def removeIds = removeItems.collect { return it.externalId }
+			existingVip.profiles?.removeAll { profile ->
+				return removeIds.contains(profile.externalId)
+			}
+			doUpdate = true
 		}
+
 		return doUpdate
 	}
 
@@ -115,16 +143,33 @@ class InstanceSync {
 		def policySvc = morpheusContext.loadBalancer.policy
 		def doUpdate = false
 
-		if (existingVip.policies?.size() != source.policiesReference?.items?.size()) {
-			existingVip.policies?.clear()
-			for (sourcePolicy in source.policiesReference.items) {
-				def policy = policySvc.findByExternalIdAndLoadBalancer(sourcePolicy.fullPath, loadBalancer)
-				if (policy) {
-					existingVip.addToPolicies(policy)
+		def sourcePolicies
+		if (source.policiesReference?.items?.size())
+			sourcePolicies = source.policiesReference.items
+		else
+			sourcePolicies = []
+
+		SyncTask<NetworkLoadBalancerPolicy, Map, NetworkLoadBalancerPolicy> syncTask = new SyncTask<>(
+			Observable.fromIterable(existingVip.policies), sourcePolicies
+		)
+		syncTask.addMatchFunction { NetworkLoadBalancerPolicy existingItem, Map sourceItem ->
+			return existingItem.externalId == sourceItem.fullPath
+		}.onAdd { addItems ->
+			for (item in addItems) {
+				def policy = policySvc.findByExternalIdAndLoadBalancer(item.fullPath, loadBalancer).blockingGet()
+				if (policy.value.isPresent()) {
+					existingVip.addToPolicies(policy.value.get())
 					doUpdate = true
 				}
 			}
+		}.onDelete { removeItems ->
+			def removeIds = removeItems.collect { return it.externalId }
+			existingVip.policies?.removeAll { policy ->
+				return removeIds.contains(policy.externalId)
+			}
+			doUpdate = true
 		}
+
 		return doUpdate
 	}
 }

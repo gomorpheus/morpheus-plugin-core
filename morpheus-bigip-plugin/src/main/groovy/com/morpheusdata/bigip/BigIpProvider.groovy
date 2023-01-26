@@ -870,21 +870,38 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	def listHealthMonitors(NetworkLoadBalancer loadBalancer) {
 		def apiConfig = getConnectionBase(loadBalancer)
-		def rtn = [success:false]
+		def rtn = [success:false, monitors:[]]
 		def endpointPath = "${apiConfig.path}/tm/ltm/monitor"
 		def params = [
 			uri:apiConfig.url,
 			path:endpointPath,
 			username:apiConfig.username,
 			password:apiConfig.password,
-			//urlParams:['expandSubcollections':'true'],
+			urlParams:['expandSubcollections':'true'],
 			authToken:apiConfig.authToken
 		]
 		def results = callApi(params, 'GET')
 		if (results.success) {
 			rtn.success = true
-			rtn.monitors = results.data.items
 			rtn.authToken = apiConfig.authToken
+
+			for (item in results.data.items) {
+				if(item.reference?.link) {
+					def serviceType = BigIpUtility.parseServiceType(item.reference.link)
+					//load types
+					if(serviceType) {
+						params.path = endpointPath + '/' + serviceType
+						def subResults = callApi(params, 'GET')
+						if(subResults.success) {
+							for (subItem in subResults.data?.items) {
+								def row = subItem
+								row.serviceType = serviceType
+								rtn.monitors << row
+							}
+						}
+					}
+				}
+			}
 		}
 
 		log.debug("get health monitors results: ${results}")
@@ -972,7 +989,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			path:endpointPath,
 			username:apiConfig.username,
 			password:apiConfig.password,
-			authToken:apiConfig.authToken
+			authToken:apiConfig.authToken,
+			urlParams:[expandSubcollections:'true']
 		]
 		def results = callApi(params, 'GET')
 		if (results.success) {
@@ -1003,16 +1021,21 @@ class BigIpProvider implements LoadBalancerProvider {
 			authToken:apiConfig.authToken,
 			urlParams:['expandSubcollections':'true']
 		]
+
+		// first grab service types
 		def results = callApi(params, 'GET')
 		if (results.success) {
-			for (serviceType in results.data.items) {
-				params.path = new URL(serviceType.href).path
-				def subResults = callApi(params, 'GET')
-				if(subResults.success) {
-					for (subItem in subResults.data.items) {
-						def row = subItem
-						row.serviceType = BigIpUtility.parseServiceType(serviceType.reference.link)
-						rtn.profiles << row
+			for (item in results.data.items) {
+				if(item.reference?.link) {
+					def serviceType = BigIpUtility.parseServiceType(item.reference.link)
+					params.path = new URL(item.reference.link).path
+					def subResults = callApi(params, 'GET')
+					if (subResults.success) {
+						for (subItem in subResults.data.items) {
+							def row = subItem
+							row.serviceType = serviceType
+							rtn.profiles << row
+						}
 					}
 				}
 			}

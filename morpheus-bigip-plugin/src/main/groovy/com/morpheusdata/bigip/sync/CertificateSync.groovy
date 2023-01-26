@@ -24,6 +24,8 @@ class CertificateSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip ssl certs")
+
 		try {
 			// get the load balancer profile service to interact with database
 			def svc = morpheusContext.loadBalancer.certificate
@@ -38,6 +40,12 @@ class CertificateSync {
 			SyncTask<ReferenceDataSyncProjection, Map, ReferenceData> syncTask = new SyncTask<>(domainRecords, apiItems.certificates)
 			syncTask.addMatchFunction { ReferenceDataSyncProjection domainItem, Map cloudItem ->
 				return domainItem.externalId == cloudItem.fullPath
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map>> updateItems ->
+				Map<Long, SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+				svc.listById(updateItems?.collect { it.existingItem.id }).map { ReferenceData refData ->
+					SyncTask.UpdateItemDto<ReferenceDataSyncProjection, Map> matchedItem = updateItemMap[refData.id]
+					return new SyncTask.UpdateItem<ReferenceDataSyncProjection, Map>(existingItem: refData, masterItem: matchedItem.masterItem)
+				}
 			}.onAdd { addItems ->
 				def adds = []
 				for (certificate in addItems) {

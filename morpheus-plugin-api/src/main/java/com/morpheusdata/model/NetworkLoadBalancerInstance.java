@@ -586,6 +586,11 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 		markDirty("policies", policies);
 	}
 
+	public void addToPolicies(NetworkLoadBalancerPolicy policy) {
+		this.policies.add(policy);
+		markDirty("policy", policy);
+	}
+
 	public List<NetworkLoadBalancerScript> getScripts() {
 		return scripts;
 	}
@@ -602,6 +607,11 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	public void setProfiles(List<NetworkLoadBalancerProfile> profiles) {
 		this.profiles = profiles;
 		markDirty("profiles", profiles);
+	}
+
+	public void addToProfiles(NetworkLoadBalancerProfile profile) {
+		this.profiles.add(profile);
+		markDirty("profiles", profile);
 	}
 
 	public List<Container> getContainers() {

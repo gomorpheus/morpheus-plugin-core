@@ -1,6 +1,7 @@
 package com.morpheusdata.bigip.sync
 
 import com.morpheusdata.bigip.BigIpPlugin
+import com.morpheusdata.bigip.util.BigIpUtility
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.NetworkLoadBalancer
@@ -22,11 +23,14 @@ class ProfileSync {
 		this.morpheusContext = plugin.morpheus
 	}
 	def execute() {
+		log.info("Syncing bigip profiles")
+
 		try {
 			// get the load balancer profile service to interact with database
 			def svc = morpheusContext.loadBalancer.profile
 
 			// grab master items from the bigip api
+			def objCategory = BigIpUtility.getObjCategory('profile', loadBalancer.id)
 			def apiItems = plugin.provider.listProfiles(loadBalancer)
 
 			// Add sync logic for adds/updates/removes

@@ -10,7 +10,10 @@ class BigIpUtility {
 		partition:'loadbalancer.f5.partition',
 		persistence:'loadbalancer.f5.persistence',
 		rule:'f5.rule',
-		cert:'f5.ssl.cert'
+		cert:'f5.ssl.cert',
+		profile:'f5.profile',
+		policy:'f5.policy',
+		pool:'f5.pool'
 	]
 
 	static final List CONDITION_OPERATOR = [

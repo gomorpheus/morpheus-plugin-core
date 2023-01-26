@@ -6,7 +6,6 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.NetworkLoadBalancer
 import com.morpheusdata.model.NetworkLoadBalancerPolicy
-import com.morpheusdata.model.NetworkLoadBalancerPool
 import com.morpheusdata.model.NetworkLoadBalancerRule
 import com.morpheusdata.model.projection.LoadBalancerPolicyIdentityProjection
 import groovy.util.logging.Slf4j
@@ -26,12 +25,14 @@ class PolicySync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip policies")
+
 		try {
 			// get the load balancer pool service to interact with database
 			def svc = morpheusContext.loadBalancer.policy
 
 			// grab master items from the bigip api
-			def objCategory = "f5.policy.${loadBalancer.id}"
+			def objCategory = BigIpUtility.getObjCategory('policy', loadBalancer.id)
 			def apiItems = plugin.provider.listPolicies(loadBalancer)
 
 			// Add sync logic for adds/updates/removes
@@ -39,17 +40,25 @@ class PolicySync {
 			SyncTask<LoadBalancerPolicyIdentityProjection, Map, NetworkLoadBalancerPolicy> syncTask = new SyncTask<>(domainRecords, apiItems.policies)
 			syncTask.addMatchFunction { LoadBalancerPolicyIdentityProjection domainItem, Map cloudItem ->
 				return domainItem.externalId == cloudItem.fullPath
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map>> updateItems ->
+				Map<Long, SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+				svc.listById(updateItems?.collect { it.existingItem.id }).map { NetworkLoadBalancerPolicy policy ->
+					SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map> matchedItem = updateItemMap[policy.id]
+					return new SyncTask.UpdateItem<LoadBalancerPolicyIdentityProjection, Map>(existingItem:policy, masterItem:matchedItem.masterItem)
+				}
 			}.onAdd { addItems ->
 				def adds = []
 
 				for (policy in addItems) {
 					def addConfig = [account :loadBalancer.account, internalId:policy.selfLink, externalId:policy.externalId, name:policy.name, category:objCategory,
 						enabled :true, loadBalancer:loadBalancer, draft:policy.status == 'draft', controls:BigIpUtility.combineStringLists(policy.controls), policyType:'policy',
-						requires: BigIpUtility.combineStringLists(policy.requires), status:policy.status, strategy:BigIpUtility.parsePathName(policy.strategy), partition:policy.partition]
+						requires: BigIpUtility.combineStringLists(policy.requires), status:policy.status, strategy:BigIpUtility.parsePathName(policy.strategy), partition:policy.partition
+					]
 					def add = new NetworkLoadBalancerPolicy(addConfig)
 					add.setConfigMap(policy)
 
-					syncPolicyRules(policy, policy.rulesReference?.items)
+					if (policy.rulesReference?.items)
+						 syncPolicyRules(add, policy.rulesReference.items)
 					adds << add
 				}
 				svc.create(adds).blockingGet()
@@ -92,7 +101,9 @@ class PolicySync {
 		def changes = false
 		def poolSvc = morpheusContext.loadBalancer.pool
 
-		SyncTask<NetworkLoadBalancerRule, Map, NetworkLoadBalancerRule> syncTask = new SyncTask<>(policy.rules, policyRuleList)
+		SyncTask<NetworkLoadBalancerRule, Map, NetworkLoadBalancerRule> syncTask = new SyncTask<>(
+			Observable.fromIterable(policy.rules), policyRuleList
+		)
 		syncTask.addMatchFunction { NetworkLoadBalancerRule existingItem, Map syncItem ->
 			existingItem.externalId == syncItem.fullPath
 		}.onAdd { addItems ->
@@ -108,8 +119,8 @@ class PolicySync {
 				for (action in item.actionsReference?.items) {
 					if(action.pool) {
 						def poolMatch = poolSvc.findByLoadBalancerAndExternalId(loadBalancer, action.pool).blockingGet()
-						if(poolMatch) {
-							add.pools << poolMatch
+						if(poolMatch.value.isPresent()) {
+							add.pools << poolMatch.value.get()
 						}
 					}
 				}

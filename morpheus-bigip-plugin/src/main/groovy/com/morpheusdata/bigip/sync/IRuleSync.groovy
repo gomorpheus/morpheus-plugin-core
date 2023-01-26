@@ -24,6 +24,7 @@ class IRuleSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip iRules")
 		try {
 			// get the load balancer script service to interact with database
 			def svc = morpheusContext.loadBalancer.script
@@ -60,7 +61,7 @@ class IRuleSync {
 			}.start()
 		}
 		catch (Throwable t) {
-			log.error("Failure in load balancer irul sync: ${t.message}", t)
+			log.error("Failure in load balancer irule sync: ${t.message}", t)
 		}
 	}
 }

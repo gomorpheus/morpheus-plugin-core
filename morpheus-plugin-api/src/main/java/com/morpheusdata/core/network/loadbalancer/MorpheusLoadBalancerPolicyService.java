@@ -9,6 +9,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface MorpheusLoadBalancerPolicyService {
 	/**
@@ -57,7 +58,7 @@ public interface MorpheusLoadBalancerPolicyService {
 	 * @param loadBalancer
 	 * @return
 	 */
-	Single<NetworkLoadBalancerPolicy> findByExternalIdAndLoadBalancer(String externalId, NetworkLoadBalancer loadBalancer);
+	Single<Optional<NetworkLoadBalancerPolicy>> findByExternalIdAndLoadBalancer(String externalId, NetworkLoadBalancer loadBalancer);
 
 	/**
 	 * Use this method to query the database for load balancer policies

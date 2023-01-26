@@ -25,6 +25,8 @@ class HealthMonitorSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip health monitors")
+
 		try {
 			// get the load balancer health monitor service to interact with database
 			def svc = morpheusContext.loadBalancer.monitor
@@ -47,7 +49,7 @@ class HealthMonitorSync {
 				def adds = []
 				for (monitor in addItems) {
 					def addConfig = [account:loadBalancer.account, internalId:monitor.selfLink, externalId:monitor.fullPath,
-						name:monitor.name, loadBalancer:loadBalancer, monitorType: BigIpUtility.parseServiceType(monitor.reference.link), monitorInterval:BigIpUtility.decodeApiNumber(monitor.interval),
+						name:monitor.name, loadBalancer:loadBalancer, monitorType:monitor.serviceType, monitorInterval:BigIpUtility.decodeApiNumber(monitor.interval),
 						monitorReverse:(monitor.reverse != 'disabled'), monitorTimeout:BigIpUtility.decodeApiNumber(monitor.timeout), sendData:monitor.send,
 						monitorUsername:monitor.username, monitorPassword:monitor.password, receiveData:monitor.recv,
 						monitorTransparent:(monitor.transparent != 'disabled'), monitorAdaptive:(monitor.adaptive != 'disabled'),
@@ -57,9 +59,11 @@ class HealthMonitorSync {
 					add.setConfigMap(monitor)
 
 					// handle parent monitors
-					def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
-					if (parentMonitor)
-						add.addConfigProperty('monitor.id', parentMonitor.id)
+					if (monitor.defaultsFrom) {
+						def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
+						if (parentMonitor.value.isPresent() )
+							add.setConfigProperty('monitor.id', parentMonitor.value.get().id)
+					}
 
 					adds << add
 				}

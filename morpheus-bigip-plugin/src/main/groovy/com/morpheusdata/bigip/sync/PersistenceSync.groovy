@@ -24,6 +24,7 @@ class PersistenceSync {
 	}
 
 	def execute() {
+		log.info("Syncing bigip persistence policies")
 		try {
 			// grab our service that interacts with the database
 			def objCategory = BigIpUtility.getObjCategory('persistence', loadBalancer.id)
@@ -33,9 +34,15 @@ class PersistenceSync {
 
 			// Add sync logic for adds/updates/removes
 			Observable domainRecords = svc.listSyncProjections(loadBalancer.id, objCategory)
-			SyncTask<LoadBalancerPolicyIdentityProjection, Map, NetworkLoadBalancerPolicy> syncTask = new SyncTask<>(domainRecords, apiItems.policies)
+			SyncTask<LoadBalancerPolicyIdentityProjection, Map, NetworkLoadBalancerPolicy> syncTask = new SyncTask<>(domainRecords, apiItems.persistencePolicies)
 			syncTask.addMatchFunction { LoadBalancerPolicyIdentityProjection domainItem, Map cloudItem ->
 				return domainItem.externalId == cloudItem.fullPath
+			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map>> updateItems ->
+				Map<Long, SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
+				svc.listById(updateItems?.collect { it.existingItem.id }).map { NetworkLoadBalancerPolicy policy ->
+					SyncTask.UpdateItemDto<LoadBalancerPolicyIdentityProjection, Map> matchedItem = updateItemMap[policy.id]
+					return new SyncTask.UpdateItem<LoadBalancerPolicyIdentityProjection, Map>(existingItem:policy, masterItem:matchedItem.masterItem)
+				}
 			}.onAdd { addItems ->
 				def adds = []
 				for (item in addItems) {

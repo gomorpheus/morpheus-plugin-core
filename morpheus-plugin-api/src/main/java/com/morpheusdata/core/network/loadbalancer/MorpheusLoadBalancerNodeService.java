@@ -9,6 +9,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Interface for interacting with the morpheus backend database in regards to load balancer node domain objects
@@ -60,7 +61,7 @@ public interface MorpheusLoadBalancerNodeService {
 	 * @param externalId
 	 * @return
 	 */
-	Single<NetworkLoadBalancerNode> findByLoadBalancerAndExternalId(NetworkLoadBalancer loadBalancer, String externalId);
+	Single<Optional<NetworkLoadBalancerNode>> findByLoadBalancerAndExternalId(NetworkLoadBalancer loadBalancer, String externalId);
 
 	/**
 	 * Use this method to query the database for load balancer nodes

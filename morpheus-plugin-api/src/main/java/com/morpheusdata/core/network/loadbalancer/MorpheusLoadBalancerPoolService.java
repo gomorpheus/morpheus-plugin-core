@@ -10,6 +10,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface MorpheusLoadBalancerPoolService {
 	/**
@@ -58,7 +59,7 @@ public interface MorpheusLoadBalancerPoolService {
 	 * @param externalId
 	 * @return
 	 */
-	Single<NetworkLoadBalancerPool> findByLoadBalancerAndExternalId(NetworkLoadBalancer loadBalancer, String externalId);
+	Single<Optional<NetworkLoadBalancerPool>> findByLoadBalancerAndExternalId(NetworkLoadBalancer loadBalancer, String externalId);
 
 	/**
 	 * This method is used to grab the persisted pool members for a given load balancer pool
