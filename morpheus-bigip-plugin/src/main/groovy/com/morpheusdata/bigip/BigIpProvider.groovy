@@ -18,7 +18,9 @@ import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.HttpApiClient
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.NetworkLoadBalancer
+import com.morpheusdata.model.NetworkLoadBalancerMonitor
 import com.morpheusdata.model.NetworkLoadBalancerPool
+import com.morpheusdata.model.NetworkLoadBalancerProfile
 import com.morpheusdata.model.NetworkLoadBalancerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.response.ServiceResponse
@@ -94,7 +96,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	Collection<OptionType> getOptionTypes() {
 		OptionType apiHost = new OptionType(
 			name:'Host',
-			code:'bigip-plugin-host',
+			code:'plugin.bigip.host',
 			fieldName:'sshHost',
 			displayOrder:0,
 			fieldLabel:'Api Host',
@@ -104,7 +106,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 		OptionType apiPort = new OptionType(
 			name:'Port',
-			code:'bigip-plugin-port',
+			code:'plugin.bigip.port',
 			fieldName:'apiPort',
 			displayOrder:1,
 			defaultValue:'443',
@@ -115,7 +117,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 		OptionType username = new OptionType(
 			name:'Username',
-			code:'bigip-plugin-username',
+			code:'plugin.bigip.username',
 			fieldName:'sshUsername',
 			displayOrder:10,
 			fieldLabel:'Username',
@@ -125,7 +127,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 		OptionType password = new OptionType(
 			name:'Password',
-			code:'bigip-plugin-password',
+			code:'plugin.bigip.password',
 			fieldName:'sshPassword',
 			displayOrder:11,
 			fieldLabel:'Password',
@@ -400,6 +402,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'name',
 			code:'plugin.bigip.monitor.name',
 			fieldName:'name',
+			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
@@ -409,6 +412,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'description',
 			code:'plugin.bigip.monitor.description',
 			fieldName:'description',
+			fieldContext:'domain',
 			displayOrder:2,
 			fieldLabel:'Description',
 			required:false,
@@ -418,6 +422,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'enabled',
 			code:'plugin.bigip.monitor.enabled',
 			fieldName:'enabled',
+			fieldContext:'domain',
 			displayOrder:3,
 			fieldLabel:'Enabled',
 			required:true,
@@ -427,7 +432,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		monitorOptions << new OptionType(
 			name:'monitor',
 			code:'plugin.bigip.monitor.monitor',
-			fieldName:'monitor',
+			fieldName:'monitor.id',
 			displayOrder:4,
 			fieldLabel:'Parent Monitor',
 			required:true,
@@ -435,19 +440,21 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldContext:'config',
 			optionSource:'bigIpPluginHealthMonitors'
 		)
-		monitorOptions << new OptionType(
+		/*monitorOptions << new OptionType(
 			name:'monitorType',
 			code:'plugin.bigip.monitor.monitorType',
 			fieldName:'monitorType',
 			displayOrder:5,
 			fieldLabel:'Monitor Type',
+			fieldContext:'domain',
 			required:false,
 			inputType:OptionType.InputType.TEXT
-		)
+		)*/
 		monitorOptions << new OptionType(
 			name:'destination',
 			code:'plugin.bigip.monitor.destination',
-			fieldName:'destination',
+			fieldName:'monitorDestination',
+			fieldContext:'domain',
 			displayOrder:6,
 			fieldLabel:'Destination',
 			required:true,
@@ -457,7 +464,8 @@ class BigIpProvider implements LoadBalancerProvider {
 		monitorOptions << new OptionType(
 			name:'interval',
 			code:'plugin.bigip.monitor.interval',
-			fieldName:'interval',
+			fieldName:'monitorInterval',
+			fieldContext:'domain',
 			displayOrder:7,
 			fieldLabel:'Interval',
 			required:true,
@@ -467,7 +475,8 @@ class BigIpProvider implements LoadBalancerProvider {
 		monitorOptions << new OptionType(
 			name:'timeout',
 			code:'plugin.bigip.monitor.timeout',
-			fieldName:'timeout',
+			fieldName:'monitorTimeout',
+			fieldContext:'domain',
 			displayOrder:8,
 			fieldLabel:'Timeout',
 			required:true,
@@ -475,25 +484,26 @@ class BigIpProvider implements LoadBalancerProvider {
 			defaultValue:'15'
 		)
 		monitorOptions << new OptionType(
-			name:'config',
+			name:'monitorConfig',
 			code:'plugin.bigip.monitor.config',
-			fieldName:'config',
+			fieldName:'monitorConfig',
 			displayOrder:9,
 			fieldLabel:'Config',
 			required:false,
 			inputType:OptionType.InputType.CODE_EDITOR,
 			fieldCondition:'config'
 		)
-		monitorOptions << new OptionType(
+		/* monitorOptions << new OptionType(
 			name:'maxRetries',
 			code:'plugin.bigip.monitor.maxRetries',
 			fieldName:'maxRetries',
+			fieldContext:'domain',
 			displayOrder:10,
 			fieldLabel:'Max Retries',
 			required:false,
 			inputType:OptionType.InputType.TEXT,
 			defaultValue:5
-		)
+		)*/
 		monitorOptions << getPartitionOptionType()
 
 		return monitorOptions
@@ -521,7 +531,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 		virtualServerOptions << new OptionType(
 			name:'vipAddress',
-			code:'plugin.virtualService.vipAddress',
+			code:'plugin.bigip.virtualService.vipAddress',
 			fieldName:'vipAddress',
 			displayOrder:3,
 			fieldLabel:'VIP Address',
@@ -530,7 +540,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 		virtualServerOptions << new OptionType(
 			name:'vipPort',
-			code:'plugin.virtualService.vipPort',
+			code:'plugin.bigip.virtualService.vipPort',
 			fieldName:'vipPort',
 			displayOrder:4,
 			fieldLabel:'VIP Port',
@@ -666,6 +676,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'partition',
 			code:'plugin.bigip.monitor.partition',
 			fieldName:'partition',
+			fieldContext:'domain',
 			displayOrder:99,
 			fieldLabel:'Partition',
 			required:true,
@@ -1153,6 +1164,281 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	}
 
+	@Override
+	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return null
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return null
+	}
+
+	@Override
+	ServiceResponse updateLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return null
+	}
+
+	@Override
+	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		def monitorSvc = morpheus.loadBalancer.monitor
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = monitor.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def monitorConfig = apiConfig.clone()
+			def itemConfig = monitor.getConfigMap()
+			//fill in config
+			monitorConfig.name = monitor.name
+			monitorConfig.serviceType = monitor.monitorType
+			monitorConfig.description = monitor.description
+			monitorConfig.timeout = monitor.monitorTimeout
+			monitorConfig.interval = monitor.monitorInterval
+			monitorConfig.destination = monitor.monitorDestination
+			monitorConfig.partition = monitor.partition
+			if(itemConfig['monitor.id']) {
+				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong()).blockingGet()
+				if(parentMonitor.value.isPresent())
+					monitorConfig.defaultsFrom = parentMonitor.value.get().name
+			}
+			if(itemConfig.monitorConfig) {
+				//additional json config
+				def extraConfig = new groovy.json.JsonSlurper().parseText(itemConfig.monitorConfig) ?: [:]
+				monitorConfig.monitorConfig = extraConfig
+			}
+			//create it
+			log.debug("monitor config: {}", monitorConfig)
+			def results = createHealthMonitor(monitorConfig)
+			log.debug("api results: {}", results)
+			rtn.success = results.success
+			if (rtn.success == true) {
+				monitor.externalId = results.healthMonitor?.fullPath
+				rtn.data = monitor
+			}
+			else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.message ?: results.msg
+			}
+			return rtn
+		}
+		catch (Throwable t) {
+			log.error("Unable to create health monitor: ${t.message}", t)
+		}
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			def loadBalancer = monitor.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def monitorConfig = apiConfig.clone()
+			monitorConfig.name = monitor.name
+			monitorConfig.serviceType = monitor.monitorType
+			monitorConfig.partition = monitor.partition
+			monitorConfig.externalId = monitorConfig.serviceType + '/' + BigIpUtility.convertExternalId(monitor.externalId)
+			monitorConfig.authToken = apiConfig.authToken
+			log.debug "monitor config: ${monitorConfig}"
+			def results = deleteHealthMonitor(monitorConfig)
+			log.info("api results: {}", results)
+			rtn.success = results.success
+			rtn.data = [found:results.found, authToken:apiConfig.authToken]
+		}
+		catch(Throwable t) {
+			log.error("error removing monitor: ${t}", t)
+			rtn.msg = 'unknown error removing monitor ' + t.message
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
+	}
+
+	@Override
+	ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		def monitorSvc = morpheus.loadBalancer.monitor
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = monitor.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def monitorConfig = apiConfig.clone()
+			def itemConfig = monitor.getConfigMap()
+			//fill in config
+			monitorConfig.name = monitor.name
+			monitorConfig.serviceType = monitor.monitorType
+			monitorConfig.description = monitor.description
+			monitorConfig.timeout = monitor.monitorTimeout
+			monitorConfig.interval = monitor.monitorInterval
+			monitorConfig.authToken = apiConfig.authToken
+			if(itemConfig['monitor.id']) {
+				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong())
+				if(parentMonitor.value.isPresent())
+					monitorConfig.defaultsFrom = parentMonitor.value.get().name
+			}
+			if(itemConfig.monitorConfig) {
+				//additional json config
+				def extraConfig = new groovy.json.JsonSlurper().parseText(itemConfig.monitorConfig) ?: [:]
+				monitorConfig.monitorConfig = extraConfig
+			}
+			//update it
+			monitorConfig.externalId = monitorConfig.serviceType + '/' + BigIpUtility.convertExternalId(monitor.externalId)
+			log.debug("monitor config: {}", monitorConfig)
+			def results = updateHealthMonitor(monitorConfig)
+			log.debug("api results: {}", results)
+			rtn.success = results.success
+			rtn.authToken = results.authToken
+			if(rtn.success != true) {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.content?.message ?: results.message
+			}
+		}
+		catch (Throwable t) {
+
+		}
+	}
+
+	def uploadHealthMonitor(Map opts) {
+		def rtn = [success:false]
+		def monitor = loadHealthMonitor(opts)
+		if(monitor.found != true) {
+			rtn.success = false
+			rtn.found = false
+			rtn.healthMonitor = monitor.healthMonitor
+		}
+		else {
+			def endpointPath = BigIpUtility.buildApiPath("${opts.path}/tm/ltm/monitor/", opts.externalId, opts.name, opts.serviceType ?: 'http')
+			def data = [
+				name:opts.name,
+				description:opts.description
+			]
+			if(opts.destination)
+				data.destination = opts.destination
+			if(opts.interval)
+				data.interval = opts.interval.toInteger()
+			if(opts.timeout)
+				data.timeout = opts.timeout.toInteger()
+			if(opts.defaultsFrom)
+				data.defaultsFrom = opts.defaultsFrom
+			if(opts.monitorConfig)
+				data += opts.monitorConfig
+			// call api
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def results = callApi(params, 'PATCH')
+			if (results.success) {
+				rtn.success = true
+				rtn.healthMonitor = results.data
+			}
+			else {
+				rtn.msg = results.msg
+			}
+			log.debug("updateHealthMonitor: {}", results)
+		}
+		return rtn
+	}
+
+	def createHealthMonitor(Map opts) {
+		// only create this monitor if it does not exist
+		def rtn = [success:false]
+		def monitor = loadHealthMonitor(opts)
+		if(monitor.found == true) {
+			rtn.success = true
+			rtn.found = true
+			rtn.healthMonitor = monitor.healthMonitor
+		}
+		else {
+			def serviceType = opts.serviceType ?: 'http'
+			def serviceDetination = opts.destination ?: '*:*'
+			def endpointPath = BigIpUtility.buildApiPath("${opts.path}/tm/ltm/monitor/", null, null, serviceType)
+			def data = [
+				name:opts.name,
+				destination:serviceDetination,
+				description:opts.description,
+				partition:opts.partition
+			]
+			if(opts.interval)
+				data.interval = opts.interval.toInteger()
+			if(opts.timeout)
+				data.timeout = opts.timeout.toInteger()
+			if(opts.defaultsFrom)
+				data.defaultsFrom = opts.defaultsFrom
+			if(opts.monitorConfig)
+				data += opts.monitorConfig
+			// create the health monitor
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def resp = callApi(params, 'POST')
+			if (resp.success) {
+				rtn.healthMonitor = resp.data
+				rtn.success = true
+			}
+		}
+		return rtn
+	}
+
+	def loadHealthMonitor(Map opts) {
+		def rtn = [success:false, found:false]
+		def monitorName = BigIpUtility.buildPartitionedName(opts)
+		def endpointPath = BigIpUtility.buildApiPath("${opts.path}/tm/ltm/monitor/", opts.externalId, monitorName, opts.serviceType ?: 'http')
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+		def results = callApi(params, 'GET')
+		log.debug("loadHealthMonitor: {}", results)
+		if(results.success) {
+			rtn.success = true
+			rtn.found = true
+			rtn.healthMonitor = results.data
+			rtn.authToken = params.authToken
+		}
+		return rtn
+	}
+
+	def deleteHealthMonitor(Map opts) {
+		def rtn = [success:false]
+		def healthMonitor = loadHealthMonitor(opts)
+		if(healthMonitor.found == true) {
+			def itemName = BigIpUtility.buildPartitionedName(opts)
+			def endpointPath = BigIpUtility.buildApiPath("${opts.path}/tm/ltm/monitor/", null, itemName, opts.serviceType ?: 'http')
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				username:opts.username,
+				password:opts.password,
+				authToken:healthMonitor.authToken
+			]
+			def results = callApi(params, 'DELETE')
+			if (results.success) {
+				rtn.success = true
+				rtn.found = true
+				rtn.authToken = healthMonitor.authToken
+			}
+		}
+		else {
+			rtn.found = false
+			rtn.success = true
+		}
+		return rtn
+	}
+
 	protected getConnectionBase(NetworkLoadBalancer lb, Map opts = null) {
 		def connectionBase = [
 			url:"https://${lb.sshHost}:${lb.apiPort}",
@@ -1222,7 +1508,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 
 		if (!response.success) {
-			throw new RuntimeException("Failure in call to F5 api: ${response.msg}")
+			log.error("Failure in call to F5 api: ${response.msg}")
 		}
 		return response
 	}

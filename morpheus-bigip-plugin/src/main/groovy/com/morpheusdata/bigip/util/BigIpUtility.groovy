@@ -142,7 +142,7 @@ class BigIpUtility {
 		def lastSlash = link.lastIndexOf('/')
 		if(lastSlash > -1) {
 			def lastQuestion = link.lastIndexOf('?')
-			if(lastQuestion > -1)
+			if (lastQuestion > -1)
 				rtn = link.substring(lastSlash + 1, lastQuestion)
 			else
 				rtn = link.substring(lastSlash + 1)
@@ -151,9 +151,9 @@ class BigIpUtility {
 	}
 
 	static String parseDetination(String destination) {
-		def rtn
+		def rtn = destination
 		def lastSlash = destination.lastIndexOf('/')
-		if(lastSlash > -1) {
+		if (lastSlash > -1) {
 			def lastColon = destination.lastIndexOf(':')
 			if(lastColon > -1) {
 				rtn = destination.substring(lastSlash + 1, lastColon)
@@ -168,6 +168,26 @@ class BigIpUtility {
 		if(lastColon > -1) {
 			def portStr = destination.substring(lastColon + 1)
 			rtn = portStr.toInteger()
+		}
+		return rtn
+	}
+
+	static String buildPartitionedName(item, delim = '~') {
+		def partition = item.partition ?: BIGIP_PARTITION
+		return "${delim}${partition}${item instanceof Map && item.draft ? delim + 'Drafts' : ''}${delim}${item.name}".toString()
+	}
+
+	static String buildApiPath(String path, String externalId, String name, String type = null) {
+		def rtn = path
+		if(rtn.endsWith('/') == false)
+			rtn = rtn + '/'
+		if(externalId) {
+			rtn = rtn + (externalId.startsWith('/') ? externalId.substring(1) : externalId)
+		} else {
+			if(type)
+				rtn = rtn + (type.startsWith('/') ? type.substring(1) : type) + (type.endsWith('/') ? '' : '/')
+			if(name)
+				rtn = rtn + (name.startsWith('/') ? name.substring(1) : name)
 		}
 		return rtn
 	}

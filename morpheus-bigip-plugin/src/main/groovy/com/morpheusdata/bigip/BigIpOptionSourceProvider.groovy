@@ -75,7 +75,8 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return BigIpUtility.BALANCE_MODE
 	}
 
-	def bigIpPluginPartitions(params) {
+	def bigIpPluginPartitions(input) {
+		def params = [Collection, Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def loadBalancerId
 		if (params.domain?.loadBalancerId) {
 			loadBalancerId = params.domain.loadBalancerId
@@ -88,7 +89,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		}
 		def partitionSvc = morpheusContext.loadBalancer.partition
 		def options = []
-		partitionSvc.listById([loadBalancerId]).blockingSubscribe {
+		partitionSvc.listSyncProjections(loadBalancerId, BigIpUtility.getObjCategory('partition', loadBalancerId)).blockingSubscribe {
 			options << [name: it.name, value: it.name]
 		}
 		return options
@@ -277,7 +278,8 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return rtn
 	}
 
-	def bigIpPluginHealthMonitors(params) {
+	def bigIpPluginHealthMonitors(input) {
+		def params = [Collection, Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def rtn = []
 		def monitors = []
 		def queryObject = [:]
@@ -304,7 +306,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 			}
 			queryObject.sort = [[name:'name', direction:'asc']]
 
-			morpheusContext.loadBalancer.monitor.queryHealthMonitors(queryObject).subscribe { monitor ->
+			morpheusContext.loadBalancer.monitor.queryHealthMonitors(queryObject).blockingSubscribe { monitor ->
 				monitors << monitor
 			}
 			rtn = monitors.collect{ monitor -> [id:monitor.id, name:monitor.name, type:monitor.monitorType, value:monitor.id] }

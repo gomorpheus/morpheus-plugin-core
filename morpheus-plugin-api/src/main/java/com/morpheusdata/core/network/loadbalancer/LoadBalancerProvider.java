@@ -1,10 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.core.PluginProvider;
-import com.morpheusdata.model.Icon;
-import com.morpheusdata.model.NetworkLoadBalancer;
-import com.morpheusdata.model.NetworkLoadBalancerType;
-import com.morpheusdata.model.OptionType;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Collection;
@@ -53,4 +50,12 @@ public interface LoadBalancerProvider extends PluginProvider {
 
 	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
 	ServiceResponse refresh(NetworkLoadBalancer loadBalancer);
+
+	// service methods for interacting with load balancer apis
+	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile);
+	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile);
+	ServiceResponse updateLoadBalancerProfile(NetworkLoadBalancerProfile profile);
+	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 }

@@ -62,6 +62,13 @@ public interface MorpheusLoadBalancerMonitorService {
 	Single<Optional<NetworkLoadBalancerMonitor>> findByExternalId(String externalId);
 
 	/**
+	 * Helper method to look up a network load balancer health monitor by its id
+	 * @param id
+	 * @return
+	 */
+	Single<Optional<NetworkLoadBalancerMonitor>> findById(Long id);
+
+	/**
 	 * Use this method to query the database for load balancer health monitors
 	 * @param args a map of properties used to query the health monitors
 	 * @return Observable stream of {@link NetworkLoadBalancerMonitor}

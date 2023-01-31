@@ -96,7 +96,7 @@ class InstanceSync {
 				svc.remove(removeItems).blockingGet()
 
 				// after removals, restart load balancer usage tracking
-				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id)
+				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id, true)
 			}.start()
 		}
 		catch (Throwable t) {
