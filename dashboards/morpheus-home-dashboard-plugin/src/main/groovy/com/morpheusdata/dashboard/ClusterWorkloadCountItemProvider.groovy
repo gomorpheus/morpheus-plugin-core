@@ -17,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class GroupWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
+class ClusterWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	GroupWorkloadCountItemProvider(Plugin plugin, MorpheusContext context) {
+	ClusterWorkloadCountItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +39,12 @@ class GroupWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-group-workload-count'
+		return 'dashboard-item-cluster-workload-count'
 	}
 
 	@Override
 	String getName() {
-		return 'Group workload counts'
+		return 'Cluster workload counts'
 	}
 
 	@Override
@@ -54,12 +54,12 @@ class GroupWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 		//rtn.uuid = ?
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.category = 'group'
-		rtn.title = 'group workload count'
-		rtn.description = 'group workload count'
+		rtn.category = 'cluster'
+		rtn.title = 'cluster workload count'
+		rtn.description = 'cluster workload count'
 		rtn.uiSize = 'md'
-		rtn.templatePath = 'hbs/groups/group-workload-count-widget'
-		rtn.scriptPath = 'groups/group-workload-count-widget.js'
+		rtn.templatePath = 'hbs/clusters/cluster-workload-count-widget'
+		rtn.scriptPath = 'clusters/cluster-workload-count-widget.js'
 		return rtn
 	}
 

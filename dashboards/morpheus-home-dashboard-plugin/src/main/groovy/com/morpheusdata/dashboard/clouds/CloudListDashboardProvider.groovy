@@ -1,4 +1,4 @@
-package com.morpheusdata.dashboard
+package com.morpheusdata.dashboard.clouds
 
 import com.morpheusdata.core.dashboard.AbstractDashboardProvider
 import com.morpheusdata.core.MorpheusContext
@@ -19,12 +19,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class HomeDashboardProvider extends AbstractDashboardProvider {
+class CloudListDashboardProvider extends AbstractDashboardProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	HomeDashboardProvider(Plugin plugin, MorpheusContext context) {
+	CloudListDashboardProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -41,12 +41,12 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 
 	@Override
 	String getCode() {
-		return 'home-dashboard'
+		return 'cloud-list-dashboard'
 	}
 
 	@Override
 	String getName() {
-		return 'default home dashboard'
+		return 'default cloud list dashboard'
 	}
 
 	@Override
@@ -55,55 +55,21 @@ class HomeDashboardProvider extends AbstractDashboardProvider {
 		//populate it
 		rtn.name = getName()
 		rtn.code = getCode()
-		rtn.dashboardId = 'home'
-		rtn.category = 'home'
-		rtn.title = 'default home dashboard'
-		rtn.description = 'the default home dashboard'
+		rtn.dashboardId = 'cloud-list'
+		rtn.category = 'clouds'
+		rtn.title = 'default cloud list dashboard'
+		rtn.description = 'the default cloud list dashboard'
 		rtn.defaultDashboard = true
 		rtn.enabled = true
 		rtn.sourceType = 'system'
-		rtn.templatePath = 'hbs/home-dashboard'
-		rtn.scriptPath = 'home-dashboard.js'
+		rtn.templatePath = 'hbs/clouds/cloud-list-dashboard'
+		rtn.scriptPath = 'clouds/cloud-list-dashboard.js'
 		//add items
 		def dashboardItemGroups = [
-			top:[
-				'dashboard-item-environment-count',
-				'dashboard-item-current-health'
-			],
 			main:[
-				'dashboard-item-user-favorites', 
-				'dashboard-item-current-alarms'
-			],
-			instances:[
-				'dashboard-item-instance-count', 
-				'dashboard-item-instance-count-cloud', 
-				'dashboard-item-instance-count-cloud-day'
-			],
-			workloads:[
-				'dashboard-item-group-workload-count',
-				'dashboard-item-cloud-workload-count',
-				'dashboard-item-cluster-workload-count'
-			],
-			//clouds:[
-				//'dashboard-item-cloud-count-type',
-			//],
-			logs:[
-				'dashboard-item-log-count',
-				'dashboard-item-log-trends'
-			],
-			jobs:[
-				'dashboard-item-job-execution-stats',
-				'dashboard-item-backup-stats',
-				'dashboard-item-task-execution-stats'
-			],
-			activity:[
-				'dashboard-item-recent-activity'
-			]//,
-			//tasks:[
-				//'dashboard-item-task-failures'
-			//]//,
-			//backups:[
-			//]
+				'dashboard-item-cloud-count-type',
+				'dashboard-item-cloud-workload-count'
+			]
 		]
 		def currentGroupRow = 0
 		def currentRow = 0

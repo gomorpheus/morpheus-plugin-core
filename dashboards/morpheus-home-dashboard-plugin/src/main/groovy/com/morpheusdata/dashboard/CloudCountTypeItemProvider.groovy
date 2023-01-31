@@ -57,7 +57,7 @@ class CloudCountTypeItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'cloud'
 		rtn.title = 'cloud count by type'
 		rtn.description = 'cloud count by type'
-		rtn.uiSize = 'sm'
+		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/clouds/cloud-count-type-widget'
 		rtn.scriptPath = 'clouds/cloud-count-type-widget.js'
 		return rtn

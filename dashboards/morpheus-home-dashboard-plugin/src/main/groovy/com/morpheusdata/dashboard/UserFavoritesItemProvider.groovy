@@ -57,7 +57,7 @@ class UserFavoritesItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'user'
 		rtn.title = 'user favorites'
 		rtn.description = 'user favorites'
-		rtn.uiSize = 'md'
+		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/user-favorites-widget'
 		rtn.scriptPath = 'user-favorites-widget.js'
 		return rtn

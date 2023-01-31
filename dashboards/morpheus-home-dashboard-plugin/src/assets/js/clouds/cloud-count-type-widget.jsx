@@ -82,7 +82,7 @@ class CloudCountTypeWidget extends React.Component {
         position: 'inset', 
         inset: { anchor:'top-left', x:100, y:0, step:100 }
       },
-      size: { height:140, width:260 },
+      size: { height:140, width:340 },
       donut: {
         position: 'left'
       }

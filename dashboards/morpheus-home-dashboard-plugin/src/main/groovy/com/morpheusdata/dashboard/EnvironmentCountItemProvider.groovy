@@ -57,7 +57,7 @@ class EnvironmentCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'environment'
 		rtn.title = 'environment count'
 		rtn.description = 'environment count'
-		rtn.uiSize = 'xxl widget-short'
+		rtn.uiSize = 'xl widget-short'
 		rtn.templatePath = 'hbs/environment-count-widget'
 		rtn.scriptPath = 'environment-count-widget.js'
 		return rtn

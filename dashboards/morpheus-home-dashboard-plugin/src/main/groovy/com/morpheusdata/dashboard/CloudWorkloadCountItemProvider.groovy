@@ -57,7 +57,7 @@ class CloudWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'cloud'
 		rtn.title = 'cloud workload count'
 		rtn.description = 'cloud workload count'
-		rtn.uiSize = 'sm'
+		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/clouds/cloud-workload-count-widget'
 		rtn.scriptPath = 'clouds/cloud-workload-count-widget.js'
 		return rtn

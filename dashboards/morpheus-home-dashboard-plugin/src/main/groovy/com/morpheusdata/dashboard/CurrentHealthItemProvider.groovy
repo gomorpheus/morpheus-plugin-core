@@ -57,7 +57,7 @@ class CurrentHealthItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.category = 'health'
 		rtn.title = 'current health'
 		rtn.description = 'current health'
-		rtn.uiSize = 'xs'
+		rtn.uiSize = 'md widget-short'
 		rtn.templatePath = 'hbs/health/current-health-widget'
 		rtn.scriptPath = 'health/current-health-widget.js'
 		return rtn

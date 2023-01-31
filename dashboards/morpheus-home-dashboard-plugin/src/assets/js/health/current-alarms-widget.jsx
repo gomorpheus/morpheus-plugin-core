@@ -121,9 +121,9 @@ class CurrentAlarmsWidget extends React.Component {
                 { alarmList.map(row => (
                   <tr key={row.id}>
                     <td className="nowrap">
-                      <ResourceLink type={row.refType} value={row.refId} content={Morpheus.utils.clipLongText((row.resourceName ? row.resourceName : row.refName), 32)}/>
+                      <ResourceLink type={row.refType} value={row.refId} content={Morpheus.utils.clipLongText((row.resourceName ? row.resourceName : row.refName), 26)}/>
                     </td>
-                    <td className="nowrap">{Morpheus.utils.clipLongText(row.name, 28)}</td>
+                    <td className="nowrap">{Morpheus.utils.clipLongText(row.name, 26)}</td>
                     <td className={'text-right ' + (Morpheus.utils.statusTextClass(row.status))}>{Morpheus.data.formatDuration(row.startDate)}</td>
                   </tr>
                 ))}

@@ -1,11 +1,11 @@
 /**
- * cloud worload count
+ * cluster worload count
  * @author bdwheeler
  */
-class CloudWorkloadCountWidget extends React.Component {
-  
+class ClusterWorkloadCountWidget extends React.Component {
+
   constructor(props) {
-    //props
+     //props
     super(props);
     //state
     this.state = { 
@@ -19,6 +19,7 @@ class CloudWorkloadCountWidget extends React.Component {
     this.setData = this.setData.bind(this);
     this.loadData = this.loadData.bind(this);
     this.refreshData = this.refreshData.bind(this);
+    this.onLegendClick = this.onLegendClick.bind(this);
   }
 
   componentDidMount() {
@@ -39,8 +40,8 @@ class CloudWorkloadCountWidget extends React.Component {
 
   loadData(filter, options) {
     //load count
-    var apiQuery = 'group(server.zone.name:count(id))';
-    var apiOptions = { ignoreStatus:true, nodeFormat:'all' };
+    var apiQuery = 'group(resourcePool.serverGroup.name:count(id))';
+    var apiOptions = { ignoreStatus:true };
     //apply search config
     if(this.props.searchSelector)
       Morpheus.api.applySearchData(this.props.searchSelector, apiOptions);
@@ -55,15 +56,17 @@ class CloudWorkloadCountWidget extends React.Component {
     newState.data.config = results.config;
     newState.data.meta = results.meta;
     //set the data list
-    newState.data.items = []
+    newState.data.items = [];
     newState.data.total = 0;
     if(results.items) {
       for(var index in results.items) {
         var row = results.items[index];
-        var rowName = Morpheus.utils.slice(row.name, 25);
-        var dataRow = [rowName, row.value];
-        newState.data.items.unshift(dataRow);
-        newState.data.total += row.value;
+        if(row.name) {
+          var rowName = Morpheus.utils.slice(row.name, 25);
+          var dataRow = [rowName, row.value];
+          newState.data.items.push(dataRow);
+          newState.data.total += row.value;
+        }
       }
     }
     newState.loaded = true;
@@ -73,6 +76,16 @@ class CloudWorkloadCountWidget extends React.Component {
     newState.errorMessage = null;
     //update the state
     this.setState(newState);
+  }
+
+  onLegendClick(chart) {
+    var total = 0;
+    for(const item of chart.data()) {
+      if(chart.internal.isTargetToShow(item.id)){
+        total += item.values[0].value;
+      }
+    }
+    $('.c3-chart-arcs-title', $(chart.element)).text(total);
   }
 
   configureChart() {
@@ -99,8 +112,8 @@ class CloudWorkloadCountWidget extends React.Component {
     //render
     return(
       <Widget widgetClass="chart-legend-right">
-        <WidgetHeader icon="/assets/infrastructure/clouds.svg#Layer_1" title="Cloud Workloads" link="/infrastructure/clouds"/>
-        <DonutChartWidget tooltip="morpheus-value" data={this.state.data} config={this.state.chartConfig}/>
+        <WidgetHeader title="Cluster Workloads" icon="/assets/infrastructure/clusters.svg#Layer_1" title="Cluster Workloads" link="/infrastructure/clusters"/>
+        <DonutChartWidget data={this.state.data} config={this.state.chartConfig} onLegendClick={this.onLegendClick}/>
       </Widget>
     );
   }
@@ -108,9 +121,9 @@ class CloudWorkloadCountWidget extends React.Component {
 }
 
 //register it
-Morpheus.components.register('cloud-workload-count-widget', CloudWorkloadCountWidget);
+Morpheus.components.register('cluster-workload-count-widget', ClusterWorkloadCountWidget);
 
 $(document).ready(function() {
-	const root = ReactDOM.createRoot(document.querySelector('#cloud-workload-count-widget'));
-	root.render(<CloudWorkloadCountWidget/>)
+  const root = ReactDOM.createRoot(document.querySelector('#cluster-workload-count-widget'));
+  root.render(<ClusterWorkloadCountWidget/>)
 });

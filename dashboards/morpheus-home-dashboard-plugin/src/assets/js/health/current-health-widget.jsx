@@ -64,6 +64,7 @@ class CurrentHealthWidget extends React.Component {
     var showChart = isLoaded == true && this.state.data.success == true;
     var healthData = this.state.data && this.state.data.health ? this.state.data.health : {};
     var cpuStatus = healthData.cpu && healthData.cpu.status ? healthData.cpu.status : 'unknown';
+    var storageStatus = healthData.storage && healthData.storage.status ? healthData.storage.status : 'unknown';
     var memoryStatus = healthData.memory && healthData.memory.status ? healthData.memory.status : 'unknown';
     var dbStatus = healthData.database && healthData.database.status ? healthData.database.status : 'unknown';
     var queueStatus = healthData.rabbit && healthData.rabbit.status ? healthData.rabbit.status : 'unknown';
@@ -85,20 +86,16 @@ class CurrentHealthWidget extends React.Component {
               <tr>
                 <td className="col-xs"><HealthStatusIcon status={cpuStatus}/></td>
                 <td>{Morpheus.utils.message('gomorpheus.label.cpu')}</td>
-              </tr>
-              <tr>
-                <td><HealthStatusIcon status={memoryStatus}/></td>
+                <td className="col-xs"><HealthStatusIcon status={memoryStatus}/></td>
                 <td>{Morpheus.utils.message('gomorpheus.label.memory')}</td>
+                <td className="col-xs"><HealthStatusIcon status={storageStatus}/></td>
+                <td>{Morpheus.utils.message('gomorpheus.label.storage')}</td>
               </tr>
               <tr>
-                <td><HealthStatusIcon status={dbStatus}/></td>
+                <td className="col-xs"><HealthStatusIcon status={dbStatus}/></td>
                 <td>{Morpheus.utils.message('gomorpheus.label.database')}</td>
-              </tr>
-              <tr>
                 <td><HealthStatusIcon status={queueStatus}/></td>
                 <td>{Morpheus.utils.message('gomorpheus.label.queues')}</td>
-              </tr>
-              <tr>
                 <td><HealthStatusIcon status={searchStatus}/></td>
                 <td>{Morpheus.utils.message('gomorpheus.label.search')}</td>
               </tr>
@@ -120,4 +117,3 @@ $(document).ready(function () {
   const root = ReactDOM.createRoot(document.querySelector('#current-health-widget'));
   root.render(<CurrentHealthWidget/>)
 });
-
