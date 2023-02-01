@@ -2,6 +2,7 @@ package com.morpheusdata.dashboard
 
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.dashboard.clouds.*
+import com.morpheusdata.dashboard.clusters.*
 import com.morpheusdata.model.Permission
 import groovy.util.logging.Slf4j
 
@@ -51,6 +52,10 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			//clusters
 			ClusterWorkloadCountItemProvider clusterWorkloadCountProvider = new ClusterWorkloadCountItemProvider(this, morpheus)
 			this.pluginProviders.put(clusterWorkloadCountProvider.code, clusterWorkloadCountProvider)
+			ClusterTypeCountItemProvider clusterTypeCountProvider = new ClusterTypeCountItemProvider(this, morpheus)
+			this.pluginProviders.put(clusterTypeCountProvider.code, clusterTypeCountProvider)
+			ClusterCapacityItemProvider clusterCapacityProvider = new ClusterCapacityItemProvider(this, morpheus)
+			this.pluginProviders.put(clusterCapacityProvider.code, clusterCapacityProvider)
 			//jobs
 			JobExecutionStatsItemProvider jobExecutionStatsItemProvider = new JobExecutionStatsItemProvider(this, morpheus)
 			this.pluginProviders.put(jobExecutionStatsItemProvider.code, jobExecutionStatsItemProvider)
@@ -79,6 +84,9 @@ class MorpheusHomeDashboardPlugin extends Plugin {
 			//add the cloud list dashboard
 			CloudListDashboardProvider cloudListDashboardProvider = new CloudListDashboardProvider(this, morpheus)
 			this.pluginProviders.put(cloudListDashboardProvider.code, cloudListDashboardProvider)
+			//add the cluster list dashboard
+			ClusterListDashboardProvider clusterListDashboardProvider = new ClusterListDashboardProvider(this, morpheus)
+			this.pluginProviders.put(clusterListDashboardProvider.code, clusterListDashboardProvider)
 		} catch(e) {
 			log.error("error initializing morpheus home dashboard plugin: ${e}", e)
 		}

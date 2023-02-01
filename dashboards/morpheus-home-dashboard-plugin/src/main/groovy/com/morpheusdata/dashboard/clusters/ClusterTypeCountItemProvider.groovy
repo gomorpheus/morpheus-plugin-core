@@ -1,4 +1,4 @@
-package com.morpheusdata.dashboard
+package com.morpheusdata.dashboard.clusters
 
 import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
 import com.morpheusdata.core.MorpheusContext
@@ -17,12 +17,12 @@ import groovy.util.logging.Slf4j
  * @author bdwheeler
  */
 @Slf4j
-class ClusterWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
+class ClusterTypeCountItemProvider extends AbstractDashboardItemTypeProvider {
 
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-	ClusterWorkloadCountItemProvider(Plugin plugin, MorpheusContext context) {
+	ClusterTypeCountItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}
@@ -39,12 +39,12 @@ class ClusterWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider
 
 	@Override
 	String getCode() {
-		return 'dashboard-item-cluster-workload-count'
+		return 'dashboard-item-cluster-type-count'
 	}
 
 	@Override
 	String getName() {
-		return 'Cluster workload counts'
+		return 'Cluster type counts'
 	}
 
 	@Override
@@ -55,11 +55,11 @@ class ClusterWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider
 		rtn.name = getName()
 		rtn.code = getCode()
 		rtn.category = 'cluster'
-		rtn.title = 'cluster workload count'
-		rtn.description = 'cluster workload count'
+		rtn.title = 'cluster type count'
+		rtn.description = 'cluster type count'
 		rtn.uiSize = 'md'
-		rtn.templatePath = 'hbs/clusters/cluster-workload-count-widget'
-		rtn.scriptPath = 'clusters/cluster-workload-count-widget.js'
+		rtn.templatePath = 'hbs/clusters/cluster-type-count-widget'
+		rtn.scriptPath = 'clusters/cluster-type-count-widget.js'
 		return rtn
 	}
 
