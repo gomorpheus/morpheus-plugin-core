@@ -57,15 +57,11 @@ class CloudWorkloadCountWidget extends React.Component {
     //set the data list
     newState.data.items = []
     newState.data.total = 0;
-    if(results.items) {
-      for(var index in results.items) {
-        var row = results.items[index];
-        var rowName = Morpheus.utils.slice(row.name, 25);
-        var dataRow = [rowName, row.value];
-        newState.data.items.unshift(dataRow);
-        newState.data.total += row.value;
-      }
-    }
+    //extract the data
+    var chartData = Morpheus.chart.extractNameValueData(results.items, 25, 100);
+    newState.data.items = chartData.items;
+    newState.data.total = chartData.total;
+    //mark loaded
     newState.loaded = true;
     newState.data.loaded = true;
     newState.date = Date.now();
@@ -81,9 +77,9 @@ class CloudWorkloadCountWidget extends React.Component {
       legend: {
         show: true,
         position: 'inset', 
-        inset: { anchor:'top-left', x:100, y:0, step:100 }
+        inset: { anchor:'top-left', x:110, y:0, step:100 }
       },
-      size: { height:140, width:340 },
+      size: { height:142, width:360 },
       donut: {
         position: 'left'
       }
