@@ -100,44 +100,16 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.total = 0;
     newState.data.maxValue = 0;
     newState.data.totals = [];
-    //apply results
-    if(results.items) {
-      //add the x axis periods
-      var axisRow = ['x'];
-      var groupSet = [];
-      //add results
-      for(var index in results.items) {
-        var row = results.items[index];
-        var rowName = Morpheus.utils.slice(row.name, 25);
-        var dataRow = [rowName];
-        groupSet.push(rowName);
-        //make the xaxis
-        for(var valueIndex in row.values) {
-          var valueRow = row.values[valueIndex];
-          if(index == 0) {
-            var axisValue = valueRow[0] // * 1000 - already in milliseconds;
-            //console.log('ts - ' + axisValue);
-            axisRow.push(axisValue);
-            newState.data.totals[valueIndex] = 0;
-          }
-          var rowItem = parseFloat(valueRow[1]);
-          dataRow.push(rowItem);
-          newState.data.totals[valueIndex] += rowItem;
-          newState.data.total += rowItem;
-          if(newState.data.totals[valueIndex] > newState.data.maxValue)
-            newState.data.maxValue = newState.data.totals[valueIndex];
-        }
-        newState.data.items.push(dataRow);
-        newState.data.types[rowName] = 'area';
-      }
-      //add axis row
-      newState.data.axisItems.push(axisRow);
-      //add groups
-      newState.data.groups.push(groupSet);
-    }
-    //set axis config
-    newState.data.maxValue = Morpheus.utils.getNextBaseTen(newState.data.maxValue);
-    //set loaded
+    //extract the data
+    var chartData = Morpheus.chart.extractNameValueTimeseriesData(results.items, 25, 100);
+    newState.data.items = chartData.items;
+    newState.data.total = chartData.total;
+    newState.data.totals = chartData.totals;
+    newState.data.types = chartData.types;
+    newState.data.axisItems.push(chartData.dateItems);
+    newState.data.groups.push(chartData.groupItems);
+    newState.data.maxValue = Morpheus.utils.getNextBaseTen(chartData.maxValue);
+    //mark loaded
     newState.loaded = true;
     newState.data.loaded = true;
     newState.date = Date.now();
