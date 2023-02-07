@@ -43,7 +43,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 			'bigIpPluginPolicyControls', 'bigIpPluginPolicyRequires', 'bigIpPluginPolicyStrategies', 'bigIpPluginPolicyRuleField', 'bigIpPolicyRuleOperator',
 			'bigIpPluginPartitions', 'bigIpPluginVirtualServerPools', 'bigIpPluginVirtualServerProfiles', 'bigIpPluginVirtualServerPolicies',
 			'bigIpPluginVirtualServerScripts', 'bigIpPluginVirtualServerPersistence', 'bigIpPluginBalanceModes', 'bigIpPluginNodes', 'bigIpPluginHealthMonitors',
-			'bigIpPluginPoolPersistenceModes', 'bigIpPluginProfileServiceTypes', 'bigIpPluginHttpProxies'
+			'bigIpPluginPoolPersistenceModes', 'bigIpPluginProfileServiceTypes', 'bigIpPluginHttpProxies', 'bigIpPluginVirtualServerProtocols'
 		]
 	}
 
@@ -76,7 +76,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 	}
 
 	def bigIpPluginPartitions(input) {
-		def params = [Collection, Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def loadBalancerId
 		if (params.domain?.loadBalancerId) {
 			loadBalancerId = params.domain.loadBalancerId
@@ -95,25 +95,26 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return options
 	}
 
-	def bigIpPluginVirtualServerPools(params) {
-		def rtn = []
+	def bigIpPluginVirtualServerPools(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def lbInstance = params.domain
 		def loadBalancer = lbInstance?.loadBalancer
 		def loadBalancerId = loadBalancer ? loadBalancer.id : params.loadBalancerId
 		def pools = []
 		if(loadBalancerId) {
-			morpheusContext.loadBalancer.pool.listById([loadBalancerId]).blockingSubscribe { pool ->
+			morpheusContext.loadBalancer.pool.listSyncProjections(loadBalancerId).blockingSubscribe { pool ->
 				pools << [name: pool.name, value: pool.id]
 			}
 		}
-		return rtn
+		return pools
 	}
 
 	def bigIpPluginVirtualServerProtocols(params) {
 		return BigIpUtility.VIRTUAL_SERVER_PROTOCOL_LIST
 	}
 
-	def bigIpPluginVirtualServerProfiles(params) {
+	def bigIpPluginVirtualServerProfiles(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def optionType = params.optionType
 		def account = morpheusContext.loadBalancer.getAccountById(params.accountId.toLong()).blockingGet()
 		def query = params.phrase ?: params.q
@@ -130,14 +131,16 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 				if (optionType?.fieldCondition)
 					queryArgs << [name:'serviceType', value:optionType.fieldCondition, operator:'eq']
 
-				queryArgs << [operator:'or', args:[
-				    [name:'name', value:"%${query}%", operator:'ilike'],
-					[name:'description', value:"%${query}%", operator:'ilike'],
-					[name:'serviceType', value:"%${query}%", operator:'ilike']
-				]]
+				if (query) {
+					queryArgs << [operator: 'or', args: [
+						[name: 'name', value: "%${query}%", operator: 'ilike'],
+						[name: 'description', value: "%${query}%", operator: 'ilike'],
+						[name: 'serviceType', value: "%${query}%", operator: 'ilike']
+					]]
+				}
 				queryObject.criteria = queryArgs
 
-				morpheusContext.loadBalancer.profile.queryProfiles(queryObject).subscribe { profile ->
+				morpheusContext.loadBalancer.profile.queryProfiles(queryObject).blockingSubscribe { profile ->
 					profiles << profile
 				}
 			}
@@ -157,7 +160,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		}
 		queryObject.sort = [[name:'name', direction:'asc']]
 
-		morpheusContext.loadBalancer.profile.queryProfiles(queryObject).subscribe { profile ->
+		morpheusContext.loadBalancer.profile.queryProfiles(queryObject).blockingSubscribe { profile ->
 			profiles << profile
 		}
 
@@ -166,7 +169,8 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		}
 	}
 
-	def bigIpPluginVirtualServerPolicies(params) {
+	def bigIpPluginVirtualServerPolicies(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def rtn = []
 		def account = morpheusContext.loadBalancer.getAccountById(params.accountId.toLong()).blockingGet()
 		def query = params.phrase ?: params.q
@@ -185,10 +189,12 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 				if (includeDraft)
 					queryArgs << [name:'draft', value:false, operator:'eq']
 
-				queryArgs << [operator:'or', args:[
-					[name:'name', value:"%${query}%", operator:'ilike'],
-					[name:'description', value:"%${query}%", operator:'ilike']
-				]]
+				if (query) {
+					queryArgs << [operator: 'or', args: [
+						[name: 'name', value: "%${query}%", operator: 'ilike'],
+						[name: 'description', value: "%${query}%", operator: 'ilike']
+					]]
+				}
 				queryObject.criteria = queryArgs
 			}
 		}
@@ -205,7 +211,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		}
 		queryObject.sort = [[name:'name', direction:'asc']]
 
-		morpheusContext.loadBalancer.policy.queryPolicies(queryObject).subscribe { policy ->
+		morpheusContext.loadBalancer.policy.queryPolicies(queryObject).blockingSubscribe { policy ->
 			policies << policy
 		}
 		return policies.collect { policy ->
@@ -237,7 +243,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 			]]
 			queryObject.sort = [[name:'name', direction:'asc']]
 
-			morpheusContext.loadBalancer.script.queryScripts(queryObject).subscribe { script ->
+			morpheusContext.loadBalancer.script.queryScripts(queryObject).blockingSubscribe { script ->
 				scripts << script
 			}
 			rtn = scripts.collect{ script -> [id:script.id, name:script.name, value:script.id] }
@@ -245,11 +251,13 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return rtn
 	}
 
-	def bigIpPluginVirtualServerPersistence(params) {
+	def bigIpPluginVirtualServerPersistence(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		return bigIpPluginVirtualServerPolicies(params + [policyType:'persistence'])
 	}
 
-	def bigIpPluginNodes(params) {
+	def bigIpPluginNodes(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def rtn = []
 		def parentId = params.parentId ?: params.parentid
 		def nodes = []
@@ -261,13 +269,16 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 				def queryArgs = [
 					[name:'loadBalancer.id', value:loadBalancer.id, operator:'eq']
 				]
-				queryArgs << [operator:'or', args:[
-					[name:'name', value:"%${query}%", operator:'ilike'],
-					[name:'ipAddress', value:"%${query}%", operator:'ilike']
-				]]
+				if (query) {
+					queryArgs << [operator: 'or', args: [
+						[name: 'name', value: "%${query}%", operator: 'ilike'],
+						[name: 'ipAddress', value: "%${query}%", operator: 'ilike']
+					]]
+				}
+				queryObject.criteria = queryArgs
 				queryObject.sort = [[name:'name', direction:'asc']]
 
-				morpheusContext.loadBalancer.node.queryNodes(queryObject).subscribe { node ->
+				morpheusContext.loadBalancer.node.queryNodes(queryObject).blockingSubscribe { node ->
 					nodes << node
 				}
 				if(nodes?.size() > 0) {
@@ -279,7 +290,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 	}
 
 	def bigIpPluginHealthMonitors(input) {
-		def params = [Collection, Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		def rtn = []
 		def monitors = []
 		def queryObject = [:]
@@ -304,6 +315,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 					[name:'monitorType', value:"%${query}%", operator:'ilike']
 				]]
 			}
+			queryObject.criteria = queryArgs
 			queryObject.sort = [[name:'name', direction:'asc']]
 
 			morpheusContext.loadBalancer.monitor.queryHealthMonitors(queryObject).blockingSubscribe { monitor ->

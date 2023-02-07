@@ -56,9 +56,16 @@ public interface MorpheusLoadBalancerPolicyService {
 	 * Retrive a load balancer policy based on externalId and load balancer (used in sync)
 	 * @param externalId
 	 * @param loadBalancer
-	 * @return
+	 * @return a {@link NetworkLoadBalancerPolicy} if found in the morpheus db
 	 */
 	Single<Optional<NetworkLoadBalancerPolicy>> findByExternalIdAndLoadBalancer(String externalId, NetworkLoadBalancer loadBalancer);
+
+	/**
+	 * This method will retrieve a load balancer policy based on its morpheus primary key
+	 * @param id - morpheus primary key for policy
+	 * @return a {@link NetworkLoadBalancerPolicy} if found in the morpheus db
+	 */
+	Single<Optional<NetworkLoadBalancerPolicy>> findById(Long id);
 
 	/**
 	 * Use this method to query the database for load balancer policies

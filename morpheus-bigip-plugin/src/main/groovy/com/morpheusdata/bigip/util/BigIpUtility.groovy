@@ -191,4 +191,11 @@ class BigIpUtility {
 		}
 		return rtn
 	}
+
+	static String getLoadBalancingMode(String mode) {
+		def rtn = 'least-connections-member'
+		if(mode == 'roundrobin')
+			rtn = 'round-robin'
+		return rtn
+	}
 }

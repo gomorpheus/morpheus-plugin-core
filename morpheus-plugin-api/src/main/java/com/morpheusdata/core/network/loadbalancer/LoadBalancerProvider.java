@@ -58,4 +58,17 @@ public interface LoadBalancerProvider extends PluginProvider {
 	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 	ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 	ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	ServiceResponse createLoadBalancerNode(NetworkLoadBalancerNode node);
+	ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode node);
+	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node);
+	ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node);
+	ServiceResponse createLoadBalancerPool(NetworkLoadBalancerPool pool);
+	ServiceResponse deleteLoadBalancerPool(NetworkLoadBalancerPool pool);
+	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool);
+	ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool);
+	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 }

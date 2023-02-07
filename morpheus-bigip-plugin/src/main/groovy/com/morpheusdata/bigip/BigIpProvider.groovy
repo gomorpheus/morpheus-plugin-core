@@ -16,9 +16,12 @@ import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.network.loadbalancer.LoadBalancerProvider
 import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.HttpApiClient
+import com.morpheusdata.core.util.MorpheusUtils
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.NetworkLoadBalancer
+import com.morpheusdata.model.NetworkLoadBalancerInstance
 import com.morpheusdata.model.NetworkLoadBalancerMonitor
+import com.morpheusdata.model.NetworkLoadBalancerNode
 import com.morpheusdata.model.NetworkLoadBalancerPool
 import com.morpheusdata.model.NetworkLoadBalancerProfile
 import com.morpheusdata.model.NetworkLoadBalancerType
@@ -269,6 +272,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'name',
 			code:'plugin.bigip.profile.name',
 			fieldName:'name',
+			fieldContext:'domain',
 			displayOrder:0,
 			fieldLabel:'name',
 			required:true,
@@ -278,6 +282,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'description',
 			code:'plugin.bigip.profile.description',
 			fieldName:'description',
+			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Description',
 			required:false,
@@ -287,6 +292,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'serviceType',
 			code:'plugin.bigip.profile.serviceType',
 			fieldName:'serviceType',
+			fieldContext:'domain',
 			displayOrder:2,
 			fieldLabel:'Service Type',
 			required:true,
@@ -297,6 +303,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'proxyType',
 			code:'plugin.bigip.profile.proxyType',
 			fieldName:'proxyType',
+			fieldContext:'domain',
 			displayOrder:3,
 			fieldLabel:'Proxy Type',
 			required:false,
@@ -308,6 +315,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'sslCert',
 			code:'plugin.bigip.profile.sslCert',
 			fieldName:'sslCert',
+			fieldContext:'domain',
 			displayOrder:4,
 			fieldLabel:'SSL Cert',
 			required:false,
@@ -326,6 +334,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'name',
 			code:'plugin.bigip.pool.name',
 			fieldName:'name',
+			fieldContext:'domain',
 			displayOrder:10,
 			fieldLabel:'Name',
 			required:true,
@@ -335,6 +344,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'description',
 			code:'plugin.bigip.pool.description',
 			fieldName:'description',
+			fieldContext:'domain',
 			displayOrder:11,
 			fieldLabel:'Description',
 			required:false,
@@ -343,17 +353,19 @@ class BigIpProvider implements LoadBalancerProvider {
 		poolOptions << new OptionType(
 			name:'balanceMode',
 			code:'plugin.bigip.pool.balanceMode',
-			fieldName:'balanceMode',
+			fieldName:'vipBalance',
+			fieldContext:'domain',
 			displayOrder:12,
 			fieldLabel:'Balance Mode',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'balanceModes'
+			optionSource:'bigIpPluginBalanceModes'
 		)
 		poolOptions << new OptionType(
 			name:'port',
 			code:'plugin.bigip.pool.port',
 			fieldName:'port',
+			fieldContext:'domain',
 			displayOrder:13,
 			fieldLabel:'Service Port',
 			required:true,
@@ -362,7 +374,8 @@ class BigIpProvider implements LoadBalancerProvider {
 		poolOptions << new OptionType(
 			name:'members',
 			code:'plugin.bigip.pool.members',
-			fieldName:'members',
+			fieldName:'members.id',
+			fieldContext:'domain',
 			displayOrder:14,
 			fieldLabel:'Members',
 			required:false,
@@ -374,23 +387,25 @@ class BigIpProvider implements LoadBalancerProvider {
 		poolOptions << new OptionType(
 			name:'monitors',
 			code:'plugin.bigip.pool.monitors',
-			fieldName:'monitors',
+			fieldName:'monitors.id',
+			fieldContext:'domain',
 			displayOrder:15,
 			fieldLabel:'Health Monitors',
 			required:false,
 			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
 			optionSource:'bigIpPluginHealthMonitors'
 		)
-		poolOptions << new OptionType(
+		/* poolOptions << new OptionType(
 			name:'persistence',
 			code:'plugin.bigip.pool.persistence',
 			fieldName:'persistence',
+			fieldContext:'domain',
 			displayOrder:16,
 			fieldLabel:'Persistence',
 			required:false,
 			inputType:OptionType.InputType.SELECT,
 			optionSource:'bigIpPluginPoolPersistenceModes'
-		)
+		) */
 		poolOptions << getPartitionOptionType()
 
 		return poolOptions
@@ -417,17 +432,6 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Description',
 			required:false,
 			inputType:OptionType.InputType.TEXT
-		)
-		monitorOptions << new OptionType(
-			name:'enabled',
-			code:'plugin.bigip.monitor.enabled',
-			fieldName:'enabled',
-			fieldContext:'domain',
-			displayOrder:3,
-			fieldLabel:'Enabled',
-			required:true,
-			inputType:OptionType.InputType.CHECKBOX,
-			defaultValue:'on'
 		)
 		monitorOptions << new OptionType(
 			name:'monitor',
@@ -514,18 +518,20 @@ class BigIpProvider implements LoadBalancerProvider {
 		virtualServerOptions << new OptionType(
 			name:'name',
 			code:'plugin.bigip.virtualService.name',
-			fieldName:'name',
+			fieldName:'vipName',
+			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
 			inputType:OptionType.InputType.TEXT
 		)
 		virtualServerOptions << new OptionType(
-			name:'description',
-			code:'plugin.bigip.virtualService.description',
-			fieldName:'description',
+			name:'vipAddress',
+			code:'plugin.bigip.virtualService.vipHostname',
+			fieldName:'vipHostname',
+			fieldContext:'domain',
 			displayOrder:2,
-			fieldLabel:'Description',
+			fieldLabel:'VIP Hostname',
 			required:false,
 			inputType:OptionType.InputType.TEXT
 		)
@@ -533,6 +539,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'vipAddress',
 			code:'plugin.bigip.virtualService.vipAddress',
 			fieldName:'vipAddress',
+			fieldContext:'domain',
 			displayOrder:3,
 			fieldLabel:'VIP Address',
 			required:true,
@@ -542,75 +549,39 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'vipPort',
 			code:'plugin.bigip.virtualService.vipPort',
 			fieldName:'vipPort',
+			fieldContext:'domain',
 			displayOrder:4,
 			fieldLabel:'VIP Port',
 			required:true,
 			inputType:OptionType.InputType.TEXT
 		)
 		virtualServerOptions << new OptionType(
-			name:'active',
-			code:'plugin.bigip.virtualService.active',
-			fieldName:'active',
-			displayOrder:5,
-			fieldLabel:'Enabled',
-			required:true,
-			inputType:OptionType.InputType.CHECKBOX,
-			defaultValue:'on'
-		)
-		virtualServerOptions << new OptionType(
-			name:'protocol',
-			code:'plugin.bigip.virtualService.protocol',
-			fieldName:'protocol',
-			displayOrder:6,
-			fieldLabel:'Protocol',
-			required:true,
-			inputType:OptionType.InputType.SELECT,
-			optionSource:'virtualServerProtocols'
-		)
-		virtualServerOptions << new OptionType(
-			name:'profiles',
-			code:'plugin.bigip.virtualService.profiles',
-			fieldName:'profiles',
-			displayOrder:7,
-			fieldLabel:'Profiles',
-			required:false,
-			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
-			optionSource:'bigIpPluginVirtualServerProfiles'
-		)
-		virtualServerOptions << new OptionType(
-			name:'policies',
-			code:'plugin.bigip.virtualService.policies',
-			fieldName:'policies',
-			displayOrder:8,
-			fieldLabel:'Policies',
-			required:false,
-			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
-			optionSource:'bigIpPluginVirtualServerPolicies'
-		)
-		virtualServerOptions << new OptionType(
-			name:'scripts',
-			code:'plugin.bigip.virtualService.scripts',
-			fieldName:'scripts',
-			displayOrder:9,
-			fieldLabel:'iRules',
-			required:false,
-			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
-			optionSource:'bigIpPluginVirtualServerScripts',
-		)
-		virtualServerOptions << new OptionType(
 			name:'persistence',
 			code:'plugin.bigip.virtualService.persistence',
-			fieldName:'persistence',
-			displayOrder:10,
+			fieldName:'vipSticky',
+			fieldContext:'domain',
+			displayOrder:5,
 			fieldLabel:'Persistence',
 			required:false,
 			inputType:OptionType.InputType.SELECT,
 			optionSource:'bigIpPluginVirtualServerPersistence'
 		)
 		virtualServerOptions << new OptionType(
+			name:'balanceMode',
+			code:'plugin.bigip.virtualService.balanceMode',
+			fieldName:'vipBalance',
+			fieldContext:'domain',
+			displayOrder:6,
+			fieldLabel:'Balance Mode',
+			required:true,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginBalanceModes'
+		)
+		virtualServerOptions << new OptionType(
 			name:'defaultPool',
 			code:'plugin.bigip.virtualService.defaultPool',
 			fieldName:'defaultPool',
+			fieldContext:'domain',
 			displayOrder:11,
 			fieldLabel:'Default Pool',
 			required:false,
@@ -626,6 +597,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'name',
 			code:'plugin.bigip.node.name',
 			fieldName:'name',
+			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
@@ -635,6 +607,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'description',
 			code:'plugin.bigip.node.description',
 			fieldName:'description',
+			fieldContext:'domain',
 			displayOrder:2,
 			fieldLabel:'Description',
 			required:false,
@@ -644,6 +617,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'ipAddress',
 			code:'plugin.bigip.node.ipAddress',
 			fieldName:'ipAddress',
+			fieldContext:'domain',
 			displayOrder:3,
 			fieldLabel:'IP Address',
 			required:true,
@@ -652,7 +626,8 @@ class BigIpProvider implements LoadBalancerProvider {
 		nodeOptions << new OptionType(
 			name:'monitor',
 			code:'plugin.bigip.node.monitor',
-			fieldName:'monitor',
+			fieldName:'monitor.id',
+			fieldContext:'domain',
 			displayOrder:4,
 			fieldLabel:'Health Monitor',
 			required:true,
@@ -663,6 +638,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'port',
 			code:'plugin.bigip.node.port',
 			fieldName:'port',
+			fieldContext:'domain',
 			displayOrder:5,
 			fieldLabel:'Port',
 			required:true,
@@ -1164,6 +1140,7 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	}
 
+	// service methods for api interaction
 	@Override
 	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
 		return null
@@ -1295,11 +1272,368 @@ class BigIpProvider implements LoadBalancerProvider {
 			}
 		}
 		catch (Throwable t) {
-
+			log.error("Unable to update health monitor: ${t.message}", t)
 		}
 	}
 
-	def uploadHealthMonitor(Map opts) {
+	@Override
+	ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			if(!monitor.name) {
+				rtn.errors.name = 'Name is required'
+			}
+
+			//extra config
+			if(monitor.config) {
+				log.debug("validating monitor config: {}", monitor.config)
+				//try to parse it - show error if bad
+				try {
+					new groovy.json.JsonSlurper().parseText(monitor.config)
+				} catch(e2) {
+					//bad
+					rtn.errors.monitorConfig = 'monitor config value is invalid json'
+				}
+			}
+			//results
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating monitor: ${e}", e)
+		}
+		return rtn
+	}
+
+	// Nodes crud
+	@Override
+	ServiceResponse createLoadBalancerNode(NetworkLoadBalancerNode loadBalancerNode) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			def loadBalancer = loadBalancerNode.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def nodeConfig = [:] + apiConfig
+			nodeConfig.name = loadBalancerNode.name
+			nodeConfig.port = loadBalancerNode.port
+			nodeConfig.description = loadBalancerNode.description
+			nodeConfig.ipAddress = loadBalancerNode.ipAddress
+			nodeConfig.healthMonitor = loadBalancerNode.monitor?.externalId
+			nodeConfig.partition = loadBalancerNode.partition
+			//create it
+			log.debug("node config: ${nodeConfig}")
+			def results = createServer(nodeConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.data = [authToken:apiConfig.authToken]
+			// if successful make sure the new id of the node is set before returning to caller so it may be persisted
+			if(rtn.success == true) {
+				loadBalancerNode.externalId = results.node?.fullPath
+				rtn.data.node = loadBalancerNode
+				rtn.success = true
+			}
+			else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.data?.message ?: results.msg
+			}
+		} catch(Throwable t) {
+			log.error("error creating node: ${t}", t)
+			rtn.msg = 'unknown error creating node: ' + t.message
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode loadBalancerNode) {
+		def rtn = [success:false]
+		try {
+			def loadBalancer = loadBalancerNode.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def nodeConfig = [:] + apiConfig
+			nodeConfig.externalId = loadBalancerNode.externalId
+			nodeConfig.name = loadBalancerNode.name
+			nodeConfig.authToken = apiConfig.authToken
+			nodeConfig.partition = loadBalancerNode.partition
+			def results = deleteServer(nodeConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.found = results.found ?: false
+			rtn.authToken = results.authToken
+		}
+		catch(Throwable t) {
+			log.error("error removing node: ${t}", t)
+			rtn.msg = 'unknown error removing node: ' + t.message
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
+	}
+
+	@Override
+	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node) {
+		return null
+	}
+
+	@Override
+	ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			if(!node.name) {
+				rtn.errors.name = 'Name is required'
+			}
+			if(!node.ipAddress) {
+				rtn.errors.ipAddress = 'Address is required'
+			}
+			if (!node.port) {
+				rtn.errors.port = 'Port is required'
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating node: ${e}", e)
+		}
+		return rtn
+	}
+
+	// Crud for lb pools
+	@Override
+	ServiceResponse createLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = pool.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def poolConfig = [:] + apiConfig
+			def itemConfig = pool.getConfigMap()
+			//fill in config
+			poolConfig.name = pool.name
+			poolConfig.port = pool.port
+			poolConfig.description = pool.description
+			poolConfig.partition = pool.partition
+			poolConfig.loadBalancingMode = BigIpUtility.getLoadBalancingMode(pool.vipBalance)
+			poolConfig.authToken = apiConfig.authToken
+			if(pool.monitors?.size() > 0)
+				poolConfig.monitorName = pool.monitors.collect{ it.externalId }?.join(' and ')
+			//create it
+			log.debug("pool config: ${poolConfig}")
+			def results = createPool(poolConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.data.authToken = results.authToken
+			if(rtn.success == true) {
+				pool.externalId = results.pool?.fullPath
+				//add pool memebers
+				if(pool.members?.size() > 0) {
+					def memberConfig = apiConfig + [name:pool.name, partition:pool.partition, authToken:results.authToken]
+					memberConfig.members = pool.members.collect{ member -> return [name:member.node.name, partition:member.node.partition, port:(member.port ?: pool.port)] }
+					def memberResults = addPoolMembers(memberConfig)
+					log.debug("memberResults: {}", memberResults)
+					if(memberResults.success != true) {
+						rtn.msg = 'failed to assign pool members: ' + memberResults.msg
+					}
+				}
+			} else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results?.msg ?: results.message
+			}
+		} catch(e) {
+			log.error("error creating pool: ${e}", e)
+			rtn.msg = 'unknown error creating pool ' + e.message
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		ServiceResponse rtn = ServiceResponse.error()
+		try {
+			def loadBalancer = pool.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def poolConfig = [:] + apiConfig
+			poolConfig.externalId = pool.externalId
+			poolConfig.name = pool.name
+			poolConfig.partition = pool.partition
+			def results = deletePool(poolConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.msg = results.message
+		} catch(e) {
+			log.error("error removing pool: ${e}", e)
+			rtn.msg = 'unknown error removing pool ' + e.message
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
+	}
+
+	@Override
+	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		return null
+	}
+
+	@Override
+	ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		def rtn = ServiceResponse.error()
+		try {
+			if(!pool.name) {
+				rtn.errors.name = 'Name is required'
+			}
+			if (!pool.port) {
+				rtn.errors.port = 'Port is required'
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating pool: ${e}", e)
+		}
+		return rtn
+	}
+
+	// Crud for virtual servers/instance
+	@Override
+	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return null
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return null
+	}
+
+	@Override
+	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return null
+	}
+
+	@Override
+	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		def policySvc = morpheus.loadBalancer.policy
+		def rtn = [success:false, errors:[:], msg:null]
+		try {
+			//need a name
+			if(!instance.vipName) {
+				rtn.errors.vipName = 'Name is required'
+			}
+			if(!instance.vipProtocol) {
+				rtn.errors.vipProtocol = 'Protocol is required'
+			}
+			if(!instance.vipAddress) {
+				rtn.errors.vipAddress = 'Vip Address is required'
+			}
+			if(!instance.vipPort) {
+				rtn.errors.vipPort = 'Vip Port is required'
+			}
+
+			def policies = []
+			if(instanceConfig.policies?.id) {
+				if(instanceConfig.policies.id instanceof CharSequence) {
+					def policy = policySvc.findById(instanceConfig.policies.id.toLong()).blockingGet()
+					if(policy.value.isPresent())
+						policies << policy.value.get()
+				} else { //if(poolConfig.nodes.id instanceof Collection) {
+					instanceConfig.policies.id?.each { rowId ->
+						def rowLongId = rowId ? rowId.toLong() : null
+						def policy = rowLongId ? policySvc.findById(rowLongId).blockingGet() : null
+						if(policy.value.isPresent())
+							policies << policy.value.get()
+					}
+				}
+			}
+			//need either a policy or a pool
+			if(opts.mode != 'instance' && !opts.config?.defaultPool && policies?.size() == 0) {
+				rtn.errors.defaultPool = 'Pool or a policy is required'
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating virtual server: ${e}", e)
+		}
+		return rtn
+	}
+
+	def deleteServer(Map opts) {
+		def rtn = [success:false]
+		def server = loadServer(opts)
+		if(server.found == true) {
+			def nodeName = BigIpUtility.buildPartitionedName(opts)
+			def endpointPath = "${opts.path}/tm/ltm/node/${nodeName}"
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def results = callApi(params, 'DELETE')
+			rtn.success = results.success
+		}
+		else {
+			rtn.found = false
+			rtn.success = true
+		}
+		return rtn
+	}
+
+	def createServer(Map opts) {
+		def rtn = [success:false]
+		def server = loadServer(opts)
+		if(server.found == true) {
+			rtn.success = true
+			rtn.found = true
+			rtn.serverName = server.node.name
+			rtn.node = server.node
+		}
+		else {
+			def endpointPath = "${opts.path}/tm/ltm/node"
+			def data = [
+				name:opts.name,
+				address:opts.ipAddress,
+				description:opts.description,
+				monitor:opts.healthMonitor,
+				partition:opts.partition
+			]
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:server.authToken
+			]
+			def results = callApi(params, 'POST')
+			if (results.success) {
+				rtn.success = true
+				rtn.serverName = results.data.name
+				rtn.node = results.data
+			}
+			else {
+				rtn.msg = results.msg
+			}
+		}
+		return rtn
+	}
+
+	def loadServer(Map opts) {
+		def rtn = [success:false, found:false]
+		def nodeName = BigIpUtility.buildPartitionedName(opts)
+		def endpointPath = "${opts.path}/tm/ltm/node/${nodeName}"
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+		def results = callApi(params, 'GET')
+		log.debug("results: ${results}")
+		if(results.success) {
+			rtn.success = true
+			rtn.found = true
+			rtn.name = opts.name
+			rtn.node = results.data
+			rtn.authToken = opts.authToken
+		}
+		else {
+			rtn.msg = results.msg
+		}
+		return rtn
+	}
+
+	def updateHealthMonitor(Map opts) {
 		def rtn = [success:false]
 		def monitor = loadHealthMonitor(opts)
 		if(monitor.found != true) {
@@ -1433,6 +1767,121 @@ class BigIpProvider implements LoadBalancerProvider {
 			}
 		}
 		else {
+			rtn.found = false
+			rtn.success = true
+		}
+		return rtn
+	}
+
+	def createPool(Map opts) {
+		def rtn = [success:false]
+		def pool = loadPool(opts)
+		if(pool.found == true) {
+			rtn.success = true
+			rtn.found = true
+			rtn.authToken = pool.authToken
+			rtn.pool = pool.pool
+		} else {
+			def endpointPath = "${opts.path}/tm/ltm/pool"
+			def data = [
+				name:opts.name,
+				description:opts.description ?: 'created by morpheus',
+				loadBalancingMode:opts.loadBalancingMode ?: 'least-connections-member',
+				partition:opts.partition
+			]
+			//add monitor
+			if(opts.monitorName)
+				data.monitor = opts.monitorName
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:pool.authToken
+			]
+			def results = callApi(params, 'POST')
+			if (results.success) {
+				rtn.success = results.success
+				rtn.pool = results.data
+				rtn.authToken = pool.authToken
+			}
+			else {
+				rtn.errors = results.errors
+				rtn.msg = results.msg
+			}
+		}
+		return rtn
+	}
+
+	def loadPool(Map opts) {
+		if (!opts.authToken) {
+			opts.authToken = getAuthToken(opts).data.token.token
+		}
+		def rtn = [success:false, found:false]
+		def poolName = BigIpUtility.buildPartitionedName(opts)
+		def endpointPath = "${opts.path}/tm/ltm/pool/${poolName}"
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+		def results = callApi(params, 'GET')
+		log.debug("results: ${results}")
+		if(results.success) {
+			rtn.success = true
+			rtn.found = true
+			rtn.pool = results.data ?: [:]
+			rtn.authToken = opts.authToken
+		}
+		return rtn
+	}
+
+	def addPoolMembers(Map opts) {
+		def rtn = [success:false]
+		def poolName = BigIpUtility.buildPartitionedName(opts)
+		def endpointPath = "${opts.path}/tm/ltm/pool/${poolName}"
+		def members = []
+		opts.members.each { member ->
+			members << [name:"${member.externalId ?: "/${member.partition}/${member.name}"}:${member.port ?: opts.port}"]
+		}
+		def data = [members:members]
+		//add monitor
+		if(opts.monitorName)
+			data.monitor = opts.monitorName
+
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			body:data,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+		def results = callApi(params, 'PATCH')
+		rtn = results
+		return rtn
+	}
+
+	def deletePool(Map opts) {
+		def rtn = [success:false]
+		def poolId = opts.externalId ?: opts.name
+		def pool = poolId ? loadPool(opts) : [found:false]
+		if(pool.found == true) {
+			def poolName = BigIpUtility.buildPartitionedName(opts)
+			def endpointPath = "${opts.path}/tm/ltm/pool/${poolName}"
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				username:opts.username,
+				password:opts.password,
+				authToken:pool.authToken
+			]
+			def results = callApi(params, 'DELETE')
+			rtn = results
+		} else {
 			rtn.found = false
 			rtn.success = true
 		}
