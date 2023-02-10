@@ -60,6 +60,10 @@ class LogTrendsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/logs/log-trends-widget'
 		rtn.scriptPath = 'logs/log-trends-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('logs').blockingGet()
+		def accessTypes = ['read', 'user', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

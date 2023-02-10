@@ -56,6 +56,10 @@ class JobExecutionStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'sm'
 		rtn.templatePath = 'hbs/jobs/job-execution-stats-widget'
 		rtn.scriptPath = 'jobs/job-execution-stats-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('job-executions').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

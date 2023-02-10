@@ -37,6 +37,10 @@ public class Permission extends MorpheusModel {
 		ServicePlan
 	}
 
+	public Permission() {
+		//blank constructor
+	}
+
 	public Permission(String name, String code, List<AccessType> availableAccessTypes) {
 		this.name = name;
 		this.code = code;

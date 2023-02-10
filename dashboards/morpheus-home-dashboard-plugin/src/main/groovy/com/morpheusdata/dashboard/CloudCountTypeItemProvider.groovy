@@ -60,6 +60,10 @@ class CloudCountTypeItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/clouds/cloud-count-type-widget'
 		rtn.scriptPath = 'clouds/cloud-count-type-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('admin-zones').blockingGet()
+		def accessTypes = ['read', 'group', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

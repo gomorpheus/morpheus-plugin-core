@@ -60,6 +60,10 @@ class RecentActivityItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/activity/recent-activity-widget'
 		rtn.scriptPath = 'activity/recent-activity-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('activity').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

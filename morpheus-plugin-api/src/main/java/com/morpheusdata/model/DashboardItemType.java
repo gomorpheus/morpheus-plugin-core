@@ -18,6 +18,10 @@ public class DashboardItemType extends MorpheusModel {
 	protected String uiSection; //area to group with.
 	protected String scriptPath;
 	protected String templatePath;
+	//permissions
+	protected Permission permission;
+	protected List<String> accessTypes;
+
 	//options
 	protected List<OptionType> optionTypes;
 
@@ -135,6 +139,23 @@ public class DashboardItemType extends MorpheusModel {
 
 	public void setOptionTypes(List<OptionType> optionTypes) {
 		this.optionTypes = optionTypes;
+	}
+
+	public Permission getPermission() {
+		return permission;
+	}
+
+	public void setPermission(Permission permission) {
+		markDirty("permission", permission);
+		this.permission = permission;
+	}
+
+	public List<String> getAccessTypes() {
+		return accessTypes;
+	}
+
+	public void setAccessTypes(List<String> accessTypes) {
+		this.accessTypes = accessTypes;
 	}
 	
 }

@@ -60,6 +60,10 @@ class CurrentAlarmsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/health/current-alarms-widget'
 		rtn.scriptPath = 'health/current-alarms-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('operations-alarms').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

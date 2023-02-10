@@ -60,6 +60,11 @@ class CurrentHealthItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'md widget-short'
 		rtn.templatePath = 'hbs/health/current-health-widget'
 		rtn.scriptPath = 'health/current-health-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('admin-health').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
+		//done
 		return rtn
 	}
 

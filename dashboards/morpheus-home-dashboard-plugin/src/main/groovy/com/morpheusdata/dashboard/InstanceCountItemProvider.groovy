@@ -60,6 +60,10 @@ class InstanceCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'sm'
 		rtn.templatePath = 'hbs/instances/instance-count-widget'
 		rtn.scriptPath = 'instances/instance-count-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('provisioning').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

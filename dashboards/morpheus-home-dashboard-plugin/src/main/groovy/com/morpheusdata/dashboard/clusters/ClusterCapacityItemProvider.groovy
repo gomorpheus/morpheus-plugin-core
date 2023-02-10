@@ -60,6 +60,10 @@ class ClusterCapacityItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/clusters/cluster-capacity-widget'
 		rtn.scriptPath = 'clusters/cluster-capacity-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('infrastructure-cluster').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

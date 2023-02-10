@@ -56,6 +56,10 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'sm'
 		rtn.templatePath = 'hbs/backups/backup-stats-widget'
 		rtn.scriptPath = 'backups/backup-stats-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('backups').blockingGet()
+		def accessTypes = ['view', 'read', 'user', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

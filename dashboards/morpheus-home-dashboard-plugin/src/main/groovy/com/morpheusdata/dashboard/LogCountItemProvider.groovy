@@ -60,6 +60,10 @@ class LogCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/logs/log-count-widget'
 		rtn.scriptPath = 'logs/log-count-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('logs').blockingGet()
+		def accessTypes = ['read', 'user', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

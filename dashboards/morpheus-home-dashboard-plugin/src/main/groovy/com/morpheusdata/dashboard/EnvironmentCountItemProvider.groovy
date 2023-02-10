@@ -60,6 +60,10 @@ class EnvironmentCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'xl widget-short'
 		rtn.templatePath = 'hbs/environment-count-widget'
 		rtn.scriptPath = 'environment-count-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('admin-health').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

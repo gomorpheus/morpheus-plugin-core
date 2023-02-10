@@ -60,6 +60,10 @@ class CloudWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'md'
 		rtn.templatePath = 'hbs/clouds/cloud-workload-count-widget'
 		rtn.scriptPath = 'clouds/cloud-workload-count-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('provisioning').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

@@ -59,6 +59,10 @@ class WorkflowExecutionsOverTimeItemProvider extends AbstractDashboardItemTypePr
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/workflow-execution-ot-widget'
 		rtn.scriptPath = 'workflow-executions-over-time-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('tasks').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

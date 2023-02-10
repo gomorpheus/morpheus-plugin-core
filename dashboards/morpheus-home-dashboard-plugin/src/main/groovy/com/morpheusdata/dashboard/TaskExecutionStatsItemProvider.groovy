@@ -56,6 +56,10 @@ class TaskExecutionStatsItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'sm'
 		rtn.templatePath = 'hbs/tasks/task-execution-stats-widget'
 		rtn.scriptPath = 'tasks/task-execution-stats-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('tasks').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 
