@@ -84,7 +84,7 @@ class UserFavoritesWidget extends React.Component {
               <tr>
                 <th className="col-lg">Instance</th>
                 <th>Type</th>
-                <th className="col-md">Address</th>
+                <th className="col-lg">Address</th>
               </tr>
             </thead>
             <tbody>

@@ -56,18 +56,17 @@ class InstanceCountWidget extends React.Component {
         var dataRow = results.items[index];
         var addRow = [];
         var rowName = dataRow.name.name;
-        addRow[0] = rowName;
-        addRow[1] = dataRow.value;
-        items.push(addRow);
-        colors[rowName] = Morph.chartConfigs.statusColor(rowName);
+        if(rowName) {
+          addRow[0] = rowName;
+          addRow[1] = dataRow.value;
+          items.push(addRow);
+          colors[rowName] = Morph.chartConfigs.statusColor(rowName);
+        }
       }
     }
     newState.data.items = items;
     newState.data.colors = colors;
     //set the count and total
-    newState.data.count = 0;
-    if(results.count)
-      newState.data.count = results.count;
     newState.data.total = 0;
     if(results.total)
       newState.data.total = results.total;

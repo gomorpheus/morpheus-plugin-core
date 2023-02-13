@@ -67,26 +67,13 @@ class InstanceCountCloudWidget extends React.Component {
     newState.data.config = results.config;
     newState.data.meta = results.meta;
     //set the data list
-    var items = [];
-    if(results.items) {
-      for(var index in results.items) {
-        var dataRow = results.items[index];
-        var addRow = [];
-        var rowName = dataRow.name;
-        addRow[0] = rowName;
-        addRow[1] = dataRow.value;
-        items.push(addRow);
-      }
-    }
-    newState.data.items = items;
-    //set the count and total
-    newState.data.count = 0;
-    if(results.count)
-      newState.data.count = results.count;
+    newState.data.items = []
     newState.data.total = 0;
-    if(results.total)
-      newState.data.total = results.total;
-    //mark it loaded
+    //extract the data
+    var chartData = Morpheus.chart.extractNameValueData(results.items, 25, 100);
+    newState.data.items = chartData.items;
+    newState.data.total = chartData.total;
+    //mark loaded
     newState.loaded = true;
     newState.data.loaded = true;
     newState.date = Date.now();
