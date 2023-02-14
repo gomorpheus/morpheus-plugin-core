@@ -98,6 +98,7 @@ class InstanceSync {
 				// after removals, restart load balancer usage tracking
 				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id, true)
 			}.start()
+			log.info('bigip virtual server sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failed to sync load balancer instance (virtual servers)", t)

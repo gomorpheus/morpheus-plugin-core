@@ -81,6 +81,7 @@ class PersistenceSync {
 			}.onDelete { removeItems->
 				svc.remove(removeItems).blockingGet()
 			}.start()
+			log.info('big ip persistence policy sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failed to sync persistence policies from the LB: ${t.message}", t)

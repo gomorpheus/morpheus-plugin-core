@@ -62,6 +62,7 @@ class CertificateSync {
 			}.onDelete { List<ReferenceDataSyncProjection> refData ->
 				svc.remove(refData).blockingGet()
 			}.start()
+			log.info('bigip certificate sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Unable to sync bigip certificates: ${t.message}", t)

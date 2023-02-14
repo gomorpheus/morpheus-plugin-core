@@ -671,7 +671,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	 */
 	@Override
 	ServiceResponse validate(NetworkLoadBalancer loadBalancer, Map opts) {
-		ServiceResponse response = ServiceResponse.error()
+		ServiceResponse response = ServiceResponse.prepare()
 		response.data = loadBalancer
 		def apiUrl = getApiUrl(loadBalancer)
 		boolean hostOnline = false
@@ -723,7 +723,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			hostOnline = ConnectionUtils.testHostConnectivity(apiHost, apiPort, true, true, null)
 
 			if (hostOnline) {
-				//cache stuff
+				//sync stuff
 				(new PartitionSync(this.plugin, loadBalancer)).execute()
 				(new NodesSync(this.plugin, loadBalancer)).execute()
 				(new HealthMonitorSync(this.plugin, loadBalancer)).execute()
@@ -742,6 +742,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			}
 			else {
 				rtn.addError("F5 BigIP is unreachable")
+				morpheusContext.loadBalancer.updateLoadBalancerStatus(loadBalancer, 'offline', 'Load Balancer is unreachable.')
 			}
 		}
 		catch (e) {
@@ -1159,7 +1160,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	@Override
 	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
 		def monitorSvc = morpheus.loadBalancer.monitor
-		ServiceResponse rtn = ServiceResponse.error()
+		ServiceResponse rtn = ServiceResponse.prepare()
 		try {
 			//prep up the create call and pass it
 			def loadBalancer = monitor.loadBalancer
@@ -1247,9 +1248,10 @@ class BigIpProvider implements LoadBalancerProvider {
 			monitorConfig.description = monitor.description
 			monitorConfig.timeout = monitor.monitorTimeout
 			monitorConfig.interval = monitor.monitorInterval
+			monitorConfig.destination = monitor.monitorDestination
 			monitorConfig.authToken = apiConfig.authToken
 			if(itemConfig['monitor.id']) {
-				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong())
+				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong()).blockingGet()
 				if(parentMonitor.value.isPresent())
 					monitorConfig.defaultsFrom = parentMonitor.value.get().name
 			}
@@ -1274,11 +1276,12 @@ class BigIpProvider implements LoadBalancerProvider {
 		catch (Throwable t) {
 			log.error("Unable to update health monitor: ${t.message}", t)
 		}
+		return rtn
 	}
 
 	@Override
 	ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
-		ServiceResponse rtn = ServiceResponse.error()
+		ServiceResponse rtn = ServiceResponse.prepare()
 		try {
 			if(!monitor.name) {
 				rtn.errors.name = 'Name is required'
@@ -1373,7 +1376,7 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	@Override
 	ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node) {
-		ServiceResponse rtn = ServiceResponse.error()
+		ServiceResponse rtn = ServiceResponse.prepare()
 		try {
 			if(!node.name) {
 				rtn.errors.name = 'Name is required'
@@ -1469,7 +1472,7 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	@Override
 	ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool) {
-		def rtn = ServiceResponse.error()
+		def rtn = ServiceResponse.prepare()
 		try {
 			if(!pool.name) {
 				rtn.errors.name = 'Name is required'
@@ -1922,7 +1925,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			return response.data.token?.token
 		}
 		else {
-			throw new RuntimeException("Failed to authenticate to bigip: ${response.msg}")
+			throw new RuntimeException("Failed to authenticate to bigip: ${response.data?.message ?: response.errors['error']}")
 		}
 	}
 

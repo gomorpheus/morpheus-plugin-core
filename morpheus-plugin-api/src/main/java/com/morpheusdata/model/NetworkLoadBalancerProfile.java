@@ -15,7 +15,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected User createdBy;
 	protected String visibility = "public"; //['public', 'private']
-	protected String description;
 	protected String internalId;
 	protected String externalId;
 	protected String config;
@@ -33,7 +32,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	protected String redirectUrl;
 	protected Boolean insertXforwardedFor = false;
 	protected String persistenceCookieName;
-	protected String partition;
 	protected Long persistenceExpiresIn; // seconds
 	protected Boolean editable;
 
@@ -94,15 +92,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
 		markDirty("visibility", visibility);
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-		markDirty("description", description);
 	}
 
 	public String getInternalId() {
@@ -251,15 +240,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	public void setPersistenceCookieName(String persistenceCookieName) {
 		this.persistenceCookieName = persistenceCookieName;
 		markDirty("persistenceCookieName", persistenceCookieName);
-	}
-
-	public String getPartition() {
-		return partition;
-	}
-
-	public void setPartition(String partition) {
-		this.partition = partition;
-		markDirty("partition", partition);
 	}
 
 	public Long getPersistenceExpiresIn() {

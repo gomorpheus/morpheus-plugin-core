@@ -13,6 +13,8 @@ import com.morpheusdata.model.NetworkLoadBalancerProfile;
 public class LoadBalancerProfileIdentityProjection extends MorpheusModel {
 	protected String externalId;
 	protected String name;
+	protected String partition;
+	protected String description;
 
 	public LoadBalancerProfileIdentityProjection(){}
 	public LoadBalancerProfileIdentityProjection(Long id, String externalId, String name) {
@@ -49,5 +51,23 @@ public class LoadBalancerProfileIdentityProjection extends MorpheusModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getPartition() {
+		return partition;
+	}
+
+	public void setPartition(String partition) {
+		this.partition = partition;
+		markDirty("partition", partition);
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+		markDirty("description", description);
 	}
 }

@@ -83,6 +83,7 @@ class PartitionSync {
 			}.onDelete { List<ReferenceDataSyncProjection> refData ->
 				svc.remove(refData).blockingGet()
 			}.start()
+			log.info('bigip partition sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failure in bigip parition sync: ${t.message}", t)

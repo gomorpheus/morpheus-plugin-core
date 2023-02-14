@@ -90,6 +90,7 @@ class PolicySync {
 			}.onDelete { removeItems->
 				svc.remove(removeItems).blockingGet()
 			}.start()
+			log.info('bigip policy sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failure in load balancer policy sync: ${t.message}", t)

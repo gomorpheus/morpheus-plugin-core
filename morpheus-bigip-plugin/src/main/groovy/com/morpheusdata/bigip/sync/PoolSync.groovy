@@ -75,6 +75,7 @@ class PoolSync {
 			}.onDelete { removeItems ->
 				svc.remove(removeItems).blockingGet()
 			}.start()
+			log.info('bigip pool sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failure in load balancer pool sync: ${t.message}", t)

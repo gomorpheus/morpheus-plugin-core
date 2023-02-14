@@ -51,7 +51,7 @@ class HealthMonitorSync {
 					def addConfig = [account:loadBalancer.account, internalId:monitor.selfLink, externalId:monitor.fullPath,
 						name:monitor.name, loadBalancer:loadBalancer, monitorType:monitor.serviceType, monitorInterval:BigIpUtility.decodeApiNumber(monitor.interval),
 						monitorReverse:(monitor.reverse != 'disabled'), monitorTimeout:BigIpUtility.decodeApiNumber(monitor.timeout), sendData:monitor.send,
-						monitorUsername:monitor.username, monitorPassword:monitor.password, receiveData:monitor.recv,
+						monitorUsername:monitor.username, monitorPassword:monitor.password, receiveData:monitor.recv, description:monitor.description,
 						monitorTransparent:(monitor.transparent != 'disabled'), monitorAdaptive:(monitor.adaptive != 'disabled'),
 						enabled:true, monitorDestination:monitor.destination, partition:monitor.partition
 					]
@@ -61,8 +61,10 @@ class HealthMonitorSync {
 					// handle parent monitors
 					if (monitor.defaultsFrom) {
 						def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
-						if (parentMonitor.value.isPresent() )
-							add.setConfigProperty('monitor.id', parentMonitor.value.get().id)
+						if (parentMonitor.value.isPresent() ) {
+							def parent = parentMonitor.value.get()
+							add.setConfigProperty('monitor.id', parent.id)
+						}
 					}
 
 					adds << add
@@ -83,6 +85,10 @@ class HealthMonitorSync {
 						existingMonitor.name = source.name
 						doUpdate = true
 					}
+					if (existingMonitor.description != source.description) {
+						existingMonitor.description = source.description
+						doUpdate = true
+					}
 
 					// TODO: do we need to test other items for update? we currently don't in the embedded implementation
 
@@ -93,6 +99,7 @@ class HealthMonitorSync {
 			}.onDelete { List<LoadBalancerMonitorIdentityProjection> monitors ->
 				svc.remove(monitors).blockingGet()
 			}.start()
+			log.info('bigip health monitor sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failure in bigip health monitor sync: ${t.message}", t)

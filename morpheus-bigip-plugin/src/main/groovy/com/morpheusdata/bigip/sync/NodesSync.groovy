@@ -91,6 +91,7 @@ class NodesSync {
 			}.onDelete { List<LoadBalancerNodeIdentityProjection> nodes ->
 				svc.remove(nodes).blockingGet()
 			}.start()
+			log.info('bigip node sync complete')
 		}
 		catch (Throwable t) {
 			log.error("Failure in bigip node sync: ${t.message}", t)

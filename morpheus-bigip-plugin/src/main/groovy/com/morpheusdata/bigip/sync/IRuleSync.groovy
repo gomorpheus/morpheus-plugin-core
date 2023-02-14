@@ -59,6 +59,7 @@ class IRuleSync {
 			}.onDelete { removeItems ->
 				svc.remove(removeItems).blockingGet()
 			}.start()
+			log.info("bigip iRule sync complete")
 		}
 		catch (Throwable t) {
 			log.error("Failure in load balancer irule sync: ${t.message}", t)
