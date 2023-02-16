@@ -45,19 +45,18 @@ class LogTrendsWidget extends React.Component {
   loadData() {
     //call api for data...
     var apiQuery;
-    var apiOptions = { minDocCount:1 };
+    var apiOptions = { minDocCount:1, max:5, level:'' };
     switch(this.state.type) {
       case 'warning':
-        apiQuery = 'level = WARNING';
+        apiOptions.level = 'WARNING';
         break;
       case 'error':
-        apiQuery = 'level = ERROR';
+        apiOptions.level = 'ERROR';
         break;
       case 'all':
       default:
-        apiQuery = '';
+        apiOptions.level = '';
         break;
-      
     }
     Morpheus.api.logs.trends(apiQuery, apiOptions).then(this.setData);
   }
@@ -101,8 +100,8 @@ class LogTrendsWidget extends React.Component {
           <table className={'widget-table' + (showTable ? '' : ' hidden')}>
             <tbody>
               { itemList.map(row => (
-                <tr key={row.id}>
-                  <td>{row.message ? row.message : ''}</td>
+                <tr key={Morpheus.utils.simpleHash(row.message)}>
+                  <td className="nowrap">{row.message ? Morpheus.utils.slice(row.message, 85) : ''}</td>
                 </tr>
               ))}
             </tbody>

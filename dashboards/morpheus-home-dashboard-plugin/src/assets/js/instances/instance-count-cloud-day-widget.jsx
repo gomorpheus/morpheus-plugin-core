@@ -101,7 +101,7 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.maxValue = 0;
     newState.data.totals = [];
     //extract the data
-    var chartData = Morpheus.chart.extractNameValueTimeseriesData(results.items, 25, 100);
+    var chartData = Morpheus.chart.extractNameValueTimeseriesData(results.items, 25, 250, 10);
     newState.data.items = chartData.items;
     newState.data.total = chartData.total;
     newState.data.totals = chartData.totals;

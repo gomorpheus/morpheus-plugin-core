@@ -65,19 +65,19 @@ class UserFavoritesWidget extends React.Component {
     //setup
     var showTable = this.state.data && this.state.loaded == true;
     var itemList = this.state.data && this.state.data.items ? this.state.data.items : [];
-    var pillList = [
-      {name:'Instances', value:'instance-favorite'},
-      {name:'Apps', value:'app-favorite'},
-      {name:'Clusters', value:'cluster-favorite'},
-      {name:'Clouds', value:'cloud-favorite'},
-      {name:'Workflows', value:'workflow-favorite'}
-    ];
-    var currentPill = Morpheus.data.findMatchingItems(pillList, 'value', this.state.type);
+    //var pillList = [
+    //  {name:'Instances', value:'instance-favorite'},
+    //  {name:'Apps', value:'app-favorite'},
+    //  {name:'Clusters', value:'cluster-favorite'},
+    //  {name:'Clouds', value:'cloud-favorite'},
+    //  {name:'Workflows', value:'workflow-favorite'}
+    //];
+    //var currentPill = Morpheus.data.findMatchingItems(pillList, 'value', this.state.type);
+    //<WidgetPills pills={pillList} defaultValue={this.state.type} align="center"/>
     //render
     return (
       <Widget>
         <WidgetHeader icon="/assets/featured.svg#Layer_1" title="Favorites"/>
-        <WidgetPills pills={pillList} defaultValue={this.state.type} align="center"/>
         <div className="dashboard-widget-content">
           <table className="widget-table">
             <thead>
