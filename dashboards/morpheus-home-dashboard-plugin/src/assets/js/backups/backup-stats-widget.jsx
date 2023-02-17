@@ -43,7 +43,7 @@ class BackupStatsWidget extends React.Component {
 
   loadData() {
     //call api for data...
-    var apiQuery = 'group(lastStatus:count(id)) lastStatus != null';
+    var apiQuery = 'group(lastResult.status:count(id)) lastResult.status != null';
     var apiOptions = {};
     //set date range
     var dayCounter = this.state.days;
