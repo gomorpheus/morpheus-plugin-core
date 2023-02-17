@@ -69,10 +69,12 @@ class InstanceCountCloudWidget extends React.Component {
     //set the data list
     newState.data.items = []
     newState.data.total = 0;
+    newState.data.count = 0;
     //extract the data
-    var chartData = Morpheus.chart.extractNameValueData(results.items, 25, 100);
+    var chartData = Morpheus.chart.extractNameValueData(results.items, 25, 250, 20);
     newState.data.items = chartData.items;
     newState.data.total = chartData.total;
+    newState.data.count = chartData.count;
     //mark loaded
     newState.loaded = true;
     newState.data.loaded = true;
@@ -100,7 +102,7 @@ class InstanceCountCloudWidget extends React.Component {
     var showChart = this.state.data && this.state.loaded == true;
     var countValue = '';
     if(showChart == true)
-      countValue = this.state.data.total ? this.state.data.total : '0';
+      countValue = this.state.data.count ? this.state.data.count : '0';
     //render
     return (
       <Widget>
