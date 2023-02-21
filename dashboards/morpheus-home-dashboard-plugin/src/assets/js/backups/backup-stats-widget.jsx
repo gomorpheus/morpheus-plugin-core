@@ -79,12 +79,12 @@ class BackupStatsWidget extends React.Component {
       //iterate items for values
       for(var index in results.items) {
         var row = results.items[index];
-        if(row[0] == 'SUCCEEDED') {
-          successRow.value = row[1];
-          chartData.total += row[1];
-        } else if(row[0] == 'FAILED') {
-          failRow.value += row[1];
-          chartData.total += row[1];
+        if(row.name == 'SUCCEEDED') {
+          successRow.value = row.value;
+          chartData.total += row.value;
+        } else if(row.name == 'FAILED') {
+          failRow.value = row.value;
+          chartData.total += row.value;
         }
       }
       //calc percents

@@ -40,7 +40,7 @@ class ClusterWorkloadCountWidget extends React.Component {
 
   loadData(filter, options) {
     //load count
-    var apiQuery = 'group(resourcePool.serverGroup.name:count(id))';
+    var apiQuery = 'group(resourcePool.serverGroup.name:count(id)) managed = true';
     var apiOptions = { ignoreStatus:true };
     //apply search config
     if(this.props.searchSelector)

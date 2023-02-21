@@ -61,7 +61,7 @@ class InstanceCountCloudDayItemProvider extends AbstractDashboardItemTypeProvide
 		rtn.scriptPath = 'instances/instance-count-cloud-day-widget.js'
 		//set permissions
 		rtn.permission = morpheusContext.getPermission().getByCode('provisioning').blockingGet()
-		def accessTypes = ['read', 'full']
+		def accessTypes = ['user', 'full']
 		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}

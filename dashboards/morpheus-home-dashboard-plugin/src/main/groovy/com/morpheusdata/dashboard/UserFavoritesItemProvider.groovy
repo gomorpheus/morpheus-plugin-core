@@ -60,6 +60,10 @@ class UserFavoritesItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.uiSize = 'lg'
 		rtn.templatePath = 'hbs/user-favorites-widget'
 		rtn.scriptPath = 'user-favorites-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('provisioning').blockingGet()
+		def accessTypes = ['user', 'full']
+		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
 

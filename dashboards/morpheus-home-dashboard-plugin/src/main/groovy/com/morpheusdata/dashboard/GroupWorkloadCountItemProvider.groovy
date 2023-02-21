@@ -62,7 +62,7 @@ class GroupWorkloadCountItemProvider extends AbstractDashboardItemTypeProvider {
 		rtn.scriptPath = 'groups/group-workload-count-widget.js'
 		//set permissions
 		rtn.permission = morpheusContext.getPermission().getByCode('provisioning').blockingGet()
-		def accessTypes = ['read', 'full']
+		def accessTypes = ['user', 'full']
 		rtn.setAccessTypes(accessTypes)
 		return rtn
 	}
