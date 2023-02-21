@@ -11,7 +11,8 @@ class InstanceCountCloudDayWidget extends React.Component {
       loaded: false,
       autoRefresh: true,
       data: null,
-      days: 7
+      rangeType:'days',
+      rangeCount: 7
     };
     this.state.chartConfig = this.configureChart();
     //apply state config
@@ -33,7 +34,7 @@ class InstanceCountCloudDayWidget extends React.Component {
   }
 
   componentDidUpdate(prevProps,prevState) {
-    if (prevState.days !== this.state.days) {
+    if(prevState.rangeCount !== this.state.rangeCount) {
       this.loadData()
     }
   }
@@ -52,13 +53,15 @@ class InstanceCountCloudDayWidget extends React.Component {
     optionSourceService.fetch('clouds', {}, function(cloudResults) {
       var zoneList = cloudResults.data;
       var apiData = [];
-      var chartDays = self.state.days;
+      var chartRange = self.state.rangeType;
+      var chartCount = self.state.rangeCount;
+      var chartDays = chartRange == 'days' ? chartCount : (chartCount * 7);
       //execute for 7 days
       var startDate = new Date();
       startDate.setDate(startDate.getDate() - (chartDays - 1));
       startDate.setHours(0, 0, 0, 0);
       var apiQuery = 'group(zoneId:count(parentRefId))';
-      var apiOptions = { startDate:startDate.toISOString(), 'range.type':'days', 'range.count':chartDays };
+      var apiOptions = { 'range.startDate':startDate.toISOString(), 'range.type':chartRange, 'range.count':chartCount };
       //execute it
       Morpheus.api.usage.count(apiQuery, apiOptions).then(function(results) {
         if(results.success == true && results.items) {
@@ -167,21 +170,22 @@ class InstanceCountCloudDayWidget extends React.Component {
 
   onPillChange(value) {
     var newState = {};
-    newState.days = value;
+    newState.rangeType = value;
+    newState.rangeCount = newState.rangeType == 'days' ? 7 : 5; //5 weeks
     this.setState(newState, this.loadData);
   }
 
   render() {
     //setup
     var pillList = [
-      {name:'1 Week', value:7},
-      {name:'1 Month', value:30}
+      {name:'Week', value:'days'},
+      {name:'Month', value:'weeks'}
     ];
     //render
     return (
       <Widget>
         <WidgetHeader icon="/assets/dashboard.svg#provisioning" title="Daily Cloud Instances" link="/provisioning/instances"/>
-        <WidgetPills pills={pillList} defaultValue={this.state.days} align="center" onPillChange={this.onPillChange}/>
+        <WidgetPills pills={pillList} defaultValue={this.state.rangeType} align="center" onPillChange={this.onPillChange}/>
         <StackedChartWidget data={this.state.data} config={this.state.chartConfig}/>
       </Widget>
     );
