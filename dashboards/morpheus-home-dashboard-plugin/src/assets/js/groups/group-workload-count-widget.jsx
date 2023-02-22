@@ -53,7 +53,15 @@ class GroupWorkloadCountWidget extends React.Component {
             var row = results.items[index];
             var rowKey = row.name //[0]; //group id
             var rowGroup = Morpheus.data.findNameValueDataById(groupList, rowKey);
-            var rowGroupName = rowGroup ? rowGroup.name : 'group-' + rowKey;
+            var rowGroupName;
+            if(rowGroup) {
+              rowGroupName = rowGroup.name;
+            } else {
+              if(rowKey == null || rowKey == undefined)
+                rowGroupName = Morpheus.utils.message('gomorpheus.option.none');
+              else
+                rowGroupName = 'group-' + rowKey;
+            }
             row.id = rowKey
             row.name = rowGroupName;
           }
