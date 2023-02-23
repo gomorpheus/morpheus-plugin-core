@@ -9,6 +9,7 @@ import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -262,7 +264,9 @@ public class HttpApiClient {
 						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
 					}
 				} else if(opts.body instanceof byte[]) {
-					postRequest.setEntity(new ByteArrayEntity((byte[])opts.body));
+					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
+				} else if(opts.body instanceof InputStream) {
+					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body)));
 				} else {
 					postRequest.setEntity(new StringEntity(opts.body.toString()));
 				}
