@@ -17,13 +17,16 @@ import com.morpheusdata.core.network.loadbalancer.LoadBalancerProvider
 import com.morpheusdata.core.util.ConnectionUtils
 import com.morpheusdata.core.util.HttpApiClient
 import com.morpheusdata.core.util.MorpheusUtils
+import com.morpheusdata.model.AccountCertificate
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.NetworkLoadBalancer
 import com.morpheusdata.model.NetworkLoadBalancerInstance
 import com.morpheusdata.model.NetworkLoadBalancerMonitor
 import com.morpheusdata.model.NetworkLoadBalancerNode
+import com.morpheusdata.model.NetworkLoadBalancerPolicy
 import com.morpheusdata.model.NetworkLoadBalancerPool
 import com.morpheusdata.model.NetworkLoadBalancerProfile
+import com.morpheusdata.model.NetworkLoadBalancerRule
 import com.morpheusdata.model.NetworkLoadBalancerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.response.ServiceResponse
@@ -1143,13 +1146,107 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	// service methods for api interaction
 	@Override
-	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
-		return null
+	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile loadBalancerProfile) {
+		def createRtn = ServiceResponse.prepare()
+		try {
+			// for SSL profiles determine if we have to install cert or just assign it
+			def apiConfig = getConnectionBase(loadBalancerProfile.loadBalancer)
+			def createParams = [profileData:[:]]
+			createParams.profileData.name = loadBalancerProfile.name
+			createParams.profileData.description = loadBalancerProfile.description
+			createParams.profileData.partition = loadBalancerProfile.partition
+			createParams.serviceType = loadBalancerProfile.serviceType
+			if (loadBalancerProfile.serviceType == 'http') {
+				createParams.profileData.proxyType = loadBalancerProfile.proxyType
+				createRtn.success = true
+			}
+			if (loadBalancerProfile.serviceType == 'client-ssl') {
+				def certSvc = morpheus.loadBalancer.certificate
+				// if a morpheus or self signed cert is selected, it will need to be installed
+				if (loadBalancerProfile.sslCert.isNumber()) {
+					AccountCertificate cert
+					// if the cert is self signed one, create the cert first
+					if (loadBalancerProfile.sslCert.toLong() == -1) {
+					}
+					else {
+						cert = certSvc.getAccountCertificateById(loadBalancerProfile.sslCert.toLong()).blockingGet().value
+					}
+
+					// install the cert onto bigip
+					def certName = BigIpUtility.buildSafeCertName(cert.name)
+					def token = certSvc.createCertInstallToken(cert, "${certSvc.sslInstallTokenName}.1", BigIpUtility.BIGIP_REFDATA_CATEGORY).blockingGet()
+					def rtn = installCert(apiConfig + [certName:certName, token:token, nlbi:1])
+
+					if (rtn.success) {
+						rtn = installKey(apiConfig + [keyName:certName, token:token, nlbi:1, authToken:rtn.authToken])
+
+						if (rtn.success) {
+							// expire out cert token
+							certSvc.expireCertInstallToken(token).blockingGet()
+						} else {
+							createRtn.success = false
+							createRtn.msg = "Unable to install ssl cert: ${rtn.message}"
+							return createRtn
+						}
+					} else {
+						log.error("Error Installing Certificate on F5 Server. Perhaps it cannot reach the Morpheus Appliance URL For Cert transfer... ${rtn.msg ?: rtn.message}")
+						createRtn.success = false
+						createRtn.msg = "Unable to install rsa private key: ${rtn.message}"
+						return rtn
+					}
+
+					// if the cert installs correctly, add it to profileData
+					createParams.certName = certName
+					createParams.hostName = cert.domainName
+					createParams.authToken = rtn.authToken
+				}
+				else {
+					createRtn.success = true
+					createParams.certName = BigIpUtility.parsePathName(loadBalancerProfile.sslCert)
+				}
+			}
+			else {
+				createRtn.success = true
+			}
+
+			// create the profile
+			if(createRtn.success) {
+				def profileResponse = createProfile(apiConfig + createParams)
+				createRtn.success = profileResponse.success
+				createRtn.msg = profileResponse.content?.message
+				createRtn.data = [category:"f5.profile.${loadBalancerProfile.loadBalancerId}"]
+			}
+
+			return createRtn
+		}
+		catch (Throwable t) {
+			log.error("Unable to create profile: ${t.message}", t)
+			rtn.msg = "Unable to create profile: ${t.message}"
+		}
 	}
 
 	@Override
-	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
-		return null
+	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile loadBalancerProfile) {
+		ServiceResponse rtn = ServiceResponse.prepare()
+		try {
+			def loadBalancer = loadBalancerProfile.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def profileConfig = [:] + apiConfig
+			profileConfig.externalId = loadBalancerProfile.externalId
+			profileConfig.name = loadBalancerProfile.name
+			profileConfig.serviceType = loadBalancerProfile.serviceType
+			profileConfig.partition = loadBalancerProfile.partition
+			def results = deleteProfile(profileConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.data = [found:results.found]
+		}
+		catch(Throwable t) {
+			log.error("error removing profile: ${t.message}", t)
+			rtn.msg = 'unknown error removing profile ' + e.message
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
 	}
 
 	@Override
@@ -1346,7 +1443,7 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	@Override
 	ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode loadBalancerNode) {
-		def rtn = [success:false]
+		def rtn = ServiceResponse.prepare()
 		try {
 			def loadBalancer = loadBalancerNode.loadBalancer
 			def apiConfig = getConnectionBase(loadBalancer)
@@ -1358,8 +1455,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			def results = deleteServer(nodeConfig)
 			log.debug("api results: ${results}")
 			rtn.success = results.success
-			rtn.found = results.found ?: false
-			rtn.authToken = results.authToken
+			rtn.data = [found:results.found ?: false, authToken:results.authToken]
 		}
 		catch(Throwable t) {
 			log.error("error removing node: ${t}", t)
@@ -1370,8 +1466,39 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	@Override
-	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node) {
-		return null
+	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode loadBalancerNode) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = loadBalancerNode.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def nodeConfig = [:] + apiConfig
+
+			//fill in config
+			nodeConfig.name = loadBalancerNode.name
+			nodeConfig.port = loadBalancerNode.port
+			nodeConfig.description = loadBalancerNode.description
+			nodeConfig.ipAddress = loadBalancerNode.ipAddress
+			nodeConfig.healthMonitor = loadBalancerNode.monitor?.externalId
+			nodeConfig.partition = loadBalancerNode.partition
+			//create it
+			nodeConfig.externalId = BigIpUtility.convertExternalId(loadBalancerNode.externalId)
+			nodeConfig.authToken = apiConfig.authToken
+			log.debug("node config: ${nodeConfig}")
+			def results = updateServer(nodeConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.data = [authToken:results.authToken]
+			if(rtn.success != true) {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.content?.message ?: results.message
+			}
+		} catch(e) {
+			log.error("error updating node: ${e}", e)
+			rtn.msg = 'unknown error updating node ' + e.message
+		}
+		return rtn
 	}
 
 	@Override
@@ -1418,7 +1545,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			def results = createPool(poolConfig)
 			log.debug("api results: ${results}")
 			rtn.success = results.success
-			rtn.data.authToken = results.authToken
+			rtn.data = [authToken:results.authToken, pool:pool]
 			if(rtn.success == true) {
 				pool.externalId = results.pool?.fullPath
 				//add pool memebers
@@ -1458,16 +1585,58 @@ class BigIpProvider implements LoadBalancerProvider {
 			rtn.success = results.success
 			rtn.msg = results.message
 		} catch(e) {
-			log.error("error removing pool: ${e}", e)
-			rtn.msg = 'unknown error removing pool ' + e.message
+			log.error("error removing pool: ${e.message}", e)
+			rtn.msg = "unknown error removing pool ${e.message}"
 		}
 		log.debug("rtn: ${rtn}")
 		return rtn
 	}
 
 	@Override
-	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool) {
-		return null
+	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool loadBalancerPool) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = loadBalancerPool.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def poolConfig = [:] + apiConfig
+			def itemConfig = loadBalancerPool.getConfigMap()
+			//fill in config
+			poolConfig.name = loadBalancerPool.name
+			poolConfig.port = loadBalancerPool.port
+			poolConfig.description = loadBalancerPool.description
+			poolConfig.loadBalancingMode = BigIpUtility.getLoadBalancingMode(loadBalancerPool.vipBalance)
+			poolConfig.partition = loadBalancerPool.partition
+			// poolConfig.loadBalancingMode = decodeLoadBalancingMode(loadBalancerPool.vipBalance)
+			if(loadBalancerPool.monitors?.size() > 0)
+				poolConfig.monitorName = loadBalancerPool.monitors.collect{ it.externalId }?.join(' and ')
+			//create it
+			poolConfig.externalId = BigIpUtility.convertExternalId(loadBalancerPool.externalId)
+			log.debug("pool config: ${poolConfig}")
+			def results = updatePool(poolConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			if(rtn.success == true) {
+				//add pool memebers
+				if(loadBalancerPool.members?.size() > 0) {
+					def memberConfig = apiConfig + [name:loadBalancerPool.name, externalId:poolConfig.externalId, partition:loadBalancerPool.partition]
+					memberConfig.members = loadBalancerPool.members.collect{ member -> return [name:member.node.name, port:(member.port ?: loadBalancerPool.port), partition:loadBalancerPool.partition] }
+					def memberResults = updatePoolMembers(memberConfig)
+					log.debug("memberResults: {}", memberResults)
+					if(memberResults.success != true) {
+						rtn.msg = "failed to assign pool members: ${memberResults.data?.message ?: memberResults.msg}"
+					}
+				}
+			} else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results?.data?.message ?: results.msg
+			}
+		} catch(e) {
+			log.error("error updating pool: ${e}", e)
+			rtn.msg = 'unknown error updating pool ' + e.message
+		}
+		return rtn
 	}
 
 	@Override
@@ -1487,20 +1656,393 @@ class BigIpProvider implements LoadBalancerProvider {
 		return rtn
 	}
 
+	// Crud for policies
+	@Override
+	ServiceResponse createLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = loadBalancerPolicy.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def policyConfig = [:] + apiConfig
+			//fill in config
+			policyConfig.policyName = loadBalancerPolicy.name
+			policyConfig.description = loadBalancerPolicy.description
+			policyConfig.strategy = loadBalancerPolicy.strategy
+			policyConfig.requires = loadBalancerPolicy.requires
+			policyConfig.controls = loadBalancerPolicy.controls
+			policyConfig.partition = loadBalancerPolicy.partition
+
+			//create it
+			def results = createBigIpPolicy(policyConfig)
+
+			if (results.success) {
+				rtn.data = [authToken:results.authToken, policy:loadBalancerPolicy]
+				loadBalancerPolicy.externalId = "/${policyConfig.partition}/${policyConfig.policyName}".toString()
+				loadBalancerPolicy.configMap = results.content
+				loadBalancerPolicy.strategy = policyConfig.strategy.split('/').last()
+
+				// publish the policy
+				def publishResults = publishPolicy(policyConfig)
+				rtn.success = publishResults.success
+			}
+			else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.msg
+			}
+		} catch(e) {
+			log.error("error creating policy: ${e}", e)
+			rtn.msg = 'unknown error creating policy ' + e.message
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			def loadBalancer = loadBalancerPolicy.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def policyConfig = [:] + apiConfig
+			policyConfig.policyName = loadBalancerPolicy.name
+			policyConfig.partition = loadBalancerPolicy.partition
+			def results = deleteBigIpPolicy(policyConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.authToken = apiConfig.authToken
+		} catch(e) {
+			log.error("error removing policy: ${e}", e)
+			rtn.msg = 'unknown error removing policy ' + e.message
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
+	}
+
+	@Override
+	ServiceResponse validateLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			if(!loadBalancerPolicy.name) {
+				rtn.addError('name', 'Name is required')
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating policy: ${e}", e)
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse validateLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		ServiceResponse rtn = ServiceResponse.prepare()
+		try {
+			def config = rule.configMap
+			if(!rule.name) {
+				rtn.addError('name', 'Name is required')
+			}
+			if(!config.value) {
+				rtn.addError('value', 'Value is required')
+			}
+			if(!config.pool) {
+				rtn.addError('pool', 'Forward to pool is required')
+			}
+			rtn.success = rtn.errors.size() == 0
+		} catch(e) {
+			log.error("error validating node: ${e}", e)
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse createLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			// get our policy
+			//def policy = NetworkLoadBalancerPolicy.get(opts.policy.id.toLong())
+			def policy = rule.policy
+			def loadBalancer = policy.loadBalancer
+
+			// create the rule and add it to our policy
+			def createRule = addPolicyRule(policy, rule)
+
+			if (createRule.success) {
+				// publish policy
+				def publishPolicy = publishPolicy([policyName:policy.name, partition:policy.partition] + createRule.auth)
+				if (publishPolicy.success) {
+					// build out the domain shit
+					def addRule = buildPolicyRuleFromMap(policy, createRule.content)
+					policy.addToRules(addRule)
+					policy.save(flush:true)
+					rtn.success = true
+				}
+				else {
+					rtn.errors = createRule.errors
+					rtn.msg = createRule.content?.message ?: results.message
+				}
+			}
+			else {
+				rtn.errors = createRule.errors
+				rtn.msg = createRule.content?.message ?: results.message
+			}
+		}
+		catch(e) {
+			log.error("error creating policy rule: ${e}", e)
+			rtn.msg = "unknown error creating policy rule  ${e.message}"
+		}
+		return rtn
+	}
+
+	@Override
+	ServiceResponse deleteLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		ServiceResponse rtn = ServiceResponse.prepare()
+		try {
+			def policy = rule.policy
+			def loadBalancer = policy.loadBalancer
+			def auth = getConnectionBase(policy.loadBalancer)
+			def policyNamingMap = [name:policy.name, partition:policy.partition, draft:true]
+			def existingRules = getPolicyRules(auth + policyNamingMap)
+			if (existingRules == null) {
+				def out = createPolicyDraft(policy, [auth:auth])
+				if (!out.success)
+					return out
+			}
+
+			// after policy draft has been created, remove our rule
+			def endpointPath = "${auth.path}/tm/ltm/policy/${BigIpUtility.buildPartitionedName(policyNamingMap)}/rules/${rule.name}".toString()
+			def params = [
+				uri:auth.url,
+				path:endpointPath,
+				username:auth.username,
+				password:auth.password,
+				authToken:auth.authToken
+			]
+			def out = callApi(params, 'DELETE')
+
+			if (!out.success) {
+				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+			else {
+				// if rule deleted successfully, publish the policy draft again
+				def publishPolicy = publishPolicy([policyName:policy.name, partition:policy.partition] + auth)
+				if (!publishPolicy.success) {
+					rtn.msg = publishPolicy.message ?: publishPolicy.msg
+				}
+				else {
+					rtn.success = true
+				}
+			}
+		}
+		catch(e) {
+			log.error("error removing policy rule: ${e}", e)
+			rtn.msg = "unknown error removing policy rule: ${e.message}"
+		}
+		log.debug("rtn: ${rtn}")
+		return rtn
+	}
+
 	// Crud for virtual servers/instance
 	@Override
-	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
-		return null
+	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = loadBalancerInstance.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def virtualServerConfig = [:] + apiConfig
+			def instanceConfig = loadBalancerInstance.getConfigMap()
+			//fill in config
+			virtualServerConfig.name = loadBalancerInstance.vipName
+			virtualServerConfig.vipProtocol = loadBalancerInstance.vipProtocol
+			virtualServerConfig.description = loadBalancerInstance.description
+			virtualServerConfig.partition = loadBalancerInstance.partition
+			//virtualServerConfig.type ?
+			virtualServerConfig.active = loadBalancerInstance.active
+			//destination
+			virtualServerConfig.vipAddress = loadBalancerInstance.vipAddress
+			virtualServerConfig.vipPort = loadBalancerInstance.vipPort
+			virtualServerConfig.destination = "/${virtualServerConfig.partition}/" + loadBalancerInstance.vipAddress + ':' + (loadBalancerInstance.vipPort ?: '80')
+			//source
+			virtualServerConfig.sourceAddress = loadBalancerInstance.sourceAddress
+			//pool
+			virtualServerConfig.defaultPool = instanceConfig.defaultPool
+			if(instanceConfig.defaultPool) {
+				virtualServerConfig.pool = morpheus.loadBalancer.pool.listById([instanceConfig.defaultPool.toLong()]).blockingFirst()
+			}
+			//get policies
+			virtualServerConfig.defaultPolicy = instanceConfig.defaultPolicy
+			virtualServerConfig.policies = []
+			if(instanceConfig.defaultPolicy) {
+				def policy = morpheus.loadBalancer.policy.listById([instanceConfig.defaultPolicy.toLong()]).blockingFirst()
+				if(policy)
+					virtualServerConfig.policies << [name:policy.name]
+			}
+			loadBalancerInstance.policies?.each { policy ->
+				virtualServerConfig.policies << [name:policy.name]
+			}
+			//get profiles
+			virtualServerConfig.clientProfile = instanceConfig.clientProfile
+			virtualServerConfig.serverProfile = instanceConfig.serverProfile
+			virtualServerConfig.httpProfile = instanceConfig.httpProfile
+			virtualServerConfig.profiles = []
+			if(instanceConfig.httpProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.httpProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+			if(instanceConfig.clientProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.clientProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+			if(instanceConfig.serverProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.serverProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+			loadBalancerInstance.profiles?.each { profile ->
+				virtualServerConfig.profiles << [name:profile.name]
+			}
+			//get scripts
+			virtualServerConfig.scripts = []
+			loadBalancerInstance.scripts?.each { script ->
+				virtualServerConfig.scripts << script.externalId
+			}
+			//persistenace
+			if(loadBalancerInstance.vipSticky) {
+				virtualServerConfig.persist = []
+				virtualServerConfig.persist << [name:loadBalancerInstance.vipSticky]
+			}
+			//create it
+			log.debug("vsconfig: {}", virtualServerConfig)
+			def results = createVirtualServer(virtualServerConfig)
+			log.debug("api results: {}", results)
+			rtn.success = results.success
+			if(rtn.success == true) {
+				loadBalancerInstance.externalId = results.virtualServer?.fullPath
+				rtn.data = [instance:loadBalancerInstance]
+			} else {
+				//fill in errors
+				rtn.errors = results.errors
+				rtn.msg = results.virtualServer?.message ?: results.message
+			}
+		} catch(e) {
+			log.error("error creating virtual server: ${e}", e)
+			rtn.msg = 'unknown error creating virtual server ' + e.message
+		}
+		return rtn
 	}
 
 	@Override
-	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
-		return null
+	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			def loadBalancer = loadBalancerInstance.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def virtualServerConfig = [:] + apiConfig
+			virtualServerConfig.externalId = loadBalancerInstance.externalId
+			def results = deleteVirtualServer(virtualServerConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			rtn.data = [found:results.found]
+		} catch(e) {
+			log.error("error removing virtual server: ${e}", e)
+			rtn.msg = 'unknown error removing virtual server ' + e.message
+		}
+		return rtn
 	}
 
 	@Override
-	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
-		return null
+	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			//prep up the create call and pass it
+			def loadBalancer = loadBalancerInstance.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def virtualServerConfig = [:] + apiConfig
+			def instanceConfig = loadBalancerInstance.getConfigMap()
+			//fill in config
+			virtualServerConfig.name = loadBalancerInstance.vipName
+			virtualServerConfig.vipProtocol = loadBalancerInstance.vipProtocol
+			virtualServerConfig.description = loadBalancerInstance.description
+			//virtualServerConfig.type ?
+			virtualServerConfig.active = loadBalancerInstance.active
+			virtualServerConfig.partition = loadBalancerInstance.partition
+			//destination
+			virtualServerConfig.vipAddress = loadBalancerInstance.vipAddress
+			virtualServerConfig.vipPort = loadBalancerInstance.vipPort
+			virtualServerConfig.destination = "/${loadBalancerInstance.partition}/" + loadBalancerInstance.vipAddress + ':' + (loadBalancerInstance.vipPort ?: '80')
+			//source
+			virtualServerConfig.sourceAddress = loadBalancerInstance.sourceAddress
+			//pool
+			virtualServerConfig.defaultPool = instanceConfig.defaultPool
+			if(instanceConfig.defaultPool) {
+				virtualServerConfig.pool = morpheus.loadBalancer.pool.listById([instanceConfig.defaultPool.toLong()]).blockingFirst()
+			}
+			//get policies
+			virtualServerConfig.defaultPolicy = instanceConfig.defaultPolicy
+			virtualServerConfig.policies = []
+			if(instanceConfig.defaultPolicy) {
+				def policy = morpheus.loadBalancer.policy.listById([instanceConfig.defaultPolicy.toLong()]).blockingFirst()
+				if(policy)
+					virtualServerConfig.policies << [name:policy.name, partition:policy.partition]
+			}
+			// add other policies
+			for (policy in loadBalancerInstance.policies) {
+				virtualServerConfig.policies << [name:policy.name, partition:policy.partition]
+			}
+
+			//get profiles
+			virtualServerConfig.clientProfile = instanceConfig.clientProfile
+			virtualServerConfig.serverProfile = instanceConfig.serverProfile
+			virtualServerConfig.httpProfile = instanceConfig.httpProfile
+			virtualServerConfig.profiles = []
+			if(instanceConfig.httpProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.httpProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+			if(instanceConfig.clientProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.clientProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+			if(instanceConfig.serverProfile) {
+				def profile = morpheus.loadBalancer.profile.listById([instanceConfig.serverProfile.toLong()]).blockingFirst()
+				if(profile)
+					virtualServerConfig.profiles << [name:profile.name]
+			}
+
+			// add profiles
+			for (profile in loadBalancerInstance.profiles) {
+				virtualServerConfig.profiles << [name:profile.name, partition:profile.partition]
+			}
+
+			//get scripts
+			virtualServerConfig.scripts = []
+			loadBalancerInstance.scripts?.each { script ->
+				virtualServerConfig.scripts << script.externalId
+			}
+			//persistenace
+			if(loadBalancerInstance.vipSticky) {
+				virtualServerConfig.persist = []
+				virtualServerConfig.persist << [name:loadBalancerInstance.vipSticky]
+			}
+			//update it
+			virtualServerConfig.externalId = BigIpUtility.convertExternalId(loadBalancerInstance.externalId)
+			log.debug("vsconfig: ${virtualServerConfig}")
+			def results = updateVirtualServer(virtualServerConfig)
+			log.debug("api results: ${results}")
+			rtn.success = results.success
+			if(rtn.success != true) {
+				rtn.errors = results.errors
+				rtn.msg = results?.virtualServer?.message ?: results.message
+			}
+		} catch(e) {
+			log.error("error updating virtual server: ${e}", e)
+			rtn.msg = 'unknown error updating virtual server ' + e.message
+		}
+		return rtn
 	}
 
 	@Override
@@ -1548,6 +2090,792 @@ class BigIpProvider implements LoadBalancerProvider {
 		return rtn
 	}
 
+	@Override
+	ServiceResponse addInstance(NetworkLoadBalancerInstance loadBalancerInstance, Map opts) {
+		log.debug("addInstance: ${loadBalancerInstance.id}, ${opts}")
+		def rtn = ServiceResponse.prepare()
+		try {
+			def loadBalancer = loadBalancerInstance.loadBalancer
+			def lbSvc = morpheus.loadBalancer
+			def instance = loadBalancerInstance.instance
+			//vip details
+			def vipAddress = loadBalancerInstance.vipAddress
+			def vipHostname = loadBalancerInstance.vipHostname
+			def vipProtocol = loadBalancerInstance.vipProtocol
+			def vipMode = loadBalancerInstance.vipMode
+			def vipPort = loadBalancerInstance.vipPort
+			def vipBalance = loadBalancerInstance.vipBalance
+			def servicePort = loadBalancerInstance.servicePort
+			def backendPort = loadBalancerInstance.backendPort
+			def vipShared = loadBalancerInstance.vipShared
+			def vipDirectAddress = loadBalancerInstance.vipDirectAddress
+			def vipSticky = loadBalancerInstance.vipSticky
+			//ssl config
+			def sslCert = loadBalancerInstance.sslCert
+			def sslRedirectMode = loadBalancerInstance.sslRedirectMode
+			def sslMode = loadBalancerInstance.sslMode
+			def sslEnabled = sslCert != null
+			//service types
+			def vipServiceMode = BigIpUtility.getVipServiceMode(loadBalancerInstance)
+			def backendServiceMode = BigIpUtility.getBackendServiceMode(loadBalancerInstance)
+			def contentSwitchResults
+			def contentSwitchServerName
+			def vsVipAddress = vipAddress
+			def partition = loadBalancerInstance.partition
+			//api config
+			def apiConfig = getConnectionBase(loadBalancer)
+			def serverNodes = []
+			def healthMonitorName = BigIpUtility.buildHealthMonitorName(loadBalancerInstance.id, servicePort, sslEnabled)
+			def keepGoing = true
+			//naming
+			def firstContainer = instance.containers?.size() > 0 ? instance.containers.first() : null
+			def namingConfig = lbSvc.buildNamingConfig(firstContainer, opts, null)
+			//results
+			def createResults
+			//health monitor
+			if(loadBalancerInstance.monitor) {
+				healthMonitorName = loadBalancerInstance.monitor.name
+				createResults = [success:true]
+			} else {
+				//create healthmon
+				def healthMonitorConfig = apiConfig +
+					[name:healthMonitorName, port:servicePort, destination:"*:${servicePort}", partition:partition]
+				createResults = createHealthMonitor(healthMonitorConfig)
+				if(createResults.success != true) {
+					rtn.success = false
+					keepGoing = false
+					rtn.msg = 'failed to create health monitor: ' + createResults.message
+					rtn.data = createResults.healthMonitor
+					rtn.results = createResults
+				}
+			}
+			// create nodes
+			if(keepGoing == true) {
+				loadBalancerInstance.instance.containers.each { container ->
+					namingConfig = lbSvc.buildNamingConfig(container, opts, null)
+					def serverName = lbSvc.buildServerName(loadBalancer.serverName, container.server.id, namingConfig)
+					def serverIp = lbSvc.getContainerIp(container, true) // prefer external address of container
+					def serverMonitor = '/Common/icmp'
+					def serverConfig = apiConfig +
+						[name:serverName, ipAddress:serverIp, port:servicePort, healthMonitor:serverMonitor, authToken:createResults.authToken, partition:partition]
+					createResults = createServer(serverConfig)
+					if(createResults.success == true) {
+						serverNodes << serverName
+					} else {
+						rtn.success = false
+						keepGoing = false
+						rtn.msg = 'failed to create server: ' + createResults.message
+						rtn.data = createResults.node
+						rtn.results = createResults
+					}
+				}
+			}
+			//create the pool
+			def poolName = lbSvc.buildPoolName(loadBalancer.poolName, loadBalancerInstance.id, sslEnabled, namingConfig)
+			if(keepGoing == true) {
+				def poolConfig = apiConfig +
+					[name:poolName, loadBalancingMode:BigIpUtility.getLoadBalancingMode(vipBalance), authToken:createResults.authToken, partition:partition]
+				createResults = createPool(poolConfig)
+				if(createResults.success != true) {
+					rtn.success = false
+					keepGoing = false
+					rtn.msg = 'failed to create pool: ' + createResults.msg
+					rtn.data = createResults.pool
+					rtn.results = createResults
+				}
+			}
+			//add pool members
+			if(keepGoing == true) {
+				def memberConfig = apiConfig +
+					[name:poolName, monitorName:"/${partition}/${healthMonitorName}", port:servicePort,
+					 members:serverNodes.collect{ node -> return [name:node, partition:partition] },
+					 authToken:createResults.authToken, partition:partition]
+				createResults = addPoolMembers(memberConfig)
+				log.debug("add pool memeber results: {}", createResults)
+				if(createResults.success != true) {
+					rtn.success = false
+					keepGoing = false
+					rtn.msg = 'failed to assign pool members: ' + createResults.msg
+					rtn.data = createResults.members
+					rtn.results = createResults
+				}
+			}
+			//policies
+			//virtual server
+			// TODO: continue with profiles
+			def virtualServerName = lbSvc.buildVirtualServerName(loadBalancer.virtualServiceName, loadBalancerInstance.id, loadBalancerInstance.vipName, sslEnabled, namingConfig)
+			if(keepGoing == true) {
+				def virtualServerConfig = apiConfig + [name:virtualServerName, vipAddress:vipAddress,
+													   vipPort:vipPort, persist:vipSticky, poolName:poolName, profiles:[], partition:partition]
+				//ssl
+				if(sslEnabled) {
+					def res = installSslCert(loadBalancerInstance, loadBalancerInstance.sslCert)
+					if(res.success) {
+						res = createProfile(
+							apiConfig + [
+								certName:BigIpUtility.buildSslCertName(loadBalancerInstance.sslCert),
+								profileName:BigIpUtility.generateSslProfileName(loadBalancerInstance),
+								hostName:vipHostname,
+								authToken:createResults.authToken,
+								partition:partition
+							]
+						)
+						if(res.success) {
+							virtualServerConfig.profiles << [name:BigIpUtility.generateSslProfileName(loadBalancerInstance), partition:partition]
+						}
+						else {
+							rtn.success = false
+							rtn.msg = res.message
+							rtn.error = rtn.message ?: rtn.msg
+							keepGoing = false
+						}
+					}
+				}
+				// create policy
+				if (keepGoing) {
+					def res = createBigIpPolicy(apiConfig + [policyName:BigIpUtility.generatePolicyName(loadBalancerInstance), partition:partition])
+					if(res.success) {
+						// add policy rules
+						res = addPolicyRules(apiConfig + [
+							policyName:BigIpUtility.generatePolicyName(loadBalancerInstance),
+							hostName:vipHostname,
+							poolName:poolName,
+							partition:partition
+						])
+						if(!res.success) {
+							rtn.success = false
+							keepGoing = false
+							rtn.message = "Failed to add policy rules: ${res.message}"
+							rtn.error = rtn.message
+						}
+						res = publishPolicy(apiConfig + [policyName:BigIpUtility.generatePolicyName(loadBalancerInstance), partition:partition])
+						if(!res.success) {
+							rtn.success = false
+							keepGoing = false
+							rtn.message = "Failed to publish policy: ${res.message}"
+							rtn.error = rtn.message
+						}
+						// add the policy to virtual server config
+						virtualServerConfig.policies = [[name:BigIpUtility.generatePolicyName(loadBalancerInstance), partition:partition]]
+					} else {
+						rtn.success = false
+						rtn.message = "Unable to create vip policy: ${res.content?.message}"
+						rtn.error = rtn.message
+						keepGoing = false
+						return rtn
+					}
+				}
+				//create vip
+				if (keepGoing) {
+					createResults = createVirtualServer(virtualServerConfig)
+					if (createResults.success != true) {
+						rtn.success = false
+						keepGoing = false
+						rtn.msg = 'failed to create virtual server: ' + createResults.virtualServer?.message ?: createResults.errors?.error
+						rtn.data = createResults.virtualServer
+						rtn.results = createResults
+					} else {
+						rtn.success = true
+					}
+				}
+			}
+			//other stuff
+			//handle removes
+			//handle any removed containers
+			if(keepGoing == true && opts.removeContainers?.size > 0) {
+				def serverIdList = []
+				lbSvc.getLoadBalancerServerIds(loadBalancer, loadBalancerInstance.id).blockingSubscribe { id ->
+					serverIdList << id
+				}
+				opts.removeContainers?.each { container ->
+					namingConfig = lbSvc.buildNamingConfig(container, opts)
+					def serverMatch = serverIdList.find { it == container.server.id }
+					if(!serverMatch) {
+						def serverName = BigIpUtility.buildServerName(loadBalancer.serverName, container.server.id, namingConfig)
+						def serverConfig = apiConfig + [name:serverName, authToken:createResults.authToken, partition:partition]
+						def deleteResult = deleteServer(serverConfig)
+						log.debug("delete server results: ${deleteResult}")
+					}
+				}
+			}
+			//create policies?
+		} catch(e) {
+			log.error("Unable to add add instance to load balancer: ${e.message}", e)
+			rtn.error = 'failed to create load balancer instance ' + e.message
+			rtn.success = false
+		}
+		log.debug("addInstance: ${rtn}")
+		return rtn
+	}
+
+	// The operations that deal with the bigip api
+	def deleteVirtualServer(Map opts) {
+		def rtn = [success:false, found:false]
+		def virtualServer
+		if(opts.externalId)
+			virtualServer = loadVirtualServer(opts)
+		else
+			virtualServer = findVirtualServer(opts)
+		if(virtualServer.found == true) {
+			rtn.found = true
+			def endpointPath
+			if(opts.externalId)
+				endpointPath = "${opts.path}/tm/ltm/virtual/${BigIpUtility.convertExternalId(opts.externalId)}"
+			else if(opts.name)
+				endpointPath = "${opts.path}/tm/ltm/virtual/${BigIpUtility.buildPartitionedName(opts)}"
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def results = callApi(params, 'DELETE')
+			rtn.success = results.success
+			log.debug("deleteResults: {}", rtn)
+		} else {
+			rtn.success = true
+		}
+		return rtn
+	}
+
+	def loadVirtualServer(Map opts) {
+		def rtn = [success:false, found:false]
+		def itemId = BigIpUtility.convertExternalId(opts.externalId)
+		def endpointPath = "${opts.path}/tm/ltm/virtual/${itemId}"
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+		def results = callApi(params, 'GET')
+		log.debug("results: ${results}")
+		if(results.success) {
+			rtn.success = true
+			rtn.found = true
+			rtn.name = opts.name
+			rtn.externalId = opts.externalId
+			rtn.virtualServer = results.data
+			rtn.authToken = opts.authToken
+		}
+		return rtn
+	}
+
+	def updateVirtualServer(Map opts) {
+		def rtn = [success:false]
+		def virtualServer = loadVirtualServer(opts)
+		if(virtualServer.found != true) {
+			rtn.success = false
+			rtn.found = false
+		} else {
+			def vipName = BigIpUtility.buildPartitionedName(opts)
+			def endpointPath = "${opts.path}/tm/ltm/virtual/${vipName}"
+			def profiles = []
+			if(opts.profiles)
+				opts.profiles.each { profile -> profiles << profile }
+			else
+				profiles << [name:'http']
+			//json data
+			def data = [
+				name:opts.name,
+				description:opts.description ?: '',
+				partition:opts.partition,
+				enabled:(opts.active == false ? false : true),
+				profiles:profiles ?: [],
+				policies:opts.policies ?: [],
+				persist:opts.persist ?: [],
+				rules:opts.scripts ?: []
+			]
+			//add config
+			if(opts.pool)
+				data.pool = opts.pool.externalId
+			else if(opts.poolName)
+				data.pool = "/${opts.poolPartition ?: 'Common'}/${opts.poolName}"
+			else
+				data.pool = ''
+			//protocol
+			data.ipProtocol = opts.vipProtocol ?: 'tcp'
+			//destination
+			data.destination = opts.destination ?: "/${opts.partition ?: 'Common'}/${opts.vipAddress}:${opts.vipPort ?: 80}"
+			//source
+			if(opts.sourceAddress)
+				data.source = opts.sourceAddress
+			//source translation
+			data.sourceAddressTranslation = [type:(opts.sourceAddressTranslation ?: 'automap')]
+			log.debug("virtual server body: {}", data)
+			//make the api call
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+
+			def results = callApi(params, 'PATCH')
+			log.debug("results: {}", results)
+			rtn = [success:results.success, virtualServer:results.data, errors:results.errors, message:results.msg]
+		}
+		return rtn
+	}
+
+	def createVirtualServer(Map opts) {
+		def rtn = [success:false]
+		def virtualServer = findVirtualServer(opts)
+		if(virtualServer.found == true) {
+			rtn.success = true
+			rtn.virtualServer = virtualServer
+			// update virtual server with new profiles and policies
+			if(opts.profiles || opts.policies) {
+				def out = updateVirtualServerProfiles(opts)
+			}
+		} else {
+			def endpointPath = "${opts.path}/tm/ltm/virtual"
+			def profiles = []
+			if(opts.profiles) {
+				def needsHttpProfile = false
+				opts.profiles.each { profile ->
+					profiles << profile
+					if (profile.name?.contains('ssl')) {
+						needsHttpProfile = true
+					}
+				}
+				if (needsHttpProfile)
+					profiles << [name:'http']
+			}
+			else {
+				profiles << [name: 'http']
+			}
+			//json data
+			def data = [
+				name:opts.name,
+				enabled:(opts.active == false ? false : true),
+				profiles:profiles,
+				policies:opts.policies ?: [],
+				partition:opts.partition
+			]
+			//add config
+			if(opts.description)
+				data.description = opts.description
+			if(opts.pool)
+				data.pool = opts.pool.externalId
+			else if(opts.poolName)
+				data.pool = "/${opts.poolPartition ?: opts.partition ?: BIGIP_PARTITION}/${opts.poolName}"
+			//scripts
+			if(opts.scripts)
+				data.rules = opts.scripts
+			//persistence
+			if(opts.persist)
+				data.persist = opts.persist
+			//protocol
+			data.ipProtocol = opts.vipProtocol ?: 'tcp'
+			//destination
+			data.destination = opts.destination ?: "/${opts.partition ?: BIGIP_PARTITION}/${opts.vipAddress}:${opts.vipPort ?: 80}"
+			//source
+			if(opts.sourceAddress)
+				data.source = opts.sourceAddress
+			//source translation
+			data.sourceAddressTranslation = [type:(opts.sourceAddressTranslation ?: 'automap')]
+			log.debug("virtual server body: {}", data)
+			//make the api call
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password
+			]
+
+			def out = callApi(params, 'POST')
+			log.debug("${endpointPath} results: ${out.data}")
+			rtn = [success:out.success, virtualServer:out.data, errors:out.errors]
+		}
+		return rtn
+	}
+
+	Map findVirtualServer(Map opts) {
+		def rtn = [success:false, found:false]
+		def endpointPath = "${opts.path}/tm/ltm/virtual"
+		def params = [uri:opts.url,
+					  path:endpointPath,
+					  username:opts.username,
+					  password:opts.password,
+					  urlParams:['expandSubcollections':'true'],
+					  authToken:opts.authToken
+		]
+		def results = callApi(params, 'GET')
+		def virtualServer = results.data.items?.find { item -> item.destination.contains("${opts.vipAddress}:${opts.vipPort ?: 80}") }
+		if(virtualServer) {
+			rtn.success = true
+			rtn.found = true
+			rtn.virtualServer = virtualServer
+			rtn.authToken = opts.authToken
+		}
+		return rtn
+	}
+
+	def getVipProfiles(Map params) {
+		def virtualName = BigIpUtility.buildPartitionedName(params)
+		def endpointPath = "${params.path}/tm/ltm/virtual/${virtualName}/profiles"
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'GET')
+
+		return out.data.items
+	}
+
+	def updateVirtualServerProfiles(Map params) {
+		def virtualServer = findVirtualServer(params).virtualServer
+		def vipProfiles = getVipProfiles(
+			[path:params.path, name:virtualServer.name, url:params.url, username:params.username, password:params.password, authToken:params.authToken, partition:virtualServer.partition]
+		)
+		def sslProfile = vipProfiles.find {
+			if(it.name.size() >= 4)
+				return it.name[-4..-1] == '-ssl'
+			else
+				return false
+		}
+
+		def profiles = vipProfiles.collect { return [name:it.name, fullPath:it.fullPath, partition:it.partition] }
+		if(!sslProfile && params.profiles) {
+			setSslProfileSni(params)
+			params.profiles.each { profiles << it }
+		}
+
+		def vipPolicies = getVipPolicies(
+			[path:params.path, name:virtualServer.name, url:params.url, username:params.username, password:params.password, partition:virtualServer.partition]
+		)
+		def policies = vipPolicies.collect { return [name:it.name, fullPath:it.fullPath, partition:it.partition] }
+		params.policies.each { policies << it }
+
+		def serverName = BigIpUtility.buildPartitionedName(virtualServer)
+		def endpointPath = "${params.path}/tm/ltm/virtual/${serverName}"
+		def data = [
+			profiles:profiles,
+			policies:policies
+		]
+
+		if (!virtualServer.pool) {
+			data.pool = "/${params.partition ?: BigIpUtility.BIGIP_PARTITION}/${params.poolName}"
+		}
+
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			body:data,
+			username:params.username,
+			password:params.password
+		]
+
+		def out = callApi(reqParams, 'PATCH')
+
+		return out
+	}
+
+	def getVipPolicies(Map params) {
+		def virtualName = BigIpUtility.buildPartitionedName(params)
+		def endpointPath = "${params.path}/tm/ltm/virtual/${virtualName}/policies"
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'GET')
+
+		return out.data.items
+	}
+
+	def setSslProfileSni(Map params) {
+		if(sslProfileExists(params)) {
+			def profileName = BigIpUtility.buildPartitionedName([name:params.profileName, partition:params.partition])
+			def endpointPath = "${params.path}/tm/ltm/profile/client-ssl/${profileName}"
+			def data = [
+				sniDefault:true
+			]
+			// create the profile
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+
+			def out = callApi(reqParams, 'PUT')
+			return out
+		} else {
+			return [success:true, authToken:params.authToken]
+		}
+	}
+
+	def deleteProfile(Map opts) {
+		def rtn = [success:false]
+		def profileId = opts.externalId ?: opts.name
+		def profile = profileId ? loadProfile(opts) : [found:false]
+		if(profile.found == true) {
+			def endpointPath = "${opts.path}/tm/ltm/profile/${opts.serviceType}/${BigIpUtility.buildPartitionedName(opts)}"
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				username:opts.username,
+				password:opts.password,
+				authToken:profile.authToken
+			]
+			def results = callApi(params, 'DELETE')
+
+			if (results.success)
+				rtn.success = true
+			else
+				rtn.msg = results.data?.message ?: results.errors?.error ?: results.msg
+		}
+		else {
+			rtn.found = false
+			rtn.success = true
+		}
+		return rtn
+	}
+
+	def loadProfile(Map opts) {
+		def rtn = [success:false, found:false]
+
+		if (!opts.externalId)
+			return rtn
+
+		def endpointPath = "${opts.path}/tm/ltm/profile/${opts.serviceType}/${BigIpUtility.buildPartitionedName(opts)}"
+		def params = [
+			uri:opts.url,
+			path:endpointPath,
+			username:opts.username,
+			password:opts.password,
+			authToken:opts.authToken
+		]
+
+		def results = callApi(params, 'GET')
+
+		log.debug("results: ${results}")
+		if(results.success) {
+			rtn.success = true
+			rtn.found = true
+			rtn.profile = results.data ?: [:]
+			rtn.authToken = opts.authToken
+		}
+		return rtn
+	}
+
+	def createProfile(Map params) {
+		def serviceType = params.serviceType ?: 'client-ssl'
+		if(!sslProfileExists(params)) {
+			def endpointPath = "${params.path}/tm/ltm/profile/${serviceType}"
+			def data = params.profileData ?: [name:params.profileName, partition:params.partition ?: BigIpUtility.BIGIP_PARTITION]
+
+			if (serviceType == 'client-ssl') {
+				log.debug("profile params: ${params}")
+				def certInfo = getCertInfo(params)
+				def certRootName = params.certName
+				def certKeyName = params.certName
+				if (certKeyName.endsWith('.crt')) {
+					certKeyName = certKeyName.replaceAll('.crt', '.key')
+				}
+				data.certKeyChain = [[name:certRootName, cert:"/${certInfo.partition}/${certRootName}".toString(), key:"/${certInfo.partition}/${certKeyName}".toString()]]
+				if (params.hostName) {
+					data.serverName = params.hostName ?: certInfo.subject.substring(3)
+				}
+				else {
+					data.serverName = (certInfo.subject.split(',').find { it.startsWith('CN=') }).substring(3)
+					if (data.serverName.startsWith('*')) {
+						data.serverName = data.serverName.substring(2)
+					}
+				}
+			}
+
+			// create the profile
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			def out = callApi(reqParams, 'POST')
+
+			if (out.success)
+				return [success:true, profile:out.data, authToken:params.authToken]
+			else
+				return [success:false, msg:out.data?.message ?: out.errors?.error ?: out.msg, authToken:params.authToken]
+		}
+		else {
+			return [success:true, authToken:params.authToken]
+		}
+	}
+
+	Boolean sslProfileExists(Map params) {
+		def profileName = BigIpUtility.buildPartitionedName([name:params.profileName, partition:params.partition])
+		def endpointPath = "${params.path}/tm/ltm/profile/client-ssl/${profileName}"
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+
+		def out = callApi(reqParams, 'GET')
+
+		return out.success
+	}
+
+	def installKey(Map params) {
+		if (!keyExists(params)) {
+			def endpointPath = "${params.path}/tm/sys/crypto/key"
+			def data = [
+				fromUrl:"${morpheus.loadBalancer.applianceUrl}/certificate/info/key/${params.token.value}/${params.nlbi}",
+				command:'install',
+				name:params.keyName
+			]
+
+			// install the rsa private key
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			def out = callApi(reqParams, 'POST')
+
+			if (out.success)
+				return [success:true, authToken:params.authToken] + out.data
+			else
+				return [success:false, msg:out.data?.message ?: out.errors?.error ?: out.msg]
+		}
+		return [success:true, message:'key already exists']
+	}
+
+	def installSslCert(NetworkLoadBalancerInstance nlbi, AccountCertificate cert) {
+		def certSvc = morpheus.loadBalancer.certificate
+		def output = [success:true]
+		def token = certSvc.createCertInstallToken(cert, "${certSvc.sslInstallTokenName}.${nlbi.id}").blockingGet()
+		def apiConfig = getConnectionBase(nlbi.loadBalancer)
+		def rtn = installCert(apiConfig + [certName:BigIpUtility.buildSslCertName(cert), token:token, nlbi:nlbi.id])
+
+		if (rtn.success) {
+			rtn = installKey(apiConfig + [keyName:BigIpUtility.buildSslCertName(cert), token:token, nlbi:nlbi.id])
+
+			if (rtn.success) {
+				// expire out cert token
+				certSvc.expireCertInstallToken(token).blockingGet()
+			}
+			else {
+				output.success = false
+				output.message = "Unable to install ssl cert: ${rtn.message}"
+			}
+		}
+		else {
+			output.success = false
+			output.message = "Unable to install rsa private key: ${rtn.message}"
+		}
+		return rtn
+	}
+
+	def installCert(Map params) {
+		if (!certExists(params)) {
+			def endpointPath = "${params.path}/tm/sys/crypto/cert".toString()
+			def url = morpheus.loadBalancer.applianceUrl
+			def data = [
+				fromUrl:"${url}${url.endsWith('/') ? '' : '/'}certificate/info/cert/${params.token.value}/${params.nlbi}".toString(),
+				command:'install',
+				name:params.certName
+			]
+
+			// install the cert
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			def out = callApi(reqParams, 'POST')
+
+			if (out.success)
+				return [success:true, authToken:params.authToken] + out.data
+			else
+				return [success:false, msg:out.data?.message ?: out.errors?.error ?: out.msg]
+		}
+		return [success:true, message:'certificate already exists', authToken:params.authToken]
+	}
+
+	def getCertInfo(Map params) {
+		def endpointPath = "${params.path}/tm/sys/file/ssl-cert"
+
+		// create the health monitor
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'GET')
+
+		def name = params.certName
+		def certInfo = out.data.items.find { item -> item.name == name }
+		if (!certInfo) {
+			name = "${params.certName}${params.certName[-4..-1] == '.crt' ? '' : '.crt'}".toString()
+			certInfo = out.data.items.find { item -> item.name == name }
+		}
+		return certInfo
+	}
+
+	def getKeyInfo(Map params) {
+		def endpointPath = "${params.path}/tm/sys/file/ssl-key"
+
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+
+		def out = callApi(reqParams, 'GET')
+
+		def name = "${params.keyName}${params.keyName[-4..-1] == '.key' ? '' : '.key'}".toString()
+		def certInfo = out.data.items.find { item -> item.name == name }
+		return certInfo
+	}
+
+	Boolean certExists(Map params) {
+		def cert = getCertInfo(params)
+		if (cert)
+			return true
+		else
+			return false
+	}
+
+	Boolean keyExists(Map params) {
+		def key = getKeyInfo(params)
+		if (key)
+			return true
+		else
+			return false
+
+	}
+
 	def deleteServer(Map opts) {
 		def rtn = [success:false]
 		def server = loadServer(opts)
@@ -1569,6 +2897,336 @@ class BigIpProvider implements LoadBalancerProvider {
 			rtn.success = true
 		}
 		return rtn
+	}
+
+	def updateServer(Map opts) {
+		def rtn = [success:false]
+		def server = loadServer(opts)
+		if(server.found != true) {
+			rtn.success = false
+			rtn.found = false
+		}
+		else {
+			def endpointPath = "${opts.path}/tm/ltm/node/${opts.externalId}"
+			def data = [
+				name:opts.name,
+				address:opts.ipAddress,
+				description:opts.description,
+				monitor:opts.healthMonitor
+			]
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def results = callApi(params, 'PATCH')
+			if (results.success) {
+				rtn.success = true
+				rtn.node = results.data
+			}
+			else {
+				rtn.msg = results.data?.message ?: results.errors?.error ?: results.msg
+			}
+		}
+		return rtn
+	}
+
+	Boolean policyExists(Map params) {
+		def endpointPath = "${params.path}/tm/ltm/policy/~${params.partition ?: BigIpUtility.BIGIP_PARTITION}~${params.policyName}"
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'GET')
+
+		return out.success
+	}
+
+	def createBigIpPolicy(Map params) {
+		def rtn = [success:false, authToken:params.authToken]
+		if(!policyExists(params)) {
+			def endpointPath = "${params.path}/tm/ltm/policy"
+			def data = [
+				name:params.policyName,
+				controls:[params.controls ?: 'forwarding'],
+				requires:[params.requires ?: 'http'],
+				strategy:params.strategy ?: '/Common/first-match',
+				subPath:'Drafts',
+				partition:params.partition
+			]
+
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+
+			def out = callApi(reqParams, 'POST')
+
+			if (out.success) {
+				rtn.success = true
+				rtn.policy = out.data
+			}
+			else {
+				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+		}
+		else {
+			rtn.success = true
+		}
+		return rtn
+	}
+
+	def deleteBigIpPolicy(Map params) {
+		def rtn = [success:false, authToken:params.authToken]
+		if(policyExists(params)) {
+			def endpointPath = "${params.path}/tm/ltm/policy/~${params.partition ?: BigIpUtility.BIGIP_PARTITION}~${params.policyName}"
+
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+
+			def out = callApi(reqParams, 'DELETE')
+
+			if (out.success) {
+				rtn.success = true
+			}
+			else {
+				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+		}
+		else {
+			return [success:true]
+		}
+	}
+
+	def publishPolicy(Map params) {
+		def rtn = [success:false, authToken:params.authToken]
+		def endpointPath = "${params.path}/tm/ltm/policy"
+		def data = [
+			name:"/${params.partition ?: BigIpUtility.BIGIP_PARTITION}/Drafts/${params.policyName}",
+			command:'publish'
+		]
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			body:data,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'POST')
+		if (out.success) {
+			rtn.success = true
+			rtn.data = out.data
+		}
+		else {
+			rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+		}
+
+		return rtn
+	}
+
+	def addPolicyRules(Map params) {
+		// add the rules
+		def rtn = [success:true]
+		def endpointPath = "${params.path}/tm/ltm/policy/~${params.partition ?: BigIpUtility.BIGIP_PARTITION}~Drafts~${params.policyName}/rules"
+		def data = [
+			name:"rule_${params.hostName}",
+			ordinal:1
+		]
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			body:data,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken,
+		]
+		def out = callApi(reqParams, 'POST')
+		if(!out.success) {
+			return [success:false, msg:out.data?.message ?: out.msg, errors:out.errors]
+		}
+		// add conditions to rule
+		endpointPath = "${params.path}/tm/ltm/policy/~${params.partition ?: BigIpUtility.BIGIP_PARTITION}~Drafts~${params.policyName}/rules/rule_${params.hostName}"
+		data = [
+			actions:[
+				[name:'0', forward:true, pool:"/${params.partition ?: BigIpUtility.BIGIP_PARTITION}/${params.poolName}", request:true, select:true]
+			],
+			conditions:[
+				[name:'0', caseInsensitive:true, equals:true, external:true, host:true, httpHost:true, present:true, remote:true, request:true, values:["${params.hostName}"]]
+			]
+		]
+		reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			body:data,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		out = callApi(reqParams, 'PUT')
+
+		if(!out.success) {
+			return [success:false, messsage:out.data?.message ?: out.msg, errors:out.errors]
+		}
+		return rtn
+	}
+
+	def addPolicyRule(NetworkLoadBalancerPolicy policy, NetworkLoadBalancerRule rule) {
+		def rtn = [success:true]
+		def	auth = getConnectionBase(policy.loadBalancer)
+		rtn.auth = auth
+
+		// get policy draft, or create if it doesn't exist
+		def policyNamingMap = [name:policy.name, partition:policy.partition, draft:true]
+		def existingRules = getPolicyRules(auth + policyNamingMap)
+
+		// we have to create a draft of the policy if it doesn't have one yet
+		if (existingRules == null) {
+			def out = createPolicyDraft(policy, [auth:auth])
+			if (!out.success)
+				return out
+			else
+				existingRules = getPolicyRules(auth + policyNamingMap)
+		}
+
+		def endpointPath = "${auth.path}/tm/ltm/policy/${BigIpUtility.buildPartitionedName(policyNamingMap)}/rules"
+		def data = [
+			name:rule.name,
+			ordinal:rule.ordinal ?: existingRules.size()
+		]
+		def params = [
+			uri:auth.url,
+			path:endpointPath,
+			body:data,
+			username:auth.username,
+			password:auth.password,
+			authToken:auth.authToken
+		]
+		def out = callApi(params, 'POST')
+		if(!out.success) {
+			return out
+		}
+		// add conditions to rule
+		def pool = morpheus.loadBalancer.pool.listById([rule.pool.toLong()]).blockingSingle()
+		endpointPath = "${auth.path}/tm/ltm/policy/~${policy.partition ?: BigIpUtility.BIGIP_PARTITION}~Drafts~${policy.name}/rules/${rule.name}"
+		// add action section to body
+		data = [
+			actions:[
+				[name:'0', forward:true, pool:BigIpUtility.buildPartitionedName(pool, '/'), request:true, select:true]
+			]
+		]
+		// build condition map
+		def condition = [name:'0', caseInsensitive:true, external:true, present:true, remote:true, request:true, values:["${opts.value}".toString()]]
+
+		// add field and operator to condition
+		condition += (BigIpUtility.CONDITION_PARAM.find { it.name == opts.field }).criteria
+		condition += (BigIpUtility.CONDITION_OPERATOR.find { it.name == opts.operator }).criteria
+		data.conditions = [condition]
+
+		params = [
+			uri:auth.url,
+			path:endpointPath,
+			body:data,
+			username:auth.username,
+			password:auth.password,
+			urlParams:['expandSubcollections':'true'],
+			authToken:auth.authToken
+		]
+		out = callApi(params, 'PUT')
+
+		if(!out.success) {
+			return out
+		}
+		else {
+			// TODO: check to see if need to make a call to get rule details
+			rtn.success = true
+			rtn.data = out.data
+		}
+		return rtn
+	}
+
+	def createPolicyDraft(NetworkLoadBalancerPolicy policy, Map opts = [:]) {
+		def rtn = [success:false]
+		def auth = opts.auth
+		if (!auth) {
+			auth = getConnectionBase(policy.loadBalancer)
+		}
+		def endpointPath = "${auth.path}/tm/ltm/policy/${BigIpUtility.buildPartitionedName([name:policy.name, partition:policy.partition])}"
+		def params = [
+			uri:auth.url,
+			path:endpointPath,
+			body:[test:''],
+			username:auth.username,
+			password:auth.password,
+			urlParams:['options':'create-draft'],
+			authToken:auth.authToken
+		]
+		def out = callApi(params, 'PATCH')
+		rtn.success = out.success
+		rtn.auth = auth
+		return out
+	}
+
+	def getPolicyRules(Map params) {
+		def policyName = BigIpUtility.buildPartitionedName(params)
+		def endpointPath = "${params.path}/tm/ltm/policy/${policyName}/rules"
+		def reqParams = [
+			uri:params.url,
+			path:endpointPath,
+			username:params.username,
+			password:params.password,
+			authToken:params.authToken
+		]
+		def out = callApi(reqParams, 'GET')
+
+		if (!out.success)
+			return null
+		else
+			return out.data.items
+	}
+
+	def buildPolicyRuleFromMap(NetworkLoadBalancerPolicy policy, Map item) {
+		def loadBalancer = policy.loadBalancer
+		def objCategory = BigIpUtility.getObjCategory('rule', loadBalancer)
+		def addConfig = [internalId:item.selfLink, externalId:item.fullPath, name:item.name, category:objCategory,
+						 enabled:true, policy:policy]
+		def firstAction = item.actionsReference?.items?.size() > 0 ? item.actionsReference.items.first() : null
+		if(firstAction) {
+			addConfig += [displayOrder:firstAction.ordinal, actionCode:firstAction.code, actionName:firstAction.name,
+						  actionInternalId:firstAction.selfLink, actionExternalId:firstAction.fullPath, actionForward:firstAction.forward,
+						  actionLength:firstAction.length, actionOffset:firstAction.offset, actionPoolId:firstAction.pool,
+						  actionPort:firstAction.port, actionRequest:firstAction.request, actionSelect:firstAction.select,
+						  actionStatus:firstAction.status, actionTimeout:firstAction.timeout, actionVlan:firstAction.vlanId,
+						  actionExpiration:firstAction.expirySecs]
+		}
+		//lookup pools and add
+		def add = new NetworkLoadBalancerRule(addConfig)
+		add.setConfigMap(item)
+		//add pools
+		for (action in item.actionsReference?.items) {
+			if(action.pool) {
+				def poolMatch = morpheus.loadBalancer.pool.findByLoadBalancerAndExternalId(loadBalancer, action.pool)
+				if(poolMatch) {
+					add.pools.add(poolMatch)
+				}
+			}
+		}
+		return add
 	}
 
 	def createServer(Map opts) {
@@ -1604,7 +3262,7 @@ class BigIpProvider implements LoadBalancerProvider {
 				rtn.node = results.data
 			}
 			else {
-				rtn.msg = results.msg
+				rtn.msg = results.data?.message ?: results.errors?.error ?: results.msg
 			}
 		}
 		return rtn
@@ -1817,6 +3475,44 @@ class BigIpProvider implements LoadBalancerProvider {
 		return rtn
 	}
 
+	def updatePool(Map opts) {
+		def rtn = [success:false]
+		def pool = loadPool(opts)
+		if(pool.found != true) {
+			rtn.success = false
+			rtn.found = false
+		} else {
+			def endpointPath = "${opts.path}/tm/ltm/pool/${opts.externalId}"
+			def data = [
+				name:opts.name,
+				description:opts.description ?: 'created by morpheus',
+				loadBalancingMode:opts.loadBalancingMode ?: 'least-connections-member',
+				partition:opts.partition
+			]
+			//add monitor
+			if(opts.monitorName)
+				data.monitor = opts.monitorName
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:opts.authToken
+			]
+			def out = callApi(params, 'PATCH')
+			if (out.success) {
+				rtn.success = true
+				rtn.pool = out.data
+			}
+			else {
+				log.warn("Unable to update bigip pool: ${out.data?.message ?: out.errors?.error ?: out.msg}")
+				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+		}
+		return rtn
+	}
+
 	def loadPool(Map opts) {
 		if (!opts.authToken) {
 			opts.authToken = getAuthToken(opts).data.token.token
@@ -1864,7 +3560,52 @@ class BigIpProvider implements LoadBalancerProvider {
 			authToken:opts.authToken
 		]
 		def results = callApi(params, 'PATCH')
-		rtn = results
+		if (results.success) {
+			rtn.success = true
+			rtn.members = results.data
+		}
+		else {
+			rtn.msg = results.data?.message ?: results.errors?.error ?: results.msg
+		}
+		return rtn
+	}
+
+	def updatePoolMembers(Map opts) {
+		def rtn = [success:false]
+		def loadResults = loadPool(opts)
+		if(loadResults.found != true) {
+			rtn.success = false
+			rtn.found = false
+		} else {
+			def poolUri = BigIpUtility.buildPartitionedName(loadResults.pool)
+			def endpointPath = "${opts.path}/tm/ltm/pool/${poolUri}"
+			def members = []
+			opts.members.each { member ->
+				def nodeName = "${member.externalId ?: BigIpUtility.buildPartitionedName(member, '/')}"
+				members << [name:"${nodeName}:${member.port ?: opts.port}"]
+			}
+			def data = [members:members]
+			//add monitor
+			if(opts.monitorName)
+				data.monitor = BigIpUtility.buildPartitionedName([name:opts.monitorName, partition:opts.partition], '/')
+			def params = [
+				uri:opts.url,
+				path:endpointPath,
+				body:data,
+				username:opts.username,
+				password:opts.password,
+				authToken:loadResults.authToken
+			]
+			def out = callApi(params, 'PATCH')
+			if (out.success) {
+				rtn.success = true
+				rtn.members = out.data
+			}
+			else {
+				log.warn("Unable to update bigip pool members: ${out.data?.message ?: out.errors?.error ?: out.msg}")
+				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+		}
 		return rtn
 	}
 
@@ -1883,7 +3624,12 @@ class BigIpProvider implements LoadBalancerProvider {
 				authToken:pool.authToken
 			]
 			def results = callApi(params, 'DELETE')
-			rtn = results
+			rtn.success = results.success
+			if (!rtn.success) {
+				log.warn("Failed to remove load balancer pool ${poolName}: ${results.data?.message}")
+				rtn.errors = results.errors
+				rtn.msg = results.data?.message
+			}
 		} else {
 			rtn.found = false
 			rtn.success = true

@@ -1,6 +1,9 @@
 package com.morpheusdata.bigip.util
 
+import com.morpheusdata.model.AccountCertificate
 import com.morpheusdata.model.NetworkLoadBalancer
+import com.morpheusdata.model.NetworkLoadBalancerInstance
+import groovy.text.SimpleTemplateEngine
 
 class BigIpUtility {
 	static final String BIGIP_PARTITION = 'Common'
@@ -197,5 +200,82 @@ class BigIpUtility {
 		if(mode == 'roundrobin')
 			rtn = 'round-robin'
 		return rtn
+	}
+
+	static buildHealthMonitorName(Long id, Integer port, Boolean ssl = false) {
+		return 'morpheus-health-' + (ssl == true ? 'ssl-' : '') + id + '-' + port
+	}
+
+	static getVipServiceMode(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = 'http'
+		def vipProtocol = loadBalancerInstance.vipProtocol
+		if(vipProtocol == 'http') {
+			rtn = 'http'
+		} else if(vipProtocol == 'tcp') {
+			rtn = 'tcp'
+		} else if(vipProtocol == 'udp') {
+			rtn = 'udp'
+		} else if(vipProtocol == 'https') {
+			def vipMode = loadBalancerInstance.vipMode
+			//if we are terminating ssl on the lb - mode is https
+			if(vipMode == 'passthrough')
+				rtn = 'http'
+			else if(vipMode == 'terminated' || vipMode == 'endtoend')
+				rtn = 'ssl'
+		}
+		return rtn
+	}
+
+	static getBackendServiceMode(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = 'http'
+		def vipProtocol = loadBalancerInstance.vipProtocol
+		if(vipProtocol == 'http') {
+			rtn = 'http'
+		} else if(vipProtocol == 'tcp') {
+			rtn = 'tcp'
+		} else if(vipProtocol == 'udp') {
+			rtn = 'udp'
+		} else if(vipProtocol == 'https') {
+			def vipMode = loadBalancerInstance.vipMode
+			//if we are terminating ssl on the lb - mode is https
+			if(vipMode == 'passthrough' || vipMode == 'endtoend')
+				rtn = 'ssl'
+			else if(vipMode == 'terminated')
+				rtn = 'http'
+		}
+		return rtn
+	}
+
+	static buildSslCertName(AccountCertificate sslCert) {
+		return 'morpheus-cert-' + sslCert.id
+	}
+
+	static generateSslProfileName(NetworkLoadBalancerInstance lbInstance) {
+		return "${lbInstance.instance.hostName}-ssl".toString()
+	}
+
+	static generatePolicyName(NetworkLoadBalancerInstance lbi) {
+		return "morph_policy_${lbi.id}".toString()
+	}
+
+	static buildServerName(String namePattern, Long id, Map nameConfig = [:]) {
+		def rtn
+		if(namePattern?.length() > 0) {
+			rtn = applyNaming(namePattern, nameConfig)
+		} else {
+			rtn = 'morpheus-server-' + id
+		}
+		return rtn
+	}
+
+	static applyNaming(String name, Map nameConfig) {
+		def engine = new SimpleTemplateEngine()
+		def template = engine.createTemplate(name).make(nameConfig)
+		def rtn = template.toString()
+		return rtn
+	}
+
+	static String buildSafeCertName(String name) {
+		return name.replaceAll(' ', '-')
 	}
 }

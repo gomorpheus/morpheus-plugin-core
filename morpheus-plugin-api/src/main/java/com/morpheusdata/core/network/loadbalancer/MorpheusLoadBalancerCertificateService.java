@@ -8,6 +8,7 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface MorpheusLoadBalancerCertificateService {
 	/**
@@ -51,4 +52,12 @@ public interface MorpheusLoadBalancerCertificateService {
 	Single<Boolean> remove(List<ReferenceDataSyncProjection> certificates);
 
 	Observable<AccountCertificate> listAccountCertificates(Long loadBalancerId);
+
+	Single<Optional<AccountCertificate>> getAccountCertificateById(Long certificateId);
+
+	Single<ReferenceData> createCertInstallToken(AccountCertificate cert, String name, String category);
+
+	Single<Boolean> expireCertInstallToken(ReferenceData token);
+
+	String getSslInstallTokenName();
 }

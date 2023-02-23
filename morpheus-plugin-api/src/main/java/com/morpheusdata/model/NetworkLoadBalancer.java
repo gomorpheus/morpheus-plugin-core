@@ -45,6 +45,10 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	protected Double hourlyPrice = 0.0d;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
+	protected String serverName;
+	protected String poolName;
+	protected String serviceName;
+	protected String virtualServiceName;
 
 	protected List<NetworkLoadBalancerMonitor> monitors = new ArrayList<NetworkLoadBalancerMonitor>();
 
@@ -336,5 +340,41 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	public void setCloud(Cloud cloud) {
 		this.cloud = cloud;
 		markDirty("cloud", cloud);
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+		markDirty("serverName", serverName);
+	}
+
+	public String getPoolName() {
+		return poolName;
+	}
+
+	public void setPoolName(String poolName) {
+		this.poolName = poolName;
+		markDirty("poolName", poolName);
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+		markDirty("serviceName", serviceName);
+	}
+
+	public String getVirtualServiceName() {
+		return virtualServiceName;
+	}
+
+	public void setVirtualServiceName(String virtualServiceName) {
+		this.virtualServiceName = virtualServiceName;
+		markDirty("virtualServiceName", virtualServiceName);
 	}
 }
