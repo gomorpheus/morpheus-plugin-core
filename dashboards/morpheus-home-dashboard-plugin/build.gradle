@@ -17,7 +17,7 @@ apply plugin:'maven-publish'
 apply plugin:'asset-pipeline'
 
 group = 'com.morpheusdata'
-version '0.1'
+version '0.1.0.rc'
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
@@ -71,7 +71,17 @@ jar {
 	manifest {
 		attributes(
 			'Plugin-Class': 'com.morpheusdata.dashboard.MorpheusHomeDashboardPlugin',
-			'Plugin-Version': archiveVersion.get()
+			'Plugin-Version': archiveVersion.get(),
+			'Morpheus-Name': 'Morpheus Standard Dashboard',
+			'Morpheus-Organization': 'morpheus',
+			'Morpheus-Code': 'morpheus-home-dashboard-plugin',
+			'Morpheus-Description': 'Plugin containing the standard Morpheus Dashboard Widgets',
+			'Morpheus-Logo': 'assets/morpheus.svg',
+			'Morpheus-Logo-Dark': 'assets/morpheus.svg',
+			'Morpheus-Color': '#ffffff',
+			'Morpheus-Labels': 'Dashboard',
+			'Morpheus-Repo': 'https://github.com/gomorpheus/morpheus-dashboard-plugin',
+			'Morpheus-Min-Appliance-Version': "6.0.0"
 		)
 	}
 }
@@ -83,7 +93,7 @@ java {
 
 task morpheusJavaDoc(type: Javadoc) {
 	source = sourceSets.main.allJava
-	title = "Morpheus Core Docs"
+	title = "Morpheus Dashboard Docs"
 }
 
 task(console, dependsOn: 'classes', type: JavaExec) {
