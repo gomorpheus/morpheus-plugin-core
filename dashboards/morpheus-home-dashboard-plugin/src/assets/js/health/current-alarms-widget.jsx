@@ -119,7 +119,7 @@ class CurrentAlarmsWidget extends React.Component {
               </thead>
               <tbody>
                 { alarmList.map(row => (
-                  <tr key={row.id}>
+                  <tr data-id={row.id} key={row.id}>
                     <td className="nowrap">
                       <ResourceLink type={row.refType} value={row.refId} content={Morpheus.utils.clipLongText((row.resourceName ? row.resourceName : row.refName), 26)}/>
                     </td>

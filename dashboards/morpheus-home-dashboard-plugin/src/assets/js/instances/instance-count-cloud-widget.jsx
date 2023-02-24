@@ -45,14 +45,14 @@ class InstanceCountCloudWidget extends React.Component {
       var apiOptions = {};
       Morpheus.api.instances.count('group(provisionZoneId:count(id))').then(function(results) {
         if(results.success == true && results.items) {
+          var lookupData = { type:'zone', items:zoneList };
           //set zone names
           for(var index in results.items) {
             var row = results.items[index];
             var rowKey = row.name //[0]; //zone id
-            var rowZone = Morpheus.data.findNameValueDataByValue(zoneList, rowKey);
-            var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
+            var rowName = Morpheus.chart.lookupChartItemName(lookupData, rowKey);
             row.id = rowKey
-            row.name = rowZoneName;
+            row.name = rowName;
           }
         }
         self.setData(results);
