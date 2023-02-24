@@ -64,13 +64,13 @@ class WorkflowExecutionsDayWidget extends React.Component {
             var row = results.items[index];
             var rowKey = row.name //[0]; //zone id
             var rowValue = row.value //[1]; //count
-            var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
+            var rowZone = Morpheus.data.findNameValueDataByValue(zoneList, rowKey);
             var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
             var rowDate = new Date();
             if(results.config.options.apiDate)
               rowDate.setTime(results.config.options.apiDate);
             var dataRow = [rowDate.getTime(), rowValue];
-            Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
+            Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow, index);
           }
         }
       });

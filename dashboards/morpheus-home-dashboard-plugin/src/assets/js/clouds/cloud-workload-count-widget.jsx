@@ -39,7 +39,7 @@ class CloudWorkloadCountWidget extends React.Component {
 
   loadData(filter, options) {
     //load count
-    var apiQuery = 'group(server.zone.name:count(id))';
+    var apiQuery = 'group(server.zone.name:count(id)) managed = true';
     var apiOptions = { ignoreStatus:true, nodeFormat:'all' };
     //apply search config
     if(this.props.searchSelector)

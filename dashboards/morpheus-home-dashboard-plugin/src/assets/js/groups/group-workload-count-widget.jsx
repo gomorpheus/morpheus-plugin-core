@@ -44,7 +44,7 @@ class GroupWorkloadCountWidget extends React.Component {
     optionSourceService.fetch('groups', {}, function(groupResults) {
       var groupList = groupResults.data;
       //load instance stats
-      var apiQuery = 'group(server.provisionSiteId:count(id))';
+      var apiQuery = 'group(server.provisionSiteId:count(id)) managed = true';
       var apiOptions = { ignoreStatus:true, nodeFormat:'all' };
       Morpheus.api.containers.count(apiQuery, apiOptions).then(function(results) {
         if(results.success == true && results.items) {
@@ -52,7 +52,7 @@ class GroupWorkloadCountWidget extends React.Component {
           for(var index in results.items) {
             var row = results.items[index];
             var rowKey = row.name //[0]; //group id
-            var rowGroup = Morpheus.data.findNameValueDataById(groupList, rowKey);
+            var rowGroup = Morpheus.data.findNameValueDataByValue(groupList, rowKey);
             var rowGroupName;
             if(rowGroup) {
               rowGroupName = rowGroup.name;

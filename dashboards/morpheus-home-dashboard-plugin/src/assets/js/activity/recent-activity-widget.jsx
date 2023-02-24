@@ -27,6 +27,11 @@ class RecentActivityWidget extends React.Component {
     $(document).on('morpheus:refresh', this.refreshData);
   }
 
+  componentDidUpdate() {
+    //refresh times
+    Morpheus.timeService.refresh();
+  }
+
   //data methods
   refreshData() {
     if(this.state.autoRefresh == true)
@@ -73,13 +78,14 @@ class RecentActivityWidget extends React.Component {
             <tbody>
               { itemList.map(row => (
                 <tr key={row.id}>
-                  <td className="nowrap">
+                  <td className="col-md nowrap">
                     <svg className="icon">
                       <use href={'/assets/dashboard.svg#' + (row.success == false ? 'alert' : row.activityType.toLowerCase())}/>
                     </svg>
                     {row.name ? row.name : row.activityType}
                   </td>
-                  <td className="nowrap">
+                  <td className="col-md ts"><time dateTime={row.timestamp}/></td>
+                  <td className="col-xxl nowrap">
                     {row.message ? row.message : ''}
                   </td>
                 </tr>

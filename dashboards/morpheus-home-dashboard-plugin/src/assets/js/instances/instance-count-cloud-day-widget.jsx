@@ -52,7 +52,7 @@ class InstanceCountCloudDayWidget extends React.Component {
     var optionSourceService = Morpheus.GlobalOptionSourceService || new Morpheus.OptionSourceService();
     optionSourceService.fetch('clouds', {}, function(cloudResults) {
       var zoneList = cloudResults.data;
-      var apiData = [];
+      var newData = Morpheus.chart.getBlankTimeseriesData();
       var chartRange = self.state.rangeType;
       var chartCount = self.state.rangeCount;
       var chartDays = chartRange == 'days' ? chartCount : (chartCount * 7);
@@ -61,31 +61,14 @@ class InstanceCountCloudDayWidget extends React.Component {
       startDate.setDate(startDate.getDate() - (chartDays - 1));
       startDate.setHours(0, 0, 0, 0);
       var apiQuery = 'group(zoneId:count(parentRefId))';
-      var apiOptions = { 'range.startDate':startDate.toISOString(), 'range.type':chartRange, 'range.count':chartCount };
+      var apiOptions = { 'range.startDate':startDate.toISOString(), 'range.type':chartRange, 'range.count':chartCount, max:1000 };
       //execute it
       Morpheus.api.usage.count(apiQuery, apiOptions).then(function(results) {
         if(results.success == true && results.items) {
-          for(var dayIndex in results.items) {
-            var dayRow = results.items[dayIndex];
-            var rowDate = new Date(dayRow.startDate);
-            if(dayRow.items) {
-              //iterate the items for the day
-              for(var index in dayRow.items) {
-                var row = dayRow.items[index];
-                var rowKey = row.name //[0]; //zone id
-                var rowValue = row.value //[1]; //count
-                var rowZone = Morpheus.data.findNameValueDataById(zoneList, rowKey);
-                if(rowZone || rowValue > 0) {
-                  var rowZoneName = rowZone ? rowZone.name : 'zone-' + rowKey;
-                  var dataRow = [rowDate.getTime(), rowValue];
-                  Morpheus.data.addGroupNameValuesData(apiData, rowZoneName, dataRow);
-                }
-              }
-            }
-          }
+          var lookupData = { type:'zone', items:zoneList };
+          newData = Morpheus.chart.apiDataToTimeseriesData(results.items, lookupData, 25, 25, 10);
         }
         //set the data
-        var newData = { items:apiData };
         self.setData(newData);
       });
     });
@@ -104,14 +87,13 @@ class InstanceCountCloudDayWidget extends React.Component {
     newState.data.maxValue = 0;
     newState.data.totals = [];
     //extract the data
-    var chartData = Morpheus.chart.extractNameValueTimeseriesData(results.items, 25, 250, 10);
-    newState.data.items = chartData.items;
-    newState.data.total = chartData.total;
-    newState.data.totals = chartData.totals;
-    newState.data.types = chartData.types;
-    newState.data.axisItems.push(chartData.dateItems);
-    newState.data.groups.push(chartData.groupItems);
-    newState.data.maxValue = Morpheus.utils.getNextBaseTen(chartData.maxValue);
+    newState.data.items = results.items;
+    newState.data.total = results.total;
+    newState.data.totals = results.totals;
+    newState.data.types = results.types;
+    newState.data.axisItems.push(results.dateItems);
+    newState.data.groups.push(results.groupItems);
+    newState.data.maxValue = Morpheus.utils.getNextBaseTen(results.maxValue);
     //mark loaded
     newState.loaded = true;
     newState.data.loaded = true;
