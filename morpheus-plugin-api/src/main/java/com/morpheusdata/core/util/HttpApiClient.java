@@ -649,7 +649,6 @@ public class HttpApiClient {
 		public Integer timeout = 30000;
 		public Integer connectionTimeout = null;
 		public Integer readTimeout = null;
-
 		public Long contentLength = null;
 
 		public OauthOptions oauth;
