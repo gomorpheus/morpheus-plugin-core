@@ -81,7 +81,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             artifactId 'morpheus-plugin-api'
-			version '0.13.6-SNAPSHOT'
+			version '0.13.6'
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
