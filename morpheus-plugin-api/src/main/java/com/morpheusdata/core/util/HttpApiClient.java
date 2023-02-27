@@ -266,7 +266,7 @@ public class HttpApiClient {
 				} else if(opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
 				} else if(opts.body instanceof InputStream) {
-					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body)));
+					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body), opts.contentLength != null ? opts.contentLength : -1));
 				} else {
 					postRequest.setEntity(new StringEntity(opts.body.toString()));
 				}
@@ -649,6 +649,7 @@ public class HttpApiClient {
 		public Integer timeout = 30000;
 		public Integer connectionTimeout = null;
 		public Integer readTimeout = null;
+		public Long contentLength = null;
 
 		public OauthOptions oauth;
 		public String apiToken;
