@@ -324,7 +324,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'SSL Cert',
 			required:false,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpCertSelect',
+			optionSource:'accountSslCertificate',
 			visibleOnCode:'loadBalancerProfile.serviceType:client-ssl'
 		)
 		profileOptions << getPartitionOptionType()
@@ -861,12 +861,10 @@ class BigIpProvider implements LoadBalancerProvider {
 	@Override
 	Collection<NetworkLoadBalancerType> getLoadBalancerTypes() {
 		NetworkLoadBalancerType type = new NetworkLoadBalancerType(
-			code:code,
+			code:getLoadBalancerTypeCode(),
 			name:'F5 BigIP',
 			internal:false,
 			enabled:true,
-			networkService:'pluginLoadBalancerService',
-			initializeQueue:'pluginInitializeLoadBalancerQueue',
 			createType:'multi',
 			supportsCerts:true,
 			creatable:true,
@@ -912,6 +910,10 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 
 		return [type]
+	}
+
+	String getLoadBalancerTypeCode() {
+		return PROVIDER_CODE
 	}
 
 	// methods used for entity syncing in the f5 world
@@ -4138,5 +4140,5 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	// constants
-	public static final String PROVIDER_CODE = 'morpheus-bigip-provider'
+	public static final String PROVIDER_CODE = 'bigip'
 }
