@@ -190,8 +190,15 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * should handle every operation necessary to setup a load balanced pool for one or more vms/containers within a morpheus
 	 * instance
 	 * @param instance
-	 * @param opts
 	 * @return
 	 */
-	ServiceResponse addInstance(NetworkLoadBalancerInstance instance, Map opts);
+	ServiceResponse addInstance(NetworkLoadBalancerInstance instance);
+
+	/**
+	 * Implement this method to remove all entities involved in a {@link NetworkLoadBalancerInstance} such ass policies, pools,
+	 * profiles, nodes, virtual servers, etc.  This method should clean said entities from the load balancer integration itself
+	 * @param instance
+	 * @return
+	 */
+	ServiceResponse removeInstance(NetworkLoadBalancerInstance instance);
 }

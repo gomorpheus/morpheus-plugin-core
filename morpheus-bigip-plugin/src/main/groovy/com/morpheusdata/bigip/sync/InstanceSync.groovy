@@ -40,7 +40,7 @@ class InstanceSync {
 			Observable domainRecords = svc.listSyncProjections(loadBalancer.id)
 			SyncTask<LoadBalancerInstanceIdentityProjection, Map, NetworkLoadBalancerInstance> syncTask = new SyncTask<>(domainRecords, apiItems.virtualServers)
 			syncTask.addMatchFunction { LoadBalancerInstanceIdentityProjection domainItem, Map cloudItem ->
-				return domainItem.externalId == cloudItem.fullPath
+				return (domainItem.externalId == cloudItem.fullPath || (domainItem.vipAddress == cloudItem.vipAddress && domainItem.vipPort == cloudItem.vipPort))
 			}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<LoadBalancerInstanceIdentityProjection, Map>> updateItems ->
 				Map<Long, SyncTask.UpdateItemDto<LoadBalancerInstanceIdentityProjection, Map>> updateItemMap = updateItems.collectEntries { [(it.existingItem.id): it] }
 				svc.listById(updateItems?.collect { it.existingItem.id }).map { NetworkLoadBalancerInstance instance ->

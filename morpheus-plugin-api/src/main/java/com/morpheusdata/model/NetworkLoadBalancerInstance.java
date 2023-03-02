@@ -14,7 +14,6 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServerGroup serverGroup;
 	protected String description;
-	protected String config;
 	protected String internalId;
 	protected String externalId;
 	protected Date dateCreated;
@@ -25,13 +24,10 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	protected Boolean externalAddress = false;
 	protected Integer backendPort; //tracking the original port form the container def
 	protected String vipType; //forwarding,http,performance etc
-	protected String vipAddress; //front facing ip being load balanced
 	protected String vipHostname; //front facing ip being load balanced
 	protected String vipProtocol; //http, tcp, https - matches port protocols
 	protected String vipScheme; //internal/external for amazon
 	protected String vipMode; //style - http, https passthrough or https terminated - passthrough, terminated, endtoend - computed
-	protected String vipName; //name of the virtual service in the load balancer
-	protected Integer vipPort; //front facing port
 	protected String vipPortRange;
 	protected String vipSticky; //mode of the sticky session persistence;
 	protected String vipBalance; //balancing mode;
@@ -105,17 +101,6 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	public void setDescription(String description) {
 		this.description = description;
 		markDirty("description", description);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getInternalId() {
@@ -208,15 +193,6 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 		markDirty("vipType", vipType);
 	}
 
-	public String getVipAddress() {
-		return vipAddress;
-	}
-
-	public void setVipAddress(String vipAddress) {
-		this.vipAddress = vipAddress;
-		markDirty("vipAddress", vipAddress);
-	}
-
 	public String getVipHostname() {
 		return vipHostname;
 	}
@@ -251,24 +227,6 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	public void setVipMode(String vipMode) {
 		this.vipMode = vipMode;
 		markDirty("vipMode", vipMode);
-	}
-
-	public String getVipName() {
-		return vipName;
-	}
-
-	public void setVipName(String vipName) {
-		this.vipName = vipName;
-		markDirty("vipName", vipName);
-	}
-
-	public Integer getVipPort() {
-		return vipPort;
-	}
-
-	public void setVipPort(Integer vipPort) {
-		this.vipPort = vipPort;
-		markDirty("vipPort", vipPort);
 	}
 
 	public String getVipPortRange() {

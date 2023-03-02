@@ -1,9 +1,6 @@
 package com.morpheusdata.core.network.loadbalancer;
 
-import com.morpheusdata.model.Account;
-import com.morpheusdata.model.Container;
-import com.morpheusdata.model.NetworkLoadBalancer;
-import com.morpheusdata.model.NetworkLoadBalancerInstance;
+import com.morpheusdata.model.*;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -80,7 +77,7 @@ public interface MorpheusLoadBalancerService {
 	 * @param loadBalancerInstance
 	 * @return
 	 */
-	Map buildNamingConfig(Container container, Map opts, NetworkLoadBalancerInstance loadBalancerInstance);
+	Map buildNamingConfig(Workload container, Map opts, NetworkLoadBalancerInstance loadBalancerInstance);
 
 	/**
 	 * This is a helper method to generate a name and applying morpheus naming substitutions
@@ -97,7 +94,7 @@ public interface MorpheusLoadBalancerService {
 	 * @param externalAddress
 	 * @return
 	 */
-	String getContainerIp(Container container, Boolean externalAddress);
+	String getContainerIp(Workload container, Boolean externalAddress);
 
 	/**
 	 * Build a name for a pool that applies any additional morpheus naming substitutions

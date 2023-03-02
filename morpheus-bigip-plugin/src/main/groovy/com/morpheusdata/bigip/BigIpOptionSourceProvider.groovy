@@ -89,7 +89,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		}
 		def partitionSvc = morpheusContext.loadBalancer.partition
 		def options = []
-		partitionSvc.listSyncProjections(loadBalancerId, BigIpUtility.getObjCategory('partition', loadBalancerId)).blockingSubscribe {
+		partitionSvc.listSyncProjections(loadBalancerId.toLong(), BigIpUtility.getObjCategory('partition', loadBalancerId)).blockingSubscribe {
 			options << [name: it.name, value: it.name]
 		}
 		return options
@@ -215,7 +215,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 			policies << policy
 		}
 		return policies.collect { policy ->
-			return [id:policy.id, name:policy.name, value:policy.id]
+			return [id:policy.id, name:policy.name, value:policy.name]
 		}
 	}
 

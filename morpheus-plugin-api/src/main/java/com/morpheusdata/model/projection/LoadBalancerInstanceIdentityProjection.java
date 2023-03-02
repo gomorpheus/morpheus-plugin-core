@@ -13,6 +13,8 @@ import com.morpheusdata.model.NetworkLoadBalancerInstance;
 public class LoadBalancerInstanceIdentityProjection extends MorpheusModel {
 	protected String externalId;
 	protected String vipName;
+	protected String vipAddress; //front facing ip being load balanced
+	protected Integer vipPort; //front facing port
 	protected String partition;
 
 	public LoadBalancerInstanceIdentityProjection() {}
@@ -46,6 +48,24 @@ public class LoadBalancerInstanceIdentityProjection extends MorpheusModel {
 	public void setVipName(String vipName) {
 		this.vipName = vipName;
 		markDirty("vipName", vipName);
+	}
+
+	public String getVipAddress() {
+		return vipAddress;
+	}
+
+	public void setVipAddress(String vipAddress) {
+		this.vipAddress = vipAddress;
+		markDirty("vipAddress", vipAddress);
+	}
+
+	public Integer getVipPort() {
+		return vipPort;
+	}
+
+	public void setVipPort(Integer vipPort) {
+		this.vipPort = vipPort;
+		markDirty("vipPort", vipPort);
 	}
 
 	public String getPartition() {

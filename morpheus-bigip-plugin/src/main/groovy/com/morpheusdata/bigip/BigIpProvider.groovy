@@ -19,6 +19,7 @@ import com.morpheusdata.core.util.HttpApiClient
 import com.morpheusdata.core.util.MorpheusUtils
 import com.morpheusdata.model.AccountCertificate
 import com.morpheusdata.model.Icon
+import com.morpheusdata.model.Instance
 import com.morpheusdata.model.NetworkLoadBalancer
 import com.morpheusdata.model.NetworkLoadBalancerInstance
 import com.morpheusdata.model.NetworkLoadBalancerMonitor
@@ -516,6 +517,108 @@ class BigIpProvider implements LoadBalancerProvider {
 		return monitorOptions
 	}
 
+	Collection<OptionType> getInstanceOptionTypes() {
+		Collection<OptionType> instanceOptionTypes =  new ArrayList<OptionType>()
+		instanceOptionTypes << new OptionType(
+			name:'vipName',
+			code:'plugin.bigip.instance.vipName',
+			fieldName:'vipName',
+			fieldContext:'domain',
+			displayOrder:1,
+			fieldLabel:'Name',
+			required:false,
+			inputType:OptionType.InputType.TEXT
+		)
+		instanceOptionTypes << new OptionType(
+			name:'vipHostname',
+			code:'plugin.bigip.instance.vipHostname',
+			fieldName:'vipHostname',
+			fieldContext:'domain',
+			displayOrder:2,
+			fieldLabel:'VIP Hostname',
+			required:false,
+			inputType:OptionType.InputType.TEXT
+		)
+		instanceOptionTypes << new OptionType(
+			name:'vipAddress',
+			code:'plugin.bigip.instance.vipAddress',
+			fieldName:'vipAddress',
+			fieldContext:'domain',
+			displayOrder:3,
+			fieldLabel:'VIP Address',
+			required:true,
+			inputType:OptionType.InputType.TEXT
+		)
+		instanceOptionTypes << new OptionType(
+			name:'vipPort',
+			code:'plugin.bigip.instance.vipPort',
+			fieldName:'vipPort',
+			fieldContext:'domain',
+			displayOrder:4,
+			fieldLabel:'VIP Port',
+			required:true,
+			inputType:OptionType.InputType.TEXT
+		)
+		instanceOptionTypes << new OptionType(
+			name:'persistence',
+			code:'plugin.bigip.instance.persistence',
+			fieldName:'vipSticky',
+			fieldContext:'domain',
+			displayOrder:5,
+			fieldLabel:'Persistence',
+			required:false,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginVirtualServerPersistence'
+		)
+		instanceOptionTypes << new OptionType(
+			name:'vipBalance',
+			code:'plugin.bigip.instance.balanceMode',
+			fieldName:'vipBalance',
+			fieldContext:'domain',
+			displayOrder:6,
+			fieldLabel:'Balance Mode',
+			required:true,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginBalanceModes'
+		)
+		instanceOptionTypes << new OptionType(
+			name:'monitor',
+			code:'plugin.bigip.instance.monitor',
+			fieldName:'monitor',
+			fieldContext:'domain',
+			displayOrder:7,
+			fieldLabel:'Monitor',
+			required:false,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginHealthMonitors'
+		)
+		instanceOptionTypes << new OptionType(
+			name:'sslCert',
+			code:'plugin.bigip.instance.sslCert',
+			fieldName:'sslCert',
+			fieldContext:'domain',
+			displayOrder:8,
+			fieldLabel:'SSL Certificate',
+			required:true,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'accountSslCertificate'
+		)
+		instanceOptionTypes << new OptionType(
+			name:'sslRedirectMode',
+			code:'plugin.bigip.instance.sslRedirectMode',
+			fieldName:'sslRedirectMode',
+			fieldContext:'domain',
+			displayOrder:9,
+			fieldLabel:'SSL Redirect Mode',
+			required:false,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'sslRedirectMode',
+			visibleOnCode:'loadBalancer.sslCert:([^0]),loadBalancerInstance.sslCert:([^0])'
+		)
+		instanceOptionTypes << getPartitionOptionType()
+		return instanceOptionTypes
+	}
+
 	Collection<OptionType> getVirtualServerOptionTypes() {
 		Collection<OptionType> virtualServerOptions = new ArrayList<OptionType>()
 		virtualServerOptions << new OptionType(
@@ -804,7 +907,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			poolOptionTypes:getPoolOptionTypes(),
 			profileOptionTypes:getProfileOptionTypes(),
 			nodeOptionTypes:getNodeOptionTypes(),
-			monitorOptionTypes:getHealthMonitorOptionTypes()
+			monitorOptionTypes:getHealthMonitorOptionTypes(),
+			instanceOptionTypes:getInstanceOptionTypes()
 		)
 
 		return [type]
@@ -2048,7 +2152,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	@Override
 	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
 		def policySvc = morpheus.loadBalancer.policy
-		def rtn = [success:false, errors:[:], msg:null]
+		def rtn = ServiceResponse.prepare()
 		try {
 			//need a name
 			if(!instance.vipName) {
@@ -2064,23 +2168,9 @@ class BigIpProvider implements LoadBalancerProvider {
 				rtn.errors.vipPort = 'Vip Port is required'
 			}
 
-			def policies = []
-			if(instanceConfig.policies?.id) {
-				if(instanceConfig.policies.id instanceof CharSequence) {
-					def policy = policySvc.findById(instanceConfig.policies.id.toLong()).blockingGet()
-					if(policy.value.isPresent())
-						policies << policy.value.get()
-				} else { //if(poolConfig.nodes.id instanceof Collection) {
-					instanceConfig.policies.id?.each { rowId ->
-						def rowLongId = rowId ? rowId.toLong() : null
-						def policy = rowLongId ? policySvc.findById(rowLongId).blockingGet() : null
-						if(policy.value.isPresent())
-							policies << policy.value.get()
-					}
-				}
-			}
 			//need either a policy or a pool
-			if(opts.mode != 'instance' && !opts.config?.defaultPool && policies?.size() == 0) {
+			def configMap = instance.configMap
+			if(configMap?.mode != 'instance' && !configMap?.defaultPool && instance.policies?.size() == 0) {
 				rtn.errors.defaultPool = 'Pool or a policy is required'
 			}
 			rtn.success = rtn.errors.size() == 0
@@ -2091,10 +2181,10 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	@Override
-	ServiceResponse addInstance(NetworkLoadBalancerInstance loadBalancerInstance, Map opts) {
-		log.debug("addInstance: ${loadBalancerInstance.id}, ${opts}")
+	ServiceResponse addInstance(NetworkLoadBalancerInstance loadBalancerInstance) {
 		def rtn = ServiceResponse.prepare()
 		try {
+			def opts = loadBalancerInstance.configMap.options
 			def loadBalancer = loadBalancerInstance.loadBalancer
 			def lbSvc = morpheus.loadBalancer
 			def instance = loadBalancerInstance.instance
@@ -2288,7 +2378,7 @@ class BigIpProvider implements LoadBalancerProvider {
 					serverIdList << id
 				}
 				opts.removeContainers?.each { container ->
-					namingConfig = lbSvc.buildNamingConfig(container, opts)
+					namingConfig = lbSvc.buildNamingConfig(container, opts, null)
 					def serverMatch = serverIdList.find { it == container.server.id }
 					if(!serverMatch) {
 						def serverName = BigIpUtility.buildServerName(loadBalancer.serverName, container.server.id, namingConfig)
@@ -2308,7 +2398,184 @@ class BigIpProvider implements LoadBalancerProvider {
 		return rtn
 	}
 
-	// The operations that deal with the bigip api
+	@Override
+	ServiceResponse removeInstance(NetworkLoadBalancerInstance loadBalancerInstance) {
+		def rtn = ServiceResponse.prepare() //deleted is if the gorm objects were removed - not the vip
+		try {
+			def activeConfig = [id:loadBalancerInstance.id, loadBalancer:loadBalancerInstance.loadBalancer,
+								vipAddress:loadBalancerInstance.vipAddress, vipPort:loadBalancerInstance.vipPort, vipBalance:loadBalancerInstance.vipBalance,
+								vipHostname:loadBalancerInstance.vipHostname, vipName:loadBalancerInstance.vipName,
+								vipProtocol:loadBalancerInstance.vipProtocol, vipSticky:loadBalancerInstance.vipSticky,
+								vipShared:loadBalancerInstance.vipShared, sslCert:loadBalancerInstance.sslCert,
+								vipMode:loadBalancerInstance.vipMode, sslRedirectMode:loadBalancerInstance.sslRedirectMode,
+								vipDirectAddress:loadBalancerInstance.vipDirectAddress, externalAddress:loadBalancerInstance.externalAddress,
+								servicePort:loadBalancerInstance.servicePort, backendPort:loadBalancerInstance.backendPort,
+								serverName:loadBalancerInstance.serverName, poolName:loadBalancerInstance.poolName,
+								serviceName:loadBalancerInstance.serviceName, virtualServiceName:loadBalancerInstance.virtualServiceName,
+								loadBalancerInstance:loadBalancerInstance, monitor:loadBalancerInstance.monitor,
+								partition:loadBalancerInstance.partition
+			]
+			def removeResults = removeInstance(activeConfig, loadBalancerInstance.instance)
+			rtn.success = removeResults.success
+
+		} catch(e) {
+			log.error("removeInstance error: ${e}", e)
+		}
+		return rtn
+	}
+
+    // The operations that deal with the bigip api
+	def removeInstance(Map instanceConfig, Instance instance) {
+		def rtn = [success:false, deleted:false]
+		try {
+			def loadBalancer = instanceConfig.loadBalancer
+			def lbSvc = morpheus.loadBalancer
+			log.info("Removing VIP from LoadBalancer: {}", instanceConfig.loadBalancer?.name)
+			//vip details
+			def vipAddress = instanceConfig.vipAddress
+			def vipHostname = instanceConfig.vipHostname
+			def vipProtocol = instanceConfig.vipProtocol
+			def vipMode = instanceConfig.vipMode
+			def vipPort = instanceConfig.vipPort
+			def servicePort = instanceConfig.servicePort
+			def backendPort = instanceConfig.backendPort
+			def vipShared = instanceConfig.vipShared
+			def vipDirectAddress = instanceConfig.vipDirectAddress
+			def loadBalancerInstance = instanceConfig.loadBalancerInstance
+			//ssl config
+			def sslCert = instanceConfig.sslCert
+			def sslEnabled = sslCert != null
+			def partition = instanceConfig.partition
+			//base api config
+			def apiConfig = getConnectionBase(loadBalancer)
+			//do the deletes
+			def keepGoing = true
+			//naming
+			def removeOpts = [:]
+			def firstContainer = instance.containers?.size() > 0 ? instance.containers.first() : null
+			def namingConfig = lbSvc.buildNamingConfig(firstContainer, removeOpts, null)
+			//results
+			def deleteResults
+			//remove the virtual server - todo handle shared vips
+			def virtualServerName = lbSvc.buildVirtualServerName(instanceConfig.virtualServiceName, instanceConfig.id, instanceConfig.vipName, sslEnabled, namingConfig)
+			def virtualServerConfig = apiConfig + [name:virtualServerName, vipAddress:vipAddress, vipPort:vipPort, partition:partition]
+			//load the virtual server
+			def policyName = BigIpUtility.generatePolicyName(loadBalancerInstance)
+			def virtualServerResults = vipExists(virtualServerConfig)
+			virtualServerConfig.authToken = virtualServerResults.authToken
+			def virtualServer = virtualServerResults.vip
+			//remove the vip if it only has one policy
+			log.debug("virtualServerResults: {}", virtualServerResults)
+			if(virtualServer) {
+				def policyMatch = virtualServer.policiesReference?.items?.find{ it.name == policyName }
+				def policyCount = virtualServer.policiesReference?.items?.size() ?: 0
+				log.debug("policyMatch: {} count: {}", policyMatch, policyCount)
+				if(policyCount == 0 || (policyMatch && policyCount == 1)) {
+					//no more policies - can remove the vip - have to look at other types of policies
+					deleteResults = deleteVirtualServer(virtualServerConfig)
+					if(deleteResults.success != true) {
+						rtn.success = false
+						keepGoing = false
+						rtn.status = deleteResults.status
+						rtn.msg = 'failed to delete virtual server: ' + deleteResults.message
+						rtn.message = deleteResults.message
+						rtn.content = deleteResults.content
+						rtn.results = deleteResults.results
+					}
+				}
+			}
+			//remove policy from virtual server
+			def out = removeVipPolicy(virtualServerConfig + [policyName:BigIpUtility.generatePolicyName(loadBalancerInstance)])
+			if(!out.success) {
+				log.warn("Error Removing Policy from Load Balancer Instance")
+				rtn.success = false
+				keepGoing = false
+				rtn.message = out.data.message ?: out.errors?.error ?: out.message
+			}
+			//delete policy
+			out = deleteBigIpPolicy(virtualServerConfig + [policyName:policyName])
+			if(!out.success) {
+				log.warn("Error Removing BigIP Policy from Load Balancer Instance")
+				rtn.success = false
+				keepGoing = false
+				rtn.message = out.content
+			}
+			if(sslEnabled) {
+				out = removeVipProfile(virtualServerConfig + [profileName:BigIpUtility.generateSslProfileName(loadBalancerInstance)])
+				if(!out.success) {
+					log.warn("Error Removing Profiles from Load Balancer Instance")
+					rtn.success = false
+					keepGoing = false
+					rtn.message = out.msg
+				}
+				out = deleteSslProfile(virtualServerConfig + [profileName:BigIpUtility.generateSslProfileName(loadBalancerInstance)])
+				if(!out.success) {
+					log.warn("Error Removing SSL Profiles from Load Balancer Instance")
+					rtn.success = false
+					keepGoing = false
+					rtn.message = out.msg
+				}
+			}
+			//remove the pool
+			def poolName = lbSvc.buildPoolName(loadBalancer.poolName, loadBalancerInstance.id, sslEnabled, namingConfig)
+			if(keepGoing == true) {
+				def poolConfig = apiConfig + [name:poolName, authToken:virtualServerConfig.authToken, partition:partition]
+				// remove pool from virtual server
+				removeVipPool(poolConfig + [vipAddress:vipAddress, vipPort:vipPort])
+				deleteResults = deletePool(poolConfig)
+				if(deleteResults.success != true) {
+					rtn.success = false
+					keepGoing = false
+					rtn.msg = 'failed to delete server pool: ' + deleteResults.msg
+					rtn.message = deleteResults.msg
+					rtn.data = deleteResults.data
+					rtn.results = deleteResults
+				}
+			}
+			//remove servers if nothing aimed at them
+			if(keepGoing == true) {
+				def serverIdList = lbSvc.getLoadBalancerServerIds(loadBalancer, instanceConfig.id).blockingSubscribe()
+				instance.containers?.findAll{ctr -> ctr.inService}?.each { container ->
+					namingConfig = lbSvc.buildNamingConfig(container, removeOpts, null)
+					def serverMatch = serverIdList.find { it == container.server.id }
+					if(!serverMatch) {
+						def serverName = lbSvc.buildServerName(instanceConfig.serverName, container.server.id, namingConfig)
+						def serverConfig = apiConfig + [name:serverName, authToken:virtualServerConfig.authToken, partition:partition]
+						def deleteResult = deleteServer(serverConfig)
+						log.debug("delete server results: {}", deleteResult)
+					} else {
+						//remove monitor?
+					}
+				}
+			}
+			//remove the health monitor
+			if(instanceConfig.monitor == null) {
+				def healthMonitorName = BigIpUtility.buildHealthMonitorName(instanceConfig.id, servicePort, sslEnabled)
+				if(keepGoing == true) {
+					def healthMonitorConfig = apiConfig + [name:healthMonitorName, authToken:virtualServerConfig.authToken, partition:partition]
+					deleteResults = deleteHealthMonitor(healthMonitorConfig)
+					if(deleteResults.success != true) {
+						rtn.success = false
+						keepGoing = false
+						rtn.status = deleteResults.status
+						rtn.msg = 'failed to delete health monitor: ' + deleteResults.message
+						rtn.message = deleteResults.message
+						rtn.content = deleteResults.data
+						rtn.results = deleteResults
+					}
+				}
+			}
+			//all done
+			if(keepGoing == true) {
+				rtn.success = true
+			}
+		} catch(e) {
+			log.error("removeInstance error: ${e}", e)
+		}
+		log.debug("returning: {}", rtn)
+		return rtn
+	}
+
 	def deleteVirtualServer(Map opts) {
 		def rtn = [success:false, found:false]
 		def virtualServer
@@ -2422,6 +2689,157 @@ class BigIpProvider implements LoadBalancerProvider {
 		return rtn
 	}
 
+	Map vipExists(Map opts) {
+		def rtn = [exists:false]
+		def endpointPath = "${opts.path}/tm/ltm/virtual"
+		def params = [uri:opts.url,
+					  path:endpointPath,
+					  username:opts.username,
+					  password:opts.password,
+					  urlParams:['expandSubcollections':'true'],
+					  authToken:opts.authToken
+		]
+		def out = callApi(params, 'GET')
+		def vip = out?.data?.items?.find { item -> item.destination.contains("${opts.vipAddress}:${opts.vipPort ?: 80}") }
+		rtn.exists = vip ? true : false
+		rtn.name = vip?.name
+		rtn.details = vip
+		rtn.vip = vip
+		rtn.authToken = opts.authToken
+		return rtn
+	}
+
+	def deleteSslProfile(Map params) {
+		if (!params.authToken) {
+			params.authToken = getAuthToken(params)
+		}
+		if(sslProfileExists(params)) {
+			def profileName = BigIpUtility.buildPartitionedName([name:params.profileName, partition:params.partition])
+			def endpointPath = "${params.path}/tm/ltm/profile/client-ssl/${profileName}"
+			// delete ssl profile
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			def out = callApi(reqParams, 'DELETE')
+			return [success:out.success, data:out.data, errors:out.errors, msg:out.data?.message ?: out.errors?.error ?: out.msg]
+		} else {
+			return [success:true, authToken:params.authToken]
+		}
+	}
+
+	def removeVipPool(Map opts) {
+		def rtn = [success:true]
+		def vipResults
+		if(opts.virtualServerId)
+			vipResults = loadVirtualServer(opts + [externalId:opts.virtualServerId])
+		else
+			vipResults = findVirtualServer(opts)
+		if(vipResults.found == true) {
+			def virtualServer = vipResults.virtualServer
+			//if we found it - remove pool
+			if(virtualServer && virtualServer.pool == BigIpUtility.buildPartitionedName(opts, '/')) {
+				def endpointPath = "${opts.path}/tm/ltm/virtual/${BigIpUtility.buildPartitionedName(virtualServer)}"
+				def data = [pool:'']
+				def params = [
+					uri:opts.url,
+					path:endpointPath,
+					body:data,
+					username:opts.username,
+					password:opts.password,
+					authToken:opts.authToken
+				]
+				def out = callApi(params, 'PATCH')
+				rtn.success = out.success
+				rtn.data = out.data
+				rtn.authToken = opts.authToken
+				rtn.message = out.data?.message ?: out.errors?.error ?: out.msg
+			}
+		}
+		return rtn
+	}
+
+	def removeVipProfile(Map params) {
+		def vip = vipExists(params)
+		if(vip.exists) {
+			// get vip profiles
+			def vipName = BigIpUtility.buildPartitionedName(params)
+			def endpointPath = "${params.path}/tm/ltm/virtual/${vipName}/profiles"
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			def out = callApi(reqParams, 'GET')
+
+			// set vip profiles minus this profile
+			def profiles = []
+			for (item in out.data.items) {
+				if(item.name != params.profileName)
+					profiles << [name:item.name, partition:item.partition]
+			}
+
+			endpointPath = "${params.path}/tm/ltm/virtual/${vipName}"
+			def data = [profiles:profiles]
+			reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken,
+			]
+			out = callApi(reqParams, 'PATCH')
+			return [success:out.success, data:out.data, errors:out.errors, msg:out.data?.message ?: out.errors?.error ?: out.msg]
+		}
+		else {
+			return [success:true, msg:'No operation', authToken:params.authToken]
+		}
+	}
+
+	def removeVipPolicy(Map params) {
+		def vip = vipExists(params)
+		if(vip.exists) {
+			// get vip policies
+			def vipName = BigIpUtility.buildPartitionedName(params)
+			def endpointPath = "${params.path}/tm/ltm/virtual/${vipName}/policies"
+			def reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken,
+			]
+			def out = callApi(reqParams, 'GET')
+
+			// set vip policies minus this policy
+			def policies = []
+			for (item in out.data.items) {
+				if(item.name != params.policyName)
+					policies << [name:item.name, partition:item.partition]
+			}
+			endpointPath = "${params.path}/tm/ltm/virtual/${vipName}"
+			def data = [policies:policies]
+			reqParams = [
+				uri:params.url,
+				path:endpointPath,
+				body:data,
+				username:params.username,
+				password:params.password,
+				authToken:params.authToken
+			]
+			out = callApi(reqParams, 'PATCH')
+			return [success:out.success, data:out.data, authToken:params.authToken]
+		} else {
+			return [success:true, msg:'No operation', authToken:params.authToken]
+		}
+	}
+
 	def createVirtualServer(Map opts) {
 		def rtn = [success:false]
 		def virtualServer = findVirtualServer(opts)
@@ -2463,7 +2881,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			if(opts.pool)
 				data.pool = opts.pool.externalId
 			else if(opts.poolName)
-				data.pool = "/${opts.poolPartition ?: opts.partition ?: BIGIP_PARTITION}/${opts.poolName}"
+				data.pool = "/${opts.poolPartition ?: opts.partition ?: BigIpUtility.BIGIP_PARTITION}/${opts.poolName}"
 			//scripts
 			if(opts.scripts)
 				data.rules = opts.scripts
@@ -2473,7 +2891,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			//protocol
 			data.ipProtocol = opts.vipProtocol ?: 'tcp'
 			//destination
-			data.destination = opts.destination ?: "/${opts.partition ?: BIGIP_PARTITION}/${opts.vipAddress}:${opts.vipPort ?: 80}"
+			data.destination = opts.destination ?: "/${opts.partition ?: BigIpUtility.BIGIP_PARTITION}/${opts.vipAddress}:${opts.vipPort ?: 80}"
 			//source
 			if(opts.sourceAddress)
 				data.source = opts.sourceAddress
@@ -3007,6 +3425,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			else {
 				rtn.msg = out.data?.message ?: out.errors?.error ?: out.msg
 			}
+			return rtn
 		}
 		else {
 			return [success:true]
@@ -3230,7 +3649,7 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	def createServer(Map opts) {
-		def rtn = [success:false]
+		def rtn = [success:false, authToken:opts.authToken]
 		def server = loadServer(opts)
 		if(server.found == true) {
 			rtn.success = true
@@ -3421,10 +3840,16 @@ class BigIpProvider implements LoadBalancerProvider {
 				authToken:healthMonitor.authToken
 			]
 			def results = callApi(params, 'DELETE')
+			rtn.data = results.data
 			if (results.success) {
 				rtn.success = true
 				rtn.found = true
 				rtn.authToken = healthMonitor.authToken
+			}
+			else {
+				rtn.success = false
+				rtn.found = true
+				rtn.message = results.data?.message ?: results.errors?.error ?: results.msg
 			}
 		}
 		else {
@@ -3515,7 +3940,7 @@ class BigIpProvider implements LoadBalancerProvider {
 
 	def loadPool(Map opts) {
 		if (!opts.authToken) {
-			opts.authToken = getAuthToken(opts).data.token.token
+			opts.authToken = getAuthToken(opts)
 		}
 		def rtn = [success:false, found:false]
 		def poolName = BigIpUtility.buildPartitionedName(opts)
@@ -3625,6 +4050,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			]
 			def results = callApi(params, 'DELETE')
 			rtn.success = results.success
+			rtn.data = results.data
 			if (!rtn.success) {
 				log.warn("Failed to remove load balancer pool ${poolName}: ${results.data?.message}")
 				rtn.errors = results.errors
@@ -3706,7 +4132,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		)
 
 		if (!response.success) {
-			log.error("Failure in call to F5 api: ${response.msg}")
+			log.error("Failure in call to F5 api: ${response.data?.message ?: response.errors?.error ?: response.msg}")
 		}
 		return response
 	}
