@@ -3,9 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class NetworkLoadBalancer extends MorpheusModel {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -51,6 +49,10 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	protected String virtualServiceName;
 
 	protected List<NetworkLoadBalancerMonitor> monitors = new ArrayList<NetworkLoadBalancerMonitor>();
+
+	//transient holder for active credentials
+	protected Boolean credentialLoaded = false;
+	protected Map credentialData = new LinkedHashMap();
 
 	public Account getAccount() {
 		return account;
@@ -376,5 +378,21 @@ public class NetworkLoadBalancer extends MorpheusModel {
 	public void setVirtualServiceName(String virtualServiceName) {
 		this.virtualServiceName = virtualServiceName;
 		markDirty("virtualServiceName", virtualServiceName);
+	}
+
+	public Boolean getCredentialLoaded() {
+		return credentialLoaded;
+	}
+
+	public void setCredentialLoaded(Boolean credentialLoaded) {
+		this.credentialLoaded = credentialLoaded;
+	}
+
+	public Map getCredentialData() {
+		return credentialData;
+	}
+
+	public void setCredentialData(Map credentialData) {
+		this.credentialData = credentialData;
 	}
 }

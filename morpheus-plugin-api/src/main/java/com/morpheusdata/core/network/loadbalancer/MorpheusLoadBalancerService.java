@@ -131,4 +131,10 @@ public interface MorpheusLoadBalancerService {
 	 * @return
 	 */
 	Observable<Long> getLoadBalancerServerIds(NetworkLoadBalancer loadBalancer, Long excludedInstance);
+
+	/**
+	 * this method will populate credential data onto the load balancer model if it exists
+	 * @param loadBalancer
+	 */
+	void loadLoadBalancerCredentials(NetworkLoadBalancer loadBalancer);
 }

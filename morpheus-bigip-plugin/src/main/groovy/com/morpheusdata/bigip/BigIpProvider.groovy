@@ -31,6 +31,7 @@ import com.morpheusdata.model.NetworkLoadBalancerRule
 import com.morpheusdata.model.NetworkLoadBalancerType
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.response.ServiceResponse
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -122,6 +123,18 @@ class BigIpProvider implements LoadBalancerProvider {
 			inputType:OptionType.InputType.TEXT,
 			fieldContext:'domain'
 		)
+		OptionType credential = new OptionType(
+			name:'credentials',
+			code:'plugin.bigio.credentials',
+			fieldName:'type',
+			displayOrder:9,
+			defaultValue:'local',
+			fieldLabel:'Credentials',
+			required:false,
+			inputType:OptionType.InputType.CREDENTIAL,
+			fieldContext:'credential',
+			config:JsonOutput.toJson(credentialTypes:['username-password']).toString()
+		)
 		OptionType username = new OptionType(
 			name:'Username',
 			code:'plugin.bigip.username',
@@ -143,7 +156,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldContext:'domain'
 		)
 
-		return [apiHost, apiPort, username, password]
+		return [apiHost, apiPort, credential, username, password]
 	}
 
 	/**
@@ -4066,11 +4079,12 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	protected getConnectionBase(NetworkLoadBalancer lb, Map opts = null) {
+		morpheus.loadBalancer.loadLoadBalancerCredentials(lb)
 		def connectionBase = [
 			url:"https://${lb.sshHost}:${lb.apiPort}",
 			path:'/mgmt',
-			username:lb.sshUsername,
-			password:lb.sshPassword
+			username:lb.credentialData?.username ?: lb.sshUsername,
+			password:lb.credentialData?.password ?: lb.sshPassword
 		]
 
 		connectionBase.authToken = opts?.authToken ?: getAuthToken(connectionBase)
