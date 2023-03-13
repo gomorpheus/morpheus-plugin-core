@@ -106,6 +106,21 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 		return ServiceResponse.success();
 	}
 
+	@Override
+	public ServiceResponse getXvpVNCConsoleUrl(ComputeServer server) { return null; }
+
+	@Override
+	public ServiceResponse getNoVNCConsoleUrl(ComputeServer server) { return null; }
+
+	@Override
+	public ServiceResponse updateServerHost(ComputeServer server) {return null; }
+
+	@Override
+	public ServiceResponse enableConsoleAccess(ComputeServer server) {return null; }
+
+	@Override
+	public ServiceResponse getWMKSConsoleUrl(ComputeServer server) { return null; }
+
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
 		Collection<ComputeServerType> serverTypes = getMorpheus().getCloud().getComputeServerTypes(cloudId).blockingGet();

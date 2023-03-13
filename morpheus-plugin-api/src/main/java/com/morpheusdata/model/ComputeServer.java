@@ -100,6 +100,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String consoleType;
 	protected Integer consolePort;
 	protected String consolePassword;
+	protected Boolean guestConsolePreferred = false;
+	protected GuestConsoleType guestConsoleType;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServer parentServer;
 	protected ComputeStats computeStats;
@@ -772,6 +774,24 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("consolePassword",consolePassword);
 	}
 
+	public Boolean getGuestConsolePreferred() {
+		return guestConsolePreferred;
+	}
+
+	public void setGuestConsolePreferred(Boolean guestConsolePreferred) {
+		this.guestConsolePreferred = guestConsolePreferred;
+		markDirty("guestConsolePreferred", guestConsolePreferred);
+	}
+
+	public GuestConsoleType getGuestConsoleType() {
+		return guestConsoleType;
+	}
+
+	public void setGuestConsoleType(GuestConsoleType guestConsoleType) {
+		this.guestConsoleType = guestConsoleType;
+		markDirty("guestConsoleType", guestConsoleType);
+	}
+
 	public ComputeServer getParentServer() {
 		return parentServer;
 	}
@@ -810,5 +830,12 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
 		markDirty("metadata", metadata);
+	}
+
+	public enum GuestConsoleType {
+		disabled,
+		vnc,
+		rdp,
+		ssh
 	}
 }

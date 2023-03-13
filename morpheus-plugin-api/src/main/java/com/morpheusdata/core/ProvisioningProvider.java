@@ -363,6 +363,47 @@ public interface ProvisioningProvider extends PluginProvider {
 	 */
 	ServiceResponse createWorkloadResources(Workload workload, Map opts);
 
+
+	/**
+	 * Builds the URL and authentication required to connect to the target server using noVNC
+	 * @since 0.13.8
+	 * @param server server to connect to
+	 * @return Url and authentication for an xvpVnc console connection to the server
+	 */
+	ServiceResponse getXvpVNCConsoleUrl(ComputeServer server);
+
+	/**
+	 * Builds the URL and authentication required to connect to the target server using noVNC
+	 * @since 0.13.8
+	 * @param server server to connect to
+	 * @return Url and authentication for a noVNC console connection to the server
+	 */
+	ServiceResponse getNoVNCConsoleUrl(ComputeServer server);
+
+	/**
+	 * Builds the URL and authentication required to connect to the target server using noVNC
+	 * @since 0.13.8
+	 * @param server server to connect to
+	 * @return Url and authentication for a wmks console connection to the server
+	 */
+	ServiceResponse getWMKSConsoleUrl(ComputeServer server);
+
+	/**
+	 * Method called before using the console host to ensure it is accurate
+	 * @since 0.13.8
+	 * @param server server to connect to
+	 * @return Success or failure
+	 */
+	ServiceResponse updateServerHost(ComputeServer server);
+
+	/**
+	 * Method called before making a hypervisor vnc console connection to a server to ensure that the server settings are correct
+	 * @since 0.13.8
+	 * @param server server to connect to
+	 * @return Success or failure
+	 */
+	ServiceResponse enableConsoleAccess(ComputeServer server);
+
 	/**
 	 * Returns the host type that is to be provisioned
 	 * @return HostType
