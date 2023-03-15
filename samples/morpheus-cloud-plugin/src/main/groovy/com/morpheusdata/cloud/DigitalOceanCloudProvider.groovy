@@ -44,12 +44,12 @@ class DigitalOceanCloudProvider implements CloudProvider {
 
 	@Override
 	Icon getIcon() {
-		return new Icon(path:"digital-ocean-plugin.svg", darkPath: "digital-ocean-plugin.svg")
+		return new Icon(path:"digitalocean.svg", darkPath: "digitalocean.svg")
 	}
 
 	@Override
 	Icon getCircularIcon() {
-		return null
+		return new Icon(path:"digitalocean-circle.svg", darkPath: "digitalocean-circle.svg")
 	}
 
 	@Override

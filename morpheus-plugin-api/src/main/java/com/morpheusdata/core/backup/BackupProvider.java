@@ -31,6 +31,7 @@ public interface BackupProvider extends PluginProvider {
 	 * This is the old way and is no longer being used.
 	 * @deprecated
 	 */
+	@Deprecated
 	String getViewSet();
 
 	/**

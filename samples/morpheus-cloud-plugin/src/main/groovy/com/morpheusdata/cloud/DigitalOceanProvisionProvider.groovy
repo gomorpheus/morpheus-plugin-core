@@ -516,46 +516,54 @@ class DigitalOceanProvisionProvider extends AbstractProvisionProvider {
 	@Override
 	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server) {
 		log.debug "getServerDetails"
-		ServiceResponse resp = new ServiceResponse(success: false)
+		ServiceResponse rtn = ServiceResponse.prepare(new WorkloadResponse())
+		String apiKey = plugin.getAuthConfig(server.cloud).doApiKey
+
 		Boolean pending = true
 		Integer attempts = 0
 		while (pending) {
 			log.debug "attempt $attempts"
 			sleep(1000l * 20l)
-			resp = serverStatus(server)
-			if (resp.success || resp.msg == 'failed') {
-				pending = false
+			def resp = apiService.getDroplet(apiKey, server.externalId)
+			if (resp.success) {
+				if(resp.data?.status == "active") {
+					rtn.success = true
+					rtn.data = dropletToWorkloadResponse(resp.data)
+					pending = false
+				} else if(resp.msg == 'failed') {
+					rtn.msg = resp.msg
+					pending = false
+				}
 			}
 			attempts++
 			if (attempts > 15) {
 				pending = false
 			}
 		}
-		resp
-	}
 
-	ServiceResponse<WorkloadResponse> serverStatus(ComputeServer server) {
-		log.debug "check server status for server ${server.externalId}"
-		ServiceResponse resp = new ServiceResponse(success: false)
-		String apiKey = plugin.getAuthConfig(server.cloud).doApiKey
-		HttpGet httpGet = new HttpGet("${DIGITAL_OCEAN_ENDPOINT}/v2/droplets/${server.externalId}")
-		def respMap = apiService.makeApiCall(httpGet, apiKey)
-
-		String status = respMap.json?.droplet?.status
-		log.debug "droplet status: ${status}"
-		if (status == 'active') {
-			resp.success = true
-		}
-		resp.content = respMap.resp
-		resp.data = apiService.dropletToWorkloadResponse(respMap.json?.droplet)
-		resp.msg = status
-		resp
+		rtn
 	}
 
 	ServiceResponse<WorkloadResponse> powerOffServer(String apiKey, String dropletId) {
 		log.debug "power off server"
 		def body = ['type': 'power_off']
 		apiService.performDropletAction(dropletId, body, apiKey)
+	}
+
+	protected WorkloadResponse dropletToWorkloadResponse(droplet) {
+		WorkloadResponse workloadResponse = new WorkloadResponse()
+		workloadResponse.externalId = droplet?.id
+		def publicNetwork = droplet?.networks?.v4?.find {
+			it.type == 'public'
+		}
+		def privateNetwork = droplet?.networks?.v4?.find {
+			it.type == 'private'
+		}
+		def publicIp = publicNetwork?.ip_address
+		def privateIp = privateNetwork?.ip_address ?: publicIp
+		workloadResponse.publicIp = publicIp
+		workloadResponse.privateIp = privateIp
+		workloadResponse
 	}
 
 	protected ComputeServer saveAndGet(ComputeServer server) {

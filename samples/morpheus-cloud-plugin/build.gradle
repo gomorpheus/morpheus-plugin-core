@@ -67,8 +67,18 @@ sourceSets {
 jar {
 	manifest {
 		attributes(
-				'Plugin-Class': 'com.morpheusdata.cloud.DigitalOceanPlugin',
-				'Plugin-Version': archiveVersion.get()
+			'Plugin-Class': 'com.morpheusdata.cloud.DigitalOceanPlugin',
+			'Plugin-Version': archiveVersion.get(),
+			'Morpheus-Name': 'Digital Ocean',
+			'Morpheus-Organization': 'morpheus',
+			'Morpheus-Code': 'digital-ocean-plugin',
+			'Morpheus-Description': 'Plugin for Digital Ocean',
+			'Morpheus-Logo': 'assets/digital-ocean.svg',
+			'Morpheus-Logo-Dark': 'assets/digital-ocean-dark.svg',
+			'Morpheus-Color': '#ffffff',
+			'Morpheus-Labels': 'Plugin, cloud',
+			'Morpheus-Repo': 'https://github.com/gomorpheus/morpheus-digital-ocean-plugin',
+			'Morpheus-Min-Appliance-Version': "5.5.2"
 		)
 	}
 }
@@ -130,9 +140,28 @@ test {
 		showStandardStreams = true
 	}
 }
+//
+// tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+// 	destinationDirectory = file("$rootDir/plugins")
+// }
 
-tasks.withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
-	destinationDirectory = file("$rootDir/plugins")
+
+shadowJar {
+	// archiveFileName = "${baseName}-${version}.mpl"
 }
 
 tasks.assemble.dependsOn tasks.shadowJar
+
+tasks.register('moveToPlugin') {
+	doLast {
+		ant.move file: "${buildDir}/libs/${project.name}-${version}-all.jar",
+			todir: "../../../morpheus-plugins"
+	}
+}
+
+// Runs assemble and copyToMorpheus
+tasks.register('publishToMorpheus') {
+	dependsOn tasks.shadowJar
+	dependsOn 'moveToPlugin'
+	tasks.findByName('moveToPlugin').mustRunAfter 'shadowJar'
+}
