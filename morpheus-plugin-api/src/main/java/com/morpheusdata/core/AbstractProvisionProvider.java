@@ -20,6 +20,11 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	}
 
 	@Override
+	public Boolean hasSnapshots() {
+		return false;
+	}
+
+	@Override
 	public Boolean canAddVolumes() {
 		return false;
 	}
@@ -120,6 +125,18 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 
 	@Override
 	public ServiceResponse getWMKSConsoleUrl(ComputeServer server) { return null; }
+
+	@Override
+	public ServiceResponse createSnapshot(ComputeServer server, Map opts) { return null; }
+
+	@Override
+	public ServiceResponse deleteSnapshots(ComputeServer server, Map opts) { return null; }
+
+	@Override
+	public ServiceResponse deleteSnapshot(Snapshot snapshot, Map opts) { return null; }
+
+	@Override
+	public ServiceResponse revertSnapshot(ComputeServer server, Snapshot snapshot, Map opts) { return null; }
 
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
