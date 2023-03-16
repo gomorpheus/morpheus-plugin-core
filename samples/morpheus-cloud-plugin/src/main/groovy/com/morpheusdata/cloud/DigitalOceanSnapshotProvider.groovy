@@ -7,6 +7,7 @@ import com.morpheusdata.core.backup.BackupTypeProvider
 import com.morpheusdata.core.backup.BackupExecutionProvider
 import com.morpheusdata.core.backup.BackupRestoreProvider
 import com.morpheusdata.core.backup.response.BackupExecutionResponse
+import com.morpheusdata.core.backup.response.BackupRestoreResponse
 import com.morpheusdata.core.backup.util.BackupStatusUtility
 import com.morpheusdata.core.util.DateUtility
 import com.morpheusdata.model.Backup
@@ -183,11 +184,10 @@ class DigitalOceanSnapshotProvider extends AbstractMorpheusBackupTypeProvider {
 
 								if(snapshotResp?.success && snapshot){
 									rtn.data.backupResult.status = BackupStatusUtility.SUCCEEDED
-									rtn.data.backupResult.startDate = DateUtility.parseDate(snapshot.created_at)
-									rtn.data.backupResult.endDate = DateUtility.parseDate(action.completed_at)
+									rtn.data.backupResult.startDate = DateUtility.parseDate(snapshot['created_at'])
+									rtn.data.backupResult.endDate = DateUtility.parseDate(action['completed_at'])
 									rtn.data.backupResult.externalId = snapshot?.id
-									def backupSizeMb = (long) (snapshot.size_gigabytes * 1024l)
-									log.debug("Backups size: ${snapshot.size_gigabytes}, converted: ${backupSizeMb}")
+									Long backupSizeMb = (long) (snapshot['size_gigabytes'] * 1024l)
 									rtn.data.backupResult.sizeInMb = backupSizeMb
 
 									def startDate = rtn.data.backupResult.startDate
@@ -313,53 +313,75 @@ class DigitalOceanSnapshotProvider extends AbstractMorpheusBackupTypeProvider {
 
 	@Override
 	ServiceResponse restoreBackup(BackupRestore backupRestore, BackupResult backupResult, Backup backup, Map opts) {
-		return ServiceResponse.success()
-		// log.info("restoreBackup {}", backupResult)
-		// def rtn = [success:true]
-		// def restoreState
-		// try{
-		// 	def config = backupResult.getConfigMap()
-		// 	def snapshotId = config.snapshotId
-		// 	def dropletId = config.dropletId
-		// 	if(snapshotId && dropletId) {
-		// 		def backup = backupResult.backup
-		// 		def container = Container.read(opts?.containerId ?: backupResult.containerId)
-		//
-		// 		def instance = Instance.read(container.instanceId)
-		// 		def server = ComputeServer.read(container.serverId)
-		// 		if (server?.externalId) {
-		// 			dropletId = server.externalId
-		// 		}
-		// 		def zone = ComputeZone.read(server.zoneId)
-		// 		def apiKey = digitalOceanComputeService.getDigitalOceanApiKey(zone)
-		// 		def apiUrl = DigitalOceanComputeUtility.digitalOceanEndpoint
-		// 		def restoreOpts = [server: [externalId: dropletId], snapshotId: snapshotId]
-		// 		//execute restore
-		// 		def restoreResults = DigitalOceanComputeUtility.restoreSnapshot(apiUrl, apiKey, restoreOpts)
-		// 		log.info("restore results: ${restoreResults}")
-		// 		if(restoreResults.success){
-		// 			backupRestore.status = BackupService.Status.IN_PROGRESS.toString()
-		// 			backupRestore.externalId = dropletId
-		// 			backupRestore.externalStatusRef = restoreResults.action?.id
-		// 			def startedAt = restoreResults.action["started_at"]
-		// 			backupRestore.startDate = MorpheusUtils.parseDate(startedAt)
-		// 			backupRestore.save(flush:true)
-		// 		} else {
-		// 			rtn.success = false
-		// 			updateBackupRestore(backupRestore, [status:BackupService.Status.FAILED.toString()])
-		// 		}
-		// 	}
-		// } catch(e) {
-		// 	log.error("restoreBackup: ${e}", e)
-		// 	rtn.success = false
-		// 	rtn.message = e.getMessage()
-		// 	updateBackupRestore(backupRestore, [status:BackupService.Status.FAILED.toString()])
-		// }
-		// return rtn
+		log.debug("restoreBackup {}", backupResult)
+		ServiceResponse rtn = ServiceResponse.prepare(new BackupRestoreResponse(backupRestore))
+		Boolean doUpdates
+		try{
+			def config = backupResult.getConfigMap()
+			def snapshotId = backupResult.externalId ?: config.snapshotId
+			def dropletId = config.dropletId
+			if(snapshotId && dropletId) {
+				def sourceWorkload = plugin.morpheus.workload.get(opts?.containerId ?: backupResult.containerId).blockingGet()
+				ComputeServer computeServer = sourceWorkload.server
+				if (computeServer?.externalId) {
+					dropletId = computeServer.externalId
+				}
+				Cloud cloud = computeServer.cloud
+				def apiKey = plugin.getAuthConfig(cloud).doApiKey
+				def restoreResults = apiService.restoreSnapshot(apiKey, dropletId, snapshotId)
+				log.info("restore results: ${restoreResults}")
+				if(restoreResults.success){
+					rtn.data.backupRestore.status = BackupStatusUtility.IN_PROGRESS
+					rtn.data.backupRestore.externalId = dropletId
+					rtn.data.backupRestore.externalStatusRef = restoreResults.action?.id
+					rtn.data.backupRestore.startDate = DateUtility.parseDate(restoreResults.action["started_at"])
+					rtn.success = true
+					doUpdates = true
+				} else {
+					rtn.data.backupRestore.status = BackupStatusUtility.FAILED
+					rtn.success = false
+					doUpdates = true
+				}
+			}
+
+		} catch(e) {
+			log.error("restoreBackup: ${e}", e)
+			rtn.success = false
+			rtn.msg = e.getMessage()
+			rtn.data.backupRestore.status = BackupStatusUtility.FAILED
+			doUpdates = true
+		}
+
+		rtn.data.updates = doUpdates
+		return rtn
 	}
 
 	@Override
 	ServiceResponse refreshBackupRestoreResult(BackupRestore backupRestore, BackupResult backupResult) {
-		return ServiceResponse.success();
+		log.debug("syncBackupRestoreResult restore: {}", restore)
+		ServiceResponse<BackupRestoreResponse> rtn = ServiceResponse.prepare(new BackupRestoreResponse(backupRestore))
+		def actionId = backupRestore.externalStatusRef
+		if(actionId) {
+			def sourceWorkload = plugin.morpheus.workload.get(backupResult.containerId).blockingGet()
+			def computeServer = sourceWorkload.server
+			def cloud = computeServer.cloud
+			def apiKey = plugin.getAuthConfig(cloud).doApiKey
+			def actionResults = apiService.getAction(apiKey, actionId)
+			if(actionResults.success && actionResults.data){
+				def action = actionResults.data
+				if(action.status == "completed"){
+					rtn.data.backupRestore.endDate = DateUtility.parseDate(action["completed_at"])
+					rtn.data.backupRestore.status = "SUCCEEDED"
+					def startDate = rtn.data.backupRestore.startDate
+					def endDate = rtn.data.backupRestore.endDate
+					if(startDate && endDate)
+						rtn.data.backupRestore.duration = endDate.time - startDate.time
+
+					rtn.data.updates = true
+				}
+			}
+		}
+
+		return rtn
 	}
 }
