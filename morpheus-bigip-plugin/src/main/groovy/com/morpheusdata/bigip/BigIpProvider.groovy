@@ -539,8 +539,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Name',
-			required:false,
-			editable:true,
+			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		instanceOptionTypes << new OptionType(
@@ -721,6 +721,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		nodeOptions << new OptionType(
@@ -1262,6 +1263,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			rtn.success = true
 		}
 
+		return rtn
 	}
 
 	// service methods for api interaction
