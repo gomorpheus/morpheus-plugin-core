@@ -96,12 +96,12 @@ subprojects { project ->
 		into(layout.projectDirectory.dir("../plugins"))
 	}
 
-	tasks.register('moveToPlugin') {
-		doLast {
-			ant.move file: "${buildDir}/libs/${project.name}-${version}-all.jar",
-				todir: "../plugins"
-		}
-	}
+	// tasks.register('moveToPlugin') {
+	// 	doLast {
+	// 		ant.move file: "${buildDir}/libs/${project.name}-${version}-all.jar",
+	// 			todir: "../plugins"
+	// 	}
+	// }
 
 	
 }

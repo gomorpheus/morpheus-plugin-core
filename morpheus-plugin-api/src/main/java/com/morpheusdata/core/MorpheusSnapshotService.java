@@ -24,6 +24,14 @@ public interface MorpheusSnapshotService {
 	 */
 	Observable<Snapshot> listByIds(List<Long> ids);
 
+
+	/**
+	 * Get a list of Snapshot projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projections
+	 */
+	Observable<SnapshotIdentityProjection> listSyncProjections(Long cloudId);
+
 //	/**
 //	 * Fetch the Snapshots that have their parentSnapshot set to parentId
 //	 * @param parentId of the parent Snapshot
@@ -37,6 +45,13 @@ public interface MorpheusSnapshotService {
 	 * @return the snapshot
 	 */
 	Single<Snapshot> create(Snapshot snapshot);
+
+	/**
+	 * Create and return new Snapshots in Morpheus
+	 * @param snapshots List of new Snapshot to persist
+	 * @return success
+	 */
+	Single<Boolean> create(List<Snapshot> snapshots);
 
 	/**
 	 * Save updates to existing Snapshots in Morpheus

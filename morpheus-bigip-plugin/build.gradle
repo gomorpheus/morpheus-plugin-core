@@ -33,7 +33,7 @@ configurations {
 
 dependencies {
 	provided project(':morpheus-plugin-api')
-	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	provided "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation 'commons-beanutils:commons-beanutils:1.9.3'
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"

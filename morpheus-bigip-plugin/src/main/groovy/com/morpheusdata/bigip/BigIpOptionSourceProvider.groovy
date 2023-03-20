@@ -330,7 +330,8 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return BigIpUtility.STICKY_MODE
 	}
 
-	def bigIpPluginProfileServiceTypes(params) {
+	def bigIpPluginProfileServiceTypes(input) {
+		def params = [Object[]].any { it.isAssignableFrom(input.getClass()) } ? input.first() : input
 		// need to grab the provider that has the bigip api call helpers
 		BigIpProvider provider = (BigIpProvider)plugin.getProviderByCode(BigIpProvider.PROVIDER_CODE)
 		def lb = morpheusContext.loadBalancer.getLoadBalancerById(params.domain.loadBalancer.id.toLong()).blockingGet()

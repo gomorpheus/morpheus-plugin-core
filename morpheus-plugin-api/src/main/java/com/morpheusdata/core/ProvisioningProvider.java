@@ -86,6 +86,13 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean hasPlanTagMatch();
 
 	/**
+	 * Determines if this provision type supports instance snapshots.
+	 * @since 0.13.8
+	 * @return Boolean representation of whether this provision type supports instance snapshots.
+	 */
+	public Boolean hasSnapshots();
+
+	/**
 	 * Determines if this provision type has ComputeZonePools that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has ComputeZonePools
 	 */
@@ -403,6 +410,47 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @return Success or failure
 	 */
 	ServiceResponse enableConsoleAccess(ComputeServer server);
+
+	/**
+	 * Request to create a snapshot for the given compute server
+	 * @since 0.13.8
+	 * @param server server to snapshot
+	 * @param opts additional options including the requested name and description of the snapshot
+	 * @return Success or failure
+	 */
+	ServiceResponse createSnapshot(ComputeServer server, Map opts);
+
+	/**
+	 * Request to delete all snapshots for a given compute server
+	 * They only need to be deleted from the cloud, Morpheus will
+	 * handle the cleanup of snapshot database records after a successful response
+	 * @since 0.13.8
+	 * @param server server to remove snapshots from
+	 * @param opts additional options
+	 * @return Success or failure
+	 */
+	ServiceResponse deleteSnapshots(ComputeServer server, Map opts);
+
+	/**
+	 * Request to delete a snapshot for a given compute server
+	 * It only needs to be deleted from the cloud, Morpheus will
+	 * handle the cleanup of snapshot database records after a successful response
+	 * @since 0.13.8
+	 * @param snapshot snapshot to delete
+	 * @param opts additional options will include serverId of the server the snapshot belongs to
+	 * @return Success or failure
+	 */
+	ServiceResponse deleteSnapshot(Snapshot snapshot, Map opts);
+
+	/**
+	 * Request to restore a snapshot to a given compute server
+	 * @since 0.13.8
+	 * @param snapshot snapshot to restore
+	 * @param server server to restore to snapshot to
+	 * @param opts additional options
+	 * @return Success or failure
+	 */
+	ServiceResponse revertSnapshot(ComputeServer server, Snapshot snapshot, Map opts);
 
 	/**
 	 * Returns the host type that is to be provisioned

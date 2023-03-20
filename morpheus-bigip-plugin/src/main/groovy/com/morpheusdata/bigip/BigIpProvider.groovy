@@ -539,7 +539,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldContext:'domain',
 			displayOrder:1,
 			fieldLabel:'Name',
-			required:false,
+			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		instanceOptionTypes << new OptionType(
@@ -700,7 +701,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			name:'defaultPool',
 			code:'plugin.bigip.virtualService.defaultPool',
 			fieldName:'defaultPool',
-			fieldContext:'domain',
+			fieldContext:'config',
 			displayOrder:11,
 			fieldLabel:'Default Pool',
 			required:false,
@@ -720,6 +721,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		nodeOptions << new OptionType(
@@ -1261,6 +1263,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			rtn.success = true
 		}
 
+		return rtn
 	}
 
 	// service methods for api interaction
@@ -4079,7 +4082,9 @@ class BigIpProvider implements LoadBalancerProvider {
 	}
 
 	protected getConnectionBase(NetworkLoadBalancer lb, Map opts = null) {
-		morpheus.loadBalancer.loadLoadBalancerCredentials(lb)
+		if (!lb.credentialLoaded)
+			morpheus.loadBalancer.loadLoadBalancerCredentials(lb)
+
 		def connectionBase = [
 			url:"https://${lb.sshHost}:${lb.apiPort}",
 			path:'/mgmt',
