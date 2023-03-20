@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class AccountIntegration extends MorpheusModel {
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
+	protected AccountIntegrationType integrationType;
 	protected String uuid;
 	protected String name;
 	protected String type;
@@ -33,15 +36,8 @@ public class AccountIntegration extends MorpheusModel {
 	protected String servicePublicKey;
 	protected String authPrivateKey;
 	protected String authPublicKey;
-
 	protected Map credentialData;
 	protected Boolean credentialLoaded = false;
-
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected Account account;
-
-	protected AccountIntegrationType integrationType;
-
 
 	public String getUuid() {
 		return uuid;
