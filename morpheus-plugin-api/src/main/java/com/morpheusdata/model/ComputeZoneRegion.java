@@ -17,7 +17,7 @@ public class ComputeZoneRegion extends ComputeZoneRegionIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected CloudIdentityProjection zone;
+	protected CloudIdentityProjection cloud;
 	protected String code;
 	protected String name;
 	protected String regionCode;
@@ -40,12 +40,12 @@ public class ComputeZoneRegion extends ComputeZoneRegionIdentityProjection {
 		this.account = account;
 	}
 
-	public CloudIdentityProjection getZone() {
-		return zone;
+	public CloudIdentityProjection getCloud() {
+		return cloud;
 	}
 
-	public void setZone(CloudIdentityProjection zone) {
-		this.zone = zone;
+	public void setCloud(CloudIdentityProjection cloud) {
+		this.cloud = cloud;
 	}
 
 	public String getCode() {

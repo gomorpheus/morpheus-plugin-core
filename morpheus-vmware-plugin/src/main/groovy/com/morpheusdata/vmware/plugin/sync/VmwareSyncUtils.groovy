@@ -1,14 +1,10 @@
 package com.morpheusdata.vmware.plugin.sync
 
 import groovy.util.logging.Slf4j
-import com.morpheusdata.vmware.plugin.*
-import com.morpheusdata.model.Cloud
 import com.morpheusdata.core.*
 import com.morpheusdata.model.*
 import com.morpheusdata.model.projection.*
-import com.morpheusdata.vmware.plugin.utils.*
 import com.morpheusdata.core.util.ComputeUtility
-import io.reactivex.*
 
 @Slf4j
 class VmwareSyncUtils {
@@ -388,7 +384,7 @@ class VmwareSyncUtils {
 							save = true
 						}
 					}
-					if(net && matchedInterface.network?.code != net.code) {
+					if(net && matchedInterface.network.code != net.code) {
 						matchedInterface.network = net
 						save = true
 					}

@@ -33,6 +33,15 @@ public interface MorpheusComputeZonePoolService {
 	Observable<ComputeZonePool> listById(Collection<Long> ids);
 
 	/**
+	 * Returns a list of all pools filtered by a cloud as well as a list of externalIds. This is useful for chunked syncs where a cloud can contain
+	 * a LARGE amount of pools
+	 * @param cloudId the current id of the cloud we are filtering by
+	 * @param externalIds a list of external ids to fetch by within the cloud scope
+	 * @return Observable stream of ComputeZonePools filtered by cloud and a collection of externalIds
+	 */
+	Observable<ComputeZonePool> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
+
+	/**
 	 * Save updates to existing ComputeZonePools
 	 *
 	 * @param pools updated ComputeZonePool

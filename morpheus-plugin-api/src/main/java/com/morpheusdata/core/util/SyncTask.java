@@ -1,5 +1,8 @@
 package com.morpheusdata.core.util;
 
+import com.morpheusdata.model.ComputeZonePool;
+import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -99,6 +102,26 @@ public class SyncTask<Projection, ApiItem, Model> {
 		return this;
 	}
 
+	public SyncTask<Projection, ApiItem, Model> withLoadObjectDetailsFromFinder(OnLoadObjectDetailsFromFinderFunction<UpdateItemDto<Projection, ApiItem>, Model> onLoadObjectDetailsFromFinderFunction) {
+		return this.withLoadObjectDetails((List<SyncTask.UpdateItemDto<Projection, ApiItem>> updateItems) -> onLoadObjectDetailsFromFinderFunction.method(updateItems).map((Model modelData) -> {
+			UpdateItem<Model, ApiItem> updateItem = new UpdateItem<>();
+			updateItem.existingItem = modelData;
+			for (int x = 0; x < updateItems.size(); x++) {
+				Projection updateDtoItem = updateItems.get(x).existingItem;
+				if (updateDtoItem instanceof MorpheusModel && modelData instanceof MorpheusModel) {
+					if (((MorpheusModel) updateDtoItem).getId() == ((MorpheusModel) modelData).getId()) {
+						updateItem.masterItem = updateItems.get(x).masterItem;
+						break;
+					}
+				} else if (updateDtoItem == modelData) {
+					updateItem.masterItem = updateItems.get(x).masterItem;
+					break;
+				}
+			}
+			return updateItem;
+		}));
+	}
+
 	public SyncTask<Projection, ApiItem, Model>  onError(OnErrorfunction onErrorfunction) {
 		this.onErrorfunction = onErrorfunction;
 		return this;
@@ -149,6 +172,11 @@ public class SyncTask<Projection, ApiItem, Model> {
 	@FunctionalInterface
 	public interface OnLoadObjectDetailsFunction<UpdateItemProjection,UpdateItem> {
 		Observable<UpdateItem> method(List<UpdateItemProjection> itemsToLoad);
+	}
+
+	@FunctionalInterface
+	public interface OnLoadObjectDetailsFromFinderFunction<UpdateItemProjection,Model> {
+		Observable<Model> method(List<UpdateItemProjection> itemsToLoad);
 	}
 
 	@FunctionalInterface

@@ -30,6 +30,8 @@ public interface MorpheusCloudService {
 
 	MorpheusComputeZoneFolderService getFolder();
 
+	MorpheusComputeZoneRegionService getRegion();
+
 	MorpheusDatastoreService getDatastore();
 
 	MorpheusNetworkService getNetwork();

@@ -68,12 +68,14 @@ public class Network extends NetworkIdentityProjection {
 	protected Boolean active = true;
 	protected Boolean defaultNetwork = false;
 	protected Boolean assignPublicIp = false;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public NetworkServer networkServer;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public Account owner;
-	public String category;
-	public String code;
-	public Integer cidrMask;
+	protected Account owner;
+	protected String category;
+	protected String code;
+	protected String regionCode;
+	protected Integer cidrMask;
 	protected NetworkIdentityProjection parentNetwork;
 
 	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
@@ -499,5 +501,45 @@ public class Network extends NetworkIdentityProjection {
 
 	public void setHasFloatingIps(Boolean hasFloatingIps) {
 		this.hasFloatingIps = hasFloatingIps;
+	}
+
+	public Account getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Account owner) {
+		this.owner = owner;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
+	}
+
+	public Integer getCidrMask() {
+		return cidrMask;
+	}
+
+	public void setCidrMask(Integer cidrMask) {
+		this.cidrMask = cidrMask;
 	}
 }

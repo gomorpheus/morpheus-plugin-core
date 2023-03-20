@@ -3,13 +3,10 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.core.NetworkProvider
-import com.morpheusdata.core.util.RestApiUtil
 import com.morpheusdata.core.util.*
-import com.morpheusdata.util.*
 import com.morpheusdata.model.*
 import com.morpheusdata.response.ServiceResponse
 import groovy.util.logging.Slf4j
-import java.util.*
 
 @Slf4j
 class GoogleNetworkProvider implements NetworkProvider {
