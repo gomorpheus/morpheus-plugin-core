@@ -1,0 +1,437 @@
+
+seed:
+  optionType:
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.resourcePool
+      type: select
+      name: resource pool
+      category: provisionType.vmware.plugin
+      fieldName: vmwareResourcePoolId
+      fieldLabel: Resource Pool
+      fieldContext: config
+      fieldGroup: Options
+      required: true
+      enabled: true
+      optionSource: vmwarePluginResourcePool
+      optionSourceType: vmware-plugin
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 8
+      fieldClass: null
+      noBlank: true
+      contextualDefault: true
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.host
+      type: select
+      name: host
+      category: provisionType.vmware.plugin
+      fieldName: hostId
+      fieldLabel: Host
+      fieldContext: config
+      fieldGroup: Options
+      required: false
+      enabled: true
+      optionSource: vmwarePluginHost
+      optionSourceType: vmware-plugin
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 102
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.network
+      type: select
+      name: network
+      category: provisionType.vmware.plugin
+      fieldName: networkId
+      fieldLabel: Network
+      fieldContext: config
+      fieldGroup: Options
+      required: true
+      enabled: true
+      optionSource: networks
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 105
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.folder
+      type: select
+      name: vmwareFolderId
+      category: provisionType.vmware.plugin
+      fieldName: vmwareFolderId
+      fieldLabel: Folder
+      fieldContext: config
+      fieldGroup: Options
+      required: false
+      enabled: true
+      optionSource: vmwarePluginFolder
+      optionSourceType: vmware-plugin
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 106
+      fieldClass: null
+      noBlank: true
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.ipAddress
+      type: text
+      name: ip address
+      category: provisionType.vmware.plugin
+      fieldName: vmwareIpAddress
+      fieldLabel: IP Address
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 113
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.netmask
+      type: text
+      name: netmask
+      category: provisionType.vmware.plugin
+      fieldName: vmwareNetmask
+      fieldLabel: Netmask
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 114
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.gateway
+      type: text
+      name: gateway
+      category: provisionType.vmware.plugin
+      fieldName: vmwareGateway
+      fieldLabel: Gateway
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 115
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.nameservers
+      type: text
+      name: nameservers
+      category: provisionType.vmware.plugin
+      fieldName: vmwareNameservers
+      fieldLabel: Nameservers
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 116
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.networkDomain
+      type: select
+      name: network domain
+      category: provisionType.vmware.plugin
+      fieldName: id
+      optionSource: networkDomains
+      fieldLabel: Network Domain
+      fieldContext: instance.networkDomain
+      fieldGroup: Advanced
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 9
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.virtualImageId
+      type: select
+      name: virtual image
+      category: provisionType.vmware.plugin.custom
+      optionSource: vmwarePluginImages
+      optionSourceType: vmware-plugin
+      fieldName: virtualImageId
+      fieldLabel: Virtual Image
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: true
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 1
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.mountLogs
+      type: text
+      name: mount logs
+      category: provisionType.vmware.plugin.custom
+      fieldName: mountLogs
+      fieldLabel: Log Folder
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 2
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.mountConfig
+      type: text
+      name: mount config
+      category: provisionType.vmware.plugin.custom
+      fieldName: mountConfig
+      fieldLabel: Config Folder
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: null
+      custom: false
+      displayOrder: 3
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.mountData
+      type: text
+      name: mount data
+      category: provisionType.vmware.plugin.custom
+      fieldName: mountData
+      fieldLabel: Deploy Folder
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: (Optional) If using deployment services, this mount point will be replaced
+        with the contents of said deployments.
+      defaultValue: null
+      custom: false
+      displayOrder: 4
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.instanceType.backupType
+      type: hidden
+      name: backup type
+      category: provisionType.vmware.plugin.custom
+      fieldName: backupType
+      fieldLabel: Backup Type
+      fieldContext: instanceType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: vmwareSnapshot
+      custom: false
+      displayOrder: 5
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.statTypeCode
+      type: hidden
+      name: stat type code
+      category: provisionType.vmware.plugin.custom
+      fieldName: statTypeCode
+      fieldLabel: Stat Type Code
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: vmware
+      custom: false
+      displayOrder: 6
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.logTypeCode
+      type: hidden
+      name: log type code
+      category: provisionType.vmware.plugin.custom
+      fieldName: logTypeCode
+      fieldLabel: Log Type Code
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: vmware
+      custom: false
+      displayOrder: 7
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.containerType.serverType
+      type: hidden
+      name: server type
+      category: provisionType.vmware.plugin.custom
+      fieldName: serverType
+      fieldLabel: Server Type
+      fieldContext: containerType
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: vm
+      custom: false
+      displayOrder: 8
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.instanceTypeLayout.description
+      type: hidden
+      name: layout description
+      category: provisionType.vmware.plugin.custom
+      fieldName: description
+      fieldLabel: Layout Description
+      fieldContext: instanceTypeLayout
+      fieldGroup: VMware VM Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: This will provision a single vm container
+      custom: false
+      displayOrder: 9
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.custom.nestedVirtualization
+      type: checkbox
+      name: enable nested virtualization
+      category: provisionType.vmware.plugin.custom
+      fieldName: nestedVirtualization
+      fieldLabel: Enable Nested Virtualization
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: true
+      global: false
+      placeHolder: null
+      helpBlock: ''
+      defaultValue: ''
+      custom: false
+      displayOrder: 9
+      fieldClass: null
+    - meta: {key: code}
+      code: provisionType.vmware.plugin.smbiosAssetTag
+      type: text
+      name: asset tag
+      category: provisionType.vmware.plugin
+      fieldName: smbiosAssetTag
+      fieldLabel: Asset Tag
+      fieldContext: config
+      fieldGroup: Advanced Options
+      required: false
+      enabled: true
+      editable: false
+      global: false
+      placeHolder: null
+      helpBlock: Sets the asset tag on the SMBIOS for use by the guest operating system.
+        If left blank, the virtual machine name will be used.
+      defaultValue: null
+      custom: false
+      displayOrder: 6
+      fieldClass: null
+  provisionType:
+    - meta: {key: code}
+      code: vmware-provision-provider-plugin
+      name: VMware Plugin
+      optionTypes:
+        - meta: { key: code }
+          code: provisionType.vmware.plugin.resourcePool
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.host
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.networkDomain
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.smbiosAssetTag
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.nestedVirtualization
+        - meta: {key: code}
+          code: provisionType.general.noAgent
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.folder
+      customOptionTypes:
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.virtualImageId
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.mountLogs
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.mountData
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.mountConfig
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.instanceType.backupType
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.statTypeCode
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.logTypeCode
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.containerType.serverType
+        - meta: {key: code}
+          code: provisionType.vmware.plugin.custom.instanceTypeLayout.description
+

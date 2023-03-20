@@ -1,0 +1,328 @@
+seed:
+  storageController:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+      busNumber: 0
+      name: SCSI 0
+      type:
+        domainClass: storageControllerType
+        meta: {key: code}
+        code: vmware-plugin-lsiLogic
+      displayOrder: 1
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide0
+      name: IDE 0
+      type:
+        domainClass: storageControllerType
+        meta: {key: code}
+        code: vmware-plugin-ide
+      busNumber: 0
+      displayOrder: 2
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide1
+      name: IDE 1
+      type:
+        domainClass: storageControllerType
+        meta: {key: code}
+        code: vmware-plugin-ide
+      busNumber: 1
+      displayOrder: 3
+  storageVolume:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.volume.0
+      name: root
+      deviceName: /dev/vda
+      type:
+        domainClass: storageVolumeType
+        meta: {key: code}
+        code: vmware-plugin-disk
+      maxStorage: 2147483648
+      rootVolume: true
+      controller:
+        domainClass: storageController
+        meta: {key: uniqueId}
+        uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+  computeServerInterface:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.interface.eth0
+      name: eth0
+      type:
+        domainClass: computeServerInterfaceType
+        meta: {key: code}
+        code: vmware-plugin-e1000
+  virtualImage:
+    - meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.activemq.5.11
+      category: vmware.plugin.vsphere.image.morpheus.activemq.5.11
+      sshUsername: ubuntu
+      sshPassword: null
+      name: ubuntu-14_04-activemq-5_11-morph.0.1
+      imageType: vmdk
+      remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/activemq/activemq-5_11-morph.0.1/ubuntu-14_04-activemq-5_11.ovf
+      imagePath: vmware/activemq/activemq-5_11-morph.0.1
+      isCloudInit: true
+      systemImage: true
+      installAgent: true
+      osType:
+        domainClass: osType
+        meta: {key: code}
+        code: ubuntu.14.04.64
+      interfaces:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.interface.eth0
+      controllers:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide1
+      volumes:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.volume.0
+    - meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.activemq.5.11-1
+      category: vmware.plugin.vsphere.image.morpheus.activemq.5.11
+      sshUsername: ubuntu
+      sshPassword: null
+      name: ubuntu-14_04-activemq-5_11-1
+      imageType: vmdk
+      remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/activemq/activemq-5_11-1/ubuntu-14_04-activemq-5_11.ovf
+      imagePath: vmware/activemq/activemq-5_11-1
+      isCloudInit: true
+      systemImage: true
+      installAgent: true
+      osType:
+        domainClass: osType
+        meta: {key: code}
+        code: ubuntu.14.04.64
+      interfaces:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.interface.eth0
+      controllers:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide1
+      volumes:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.volume.0
+    - meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.activemq.5.13
+      category: vmware.plugin.vsphere.image.morpheus.activemq.5.13
+      sshUsername: ubuntu
+      sshPassword: null
+      name: ubuntu-14_04-activemq-5_13-morph.0.1
+      imageType: vmdk
+      remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/activemq/activemq-5_13-morph.0.1/ubuntu-14_04-activemq-5_13.ovf
+      imagePath: vmware/activemq/activemq-5_13-morph.0.1
+      isCloudInit: true
+      systemImage: true
+      installAgent: true
+      osType:
+        domainClass: osType
+        meta: {key: code}
+        code: ubuntu.14.04.64
+      interfaces:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.interface.eth0
+      controllers:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide1
+      volumes:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.volume.0
+    - meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.activemq.5.13-1
+      category: vmware.plugin.vsphere.image.morpheus.activemq.5.13
+      sshUsername: ubuntu
+      sshPassword: null
+      name: ubuntu-14_04-activemq-5_13-1
+      imageType: vmdk
+      remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/activemq/activemq-5_13-1/ubuntu-14_04-activemq-5_13.ovf
+      imagePath: vmware/activemq/activemq-5_13-1
+      isCloudInit: true
+      systemImage: true
+      installAgent: true
+      osType:
+        domainClass: osType
+        meta: {key: code}
+        code: ubuntu.14.04.64
+      interfaces:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.interface.eth0
+      controllers:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.scsi0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide0
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.controller.ide1
+      volumes:
+        - meta: {key: uniqueId}
+          uniqueId: vmware.plugin.vsphere.image.morpheus.activemq.volume.0
+  containerType:
+    - meta: {key: code}
+      code: activemq-vmware-plugin-5.11
+      shortName: activemq
+      name: ActiveMQ 5.11
+      ports: [8161, 61616, 5672, 61613, 1883, 61614]
+      containerVersion: '5.11'
+      repositoryImage: ''
+      virtualImage:
+        domainClass: virtualImage
+        meta: {key: code}
+        code: vmware.plugin.vsphere.image.morpheus.activemq.5.11-1
+      imageCode: morpheus activemq 5.11
+      entryPoint: /entrypoint.sh
+      statTypeCode: vm
+      logTypeCode: activemq
+      checkTypeCode: webGetCheck
+      mountConfig: /opt/apache-activemq-5.11.1/conf
+      mountData: /data/activemq
+      mountLogs: /var/log/activemq
+      category: activemq
+      serverType: vm
+      providerType: vmware-plugin
+      scripts:
+        - meta: {key: code}
+          code: activemq-5.11-vm-entrypoint
+        - meta: {key: code}
+          code: activemq-5.11-vm-stop
+        - meta: {key: code}
+          code: activemq-5.11-vm-start
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+      templates:
+        - meta: {key: code}
+          code: activemq-conf-5.11
+      backupType: vmwareSnapshot
+      containerPorts:
+        - meta: {key: code}
+          code: activemq.8161
+        - meta: {key: code}
+          code: activemq.61616
+        - meta: {key: code}
+          code: activemq.5672
+        - meta: {key: code}
+          code: activemq.61613
+        - meta: {key: code}
+          code: activemq.1883
+        - meta: {key: code}
+          code: activemq.61614
+    - meta: {key: code}
+      code: activemq-vmware-plugin-5.13
+      shortName: activemq
+      name: ActiveMQ 5.13
+      ports: [8161, 61616, 5672, 61613, 1883, 61614]
+      containerVersion: '5.13'
+      repositoryImage: ''
+      virtualImage:
+        domainClass: virtualImage
+        meta: {key: code}
+        code: vmware.plugin.vsphere.image.morpheus.activemq.5.13-1
+      imageCode: morpheus activemq 5.13
+      entryPoint: /entrypoint.sh
+      statTypeCode: vm
+      logTypeCode: activemq
+      checkTypeCode: webGetCheck
+      mountConfig: /opt/apache-activemq-5.13.4/conf
+      mountData: /data/activemq
+      mountLogs: /var/log/activemq
+      category: activemq
+      serverType: vm
+      providerType: vmware-plugin
+      scripts:
+        - meta: {key: code}
+          code: activemq-5.11-vm-entrypoint
+        - meta: {key: code}
+          code: activemq-5.11-vm-stop
+        - meta: {key: code}
+          code: activemq-5.11-vm-start
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+      templates:
+        - meta: {key: code}
+          code: activemq-conf-5.11
+      backupType: vmwareSnapshot
+      containerPorts:
+        - meta: {key: code}
+          code: activemq.8161
+        - meta: {key: code}
+          code: activemq.61616
+        - meta: {key: code}
+          code: activemq.5672
+        - meta: {key: code}
+          code: activemq.61613
+        - meta: {key: code}
+          code: activemq.1883
+        - meta: {key: code}
+          code: activemq.61614
+  containerTypeSet:
+    - meta: {key: code}
+      code: activemq-vmware-plugin-5.11-set
+      containerType: {domainClass: containerType, code: activemq-vmware-plugin-5.11}
+      priorityOrder: 0
+      containerCount: 1
+    - meta: {key: code}
+      code: activemq-vmware-plugin-5.13-set
+      containerType: {domainClass: containerType, code: activemq-vmware-plugin-5.13}
+      priorityOrder: 0
+      containerCount: 1
+  instanceTypeLayout:
+    - meta:
+        key: [code, instanceType]
+      code: activemq-vmware-plugin-5.11
+      name: VMware ActiveMQ
+      sortOrder: 10
+      description: This will provision a single process with no redundancy
+      instanceType:
+        domainClass: instanceType
+        meta: {key: code}
+        code: activemq
+      instanceVersion: '5.11'
+      serverCount: 1
+      portCount: 6
+      serverType: vm
+      enabled: true
+      creatable: true
+      containers:
+        - meta: {key: code}
+          code: activemq-vmware-plugin-5.11-set
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin
+    - meta:
+        key: [code, instanceType]
+      code: activemq-vmware-plugin-5.13
+      name: VMware ActiveMQ
+      sortOrder: 10
+      description: This will provision a single process with no redundancy
+      instanceType:
+        domainClass: instanceType
+        meta: {key: code}
+        code: activemq
+      instanceVersion: '5.13'
+      serverCount: 1
+      portCount: 6
+      serverType: vm
+      enabled: true
+      creatable: true
+      containers:
+        - meta: {key: code}
+          code: activemq-vmware-plugin-5.13-set
+      provisionType:
+        domainClass: provisionType
+        meta: {key: code}
+        code: vmware-provision-provider-plugin

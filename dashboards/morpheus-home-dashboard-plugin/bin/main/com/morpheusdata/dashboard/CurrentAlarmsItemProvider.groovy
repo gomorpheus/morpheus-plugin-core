@@ -1,0 +1,70 @@
+package com.morpheusdata.dashboard
+
+import com.morpheusdata.core.dashboard.AbstractDashboardItemTypeProvider
+import com.morpheusdata.core.MorpheusContext
+import com.morpheusdata.core.Plugin
+import com.morpheusdata.model.DashboardItem
+import com.morpheusdata.model.DashboardItemType
+import com.morpheusdata.views.HTMLResponse
+import com.morpheusdata.views.ViewModel
+import com.morpheusdata.response.ServiceResponse
+import groovy.util.logging.Slf4j
+
+/**
+ * Provides an interface and standard set of methods for creating custom dashboards
+ * 
+ * @since 0.13
+ * @author bdwheeler
+ */
+@Slf4j
+class CurrentAlarmsItemProvider extends AbstractDashboardItemTypeProvider {
+
+	Plugin plugin
+	MorpheusContext morpheusContext
+
+	CurrentAlarmsItemProvider(Plugin plugin, MorpheusContext context) {
+		this.plugin = plugin
+		this.morpheusContext = context
+	}
+
+	@Override
+	MorpheusContext getMorpheus() {
+		return morpheusContext
+	}
+
+	@Override
+	Plugin getPlugin() {
+		return plugin
+	}
+
+	@Override
+	String getCode() {
+		return 'dashboard-item-current-alarms'
+	}
+
+	@Override
+	String getName() {
+		return 'Current alarms'
+	}
+
+	@Override
+	DashboardItemType getDashboardItemType() {
+		def rtn = new DashboardItemType()
+		//populate it
+		//rtn.uuid = ?
+		rtn.name = getName()
+		rtn.code = getCode()
+		rtn.category = 'health'
+		rtn.title = 'current alarms'
+		rtn.description = 'current alarms'
+		rtn.uiSize = 'lg'
+		rtn.templatePath = 'hbs/health/current-alarms-widget'
+		rtn.scriptPath = 'health/current-alarms-widget.js'
+		//set permissions
+		rtn.permission = morpheusContext.getPermission().getByCode('operations-alarms').blockingGet()
+		def accessTypes = ['read', 'full']
+		rtn.setAccessTypes(accessTypes)
+		return rtn
+	}
+
+}

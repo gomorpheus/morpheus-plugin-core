@@ -1,0 +1,739 @@
+seed:
+  storageController:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+    busNumber: 0
+    name: SCSI 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-lsiLogic
+    displayOrder: 1
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide0
+    name: IDE 0
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 0
+    displayOrder: 2
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide1
+    name: IDE 1
+    type:
+      domainClass: storageControllerType
+      meta: {key: code}
+      code: vmware-plugin-ide
+    busNumber: 1
+    displayOrder: 3
+  storageVolume:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.16.04.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.18.04.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.20.04.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.scsi0
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.volume.0
+    name: root
+    deviceName: /dev/vda
+    type:
+      domainClass: storageVolumeType
+      meta: {key: code}
+      code: vmware-plugin-disk
+    maxStorage: 2147483648
+    rootVolume: true
+    unitNumber: '0'
+    controller:
+      domainClass: storageController
+      meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+  computeServerInterface:
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.16.04.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.18.04.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.20.04.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  - meta: {key: uniqueId}
+    uniqueId: vmware.plugin.morpheus.ubuntu.22.04.eth0
+    name: eth0
+    type:
+      domainClass: computeServerInterfaceType
+      meta: {key: code}
+      code: vmware-plugin-vmxnet3
+  virtualImage:
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.16.04.3-v1.ubuntu.16.04.3.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    sshUsername: cloud-user
+    sshPassword: null
+    name: Morpheus Ubuntu 16.04.3 v1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-16_04_3-v1-amd64/morpheus-ubuntu-16_04_3-v1-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-16_04_3-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.16.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.16.04.5-v1.ubuntu.16.04.5.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    sshUsername: cloud-user
+    sshPassword: null
+    name: Morpheus Ubuntu 16.04.5 v1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-16_04_5-v1-amd64/morpheus-ubuntu-16_04_5-v1-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-16_04_5-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.16.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.16.04.6-v1.ubuntu.16.04.6.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    sshUsername: cloud-user
+    sshPassword: null
+    name: Morpheus Ubuntu 16.04.6 v1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-16_04_6-v1/morpheus-ubuntu-16_04_6-v1-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-16_04_6-v1
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.16.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.16.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.18.04.2-v1.ubuntu.18.04.2.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    sshUsername: cloud-user
+    sshPassword: null
+    name: Morpheus Ubuntu 18.04.2 v1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-18_04_2-v1-amd64/morpheus-ubuntu-18_04_2-v1-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-18_04_2-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.18.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.18.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.20.04.1-v1.ubuntu.20.04.1.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    name: Morpheus Ubuntu 20.04.1 v1
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-20_04_1-v1-amd64/morpheus-ubuntu-20.04_1-v1-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-20_04_1-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.20.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.20.04.4-v2.ubuntu.20.04.4.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    name: Morpheus Ubuntu 20.04.4 v2
+    imageType: vmdk
+    remotePath: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-20_04_4-v2-amd64/morpheus-ubuntu-20_04-v2-amd64.ovf
+    imagePath: vmware/ubuntu/ubuntu-20_04_4-v2-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.20.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.20.04.volume.0
+  - meta: {key: code}
+    code: vmware.plugin.vsphere.image.morpheus.ubuntu.22.04-v1.ubuntu.22.04.amd64
+    category: vmware.plugin.vsphere.image.morpheus.ubuntu
+    name: Morpheus Ubuntu 22.04 v1
+    imageType: vmdk
+    remotePath: https://morpheus-images.s3-us-west-1.amazonaws.com/vmware/ubuntu/ubuntu-22_04-v1-amd64/morpheus-ubuntu-22_04-amd64-20220428.ovf
+    imagePath: vmware/ubuntu/ubuntu-22_04-v1-amd64
+    isCloudInit: true
+    systemImage: true
+    installAgent: true
+    osType:
+      domainClass: osType
+      meta: {key: code}
+      code: ubuntu.22.04.64
+    zoneType: vmware
+    interfaces:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.eth0
+    controllers:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.scsi0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide0
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.controller.ide1
+    volumes:
+    - meta: {key: uniqueId}
+      uniqueId: vmware.plugin.morpheus.ubuntu.22.04.volume.0
+  containerType:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-16.04
+    shortName: ubuntu
+    name: Ubuntu 16.04
+    ports: [22]
+    containerVersion: '16.04'
+    repositoryImage: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-16_04_5-v1-amd64/morpheus-ubuntu-16_04_5-v1-amd64.ovf
+    imageCode: morpheus ubuntu 16.04
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: ubuntu
+    showServerLogs: 'true'
+    category: ubuntu
+    cloneType: ubuntu
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: ubuntu.22
+    actions:
+    - meta: {key: code}
+      code: ubuntu-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.ubuntu.16.04.6-v1.ubuntu.16.04.6.amd64
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-18.04
+    shortName: ubuntu
+    name: Ubuntu 18.04
+    ports: [22]
+    containerVersion: '18.04'
+    repositoryImage: https://s3-us-west-1.amazonaws.com/morpheus-images/vmware/ubuntu/ubuntu-18_04_2-v1-amd64/morpheus-ubuntu-18_04_2-v1-amd64.ovf
+    imageCode: morpheus ubuntu 18.04
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: ubuntu
+    showServerLogs: 'true'
+    category: ubuntu
+    cloneType: ubuntu
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: ubuntu.22
+    actions:
+    - meta: {key: code}
+      code: ubuntu-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.ubuntu.18.04.2-v1.ubuntu.18.04.2.amd64
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-20.04
+    shortName: ubuntu
+    name: Ubuntu 20.04
+    ports: [22]
+    containerVersion: '20.04'
+    imageCode: morpheus ubuntu 20.04
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: ubuntu
+    showServerLogs: 'true'
+    category: ubuntu
+    cloneType: ubuntu
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: ubuntu.22
+    actions:
+    - meta: {key: code}
+      code: ubuntu-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.ubuntu.20.04.4-v2.ubuntu.20.04.4.amd64
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04
+    shortName: ubuntu
+    name: Ubuntu 22.04
+    ports: [22]
+    containerVersion: '22.04'
+    imageCode: morpheus ubuntu 22.04
+    entryPoint: ''
+    mountLogs: /var/log
+    statTypeCode: vm
+    logTypeCode: ubuntu
+    showServerLogs: 'true'
+    category: ubuntu
+    cloneType: ubuntu
+    priorityOrder: 0
+    serverType: vm
+    providerType: vmware-plugin
+    containerPorts:
+    - meta: {key: code}
+      code: ubuntu.22
+    actions:
+    - meta: {key: code}
+      code: ubuntu-remove-node
+    checkTypeCode: containerCheck
+    virtualImage:
+      domainClass: virtualImage
+      meta: {key: code}
+      code: vmware.plugin.vsphere.image.morpheus.ubuntu.22.04-v1.ubuntu.22.04.amd64
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+    backupType: vmwareSnapshot
+  containerTypeSet:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-16.04-set
+    containerType: {domainClass: containerType, code: vmware-plugin-ubuntu-16.04}
+    category: ubuntu
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-18.04-set
+    containerType: {domainClass: containerType, code: vmware-plugin-ubuntu-18.04}
+    category: ubuntu
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-20.04-set
+    containerType: {domainClass: containerType, code: vmware-plugin-ubuntu-20.04}
+    category: ubuntu
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04-set
+    containerType: {domainClass: containerType, code: vmware-plugin-ubuntu-22.04}
+    category: ubuntu
+    priorityOrder: 0
+    dynamicCount: true
+    containerCount: 1
+  instanceTypeLayout:
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-ubuntu-16.04-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '16.04'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: ubuntu
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    supportsConvertToManaged: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-ubuntu-16.04-set
+    actions:
+    - meta: {key: code}
+      code: ubuntu-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-ubuntu-18.04-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '18.04'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: ubuntu
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    supportsConvertToManaged: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-ubuntu-18.04-set
+    actions:
+    - meta: {key: code}
+      code: ubuntu-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-ubuntu-20.04-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '20.04'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: ubuntu
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    supportsConvertToManaged: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-ubuntu-20.04-set
+    actions:
+    - meta: {key: code}
+      code: ubuntu-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  - meta:
+      key: [code, instanceType]
+    code: vmware-plugin-ubuntu-22.04-single
+    name: VMware VM
+    sortOrder: 30
+    instanceVersion: '22.04'
+    description: This will provision a single master vm in vmware
+    instanceType:
+      domainClass: instanceType
+      meta: {key: code}
+      code: ubuntu
+    serverCount: 1
+    portCount: 1
+    serverType: vm
+    supportsConvertToManaged: true
+    enabled: true
+    creatable: true
+    containers:
+    - meta: {key: code}
+      code: vmware-plugin-ubuntu-22.04-set
+    actions:
+    - meta: {key: code}
+      code: ubuntu-add-node
+    provisionType:
+      domainClass: provisionType
+      meta: {key: code}
+      code: vmware-provision-provider-plugin
+  scaleAction:
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-16.04-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-ubuntu-16.04-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: ubuntu-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: ubuntu-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-18.04-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-ubuntu-18.04-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: ubuntu-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: ubuntu-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-20.04-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-ubuntu-20.04-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: ubuntu-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: ubuntu-remove-node
+  - meta: {key: code}
+    code: vmware-plugin-ubuntu-22.04-single
+    scaleType: action
+    layout:
+      domainClass: instanceTypeLayout
+      meta: {key: code}
+      code: vmware-plugin-ubuntu-22.04-single
+    upAction:
+      domainClass: instanceAction
+      meta: {key: code}
+      code: ubuntu-add-node
+    downAction:
+      domainClass: containerAction
+      meta: {key: code}
+      code: ubuntu-remove-node

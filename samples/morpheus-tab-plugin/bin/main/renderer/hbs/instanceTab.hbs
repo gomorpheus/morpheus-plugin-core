@@ -1,0 +1,20 @@
+<h1>Hello There {{name}}</h1>
+<dl>
+	<dt>Description</dt>
+	<dd>{{description}}</dd>
+	<dt>Status</dt>
+	<dd>{{status}}</dd>
+	<dt>Max Cores</dt>
+	<dd>{{maxCores}}</dd>
+</dl>
+
+<form id="test-post" action="/plugin/customTab/example" method="post">
+	<input type="hidden" name="_csrf">
+	<h1>Test Form</h1>
+	<input type="text">
+	<button type="submit">Test</button>
+</form>
+<script src="{{asset "/instance-tab.js"}}" nonce="{{nonce ""}}" ></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" nonce="{{nonce}}"></script>
+<iframe src="https://www.digitalocean.com/" title="Digital Ocean Home Page" nonce="{{nonce}}"></iframe>
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Groovy-logo.svg" alt="Groovy Logo" />

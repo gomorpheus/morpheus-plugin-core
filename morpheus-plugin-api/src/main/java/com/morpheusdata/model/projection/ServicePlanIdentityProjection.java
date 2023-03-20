@@ -11,6 +11,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @since 0.8.0
  */
 public class ServicePlanIdentityProjection extends MorpheusModel {
+	
 	protected String code;
 	protected String name;
 	protected String externalId;
@@ -61,4 +62,5 @@ public class ServicePlanIdentityProjection extends MorpheusModel {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
 	}
+
 }
