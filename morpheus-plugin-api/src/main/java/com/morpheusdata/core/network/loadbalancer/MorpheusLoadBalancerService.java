@@ -1,9 +1,12 @@
 package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
+import com.morpheusdata.model.projection.NetworkLoadBalancerIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
@@ -28,6 +31,24 @@ public interface MorpheusLoadBalancerService {
 	MorpheusLoadBalancerInstanceService getInstance();
 
 	Single<NetworkLoadBalancer> getLoadBalancerById(Long id);
+
+
+	/**
+	 * Lists all network load balancer projection objects for a specified cloud and type.
+	 * The projection is a subset of the properties on a full {@link NetworkDomain} object for sync matching.
+	 * @param cloudId the {@link Cloud} identifier associated to the domains to be listed.
+	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param typeCode the {@link NetworkLoadBalancerType} code for filtering by (optional)
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkLoadBalancerIdentityProjection> listIdentityProjections(Long cloudId, String regionCode, String typeCode);
+
+	/**
+	 * Lists all {@link NetworkLoadBalancer} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link NetworkLoadBalancer} objects from.
+	 * @return an RxJava Observable stream of {@link NetworkLoadBalancer} to be subscribed to.
+	 */
+	Observable<NetworkLoadBalancer> listById(Collection<Long> ids);
 
 	/**
 	 * Method is used to persist a change in load balancer status to the database

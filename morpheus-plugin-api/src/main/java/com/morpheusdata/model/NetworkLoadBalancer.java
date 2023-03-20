@@ -1,21 +1,25 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.NetworkLoadBalancerIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.*;
 
-public class NetworkLoadBalancer extends MorpheusModel {
+public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected NetworkLoadBalancerType type;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected ComputeZoneRegion region;
 
 	protected String name;
 	protected String description;
 	protected String visibility = "private"; //['public', 'private']
 	protected String internalId;
-	protected String externalId;
 	protected String areaId;
 	protected String sshHost;
 	protected Integer sshPort = 22;
@@ -108,14 +112,6 @@ public class NetworkLoadBalancer extends MorpheusModel {
 		markDirty("internalId", internalId);
 	}
 
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
-	}
 
 	public String getAreaId() {
 		return areaId;
@@ -394,5 +390,22 @@ public class NetworkLoadBalancer extends MorpheusModel {
 
 	public void setCredentialData(Map credentialData) {
 		this.credentialData = credentialData;
+	}
+
+	public NetworkLoadBalancerType getType() {
+		return type;
+	}
+
+	public void setType(NetworkLoadBalancerType type) {
+		this.type = type;
+	}
+
+	public ComputeZoneRegion getRegion() {
+		return region;
+	}
+
+	public void setRegion(ComputeZoneRegion region) {
+		this.region = region;
+		markDirty("region", region);
 	}
 }
