@@ -1,6 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.NetworkLoadBalancerIdentityProjection;
 import io.reactivex.Observable;
@@ -8,6 +9,7 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -158,4 +160,29 @@ public interface MorpheusLoadBalancerService {
 	 * @param loadBalancer
 	 */
 	void loadLoadBalancerCredentials(NetworkLoadBalancer loadBalancer);
+
+	/**
+	 * Save updates to existing LoadBalancers
+	 *
+	 * @param loadBalancers updated ComputeZonePool
+	 * @return success
+	 */
+	Single<Boolean> save(List<NetworkLoadBalancer> loadBalancers);
+
+	/**
+	 * Create new ComputeZonePools in Morpheus
+	 *
+	 * @param loadBalancers new NetworkLoadBalancers to persist
+	 * @return success
+	 */
+	Single<Boolean> create(List<NetworkLoadBalancer> loadBalancers);
+
+	/**
+	 * Remove load balancers from morpheus. It should be noted this does an internal delete
+	 * it does not make remote calls to the load balancer to delete object associations
+	 *
+	 * @param loadBalancers Load Balancers to remove
+	 * @return success
+	 */
+	Single<Boolean> remove(List<NetworkLoadBalancerIdentityProjection> loadBalancers);
 }
