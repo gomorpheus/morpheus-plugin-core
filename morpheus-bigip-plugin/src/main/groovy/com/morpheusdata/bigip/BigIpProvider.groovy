@@ -355,6 +355,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:10,
 			fieldLabel:'Name',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		poolOptions << new OptionType(
@@ -438,6 +439,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		monitorOptions << new OptionType(
@@ -457,6 +459,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:4,
 			fieldLabel:'Parent Monitor',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.SELECT,
 			fieldContext:'config',
 			optionSource:'bigIpPluginHealthMonitors'
@@ -479,6 +482,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:6,
 			fieldLabel:'Destination',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT,
 			defaultValue:'*:*'
 		)
@@ -643,6 +647,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:1,
 			fieldLabel:'Name',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		virtualServerOptions << new OptionType(
@@ -742,6 +747,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:3,
 			fieldLabel:'IP Address',
 			required:true,
+			editable:true,
 			inputType:OptionType.InputType.TEXT
 		)
 		nodeOptions << new OptionType(
@@ -777,6 +783,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:99,
 			fieldLabel:'Partition',
 			required:true,
+			editable:false,
 			inputType:OptionType.InputType.SELECT,
 			optionSource:'bigIpPluginPartitions',
 			defaultValue:'Common'
