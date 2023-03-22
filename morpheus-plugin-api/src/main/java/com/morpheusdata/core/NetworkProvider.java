@@ -38,6 +38,12 @@ public interface NetworkProvider extends PluginProvider {
 	Collection<NetworkType> getNetworkTypes();
 
 	/**
+	 * Provides a Collection of Router Types that can be managed by this provider
+	 * @return Collection of NetworkRouterType
+	 */
+	Collection<NetworkRouterType> getRouterTypes();
+
+	/**
 	 * Validates the submitted network information.
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.

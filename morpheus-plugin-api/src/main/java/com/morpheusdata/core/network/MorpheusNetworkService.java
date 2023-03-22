@@ -46,6 +46,14 @@ public interface MorpheusNetworkService {
 	 */
 	MorpheusNetworkTypeService getType();
 
+
+	/**
+	 * Returns the {@link MorpheusNetworkRouterService} used for performing updates/queries on {@link NetworkRouter} related assets
+	 * within Morpheus
+	 * @return An instance of the {@link MorpheusNetworkRouterService}
+	 */
+	MorpheusNetworkRouterService getRouter();
+
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
 	 * @param poolServer the pool integration with which we want to update the status.
@@ -159,7 +167,7 @@ public interface MorpheusNetworkService {
 	Single<Boolean> create(List<Network> addList);
 
 	/**
-	 * Saves a list of {@link NetworkDomain} objects. Be mindful this is an RxJava implementation and must be subscribed
+	 * Saves a list of {@link Network} objects. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
 	 * @param networksToSave a List of Network objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
