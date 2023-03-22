@@ -25,7 +25,7 @@ public interface MorpheusComputeZoneRegionService {
 	 * @param cloudId  Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ComputeZoneRegionIdentityProjection> listSyncProjections(Long cloudId);
+	Observable<ComputeZoneRegionIdentityProjection> listIdentityProjections(Long cloudId);
 
 	/**
 	 * Get a list of ComputeZoneRegion objects from a list of projection ids
