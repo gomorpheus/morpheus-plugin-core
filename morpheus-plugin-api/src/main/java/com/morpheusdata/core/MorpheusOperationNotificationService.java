@@ -16,9 +16,18 @@ public interface MorpheusOperationNotificationService {
 
 	/**
 	 * Get a list of OperationNotification projections based on a category name
-	 * @param category category
+	 * @param category category string unique filter category
 	 * @return Observable stream of sync projection
 	 */
+	Observable<OperationNotificationIdentityProjection> listIdentityProjections(String category);
+
+	/**
+	 * Get a list of OperationNotification projections based on a category name
+	 * @param category category
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(String)}}
+	 */
+	@Deprecated
 	Observable<OperationNotificationIdentityProjection> listSyncProjections(String category);
 
 	/**

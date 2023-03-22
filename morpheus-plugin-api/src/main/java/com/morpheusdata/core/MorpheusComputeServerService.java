@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
 import com.morpheusdata.model.ComputePort;
+import com.morpheusdata.model.Network;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
 import io.reactivex.Observable;
@@ -30,6 +31,15 @@ public interface MorpheusComputeServerService {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
+	Observable<ComputeServerIdentityProjection> listIdentityProjections(Long cloudId);
+
+	/**
+	 * Get a list of {@link ComputeServer} projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long)}}
+	 */
+	@Deprecated
 	Observable<ComputeServerIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
@@ -38,6 +48,14 @@ public interface MorpheusComputeServerService {
 	 * @return Observable stream of ComputeServers
 	 */
 	Observable<ComputeServer> listById(Collection<Long> ids);
+
+	/**
+	 * Lists all {@link ComputeServer} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param cloudId the cloud to filter the list of servers by.
+	 * @param externalIds a Collection of external Ids to filter the list of servers by
+	 * @return an RxJava Observable stream of {@link ComputeServer} to be subscribed to.
+	 */
+	Observable<ComputeServer> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
 
 	/**
 	 * Save updates to existing ComputeServers

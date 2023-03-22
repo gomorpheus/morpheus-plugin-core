@@ -5,6 +5,13 @@ import com.morpheusdata.model.projection.OperationNotificationIdentityProjection
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+/**
+ * Represents a Notification Record often displayed in the Alarm Notification area of Morpheus
+ * These can be created by alarm events that can be synced from some cloud types like AWS CloudWatch
+ * or Vmware
+ * @see com.morpheusdata.core.MorpheusOperationNotificationService
+ * @author Bob Whiton
+ */
 public class OperationNotification extends OperationNotificationIdentityProjection {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -21,6 +28,7 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	protected String uniqueId;
 	protected String refType;
 	protected Long refId;
+	protected String regionCode;
 
 	/**
 	 * The account related to this OperationNotification
@@ -229,5 +237,22 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	 */
 	public void setRefId(Long refId) {
 		this.refId = refId;
+	}
+
+	/**
+	 * Returns the regionCode for this OperationNotification
+	 * @return regionCode the region identifier (i.e. us-west-1)
+	 */
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	/**
+	 * Sets the regionCode for this OperationNotification. This is used in multi region clouds when needing to categorize
+	 * what region an alarm is being triggered in.
+	 * @param regionCode regionCode the region identifier (i.e. us-west-1)
+	 */
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
 	}
 }
