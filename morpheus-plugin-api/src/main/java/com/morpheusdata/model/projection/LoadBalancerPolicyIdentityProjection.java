@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerPolicyService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.NetworkLoadBalancerPolicy;
 
 /**
@@ -10,7 +10,7 @@ import com.morpheusdata.model.NetworkLoadBalancerPolicy;
  * @see MorpheusLoadBalancerPolicyService
  * @author David Estes
  */
-public class LoadBalancerPolicyIdentityProjection extends MorpheusModel {
+public class LoadBalancerPolicyIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String partition;

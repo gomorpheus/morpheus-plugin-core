@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.MorpheusNetworkService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.NetworkDomain} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusNetworkService
  * @author David Estes
  */
-public class NetworkDomainIdentityProjection extends MorpheusModel {
+public class NetworkDomainIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 

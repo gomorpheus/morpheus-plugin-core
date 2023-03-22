@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.NetworkSubnetType;
 
 /**
@@ -11,7 +11,7 @@ import com.morpheusdata.model.NetworkSubnetType;
  * @see MorpheusNetworkSubnetService
  * @author Bob Whiton
  */
-public class NetworkSubnetIdentityProjection extends MorpheusModel {
+public class NetworkSubnetIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String typeCode;

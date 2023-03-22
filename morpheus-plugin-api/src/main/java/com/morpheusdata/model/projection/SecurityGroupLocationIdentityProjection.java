@@ -1,9 +1,9 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 
-public class SecurityGroupLocationIdentityProjection extends MorpheusModel {
+public class SecurityGroupLocationIdentityProjection extends MorpheusIdentityModel {
 
 	public SecurityGroupLocationIdentityProjection(){}
 

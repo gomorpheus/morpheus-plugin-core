@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.StorageBucket;
 
 /**
@@ -8,7 +8,7 @@ import com.morpheusdata.model.StorageBucket;
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
  * @author bdwheeler
  */
-public class StorageBucketIdentityProjection extends MorpheusModel {
+public class StorageBucketIdentityProjection extends MorpheusIdentityModel {
 
 	protected String code;
 	protected String name;

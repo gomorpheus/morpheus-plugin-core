@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerInstanceService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.NetworkLoadBalancerInstance;
 
 /**
@@ -10,7 +10,7 @@ import com.morpheusdata.model.NetworkLoadBalancerInstance;
  * @see MorpheusLoadBalancerInstanceService
  * @author David Estes
  */
-public class LoadBalancerInstanceIdentityProjection extends MorpheusModel {
+public class LoadBalancerInstanceIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String vipName;
 	protected String vipAddress; //front facing ip being load balanced

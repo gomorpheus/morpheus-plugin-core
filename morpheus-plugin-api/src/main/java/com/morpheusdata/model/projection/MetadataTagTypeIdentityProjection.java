@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusMetadataTagTypeService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.MetadataTagType} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusMetadataTagTypeService
  * @author Bob Whiton
  */
-public class MetadataTagTypeIdentityProjection extends MorpheusModel {
+public class MetadataTagTypeIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String refType;
 	protected Long refId;

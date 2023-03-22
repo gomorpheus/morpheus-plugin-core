@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.ReplicationType;
 import com.morpheusdata.model.Replication;
 import com.morpheusdata.core.backup.MorpheusReplicationService;
@@ -11,7 +11,7 @@ import com.morpheusdata.core.backup.MorpheusReplicationService;
  * @see MorpheusReplicationService
  * @author Dustin DeYoung
  */
-public class ReplicationIdentityProjection extends MorpheusModel {
+public class ReplicationIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String typeCode;

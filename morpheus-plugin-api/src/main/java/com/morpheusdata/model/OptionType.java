@@ -17,7 +17,7 @@ public class OptionType extends MorpheusModel {
 	protected Boolean required = false;
 	protected Boolean editable = true;
 	protected Boolean enabled = true;
-
+	protected String uuid;
 	protected String noSelection;
 	protected Long minVal;
 	protected Long maxVal;
@@ -532,6 +532,23 @@ public class OptionType extends MorpheusModel {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 		markDirty("enabled", enabled, this.enabled);
+	}
+
+	/**
+	 * returns the uuid
+	 * @return the uuid of the current record
+	 */
+	public String getUuid() {
+		return uuid;
+	}
+
+	/**
+	 * Sets the uuid. In this class this should not be called directly
+	 * @param uuid the uuid of the current record
+	 */
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
 	}
 
 	public String getNoSelection() {

@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.StorageServer;
 
 /**
@@ -8,7 +8,7 @@ import com.morpheusdata.model.StorageServer;
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
  * @author bdwheeler
  */
-public class StorageServerIdentityProjection extends MorpheusModel {
+public class StorageServerIdentityProjection extends MorpheusIdentityModel {
 
 	protected String code;
 	protected String name;

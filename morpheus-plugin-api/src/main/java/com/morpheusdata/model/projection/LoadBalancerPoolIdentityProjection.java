@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerPolicyService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.NetworkLoadBalancerPool;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerPoolService;
 
@@ -10,7 +10,7 @@ import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerPoolServic
  * comparison with less bandwidth usage and memory footprint. This is a DTO Projection object
  * @see MorpheusLoadBalancerPoolService
  */
-public class LoadBalancerPoolIdentityProjection extends MorpheusModel {
+public class LoadBalancerPoolIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String partition;

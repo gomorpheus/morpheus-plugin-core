@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.cloud.MorpheusComputeZoneFolderService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.ComputeZoneFolder} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusComputeZoneFolderService
  * @author Bob Whiton
  */
-public class ComputeZoneFolderIdentityProjection extends MorpheusModel {
+public class ComputeZoneFolderIdentityProjection extends MorpheusIdentityModel {
 	protected String type = "default";
 	protected String internalId;
 	protected String name;
