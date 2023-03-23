@@ -1,11 +1,9 @@
 package com.morpheusdata.model.provisioning;
 
+import java.util.Map;
 
-import com.morpheusdata.model.NetworkConfiguration;
 import com.morpheusdata.model.Process;
 import com.morpheusdata.model.ProxyConfiguration;
-
-import java.util.Map;
 
 public class HostRequest {
 

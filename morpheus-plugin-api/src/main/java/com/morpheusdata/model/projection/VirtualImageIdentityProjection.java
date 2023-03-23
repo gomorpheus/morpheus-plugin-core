@@ -2,7 +2,6 @@ package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusVirtualImageService;
 import com.morpheusdata.model.ImageType;
-import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.VirtualImage} object for doing a sync match

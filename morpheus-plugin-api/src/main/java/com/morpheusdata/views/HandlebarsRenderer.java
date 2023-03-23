@@ -11,7 +11,6 @@ import com.morpheusdata.core.web.MorpheusWebRequestService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * HandlebarsRenderer implements the Renderer interface.

@@ -1,6 +1,5 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.ReplicationType;
 import com.morpheusdata.core.backup.MorpheusReplicationTypeService;
 

@@ -3,7 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
 
-public class WorkloadTypeMount extends MorpheusModel {
+public class WorkloadTypeMount extends MorpheusModel implements IModelCodeName {
 
 	protected String code;
 	protected String name;

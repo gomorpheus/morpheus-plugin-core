@@ -3,7 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-public class WorkloadTypeLog extends MorpheusModel {
+public class WorkloadTypeLog extends MorpheusModel implements IModelCodeName {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;

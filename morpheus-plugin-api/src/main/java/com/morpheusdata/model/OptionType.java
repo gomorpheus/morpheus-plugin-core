@@ -9,7 +9,7 @@ package com.morpheusdata.model;
  *
  * @author David Estes
  */
-public class OptionType extends MorpheusModel {
+public class OptionType extends MorpheusModel implements IModelUuidCodeName {
 
 	protected String name;
 	protected String code;

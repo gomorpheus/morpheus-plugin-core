@@ -5,7 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-public class WorkloadTypeConfig extends MorpheusModel {
+public class WorkloadTypeConfig extends MorpheusModel implements IModelCodeName {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;
