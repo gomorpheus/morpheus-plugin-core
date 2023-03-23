@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
-public class EnvironmentVariableType extends MorpheusModel {
+public class EnvironmentVariableType extends MorpheusModel implements IModelCodeName {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;

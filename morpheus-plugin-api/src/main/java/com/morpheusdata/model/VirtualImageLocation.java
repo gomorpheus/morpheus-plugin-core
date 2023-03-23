@@ -5,7 +5,6 @@ import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.model.*;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.ArrayList;

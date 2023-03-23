@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Templatized resource specs to define resources.
  */
-public class ResourceSpecTemplate extends ResourceSpecTemplateIdentityProjection {
+public class ResourceSpecTemplate extends ResourceSpecTemplateIdentityProjection implements IModelUuidCodeName {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Account account;

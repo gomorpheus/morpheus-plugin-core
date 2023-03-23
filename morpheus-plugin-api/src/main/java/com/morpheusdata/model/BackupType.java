@@ -2,7 +2,8 @@ package com.morpheusdata.model;
 
 import java.util.List;
 
-public class BackupType extends MorpheusModel {
+public class BackupType extends MorpheusModel implements IModelCodeName {
+	
 	protected String code;
 	protected String name;
 	protected String backupFormat; //data,file,snapshot

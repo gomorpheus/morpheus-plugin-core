@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
 
-public class WorkloadAction extends MorpheusModel {
+public class WorkloadAction extends MorpheusModel implements IModelUuidCodeName {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;

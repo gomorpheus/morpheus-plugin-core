@@ -2,10 +2,10 @@ package com.morpheusdata.model.serializers;
 
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 public class ModelIdentitySerializer extends StdSerializer<MorpheusIdentityModel> {
 
@@ -14,7 +14,7 @@ public class ModelIdentitySerializer extends StdSerializer<MorpheusIdentityModel
 		this(null);
 	}
 
-	public ModelIdentitySerializer(Class<MorpheusModel> t) {
+	public ModelIdentitySerializer(Class<MorpheusIdentityModel> t) {
 		super(t);
 	}
 

@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-public class WorkloadTypePort extends MorpheusModel {
+public class WorkloadTypePort extends MorpheusModel implements IModelCodeName {
 
 	protected String code;
 	protected String name;
