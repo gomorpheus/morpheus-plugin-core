@@ -48,7 +48,17 @@ public interface MorpheusBackupResultService {
 	 * @param ids list of {@link BackupResult} ids to fetch.
 	 * @return an RxJava Observable stream of {@link BackupResult} objects for subscription.
 	 */
-	Observable<BackupResultIdentityProjection> listById(Collection<Long> ids);
+	Observable<BackupResult> listById(Collection<Long> ids);
+
+	/**
+	 * Lists all backup result projection objects for a specified account ID and backup.
+	 * The projection is a subset of the properties on a full {@link BackupResult} object for sync matching.
+	 * @param backupSetId the {@link com.morpheusdata.model.BackupResult} backupSetId
+	 * @param containerId the {@link com.morpheusdata.model.Container} identifier of the container associated to the backup result.
+	 * @return an RxJava Observable stream of {@link BackupResult} objects for subscription.
+	 */
+	Observable<BackupResult> listByBackupSetIdAndContainerId(String backupSetId, Long containerId);
+
 
 	/**
 	 * Removes Missing Backup Result on the Morpheus side. This accepts the Projection Object instead of the main Object.
