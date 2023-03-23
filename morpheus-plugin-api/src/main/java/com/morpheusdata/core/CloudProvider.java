@@ -204,4 +204,12 @@ public interface CloudProvider extends PluginProvider {
 	 * @return Boolean
 	 */
 	Boolean supportsDistributedWorker();
+
+
+	/**
+	 * Returns the default provision code for fetching a {@link ProvisioningProvider} for this cloud.
+	 * This is only really necessary if the provision type code is the exact same as the cloud code.
+	 * @return the provision provider code
+	 */
+	default String getDefaultProvisionTypeCode() { return null; };
 }

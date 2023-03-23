@@ -88,6 +88,9 @@ public class HttpApiClient {
 	HttpClient httpClient;
 	HttpClientConnectionManager connectionManager;
 	BasicCookieStore cookieStore = new BasicCookieStore();
+	/**
+	 * Sets a throttle rate (in milliseconds) between HTTP Calls. This is used to slow down queries to the remote server.
+	 */
 	public Long throttleRate = 0L;
 	public NetworkProxy networkProxy;
 	private Date lastCallTime;

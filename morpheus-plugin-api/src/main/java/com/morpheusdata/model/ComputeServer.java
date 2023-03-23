@@ -103,7 +103,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Boolean guestConsolePreferred = false;
 	protected GuestConsoleType guestConsoleType;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeServer parentServer;
+	protected ComputeServerIdentityProjection parentServer;
 	protected ComputeStats computeStats;
 	@JsonIgnore
 	protected List<MetadataTag> metadata;
@@ -792,11 +792,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("guestConsoleType", guestConsoleType);
 	}
 
-	public ComputeServer getParentServer() {
+	public ComputeServerIdentityProjection getParentServer() {
 		return parentServer;
 	}
 
-	public void setParentServer(ComputeServer parentServer) {
+	public void setParentServer(ComputeServerIdentityProjection parentServer) {
 		this.parentServer = parentServer;
 		markDirty("parentServer",parentServer);
 	}

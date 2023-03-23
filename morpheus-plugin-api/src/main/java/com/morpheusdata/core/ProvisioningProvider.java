@@ -21,25 +21,34 @@ import java.util.Map;
 public interface ProvisioningProvider extends PluginProvider {
 
 	/**
+	 * Some older clouds have a provision type code that is the exact same as the cloud code. This allows one to set it
+	 * to match and in doing so the provider will be fetched via the cloud providers {@link CloudProvider#getDefaultProvisionTypeCode()} method.
+	 * @return code for overriding the ProvisionType record code property
+	 */
+	default String getProvisionTypeCode() {
+		return getCode();
+	}
+
+	/**
 	 * Provide an icon to be displayed for ServicePlans, VM detail page, etc.
 	 * where a circular icon is displayed
 	 * @since 0.13.6
 	 * @return Icon
 	 */
-	public Icon getCircularIcon();
+	Icon getCircularIcon();
 
 	/**
 	 * Provides a Collection of OptionType inputs that need to be made available to various provisioning Wizards
 	 * @return Collection of OptionTypes
 	 */
-	public Collection<OptionType> getOptionTypes();
+	Collection<OptionType> getOptionTypes();
 
 	/**
 	 * Provides a Collection of OptionType inputs for configuring node types
 	 * @since 0.9.0
 	 * @return Collection of OptionTypes
 	 */
-	public Collection<OptionType> getNodeOptionTypes();
+	Collection<OptionType> getNodeOptionTypes();
 
 	/**
 	 * Provides a Collection of StorageVolumeTypes that are available for root StorageVolumes
