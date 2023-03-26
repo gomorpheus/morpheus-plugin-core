@@ -36,6 +36,8 @@ public interface MorpheusCloudService {
 
 	MorpheusNetworkService getNetwork();
 
+	MorpheusAccountResourceService getResource();
+
 	Single<Collection<ComputeServerType>> getComputeServerTypes(Long cloudId);
 
 	/**

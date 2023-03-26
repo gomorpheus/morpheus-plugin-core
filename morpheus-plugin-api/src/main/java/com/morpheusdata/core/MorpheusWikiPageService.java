@@ -15,8 +15,8 @@ public interface MorpheusWikiPageService {
 
 	/**
 	 * Get a list of WikiPage projections based on the refIds and refType
-	 * @param refType the refType to match on. Typically 'ComputeServer'
-	 * @param refIds the refIds to match on. Typically the ids of the Compute Servers
+	 * @param refType the refType to match on. Typically, 'ComputeServer'
+	 * @param refIds the refIds to match on. Typically, the ids of the Compute Servers
 	 * @return Observable stream of sync projection
 	 */
 	Observable<WikiPageIdentityProjection> listSyncProjections(String refType, List<Long> refIds);

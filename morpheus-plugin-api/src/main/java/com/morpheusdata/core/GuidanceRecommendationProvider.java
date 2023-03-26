@@ -28,7 +28,7 @@ public interface GuidanceRecommendationProvider  extends PluginProvider {
 	/**
 	 * Discovery details provided to your rendering engine
 	 * @param discovery details of the recommendation used for rendering a detailed recommendation description
-	 * @return result of rendering an template
+	 * @return result of rendering a template
 	 */
 	HTMLResponse renderTemplate(AccountDiscovery discovery);
 
@@ -41,13 +41,13 @@ public interface GuidanceRecommendationProvider  extends PluginProvider {
 	Icon getIcon();
 
 	/**
-	 * Provide a more user friendly title of the guidance recommendation
+	 * Provide a more user-friendly title of the guidance recommendation
 	 * @return the desired title of the discovery type
 	 */
 	String getTitle();
 
 	/**
-	 * Provide a more user friendly description of the guidance recommendation
+	 * Provide a more user-friendly description of the guidance recommendation
 	 * @return the desired description of the discovery type
 	 */
 	String getDescription();

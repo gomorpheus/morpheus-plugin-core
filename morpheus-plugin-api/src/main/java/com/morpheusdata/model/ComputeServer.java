@@ -111,6 +111,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String cloudConfigUser;
 	protected String cloudConfigMeta;
 	protected String cloudConfigNetwork;
+	protected ComputeZoneRegion region;
 
 	public String getUuid() {
 		return uuid;
@@ -406,6 +407,14 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public void setSingleTenant(Boolean singleTenant) {
 		this.singleTenant = singleTenant;
+	}
+
+	public ComputeZoneRegion getRegion() {
+		return region;
+	}
+
+	public void setRegion(ComputeZoneRegion region) {
+		this.region = region;
 	}
 
 	public enum PowerState {
