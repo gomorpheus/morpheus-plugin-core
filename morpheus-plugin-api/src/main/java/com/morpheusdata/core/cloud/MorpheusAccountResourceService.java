@@ -28,11 +28,20 @@ public interface MorpheusAccountResourceService {
 
 	/**
 	 * Get a list of {@link AccountResource} projections based on Cloud id and resource type code
-	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
 	 * @param cloudId  Cloud id
+	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
 	 * @return Observable stream of sync projection
 	 */
-	Observable<AccountResourceIdentityProjection> listIdentityProjections(String typeCode, Long cloudId);
+	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId,String typeCode);
+
+	/**
+	 * Get a list of {@link AccountResource} projections based on Cloud id and resource type code
+	 *
+	 * @param cloudId  Cloud id
+	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
+	 * @return Observable stream of sync projection
+	 */
+	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId,String typeCode, String regionCode);
 
 	/**
 	 * Get a list of AccountResource objects from a list of projection ids

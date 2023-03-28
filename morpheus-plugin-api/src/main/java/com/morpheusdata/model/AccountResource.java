@@ -31,8 +31,8 @@ public class AccountResource extends AccountResourceIdentityProjection {
 	protected String resourcePoolName;
 	protected Long userId;
 	protected String userName;
-	protected Long zoneId;
-	protected String zoneName;
+	protected Long cloudId;
+	protected String cloudName;
 	protected Long siteId;
 	protected String siteName;
 	protected Long planId;
@@ -278,20 +278,20 @@ public class AccountResource extends AccountResourceIdentityProjection {
 		this.userName = userName;
 	}
 
-	public Long getZoneId() {
-		return zoneId;
+	public Long getCloudId() {
+		return cloudId;
 	}
 
-	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
 	}
 
-	public String getZoneName() {
-		return zoneName;
+	public String getCloudName() {
+		return cloudName;
 	}
 
-	public void setZoneName(String zoneName) {
-		this.zoneName = zoneName;
+	public void setCloudName(String cloudName) {
+		this.cloudName = cloudName;
 	}
 
 	public Long getSiteId() {
