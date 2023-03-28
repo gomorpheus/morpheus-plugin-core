@@ -320,7 +320,7 @@ public class HttpApiClient {
 					}
 				} catch(Exception ex) {
 					try {
-						log.error("Error occurred processing the response for {} : {}",uriBuilder.build().toString(),ex.getMessage(), ex);
+						log.error("Error occurred processing the response for {} : {}{}",uriBuilder.build().toString(),ex.getMessage(), ex);
 						rtn.setError("Error occurred processing the response for " + uriBuilder.build().toString() + " : " + ex.getMessage());
 					} catch(URISyntaxException uie) {
 						log.error("Error occurred processing the response for {} : {}","invalid uri",ex.getMessage(), ex);
