@@ -49,6 +49,16 @@ public interface MorpheusVirtualImageService {
 	Observable<VirtualImageIdentityProjection> listSyncProjections(Long accountId, ImageType[] imageTypes);
 
 	/**
+	 * Get a list of VirtualImage projections that matches one of the provided categories and either the account owns or
+	 * the account can access due to the visibility setting on the VirtualImage
+	 * @param accountId Account Id
+	 * @param categories Array of categories
+	 * @return Observable stream of sync projections
+	 */
+	Observable<VirtualImageIdentityProjection> listSyncProjectionsByCategory(Long accountId, String[] categories);
+
+
+	/**
 	 * Get a VirtualImage object by id
 	 * @param id VirtualImage id
 	 * @return the VirtualImage
