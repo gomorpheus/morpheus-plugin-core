@@ -9,7 +9,7 @@ public class WorkloadTypeSet extends MorpheusModel {
 	protected Integer priorityOrder;
 	protected Integer containerCount;
 	protected Boolean dynamicCount;
-	protected ContainerType containerType;
+	protected WorkloadType workloadType;
 	protected String provisionService;
 	protected String planCategory;
 	protected String refType;
@@ -60,13 +60,13 @@ public class WorkloadTypeSet extends MorpheusModel {
 		markDirty("dynamicCount", dynamicCount);
 	}
 
-	public ContainerType getContainerType() {
-		return containerType;
+	public WorkloadType getWorkloadType() {
+		return workloadType;
 	}
 	
-	public void setContainerType(ContainerType containerType) {
-		this.containerType = containerType;
-		markDirty("containerType", containerType);
+	public void setWorkloadType(WorkloadType workloadType) {
+		this.workloadType = workloadType;
+		markDirty("workloadType", workloadType);
 	}
 
 	public String getProvisionService() {

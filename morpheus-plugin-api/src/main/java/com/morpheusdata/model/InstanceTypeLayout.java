@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
+import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
 
 public class InstanceTypeLayout extends MorpheusModel {
 
@@ -45,20 +48,27 @@ public class InstanceTypeLayout extends MorpheusModel {
 	protected String uuid;
 	protected String syncSource;
 
+	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
+	protected List<InstanceTypeLayout> layouts;
+	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
+	protected List<EnvironmentVariableType> environmentVariables;
+	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
+	protected List<OptionType> optionTypes;
+	@JsonSerialize(using = ModelCollectionIdUuidCodeNameSerializer.class)
+	protected List<ResourceSpecTemplate> specTemplates;
+	@JsonSerialize(using=ModelCollectionAsIdsOnlySerializer.class)
+	protected List<WorkloadTypeSet> workloads;
+	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
+	protected List<TaskSet> taskSets;
+	//actions:InstanceAction
+	//labels:Label
+
+	//other fields not carried over
 	//protected Map configs
 	//protected String postProvisionService
 	//protected String postProvisionOperation
 	//protected String preProvisionService
 	//protected String preProvisionOperation
-	//protected List environmentVariables
-	//protected List optionTypes
-	//containers:ContainerTypeSet
-	//actions:InstanceAction
-	//taskSets:TaskSet
-	//optionTypes:OptionType
-	//environmentVariables:EnvironmentVariableType
-	//specTemplates:ResourceSpecTemplate
-	//labels:Label
 
 	public Account getAccount() {
 		return account;
@@ -375,16 +385,52 @@ public class InstanceTypeLayout extends MorpheusModel {
 		markDirty("code", code);
 	}
 
-	//protected List containers
-	protected List containers;
-
-	public List getContainers() {
-		return containers;
+	public List<InstanceTypeLayout> getLayouts() {
+		return layouts;
 	}
 
-	public void setContainers(List containers) {
-		this.containers = containers;
-		markDirty("containers", containers);
+	public void setLayouts(List<InstanceTypeLayout> layouts) {
+		this.layouts = layouts;
+	}
+
+	public List<EnvironmentVariableType> getEnvironmentVariables() {
+		return environmentVariables;
+	}
+
+	public void setEnvironmentVariables(List<EnvironmentVariableType> environmentVariables) {
+		this.environmentVariables = environmentVariables;
+	}
+
+	public List<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(List<OptionType> optionTypes) {
+		this.optionTypes = optionTypes;
+	}
+
+	public List<ResourceSpecTemplate> getSpecTemplates() {
+		return specTemplates;
+	}
+
+	public void setSpecTemplates(List<ResourceSpecTemplate> specTemplates) {
+		this.specTemplates = specTemplates;
+	}
+
+	public List<WorkloadTypeSet> getWorkloads() {
+		return workloads;
+	}
+
+	public void setWorkloads(List<WorkloadTypeSet> workloads) {
+		this.workloads = workloads;
+	}
+
+	public List<TaskSet> getTaskSets() {
+		return taskSets;
+	}
+
+	public void setTaskSets(List<TaskSet> taskSets) {
+		this.taskSets = taskSets;
 	}
 	
 }

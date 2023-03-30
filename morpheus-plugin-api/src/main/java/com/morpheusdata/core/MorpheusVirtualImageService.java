@@ -108,4 +108,5 @@ public interface MorpheusVirtualImageService {
 	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages);
 
 	Single<Collection<CloudFile>> getVirtualImageFiles(VirtualImage virtualImage);
+	
 }
