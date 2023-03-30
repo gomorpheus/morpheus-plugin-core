@@ -52,6 +52,11 @@ class GoogleNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
+	Collection<NetworkRouterType> getRouterTypes() {
+		return null
+	}
+
+	@Override
 	ServiceResponse validateNetwork(Network network, Map opts) {
 		log.debug "validateNetwork: ${network} ${opts}"
 		return ServiceResponse.success()

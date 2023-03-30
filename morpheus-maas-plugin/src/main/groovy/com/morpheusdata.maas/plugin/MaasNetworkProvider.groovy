@@ -46,13 +46,17 @@ class MaasNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
-	@Override
 	Collection<NetworkType> getNetworkTypes() {
 		NetworkType networkType = new NetworkType()
 		networkType.code = 'maas-plugin-network'
 		networkType.hasCidr = true
 		networkType.name = 'MaaS Plugin Subnet'
 		return [networkType]
+	}
+
+	@Override
+	Collection<NetworkRouterType> getRouterTypes() {
+		return null
 	}
 
 	@Override
