@@ -103,5 +103,8 @@ class MaasNetworkProvider implements NetworkProvider {
 		ServiceResponse.success()
 	}
 
-
+	@Override
+	Collection<NetworkRouterType> getRouterTypes() {
+		return null
+	}
 }

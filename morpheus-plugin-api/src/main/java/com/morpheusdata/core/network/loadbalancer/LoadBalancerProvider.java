@@ -201,4 +201,12 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @return
 	 */
 	ServiceResponse removeInstance(NetworkLoadBalancerInstance instance);
+
+	/**
+	 * Implement this method to update all entities involved in a {@link NetworkLoadBalancerInstance} such as policies, pools,
+	 * profiles, nodes, virtual servers, etc.  This method is usually called when a node is added/removed from an instance
+	 * @param instance
+	 * @return
+	 */
+	ServiceResponse updateInstance(NetworkLoadBalancerInstance instance);
 }

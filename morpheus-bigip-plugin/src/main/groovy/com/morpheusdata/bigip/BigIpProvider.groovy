@@ -337,7 +337,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'SSL Cert',
 			required:false,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'accountSslCertificate',
+			optionSource:'bigIpCertSelect',
 			visibleOnCode:'loadBalancerProfile.serviceType:client-ssl'
 		)
 		profileOptions << getPartitionOptionType()
@@ -747,7 +747,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:3,
 			fieldLabel:'IP Address',
 			required:true,
-			editable:true,
+			editable:false,
 			inputType:OptionType.InputType.TEXT
 		)
 		nodeOptions << new OptionType(
@@ -2420,6 +2420,125 @@ class BigIpProvider implements LoadBalancerProvider {
 			rtn.success = false
 		}
 		log.debug("addInstance: ${rtn}")
+		return rtn
+	}
+
+	@Override
+	ServiceResponse updateInstance(NetworkLoadBalancerInstance instance) {
+		def rtn = ServiceResponse.prepare()
+		try {
+			def lbSvc = morpheus.loadBalancer
+			def changeResults = instance.holder.changeResults
+			def opts = instance.holder.options
+			if(changeResults.changed == true) {
+				opts.activeConfig.loadBalancerInstance = instance
+				def removeResults = removeInstance(opts.activeConfig, instance.instance)
+				if(removeResults.success == true) {
+					def addResults = addInstance(instance, opts)
+					rtn.success = removeResults.success
+				}
+			} else if(changeResults.addNodes == true) {
+				def updateResults = updateInstanceMembers(instance, opts)
+				rtn.success = updateResults.success
+			} else if(changeResults.removeNodes == true) {
+				def updateResults = updateInstanceMembers(instance, opts)
+				if (updateResults.success) {
+					rtn.success = updateResults.success
+					def loadBalancer = instance.loadBalancer
+					def config = getConnectionBase(loadBalancer)
+					// remove our nodes from the f5
+					for (container in opts.removeContainers) {
+						def namingConfig = lbSvc.buildNamingConfig(container, opts, null)
+						def serverName = lbSvc.buildServerName(loadBalancer.serverName, container.server.id, namingConfig)
+						def nodeConfig = [name:serverName, partition:instance.partition] + config
+						def removeResult = deleteServer(nodeConfig)
+						if (!removeResult.success) {
+							log.warn("Unable to delete node from load balancer: ${removeResult.message}")
+							rtn.success = false
+							rtn.msg = "Unable to delete node from load balancer: ${removeResult.message}"
+						}
+					}
+				}
+			} else {
+				rtn.success = true
+				rtn.msg = 'no changes detected'
+			}
+		}
+		catch (Throwable t) {
+			log.error("Unable to updateInstance ${instance.vipName}: ${t.message}", t)
+		}
+
+		return rtn
+	}
+
+	def updateInstanceMembers(NetworkLoadBalancerInstance loadBalancerInstance, Map opts = [:]) {
+		def rtn = [success:false]
+		try {
+			//prep up the create call and pass it
+			def lbSvc = morpheus.loadBalancer
+			def loadBalancer = loadBalancerInstance.loadBalancer
+			def apiConfig = getConnectionBase(loadBalancer)
+			def poolConfig = [:] + apiConfig
+			//ssl
+			def sslCert = loadBalancerInstance.sslCert
+			def sslEnabled = sslCert != null
+			//pool config
+			def firstContainer = loadBalancerInstance.instance.containers?.size() > 0 ? loadBalancerInstance.instance.containers.first() : null
+			def namingConfig = lbSvc.buildNamingConfig(firstContainer, opts, null)
+			def poolName = lbSvc.buildPoolName(loadBalancer.poolName, loadBalancerInstance.id, sslEnabled, namingConfig)
+			def servicePort = loadBalancerInstance.servicePort
+			def partition = loadBalancerInstance.partition
+			//fill in config
+			poolConfig.name = poolName
+			poolConfig.port = loadBalancerInstance.servicePort
+			poolConfig.partition = partition
+			//figure otu what containers should be in the pool
+			def containerList = []
+			loadBalancerInstance.instance?.containers?.each { container ->
+				//check if its a removed contianer
+				def removeMatch = opts.removeContainers?.find{ it.id == container.id }
+				if(removeMatch == null) {
+					containerList << container
+				}
+			}
+			//add any add containers
+			opts.addContainers?.each { container ->
+				def existingMatch = loadBalancerInstance.instance?.containers?.find{ it.id == container.id }
+				if(existingMatch == null)
+					containerList << container
+			}
+			//build up the member list
+			poolConfig.members = []
+			if(containerList?.size() > 0) {
+				containerList?.each { container ->
+					namingConfig = lbSvc.buildNamingConfig(container, opts, null)
+					def serverName = lbSvc.buildServerName(loadBalancer.serverName, container.server.id, namingConfig)
+					def serverIp = lbSvc.getContainerIp(container, true)
+					//if this is a new server create it
+					def addMatch = opts.addContainers?.find{ it.id == container.id }
+					if(addMatch != null) {
+						//new - create it
+						def serverMonitor = '/Common/icmp'
+						def serverConfig = apiConfig + [name:serverName, ipAddress:serverIp, port:servicePort, healthMonitor:serverMonitor, partition:partition]
+						def createResults = createServer(serverConfig)
+					}
+					//add to the member list
+					poolConfig.members << [name:serverName, partition:partition]
+				}
+			}
+			//update it
+			def memberResults = updatePoolMembers(poolConfig)
+			println("memberResults: ${memberResults}")
+			rtn.success = memberResults.success
+			if(rtn.success == false) {
+				//fill in errors
+				rtn.errors = memberResults.errors
+				rtn.msg = memberResults?.content?.message ?: memberResults.message
+			}
+		} catch(e) {
+			log.error("error updating pool: ${e}", e)
+			rtn.msg = 'unknown error updating pool ' + e.message
+		}
 		return rtn
 	}
 

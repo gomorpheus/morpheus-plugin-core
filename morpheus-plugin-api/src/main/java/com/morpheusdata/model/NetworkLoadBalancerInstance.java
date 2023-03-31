@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.LoadBalancerInstanceIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -75,6 +73,16 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	protected List<NetworkLoadBalancerProfile> profiles = new ArrayList<NetworkLoadBalancerProfile>();
 	protected List<Container> containers = new ArrayList<Container>();
 
+	// this property will hold additional properties that may be useful to the api integrators
+	protected Map<String, Object> holder = new HashMap<String, Object>();
+
+
+	public Map<String, Object> getHolder() {
+		return this.holder;
+	}
+	public void setHolder(Map<String, Object> map) {
+		this.holder = map;
+	}
 
 	public Instance getInstance() {
 		return instance;
