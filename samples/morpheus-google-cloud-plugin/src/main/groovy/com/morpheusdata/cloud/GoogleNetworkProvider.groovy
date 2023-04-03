@@ -293,11 +293,6 @@ class GoogleNetworkProvider implements NetworkProvider {
 		rtn
 	}
 
-	@Override
-	Collection<NetworkRouterType> getRouterTypes() {
-		return null
-	}
-
 	private getAuthConfig(Cloud cloud) {
 		Map authConfig = [:]
 

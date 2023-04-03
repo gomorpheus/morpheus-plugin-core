@@ -102,9 +102,4 @@ class MaasNetworkProvider implements NetworkProvider {
 	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network){
 		ServiceResponse.success()
 	}
-
-	@Override
-	Collection<NetworkRouterType> getRouterTypes() {
-		return null
-	}
 }
