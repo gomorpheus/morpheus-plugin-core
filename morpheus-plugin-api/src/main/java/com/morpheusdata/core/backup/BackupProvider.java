@@ -17,9 +17,6 @@ import java.util.*;
  */
 public interface BackupProvider extends PluginProvider {
 
-	// Associations between cloud type and backup providers
-	Collection<BackupIntegration> scopedProviders = new ArrayList<BackupIntegration>();
-
 	/**
 	 * Returns the integration logo for display when a user needs to view or add this integration
 	 * @return Icon representation of assets stored in the src/assets of the project.

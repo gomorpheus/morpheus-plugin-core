@@ -1,6 +1,7 @@
 package com.morpheusdata.core.backup;
 
 import com.morpheusdata.core.*;
+import com.morpheusdata.model.BackupIntegration;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ public abstract class AbstractBackupProvider implements BackupProvider {
 
 	Plugin plugin;
 	MorpheusContext morpheusContext;
+
+	// Associations between cloud type and backup providers
+	protected Collection<BackupIntegration> scopedProviders = new ArrayList<BackupIntegration>();
 
 	BackupJobProvider backupJobProvider;
 
