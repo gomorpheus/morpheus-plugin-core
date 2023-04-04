@@ -198,7 +198,7 @@ public class MorpheusModel {
 	private Map toMap(JsonObject object) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String key : object.keySet()) {
-			Object val = new Object();
+			Object val = null;
 			JsonValue value = object.get(key);
 			if (value instanceof JsonArray) {
 				val = toList((JsonArray) value);
@@ -208,7 +208,13 @@ public class MorpheusModel {
 				val = object.getString(key);
 			} else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
 				JsonNumber number = object.getJsonNumber(key);
-				val = number.isIntegral() ? number.longValue() : number.doubleValue();
+				//val = number.isIntegral() ? number.longValue() : number.doubleValue();
+				// HACK: Removed the use of the ternary operator because of what appears to be a bug in java/groovy
+				// See Jordon for more explanation
+				if (number.isIntegral())
+					val = number.longValue();
+				else
+					val = number.doubleValue();
 			} else if(value.getValueType() == JsonValue.ValueType.FALSE || value.getValueType() == JsonValue.ValueType.TRUE) {
 				val = object.getBoolean(key);
 			}

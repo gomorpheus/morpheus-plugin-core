@@ -56,17 +56,17 @@ class HealthMonitorSync {
 						enabled:true, monitorDestination:monitor.destination, partition:monitor.partition
 					]
 					def add = new NetworkLoadBalancerMonitor(addConfig)
-					add.setConfigMap(monitor)
 
 					// handle parent monitors
 					if (monitor.defaultsFrom) {
 						def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
 						if (parentMonitor.value.isPresent() ) {
 							def parent = parentMonitor.value.get()
-							add.setConfigProperty('monitor.id', parent.id)
+							monitor['monitor.id'] = parent.id.toLong()
 						}
 					}
 
+					add.setConfigMap(monitor)
 					adds << add
 				}
 				svc.create(adds).blockingGet()
