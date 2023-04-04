@@ -138,6 +138,36 @@ public interface ProvisioningProvider extends PluginProvider {
 	public Boolean hasConfigurableSockets();
 
 	/**
+	 * Custom service plans can be created for this provider
+	 * @return Boolean
+	 */
+	public Boolean supportsCustomServicePlans();
+
+	/**
+	 * Indicates if this provider supports node types
+	 * @return Boolean
+	 */
+	public  Boolean hasNodeTypes();
+
+	/**
+	 * Indicates if this provider supports custom layouts
+	 * @return Boolean
+	 */
+	public Boolean customSupported();
+
+	/**
+	 * Indicates if this provider supports LVM instances
+	 * @return Boolean
+	 */
+	public Boolean lvmSupported();
+
+	/**
+	 * Indicates if this provider creates a {@link ComputeServer} for each instance.
+	 * @return
+	 */
+	public Boolean createServer();
+
+	/**
 	 * Indicates if data volumes may be customized during provisioning. For example, the size changed
 	 * @return Boolean
 	 */

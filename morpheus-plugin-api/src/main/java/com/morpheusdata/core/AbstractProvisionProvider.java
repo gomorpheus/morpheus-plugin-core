@@ -67,6 +67,21 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	public Boolean hasConfigurableSockets() { return false; }
 
 	@Override
+	public Boolean supportsCustomServicePlans() { return true; }
+
+	@Override
+	public  Boolean hasNodeTypes() { return true; }
+
+	@Override
+	public Boolean customSupported() { return true; }
+
+	@Override
+	public Boolean lvmSupported() { return false; }
+
+	@Override
+	public Boolean createServer() { return true; }
+
+	@Override
 	public Collection<StorageVolumeType> getRootVolumeStorageTypes() {
 		return new ArrayList<StorageVolumeType>();
 	}
