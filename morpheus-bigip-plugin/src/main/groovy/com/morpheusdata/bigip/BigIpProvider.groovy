@@ -193,7 +193,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Controls',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginPolicyControls'
+			optionSource:'bigIpPluginPolicyControls',
+			fieldContext:'domain'
 		)
 		policyOptions << new OptionType(
 			name:'Requires',
@@ -203,7 +204,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Requires',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginPolicyRequires'
+			optionSource:'bigIpPluginPolicyRequires',
+			fieldContext:'domain'
 		)
 		policyOptions << new OptionType(
 			name:'Strategy',
@@ -214,7 +216,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			required:true,
 			inputType:OptionType.InputType.SELECT,
 			optionSource:'bigIpPluginPolicyStrategies',
-			defaultValue:'/Common/first-match'
+			defaultValue:'/Common/first-match',
+			fieldContext:'domain'
 		)
 		policyOptions << getPartitionOptionType()
 
