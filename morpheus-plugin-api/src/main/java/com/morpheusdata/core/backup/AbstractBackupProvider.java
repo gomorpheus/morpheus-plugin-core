@@ -15,19 +15,10 @@ import java.util.Map;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public abstract class AbstractBackupProvider implements BackupProvider {
-
-	Plugin plugin;
-	MorpheusContext morpheusContext;
-
-	// Associations between cloud type and backup providers
-	protected Collection<BackupIntegration> scopedProviders = new ArrayList<BackupIntegration>();
-
-	BackupJobProvider backupJobProvider;
+public abstract class AbstractBackupProvider extends BackupProvider {
 
 	public AbstractBackupProvider(Plugin plugin, MorpheusContext context) {
-		this.plugin = plugin;
-		this.morpheusContext = context;
+		super(plugin, context);
 	}
 
 	@Override

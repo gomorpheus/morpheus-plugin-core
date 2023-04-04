@@ -15,7 +15,7 @@ import java.util.*;
  * @since 0.12.2
  * @author Dustin DeYoung
  */
-public interface BackupProvider extends PluginProvider {
+public interface BackupProviderInterface extends PluginProvider {
 
 	/**
 	 * Returns the integration logo for display when a user needs to view or add this integration
