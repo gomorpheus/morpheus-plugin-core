@@ -49,8 +49,6 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 	protected String syncSource;
 
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
-	protected List<InstanceTypeLayout> layouts;
-	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<EnvironmentVariableType> environmentVariables;
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<OptionType> optionTypes;
@@ -383,14 +381,6 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 	public void setSyncSource(String syncSource) {
 		this.syncSource = syncSource;
 		markDirty("code", code);
-	}
-
-	public List<InstanceTypeLayout> getLayouts() {
-		return layouts;
-	}
-
-	public void setLayouts(List<InstanceTypeLayout> layouts) {
-		this.layouts = layouts;
 	}
 
 	public List<EnvironmentVariableType> getEnvironmentVariables() {
