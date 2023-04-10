@@ -50,7 +50,7 @@ class PolicySync {
 				def adds = []
 
 				for (policy in addItems) {
-					def addConfig = [account :loadBalancer.account, internalId:policy.selfLink, externalId:policy.externalId, name:policy.name, category:objCategory,
+					def addConfig = [account :loadBalancer.account, internalId:policy.selfLink, externalId:policy.fullPath, name:policy.name, category:objCategory,
 						enabled :true, loadBalancer:loadBalancer, draft:policy.status == 'draft', controls:BigIpUtility.combineStringLists(policy.controls), policyType:'policy',
 						requires: BigIpUtility.combineStringLists(policy.requires), status:policy.status, strategy:BigIpUtility.parsePathName(policy.strategy), partition:policy.partition
 					]
@@ -78,7 +78,10 @@ class PolicySync {
 						existingPolicy.description = source.description
 						doUpdate = true
 					}
-					doUpdate = doUpdate || syncPolicyRules(existingPolicy.rules, source.rulesReference?.items)
+
+					if (source.rulesReference?.items) {
+						doUpdate = doUpdate || syncPolicyRules(existingPolicy, source.rulesReference.items)
+					}
 
 					if (doUpdate)
 						itemsToUpdate << existingPolicy
@@ -98,7 +101,7 @@ class PolicySync {
 	}
 
 	protected syncPolicyRules(NetworkLoadBalancerPolicy policy, List policyRuleList) {
-		log.info("Syncing pool memebers for pool ${policy.name}: ${policyRuleList}")
+		log.info("Syncing policy rules for policy ${policy.name}: ${policyRuleList}")
 		def changes = false
 		def poolSvc = morpheusContext.loadBalancer.pool
 
@@ -107,6 +110,8 @@ class PolicySync {
 		)
 		syncTask.addMatchFunction { NetworkLoadBalancerRule existingItem, Map syncItem ->
 			existingItem.externalId == syncItem.fullPath
+		}.withLoadObjectDetails { List<SyncTask.UpdateItemDto<NetworkLoadBalancerRule, Map>> updateItems ->
+			return Observable.fromIterable(updateItems.collect { item -> return item.existingItem })
 		}.onAdd { addItems ->
 			List<NetworkLoadBalancerRule> adds = new ArrayList<NetworkLoadBalancerRule>()
 			for (item in addItems) {
@@ -129,6 +134,9 @@ class PolicySync {
 				adds << add
 			}
 			policy.rules = adds
+		}.onUpdate { List<SyncTask.UpdateItem<NetworkLoadBalancerRule, Map>> updateItems ->
+			// NOT IMPLEMENTED
+			log.info("Sync updates not implemented for policy rules sync")
 		}.onDelete { removeItems ->
 			def removeIds = removeItems.collect { return it.externalId }
 	    	policy.rules?.removeAll { rule ->

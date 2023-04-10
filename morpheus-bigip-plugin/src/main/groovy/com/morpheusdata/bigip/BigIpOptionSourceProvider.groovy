@@ -40,7 +40,7 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 	@Override
 	List<String> getMethodNames() {
 		return [
-			'bigIpPluginPolicyControls', 'bigIpPluginPolicyRequires', 'bigIpPluginPolicyStrategies', 'bigIpPluginPolicyRuleField', 'bigIpPolicyRuleOperator',
+			'bigIpPluginPolicyControls', 'bigIpPluginPolicyRequires', 'bigIpPluginPolicyStrategies', 'bigIpPluginPolicyRuleField', 'bigIpPluginPolicyRuleOperator',
 			'bigIpPluginPartitions', 'bigIpPluginVirtualServerPools', 'bigIpPluginVirtualServerProfiles', 'bigIpPluginVirtualServerPolicies',
 			'bigIpPluginVirtualServerScripts', 'bigIpPluginVirtualServerPersistence', 'bigIpPluginBalanceModes', 'bigIpPluginNodes', 'bigIpPluginHealthMonitors',
 			'bigIpPluginPoolPersistenceModes', 'bigIpPluginProfileServiceTypes', 'bigIpPluginHttpProxies', 'bigIpPluginVirtualServerProtocols'

@@ -17,7 +17,6 @@ public class NetworkLoadBalancerRule extends LoadBalancerRuleIdentityProjection 
 	protected String description;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected Boolean enabled = true;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -110,17 +109,6 @@ public class NetworkLoadBalancerRule extends LoadBalancerRuleIdentityProjection 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public Boolean getEnabled() {

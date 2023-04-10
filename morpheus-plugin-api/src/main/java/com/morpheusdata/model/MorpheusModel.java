@@ -183,11 +183,53 @@ public class MorpheusModel {
 				builder.add(key, (Boolean) val);
 			} else if(val instanceof Map) {
 				builder.add(key, mapToJson((Map<String, Object>) val));
+			} else if (val instanceof List) {
+				builder.add(key, listToJson((List<Object>) val));
 			} else {
 				if(val != null) {
 					builder.add(key, val.toString());
 				} else {
 					builder.addNull(key);
+				}
+			}
+		}
+
+		return builder.build();
+	}
+
+	private JsonArray listToJson(List<Object> list) {
+		JsonArrayBuilder builder = Json.createArrayBuilder();
+
+		for (Object val: list) {
+			if (val instanceof String) {
+				builder.add((String) val);
+			} else if (val instanceof Number) {
+				if(val instanceof Integer) {
+					builder.add((Integer) val);
+				} else if(val instanceof Double) {
+					builder.add((Double) val);
+				} else if(val instanceof Long) {
+					builder.add((Long) val);
+				} else if(val instanceof Boolean) {
+					builder.add((Boolean) val);
+				} else if(val instanceof Short) {
+					builder.add((Short) val);
+				} else if(val instanceof Float) {
+					builder.add((Float) val);
+				} else {
+					builder.add((BigDecimal) val);
+				}
+			} else if(val instanceof Boolean) {
+				builder.add((Boolean) val);
+			} else if(val instanceof Map) {
+				builder.add(mapToJson((Map<String, Object>) val));
+			} else if (val instanceof List) {
+				builder.add(listToJson((List<Object>) val));
+			} else {
+				if(val != null) {
+					builder.add(val.toString());
+				} else {
+					builder.addNull();
 				}
 			}
 		}

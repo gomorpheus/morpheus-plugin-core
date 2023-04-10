@@ -237,7 +237,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:20,
 			fieldLabel:'Name',
 			required:true,
-			inputType:OptionType.InputType.TEXT
+			inputType:OptionType.InputType.TEXT,
+			fieldContext:'domain'
 		)
 		ruleOptions << new OptionType(
 			name:'Field',
@@ -247,7 +248,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Field',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginPolicyRuleField'
+			optionSource:'bigIpPluginPolicyRuleField',
+			fieldContext:'domain'
 		)
 		ruleOptions << new OptionType(
 			name:'Operator',
@@ -257,7 +259,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Operator',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginPolicyRuleOperator'
+			optionSource:'bigIpPluginPolicyRuleOperator',
+			fieldContext:'domain'
 		)
 		ruleOptions << new OptionType(
 			name:'Value',
@@ -266,7 +269,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			displayOrder:23,
 			fieldLabel:'Value',
 			required:true,
-			inputType:OptionType.InputType.TEXT
+			inputType:OptionType.InputType.TEXT,
+			fieldContext:'domain'
 		)
 		ruleOptions << new OptionType(
 			name:'Pool',
@@ -276,7 +280,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			fieldLabel:'Pool',
 			required:true,
 			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginVirtualServerPools'
+			optionSource:'bigIpPluginVirtualServerPools',
+			fieldContext:'domain'
 		)
 
 		return ruleOptions
@@ -855,16 +860,16 @@ class BigIpProvider implements LoadBalancerProvider {
 
 			if (hostOnline) {
 				//sync stuff
-				(new PartitionSync(this.plugin, loadBalancer)).execute()
-				(new NodesSync(this.plugin, loadBalancer)).execute()
-				(new HealthMonitorSync(this.plugin, loadBalancer)).execute()
-				(new PoolSync(this.plugin, loadBalancer)).execute()
+				//(new PartitionSync(this.plugin, loadBalancer)).execute()
+				//(new NodesSync(this.plugin, loadBalancer)).execute()
+				//(new HealthMonitorSync(this.plugin, loadBalancer)).execute()
+				//(new PoolSync(this.plugin, loadBalancer)).execute()
 				(new PolicySync(this.plugin, loadBalancer)).execute()
-				(new ProfileSync(this.plugin, loadBalancer)).execute()
-				(new CertificateSync(this.plugin, loadBalancer)).execute()
-				(new PersistenceSync(this.plugin, loadBalancer)).execute()
-				(new IRuleSync(this.plugin, loadBalancer)).execute()
-				(new InstanceSync(this.plugin, loadBalancer)).execute()
+				//(new ProfileSync(this.plugin, loadBalancer)).execute()
+				//(new CertificateSync(this.plugin, loadBalancer)).execute()
+				//(new PersistenceSync(this.plugin, loadBalancer)).execute()
+				//(new IRuleSync(this.plugin, loadBalancer)).execute()
+				//(new InstanceSync(this.plugin, loadBalancer)).execute()
 
 				// update status
 				morpheusContext.loadBalancer.updateLoadBalancerStatus(loadBalancer, 'ok', null)
@@ -1811,11 +1816,12 @@ class BigIpProvider implements LoadBalancerProvider {
 			if (results.success) {
 				rtn.data = [authToken:results.authToken, policy:loadBalancerPolicy]
 				loadBalancerPolicy.externalId = "/${policyConfig.partition}/${policyConfig.policyName}".toString()
-				loadBalancerPolicy.configMap = results.content
+				loadBalancerPolicy.configMap = results.policy
 				loadBalancerPolicy.strategy = policyConfig.strategy.split('/').last()
 
 				// publish the policy
 				def publishResults = publishPolicy(policyConfig)
+				rtn.data = [policy:loadBalancerPolicy]
 				rtn.success = publishResults.success
 			}
 			else {
@@ -1842,7 +1848,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			def results = deleteBigIpPolicy(policyConfig)
 			log.debug("api results: ${results}")
 			rtn.success = results.success
-			rtn.authToken = apiConfig.authToken
+			rtn.data = [authToken:apiConfig.authToken]
 		} catch(e) {
 			log.error("error removing policy: ${e}", e)
 			rtn.msg = 'unknown error removing policy ' + e.message
@@ -1893,7 +1899,6 @@ class BigIpProvider implements LoadBalancerProvider {
 			// get our policy
 			//def policy = NetworkLoadBalancerPolicy.get(opts.policy.id.toLong())
 			def policy = rule.policy
-			def loadBalancer = policy.loadBalancer
 
 			// create the rule and add it to our policy
 			def createRule = addPolicyRule(policy, rule)
@@ -1903,10 +1908,9 @@ class BigIpProvider implements LoadBalancerProvider {
 				def publishPolicy = publishPolicy([policyName:policy.name, partition:policy.partition] + createRule.auth)
 				if (publishPolicy.success) {
 					// build out the domain shit
-					def addRule = buildPolicyRuleFromMap(policy, createRule.content)
-					policy.addToRules(addRule)
-					policy.save(flush:true)
+					def addRule = buildPolicyRuleFromMap(policy, createRule.data)
 					rtn.success = true
+					rtn.data = addRule
 				}
 				else {
 					rtn.errors = createRule.errors
@@ -3660,6 +3664,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		// get policy draft, or create if it doesn't exist
 		def policyNamingMap = [name:policy.name, partition:policy.partition, draft:true]
 		def existingRules = getPolicyRules(auth + policyNamingMap)
+		def config = rule.configMap
 
 		// we have to create a draft of the policy if it doesn't have one yet
 		if (existingRules == null) {
@@ -3673,7 +3678,7 @@ class BigIpProvider implements LoadBalancerProvider {
 		def endpointPath = "${auth.path}/tm/ltm/policy/${BigIpUtility.buildPartitionedName(policyNamingMap)}/rules"
 		def data = [
 			name:rule.name,
-			ordinal:rule.ordinal ?: existingRules.size()
+			ordinal:config.ordinal ?: existingRules.size()
 		]
 		def params = [
 			uri:auth.url,
@@ -3688,7 +3693,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			return out
 		}
 		// add conditions to rule
-		def pool = morpheus.loadBalancer.pool.listById([rule.pool.toLong()]).blockingSingle()
+		def pool = morpheus.loadBalancer.pool.listById([config.pool.toLong()]).blockingSingle()
 		endpointPath = "${auth.path}/tm/ltm/policy/~${policy.partition ?: BigIpUtility.BIGIP_PARTITION}~Drafts~${policy.name}/rules/${rule.name}"
 		// add action section to body
 		data = [
@@ -3697,11 +3702,11 @@ class BigIpProvider implements LoadBalancerProvider {
 			]
 		]
 		// build condition map
-		def condition = [name:'0', caseInsensitive:true, external:true, present:true, remote:true, request:true, values:["${opts.value}".toString()]]
+		def condition = [name:'0', caseInsensitive:true, external:true, present:true, remote:true, request:true, values:["${config.value}".toString()]]
 
 		// add field and operator to condition
-		condition += (BigIpUtility.CONDITION_PARAM.find { it.name == opts.field }).criteria
-		condition += (BigIpUtility.CONDITION_OPERATOR.find { it.name == opts.operator }).criteria
+		condition += (BigIpUtility.CONDITION_PARAM.find { it.name == config.field }).criteria
+		condition += (BigIpUtility.CONDITION_OPERATOR.find { it.name == config.operator }).criteria
 		data.conditions = [condition]
 
 		params = [
