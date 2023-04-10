@@ -860,16 +860,16 @@ class BigIpProvider implements LoadBalancerProvider {
 
 			if (hostOnline) {
 				//sync stuff
-				//(new PartitionSync(this.plugin, loadBalancer)).execute()
-				//(new NodesSync(this.plugin, loadBalancer)).execute()
-				//(new HealthMonitorSync(this.plugin, loadBalancer)).execute()
-				//(new PoolSync(this.plugin, loadBalancer)).execute()
+				(new PartitionSync(this.plugin, loadBalancer)).execute()
+				(new NodesSync(this.plugin, loadBalancer)).execute()
+				(new HealthMonitorSync(this.plugin, loadBalancer)).execute()
+				(new PoolSync(this.plugin, loadBalancer)).execute()
 				(new PolicySync(this.plugin, loadBalancer)).execute()
-				//(new ProfileSync(this.plugin, loadBalancer)).execute()
-				//(new CertificateSync(this.plugin, loadBalancer)).execute()
-				//(new PersistenceSync(this.plugin, loadBalancer)).execute()
-				//(new IRuleSync(this.plugin, loadBalancer)).execute()
-				//(new InstanceSync(this.plugin, loadBalancer)).execute()
+				(new ProfileSync(this.plugin, loadBalancer)).execute()
+				(new CertificateSync(this.plugin, loadBalancer)).execute()
+				(new PersistenceSync(this.plugin, loadBalancer)).execute()
+				(new IRuleSync(this.plugin, loadBalancer)).execute()
+				(new InstanceSync(this.plugin, loadBalancer)).execute()
 
 				// update status
 				morpheusContext.loadBalancer.updateLoadBalancerStatus(loadBalancer, 'ok', null)
