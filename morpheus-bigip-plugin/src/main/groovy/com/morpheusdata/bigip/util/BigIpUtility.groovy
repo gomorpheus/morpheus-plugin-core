@@ -50,6 +50,19 @@ class BigIpUtility {
 		[name:'sctp', value:'sctp']
 	]
 
+	static final VIRTUAL_SERVER_TYPES = [
+		[name:'Standard', value:'standard'],
+		[name:'Forwarding (Layer 2)', value:'forwarding'],
+		[name:'Forwarding (IP)', value:'forwardingIp'],
+		[name:'Performance (HTTP)', value:'performance'],
+		[name:'Performance (Layer 4)', value:'performanceLayer4'],
+		[name:'Stateless', value:'stateless'],
+		[name:'Reject', value:'reject'],
+		[name:'DHCP', value:'dhcp'],
+		[name:'Internal', value:'internal'],
+		[name:'Message Routing', value:'message']
+	]
+
 	static final BALANCE_MODE = [
 		[name:'round robin', value:'roundrobin'],
 		[name:'least connections', value:'leastconnections']

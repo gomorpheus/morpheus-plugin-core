@@ -659,11 +659,46 @@ class BigIpProvider implements LoadBalancerProvider {
 			inputType:OptionType.InputType.TEXT
 		)
 		virtualServerOptions << new OptionType(
+			name:'description',
+			code:'plugin.bigip.virtualService.description',
+			fieldName:'description',
+			fieldContext:'domain',
+			displayOrder:2,
+			fieldLabel:'Description',
+			required:false,
+			editable:true,
+			inputType:OptionType.InputType.TEXT
+		)
+		virtualServerOptions << new OptionType(
+			name:'active',
+			code:'plugin.bigip.virtualService.enabled',
+			fieldName:'active',
+			fieldContext:'domain',
+			displayOrder:3,
+			fieldLabel:'Enabled',
+			required:true,
+			editable:true,
+			defaultValue:'on',
+			inputType:OptionType.InputType.CHECKBOX
+		)
+		virtualServerOptions << new OptionType(
+			name:'vipType',
+			code:'plugin.bigip.virtualService.vipType',
+			fieldName:'vipType',
+			fieldContext:'domain',
+			displayOrder:4,
+			fieldLabel:'VIP Type',
+			required:true,
+			editable:true,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginVirtualServerTypes'
+		)
+		virtualServerOptions << new OptionType(
 			name:'vipAddress',
 			code:'plugin.bigip.virtualService.vipHostname',
 			fieldName:'vipHostname',
 			fieldContext:'domain',
-			displayOrder:2,
+			displayOrder:10,
 			fieldLabel:'VIP Hostname',
 			required:false,
 			inputType:OptionType.InputType.TEXT
@@ -673,7 +708,7 @@ class BigIpProvider implements LoadBalancerProvider {
 			code:'plugin.bigip.virtualService.vipAddress',
 			fieldName:'vipAddress',
 			fieldContext:'domain',
-			displayOrder:3,
+			displayOrder:11,
 			fieldLabel:'VIP Address',
 			required:true,
 			inputType:OptionType.InputType.TEXT
@@ -683,39 +718,87 @@ class BigIpProvider implements LoadBalancerProvider {
 			code:'plugin.bigip.virtualService.vipPort',
 			fieldName:'vipPort',
 			fieldContext:'domain',
-			displayOrder:4,
+			displayOrder:12,
 			fieldLabel:'VIP Port',
 			required:true,
 			inputType:OptionType.InputType.TEXT
+		)
+		virtualServerOptions << new OptionType(
+			name:'sourceAddress',
+			code:'plugin.bigip.virtualService.sourceAddress',
+			fieldName:'sourceAddress',
+			fieldContext:'domain',
+			displayOrder:13,
+			fieldLabel:'Source Address',
+			required:false,
+			inputType:OptionType.InputType.TEXT
+		)
+		virtualServerOptions << new OptionType(
+			name:'vipProtocol',
+			code:'plugin.bigip.virtualService.vipProtocol',
+			fieldName:'vipProtocol',
+			fieldContext:'domain',
+			displayOrder:14,
+			fieldLabel:'Protocol',
+			required:true,
+			editable:true,
+			inputType:OptionType.InputType.SELECT,
+			optionSource:'bigIpPluginVirtualServerProtocols'
+		)
+		virtualServerOptions << new OptionType(
+			name:'profiles',
+			code:'plugin.bigip.virtualService.vipProfiles',
+			fieldName:'profiles.id',
+			fieldContext:'domain',
+			displayOrder:15,
+			fieldLabel:'Profiles',
+			required:false,
+			editable:true,
+			fieldClass:'name-value-type',
+			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
+			optionSource:'bigIpPluginVirtualServerProfiles'
+		)
+		virtualServerOptions << new OptionType(
+			name:'policies',
+			code:'plugin.bigip.virtualService.vipPolicies',
+			fieldName:'policies.id',
+			fieldContext:'domain',
+			displayOrder:16,
+			fieldLabel:'Policies',
+			required:false,
+			editable:true,
+			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
+			optionSource:'bigIpPluginVirtualServerPolicies'
+		)
+		virtualServerOptions << new OptionType(
+			name:'scripts',
+			code:'plugin.bigip.virtualService.vipScripts',
+			fieldName:'scripts.id',
+			fieldContext:'domain',
+			displayOrder:17,
+			fieldLabel:'IRules',
+			required:false,
+			editable:true,
+			inputType:OptionType.InputType.MULTI_TYPEAHEAD,
+			optionSource:'bigIpPluginVirtualServerScripts'
 		)
 		virtualServerOptions << new OptionType(
 			name:'persistence',
 			code:'plugin.bigip.virtualService.persistence',
 			fieldName:'vipSticky',
 			fieldContext:'domain',
-			displayOrder:5,
+			displayOrder:18,
 			fieldLabel:'Persistence',
 			required:false,
 			inputType:OptionType.InputType.SELECT,
 			optionSource:'bigIpPluginVirtualServerPersistence'
 		)
 		virtualServerOptions << new OptionType(
-			name:'balanceMode',
-			code:'plugin.bigip.virtualService.balanceMode',
-			fieldName:'vipBalance',
-			fieldContext:'domain',
-			displayOrder:6,
-			fieldLabel:'Balance Mode',
-			required:true,
-			inputType:OptionType.InputType.SELECT,
-			optionSource:'bigIpPluginBalanceModes'
-		)
-		virtualServerOptions << new OptionType(
 			name:'defaultPool',
 			code:'plugin.bigip.virtualService.defaultPool',
 			fieldName:'defaultPool',
 			fieldContext:'config',
-			displayOrder:11,
+			displayOrder:19,
 			fieldLabel:'Default Pool',
 			required:false,
 			inputType:OptionType.InputType.SELECT,

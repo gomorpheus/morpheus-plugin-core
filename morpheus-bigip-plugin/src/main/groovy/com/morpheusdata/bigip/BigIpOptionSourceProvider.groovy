@@ -43,7 +43,8 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 			'bigIpPluginPolicyControls', 'bigIpPluginPolicyRequires', 'bigIpPluginPolicyStrategies', 'bigIpPluginPolicyRuleField', 'bigIpPluginPolicyRuleOperator',
 			'bigIpPluginPartitions', 'bigIpPluginVirtualServerPools', 'bigIpPluginVirtualServerProfiles', 'bigIpPluginVirtualServerPolicies',
 			'bigIpPluginVirtualServerScripts', 'bigIpPluginVirtualServerPersistence', 'bigIpPluginBalanceModes', 'bigIpPluginNodes', 'bigIpPluginHealthMonitors',
-			'bigIpPluginPoolPersistenceModes', 'bigIpPluginProfileServiceTypes', 'bigIpPluginHttpProxies', 'bigIpPluginVirtualServerProtocols'
+			'bigIpPluginPoolPersistenceModes', 'bigIpPluginProfileServiceTypes', 'bigIpPluginHttpProxies', 'bigIpPluginVirtualServerProtocols',
+			'bigIpPluginVirtualServerTypes'
 		]
 	}
 
@@ -63,6 +64,10 @@ class BigIpOptionSourceProvider implements OptionSourceProvider {
 		return BigIpUtility.CONDITION_PARAM.collect {
 			return [name:it.name, value:it.name]
 		}
+	}
+
+	def bigIpPluginVirtualServerTypes(params) {
+		return BigIpUtility.VIRTUAL_SERVER_TYPES
 	}
 
 	def bigIpPluginPolicyRuleOperator(params) {

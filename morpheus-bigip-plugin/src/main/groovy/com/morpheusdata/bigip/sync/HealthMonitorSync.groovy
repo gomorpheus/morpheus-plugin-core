@@ -6,9 +6,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.NetworkLoadBalancer
 import com.morpheusdata.model.NetworkLoadBalancerMonitor
-import com.morpheusdata.model.NetworkLoadBalancerNode
 import com.morpheusdata.model.projection.LoadBalancerMonitorIdentityProjection
-import com.morpheusdata.model.projection.LoadBalancerNodeIdentityProjection
 import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
