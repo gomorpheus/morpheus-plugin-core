@@ -14,6 +14,7 @@ import java.util.Map;
  * @author David Estes, Mike Truso, Eric Helgeson
  */
 public class Account extends MorpheusModel {
+	
 	protected String name;
 	protected String description;
 	protected String conf;
