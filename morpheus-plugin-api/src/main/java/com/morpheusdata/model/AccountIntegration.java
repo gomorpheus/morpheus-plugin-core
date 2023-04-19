@@ -3,10 +3,14 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
+import java.util.List;
 import java.util.Map;
 
 public class AccountIntegration extends MorpheusModel {
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
+	protected AccountIntegrationType integrationType;
 	protected String uuid;
 	protected String name;
 	protected String type;
@@ -33,15 +37,12 @@ public class AccountIntegration extends MorpheusModel {
 	protected String servicePublicKey;
 	protected String authPrivateKey;
 	protected String authPublicKey;
-
 	protected Map credentialData;
 	protected Boolean credentialLoaded = false;
 
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected Account account;
-
-	protected AccountIntegrationType integrationType;
-
+	//options
+	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
+	protected List<OptionType> optionTypes;
 
 	public String getUuid() {
 		return uuid;
@@ -309,6 +310,13 @@ public class AccountIntegration extends MorpheusModel {
 		this.integrationType = integrationType;
 	}
 
+	public List<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(List<OptionType> optionTypes) {
+		this.optionTypes = optionTypes;
+	}
 
 	public enum Status {
 		ok,
@@ -316,4 +324,5 @@ public class AccountIntegration extends MorpheusModel {
 		syncing,
 		error
 	}
+	
 }

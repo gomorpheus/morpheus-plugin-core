@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusOperationNotificationService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.OperationNotification} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusOperationNotificationService
  * @author Bob Whiton
  */
-public class OperationNotificationIdentityProjection extends MorpheusModel {
+public class OperationNotificationIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 

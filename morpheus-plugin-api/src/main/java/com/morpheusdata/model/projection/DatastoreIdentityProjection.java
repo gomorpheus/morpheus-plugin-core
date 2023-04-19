@@ -2,7 +2,7 @@ package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.cloud.MorpheusDatastoreService;
 import com.morpheusdata.core.cloud.MorpheusComputeZoneFolderService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.Datastore} object for doing a sync match
@@ -10,7 +10,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusDatastoreService
  * @author Bob Whiton
  */
-public class DatastoreIdentityProjection extends MorpheusModel {
+public class DatastoreIdentityProjection extends MorpheusIdentityModel {
 	protected String type = "default";
 	protected String internalId;
 	protected String name;

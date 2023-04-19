@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusWikiPageService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.WikiPage} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @see MorpheusWikiPageService
  * @author Alex Clement
  */
-public class WikiPageIdentityProjection extends MorpheusModel {
+public class WikiPageIdentityProjection extends MorpheusIdentityModel {
 
 	protected String refType;
 	protected Long refId;

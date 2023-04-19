@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.ReferenceData} object for doing a sync match
@@ -8,7 +8,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Eric Helgeson
  * @since 0.8.0
  */
-public class ReferenceDataSyncProjection extends MorpheusModel {
+public class ReferenceDataSyncProjection extends MorpheusIdentityModel {
 	protected String internalId;
 	protected String externalId;
 	protected String name;

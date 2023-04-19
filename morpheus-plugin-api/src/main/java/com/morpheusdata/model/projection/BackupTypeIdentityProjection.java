@@ -1,9 +1,9 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 import com.morpheusdata.model.BackupType;
 
-public class BackupTypeIdentityProjection extends MorpheusModel {
+public class BackupTypeIdentityProjection extends MorpheusIdentityModel {
 	protected String name;
 	protected String code;
 

@@ -11,6 +11,7 @@ import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
  * Provides a means to set predefined tiers on memory, storage, cores, and cpu.
  */
 public class ServicePlan extends ServicePlanIdentityProjection {
+
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Account account;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
@@ -60,4 +61,5 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public Boolean noDisks = false;
 	public BigDecimal price_monthly;
 	public BigDecimal price_hourly;
+	
 }

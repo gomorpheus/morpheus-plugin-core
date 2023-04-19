@@ -17,7 +17,6 @@ public class ComputeTypeLayout extends MorpheusModel {
 	protected ProvisionType provisionType;
 	protected ComputeServerGroupType groupType;
 
-
 	public String getCode() {
 		return code;
 	}

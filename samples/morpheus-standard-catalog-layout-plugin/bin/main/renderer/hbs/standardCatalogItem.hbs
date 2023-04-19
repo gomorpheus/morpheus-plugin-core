@@ -1,0 +1,30 @@
+<script src="{{asset "/form_manager.js"}}" ></script>
+<link rel="stylesheet" type="text/css" href="{{asset "/styles.css"}}">
+<script src="{{asset "/templates/plugin-configurable-option.js"}}" ></script>
+<div class="page-content">
+	<div class="catalog-item-details">
+		<div class="item-type-header">
+			<div class="item-type-image">
+				<img class="item-header-img" src="{{iconPath}}" title="{{name}}" onError="loadImage(this);"/>
+			</div>
+			<h1 class="ellipsize" title="{{name}}">{{name}}</h1>
+			<div class="desc">{{description}}</div>
+		</div>
+		<div class="catalog-item-body break-container-sm">
+			{{#hasWiki}}
+				<div class="catalog-item-content wiki-content">
+					{{wiki}}
+				</div>
+			{{/hasWiki}}
+			<div class="catalog-item-configuration {{#hasWiki}}with-item-content{{/hasWiki}}">
+				{{#orderForm}}
+					<div class="actions text-right">
+							<button class="button" type="submit">Add to Order</button>
+							<input type="hidden" class="order-now" name="orderNow" value="false">
+							<button class="button order-now" type="submit">Order Now</button>
+					</div>
+				{{/orderForm}}
+			</div>
+		</div>
+	</div>
+</div>

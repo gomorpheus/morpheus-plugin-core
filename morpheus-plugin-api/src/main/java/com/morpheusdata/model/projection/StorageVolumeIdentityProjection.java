@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusComputeServerService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.StorageVolume} object for doing a sync match
@@ -9,7 +9,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Bob Whiton
  * @since 0.9.0
  */
-public class StorageVolumeIdentityProjection extends MorpheusModel {
+public class StorageVolumeIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 

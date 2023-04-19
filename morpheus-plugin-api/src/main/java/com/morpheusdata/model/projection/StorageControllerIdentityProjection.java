@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.StorageController} object for doing a sync match
@@ -8,7 +8,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Alex Clement
  * @since 0.13.0
  */
-public class StorageControllerIdentityProjection extends MorpheusModel {
+public class StorageControllerIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String controllerKey;

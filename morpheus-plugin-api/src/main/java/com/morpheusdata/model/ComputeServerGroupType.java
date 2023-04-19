@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 public class ComputeServerGroupType extends MorpheusModel {
+	
 	protected String name;
 	protected String code;
 	protected String shortName;

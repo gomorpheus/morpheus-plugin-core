@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusServicePlanService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.ServicePlan} object for doing a sync match
@@ -10,7 +10,8 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Mike Truso
  * @since 0.8.0
  */
-public class ServicePlanIdentityProjection extends MorpheusModel {
+public class ServicePlanIdentityProjection extends MorpheusIdentityModel {
+	
 	protected String code;
 	protected String name;
 	protected String externalId;
@@ -61,4 +62,5 @@ public class ServicePlanIdentityProjection extends MorpheusModel {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
 	}
+
 }

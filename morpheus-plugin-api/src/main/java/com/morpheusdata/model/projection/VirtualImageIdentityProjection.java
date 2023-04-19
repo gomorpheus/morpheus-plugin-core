@@ -2,7 +2,6 @@ package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusVirtualImageService;
 import com.morpheusdata.model.ImageType;
-import com.morpheusdata.model.MorpheusModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.VirtualImage} object for doing a sync match
@@ -11,7 +10,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Mike Truso
  * @since 0.8.0
  */
-public class VirtualImageIdentityProjection extends MorpheusModel {
+public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected ImageType imageType;

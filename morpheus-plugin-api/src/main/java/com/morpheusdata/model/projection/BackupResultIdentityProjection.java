@@ -1,8 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
-
-public class BackupResultIdentityProjection extends MorpheusModel {
+public class BackupResultIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String backupName;
 

@@ -1,6 +1,6 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Represents ansible inventory files. This is the identity projection class that is used for syncing inventory.
@@ -9,7 +9,8 @@ import com.morpheusdata.model.MorpheusModel;
  * @author David Estes
  * @since 0.8.0
  */
-public class AccountInventoryIdentityProjection extends MorpheusModel {
+public class AccountInventoryIdentityProjection extends MorpheusIdentityModel {
+
 	protected String externalId;
 
 	/**
@@ -27,4 +28,5 @@ public class AccountInventoryIdentityProjection extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
+	
 }

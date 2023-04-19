@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Instance extends InstanceIdentityProjection {
+
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	private String uuid;
@@ -27,8 +28,8 @@ public class Instance extends InstanceIdentityProjection {
 	public String displayName;
 	public String environmentPrefix;
 	public String hostName;
-	//	public String domainName;
-//	public String assignedDomainName;
+	//public String domainName;
+	//public String assignedDomainName;
 	public Boolean firewallEnabled;
 	public String status;
 	public String userStatus;

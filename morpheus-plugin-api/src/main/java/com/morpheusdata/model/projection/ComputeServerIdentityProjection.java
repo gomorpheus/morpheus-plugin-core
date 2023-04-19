@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusComputeServerService;
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.ComputeServer} object for doing a sync match
@@ -10,7 +10,7 @@ import com.morpheusdata.model.MorpheusModel;
  * @author Mike Truso
  * @since 0.8.0
  */
-public class ComputeServerIdentityProjection extends MorpheusModel {
+public class ComputeServerIdentityProjection extends MorpheusIdentityModel {
 	protected String status;
 	protected String category;
 	protected String computeServerTypeCode;

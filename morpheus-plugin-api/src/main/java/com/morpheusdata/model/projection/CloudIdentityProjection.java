@@ -1,9 +1,9 @@
 package com.morpheusdata.model.projection;
 
-import com.morpheusdata.model.MorpheusModel;
+import com.morpheusdata.model.projection.MorpheusIdentityModel;
 
 
-public class CloudIdentityProjection extends MorpheusModel {
+public class CloudIdentityProjection extends MorpheusIdentityModel {
 
 	public CloudIdentityProjection(){}
 
