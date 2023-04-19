@@ -2,6 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
 
 import java.util.List;
 import java.util.Map;
