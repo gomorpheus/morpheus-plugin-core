@@ -11,6 +11,7 @@ import com.morpheusdata.model.projection.DatastoreIdentityProjection
 import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection
 import com.morpheusdata.model.provisioning.HostRequest
+import com.morpheusdata.model.provisioning.NetworkConfiguration
 import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.request.UpdateModel
