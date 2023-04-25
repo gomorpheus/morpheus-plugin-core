@@ -307,7 +307,7 @@ public class PluginManager {
 
 	/**
 	 * Returns a list of all scribe resource files to be dynamically loaded in Morpheus
-	 * @param plugin the plugin we are loading from
+	 * @param plugin the plugin we are loading fromwe
 	 * @return a collection of strings of paths to scribe resources in the plugin
 	 */
 	public Collection<String> getScribeResources(Plugin plugin) throws IOException {
@@ -353,7 +353,7 @@ public class PluginManager {
 		//returning a collection of string paths
 		Collection<String> rtn = null;
 		//load the manifest if it exists
-		URL seedManifest = plugin.getClassLoader().getResource("seed/seeds.list");
+		URL seedManifest = plugin.getClassLoader().getResource("seed/seeds.manifest");
 		if(seedManifest != null) {
 			//load the conetents
 			String[] fileList = null;
