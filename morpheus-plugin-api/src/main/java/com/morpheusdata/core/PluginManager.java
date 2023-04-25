@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
  * @author David Estes
  */
 public class PluginManager {
+
 	static Logger log = LoggerFactory.getLogger(PluginManager.class);
+
 	private ArrayList<Plugin> plugins = new ArrayList<>();
 	private MorpheusContext morpheus;
 	private Dispatcher dispatcher;
@@ -43,9 +45,9 @@ public class PluginManager {
 		if(this.morpheus == null) {
 			throw new IllegalArgumentException("Context must not be null when passed to the constructor of the Morpheus Plugin Manager");
 		}
-//		for(Class<Plugin> plugin : plugins) {
-//			registerPlugin(plugin);
-//		}
+		//for(Class<Plugin> plugin : plugins) {
+		//	registerPlugin(plugin);
+		//}
 	}
 
 	public PluginManager(MorpheusContext context) {
@@ -262,6 +264,123 @@ public class PluginManager {
 			}
 		}
 		return properties;
+	}
+
+	/**
+	 * Returns a list of all morpheus packages for the plugin to be dynamically loaded in Morpheus
+	 * @param plugin the plugin we are loading from
+	 * @return a collection of strings of paths to package files in the plugin
+	 */
+	public Collection<String> getPackages(Plugin plugin) throws IOException {
+		//returning a collection of string paths
+		Collection<String> rtn = null;
+		//load the manifest if it exists
+		URL packageManifest = plugin.getClassLoader().getResource("packages/packages.manifest");
+		if(packageManifest != null) {
+			//load the conetents
+			String[] fileList = null;
+			InputStream is = null;
+			try {
+				is = packageManifest.openStream();
+				String manifestConents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+				fileList = manifestConents.split("\n");
+			} catch(IOException ignore) {
+				//ignore
+			} finally {
+				if(is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						//ignore
+					}
+				}
+			}	
+			//now put the file list into the results
+			if(fileList != null && fileList.length > 0) {
+				rtn = new ArrayList<String>();
+				Collections.addAll(rtn, fileList); 	
+				//done
+			}
+		}
+		return rtn;
+	}
+
+	/**
+	 * Returns a list of all scribe resource files to be dynamically loaded in Morpheus
+	 * @param plugin the plugin we are loading from
+	 * @return a collection of strings of paths to scribe resources in the plugin
+	 */
+	public Collection<String> getScribeResources(Plugin plugin) throws IOException {
+		//returning a collection of string paths
+		Collection<String> rtn = null;
+		//load the manifest if it exists
+		URL scribeManifest = plugin.getClassLoader().getResource("scribe/scribe.manifest");
+		if(scribeManifest != null) {
+			//load the conetents
+			String[] fileList = null;
+			InputStream is = null;
+			try {
+				is = scribeManifest.openStream();
+				String manifestConents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+				fileList = manifestConents.split("\n");
+			} catch(IOException ignore) {
+				//ignore
+			} finally {
+				if(is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						//ignore
+					}
+				}
+			}	
+			//now put the file list into the results
+			if(fileList != null && fileList.length > 0) {
+				rtn = new ArrayList<String>();
+				Collections.addAll(rtn, fileList); 	
+				//done
+			}
+		}
+		return rtn;
+	}
+
+	/**
+	 * Returns a list of all seed resource files to be dynamically loaded in Morpheus
+	 * @param plugin the plugin we are loading from
+	 * @return a collection of strings of paths to seed resources in the plugin
+	 */
+	public Collection<String> getSeedResources(Plugin plugin) throws IOException {
+		//returning a collection of string paths
+		Collection<String> rtn = null;
+		//load the manifest if it exists
+		URL seedManifest = plugin.getClassLoader().getResource("seed/seeds.list");
+		if(seedManifest != null) {
+			//load the conetents
+			String[] fileList = null;
+			InputStream is = null;
+			try {
+				is = seedManifest.openStream();
+				String manifestConents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+				fileList = manifestConents.split("\n");
+			} catch(IOException ignore) {
+				//ignore
+			} finally {
+				if(is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						//ignore
+					}
+				}
+			}	
+			//now put the file list into the results
+			if(fileList != null && fileList.length > 0) {
+				rtn = new ArrayList<String>();
+				Collections.addAll(rtn, fileList); 	
+				//done
+			}
+		}
+		return rtn;
 	}
 
 	private void loadI18nFromResources(Plugin plugin, Properties properties, ArrayList<String> fileList) throws IOException {
