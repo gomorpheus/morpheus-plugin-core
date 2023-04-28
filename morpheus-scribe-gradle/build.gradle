@@ -1,0 +1,90 @@
+buildscript {
+
+	repositories {
+		mavenLocal()
+		maven { url "https://repo.grails.org/grails/core" }
+	}
+
+	dependencies {
+	}
+
+}
+
+group "com.morpheusdata"
+
+apply plugin:"eclipse"
+apply plugin:"groovy"
+apply plugin:"idea"
+apply plugin:"maven-publish"
+apply plugin:"java-library"
+
+ext {
+  isBuildSnapshot = version.endsWith('-SNAPSHOT')
+  isReleaseVersion = !isBuildSnapshot
+}
+
+repositories {
+	mavenLocal()
+	maven { url "https://repo.grails.org/grails/core" }
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+dependencies {
+	implementation gradleApi()	
+}
+
+publishing {
+	
+	publications {
+		maven(MavenPublication) {
+			artifactId 'morpheus-scribe-gradle'
+			pom.withXml {
+				asNode().children().last() + {
+					resolveStrategy = Closure.DELEGATE_FIRST
+					name 'Morpheus Scribe Gradle Plugin'
+					description 'Implements a standard convention for adding scribe resource files or packages to your Grails application.'
+					url 'https://github.com/morpheusdata/morpheus-plugin-core'
+					scm {
+						url 'https://github.com/morpheusdata/morpheus-plugin-core'
+						connection 'scm:https://bertramdev@github.com/morpheusdata/morpheus-plugin-core.git'
+						developerConnection 'scm:git://github.com/morpheusdata/morpheus-plugin-core.git'
+					}
+					licenses {
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/license/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
+					}
+					developers {
+						developer {
+							id 'bdwheeler'
+							name 'bdwheeler'
+							email 'bdwheeler@gmail.com'
+						}
+					}
+				}
+			}
+			from components.java
+		}
+	}
+	
+	repositories {
+		maven {
+			if( !isReleaseVersion ) {
+				url = "http://nexus.bertramlabs.com/content/repositories/snapshots"
+				if(project.hasProperty('labsNexusUser')) {
+					credentials {
+						username = labsNexusUser
+						password = labsNexusPassword
+					}
+				}
+			}
+		}
+	}
+
+}
