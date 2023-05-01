@@ -12,11 +12,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class PolicySync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class PolicySync extends BigIPEntitySync {
 	public PolicySync(){}
 	public PolicySync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer
@@ -26,6 +22,10 @@ class PolicySync {
 
 	def execute() {
 		log.info("Syncing bigip policies")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip policy sync')
+			return
+		}
 
 		try {
 			// get the load balancer pool service to interact with database

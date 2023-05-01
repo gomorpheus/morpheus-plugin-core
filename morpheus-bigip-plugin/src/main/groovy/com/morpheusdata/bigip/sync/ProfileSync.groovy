@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class ProfileSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class ProfileSync extends BigIPEntitySync {
 	public ProfileSync(){}
 	public ProfileSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer
@@ -24,6 +20,10 @@ class ProfileSync {
 	}
 	def execute() {
 		log.info("Syncing bigip profiles")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip profile sync')
+			return
+		}
 
 		try {
 			// get the load balancer profile service to interact with database

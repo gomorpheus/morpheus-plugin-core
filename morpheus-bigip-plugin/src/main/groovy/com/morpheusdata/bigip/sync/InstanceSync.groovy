@@ -14,11 +14,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class InstanceSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class InstanceSync extends BigIPEntitySync {
 	public InstanceSync() {
 	}
 	public InstanceSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
@@ -29,6 +25,11 @@ class InstanceSync {
 
 	def execute() {
 		log.info("Syncing bigip virtual servers")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip virtual server sync')
+			return
+		}
+
 		try {
 			// get the load balancer instance service to interact with database
 			def svc = morpheusContext.loadBalancer.instance

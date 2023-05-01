@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class IRuleSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class IRuleSync extends BigIPEntitySync {
 	public IRuleSync() {}
 	public IRuleSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.plugin = plugin
@@ -25,6 +21,11 @@ class IRuleSync {
 
 	def execute() {
 		log.info("Syncing bigip iRules")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip iRule sync')
+			return
+		}
+
 		try {
 			// get the load balancer script service to interact with database
 			def svc = morpheusContext.loadBalancer.script

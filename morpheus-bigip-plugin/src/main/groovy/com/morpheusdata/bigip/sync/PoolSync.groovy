@@ -12,11 +12,8 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class PoolSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class PoolSync extends BigIPEntitySync {
+	public PoolSync(){}
 	public PoolSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.plugin = plugin
 		this.loadBalancer = loadBalancer
@@ -25,6 +22,11 @@ class PoolSync {
 
 	def execute() {
 		log.info("Syncing bigip pools")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip pool sync')
+			return
+		}
+
 		try {
 			// get the load balancer pool service to interact with database
 			def svc = morpheusContext.loadBalancer.pool

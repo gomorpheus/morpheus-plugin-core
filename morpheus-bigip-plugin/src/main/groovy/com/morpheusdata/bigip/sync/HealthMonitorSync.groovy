@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class HealthMonitorSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class HealthMonitorSync extends BigIPEntitySync {
 	public HealthMonitorSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer
 		this.plugin = plugin
@@ -24,6 +20,10 @@ class HealthMonitorSync {
 
 	def execute() {
 		log.info("Syncing bigip health monitors")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip health monitor sync')
+			return
+		}
 
 		try {
 			// get the load balancer health monitor service to interact with database

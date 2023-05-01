@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class PersistenceSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class PersistenceSync extends BigIPEntitySync {
 	public PersistenceSync() {}
 	public PersistenceSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.plugin = plugin
@@ -25,6 +21,11 @@ class PersistenceSync {
 
 	def execute() {
 		log.info("Syncing bigip persistence policies")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip persistence policy sync')
+			return
+		}
+
 		try {
 			// grab our service that interacts with the database
 			def objCategory = BigIpUtility.getObjCategory('persistence', loadBalancer.id)

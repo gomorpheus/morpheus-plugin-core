@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class NodesSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class NodesSync extends BigIPEntitySync {
 	public NodesSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer
 		this.plugin = plugin
@@ -24,6 +20,11 @@ class NodesSync {
 
 	def execute() {
 		log.info("Starting bigip node sync")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip node sync')
+			return
+		}
+
 		try {
 			// get the load balancer node service to interact with database
 			def svc = morpheusContext.loadBalancer.node

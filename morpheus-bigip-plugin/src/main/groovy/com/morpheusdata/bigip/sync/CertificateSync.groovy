@@ -11,11 +11,7 @@ import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 
 @Slf4j
-class CertificateSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class CertificateSync extends BigIPEntitySync {
 	public CertificateSync(){}
 	public CertificateSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer
@@ -25,6 +21,10 @@ class CertificateSync {
 
 	def execute() {
 		log.info("Syncing bigip ssl certs")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip certificate sync')
+			return
+		}
 
 		try {
 			// get the load balancer profile service to interact with database

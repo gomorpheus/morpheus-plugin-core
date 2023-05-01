@@ -13,11 +13,8 @@ import groovy.util.logging.Slf4j
 import io.reactivex.*
 
 @Slf4j
-class PartitionSync {
-	private NetworkLoadBalancer loadBalancer
-	private MorpheusContext morpheusContext
-	private BigIpPlugin plugin
-
+class PartitionSync extends BigIPEntitySync {
+	public PartitionSync(){}
 	public PartitionSync(BigIpPlugin plugin, NetworkLoadBalancer loadBalancer) {
 		this.plugin = plugin
 		this.loadBalancer = loadBalancer
@@ -26,6 +23,10 @@ class PartitionSync {
 
 	def execute() {
 		log.info("Syncing bigip partitions")
+		if (!shouldExecute()) {
+			log.info('Skipping bigip partition sync')
+			return
+		}
 
 		try {
 			// get the partition service from the plugin provider
