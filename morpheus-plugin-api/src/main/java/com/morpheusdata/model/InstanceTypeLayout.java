@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
@@ -13,6 +14,13 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 	//ownership
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
+	//related models
+	@JsonSerialize(using=ModelIdCodeNameSerializer.class)
+	protected InstanceType instanceType;
+	@JsonSerialize(using=ModelIdCodeNameSerializer.class)
+	protected ProvisionType provisionType;
+
+	//fields
 	protected String code;
 	protected String name;
 	protected String description;
@@ -23,7 +31,6 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 	protected String serverType;
 	protected String osType;
 	protected String osCategory;
-	protected ProvisionType provisionType;
 	protected Integer serverCount;
 	protected Integer portCount;
 	protected String layoutStyle;
@@ -48,6 +55,7 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 	protected String uuid;
 	protected String syncSource;
 
+	//collections
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<EnvironmentVariableType> environmentVariables;
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
