@@ -125,8 +125,8 @@ class PolicySync extends BigIPEntitySync {
 				for (action in item.actionsReference?.items) {
 					if(action.pool) {
 						def poolMatch = poolSvc.findByLoadBalancerAndExternalId(loadBalancer, action.pool).blockingGet()
-						if(poolMatch.value.isPresent()) {
-							add.pools << poolMatch.value.get()
+						if(poolMatch.isPresent()) {
+							add.pools << poolMatch.get()
 						}
 					}
 				}

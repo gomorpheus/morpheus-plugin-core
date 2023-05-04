@@ -58,8 +58,8 @@ class HealthMonitorSync extends BigIPEntitySync {
 					// handle parent monitors
 					if (monitor.defaultsFrom) {
 						def parentMonitor = svc.findByExternalId(monitor.defaultsFrom).blockingGet()
-						if (parentMonitor.value.isPresent() ) {
-							def parent = parentMonitor.value.get()
+						if (parentMonitor.isPresent() ) {
+							def parent = parentMonitor.get()
 							monitor['monitor.id'] = parent.id.toLong()
 						}
 					}

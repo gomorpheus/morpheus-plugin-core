@@ -954,6 +954,8 @@ class BigIpProvider implements LoadBalancerProvider {
 				(new IRuleSync(this.plugin, loadBalancer)).execute()
 				(new InstanceSync(this.plugin, loadBalancer)).execute()
 
+				log.info("BigIP sync (${loadBalancer.name}) complete.")
+
 				// update status
 				morpheusContext.loadBalancer.updateLoadBalancerStatus(loadBalancer, 'ok', null)
 				morpheusContext.loadBalancer.clearLoadBalancerAlarm(loadBalancer)
@@ -1494,8 +1496,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			monitorConfig.partition = monitor.partition
 			if(itemConfig['monitor.id']) {
 				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong()).blockingGet()
-				if(parentMonitor.value.isPresent())
-					monitorConfig.defaultsFrom = parentMonitor.value.get().name
+				if(parentMonitor.isPresent())
+					monitorConfig.defaultsFrom = parentMonitor.get().name
 			}
 			if(itemConfig.monitorConfig) {
 				//additional json config
@@ -1569,8 +1571,8 @@ class BigIpProvider implements LoadBalancerProvider {
 			monitorConfig.authToken = apiConfig.authToken
 			if(itemConfig['monitor.id']) {
 				def parentMonitor = monitorSvc.findById(itemConfig['monitor.id'].toLong()).blockingGet()
-				if(parentMonitor.value.isPresent())
-					monitorConfig.defaultsFrom = parentMonitor.value.get().name
+				if(parentMonitor.isPresent())
+					monitorConfig.defaultsFrom = parentMonitor.get().name
 			}
 			if(itemConfig.monitorConfig) {
 				//additional json config
@@ -3874,9 +3876,9 @@ class BigIpProvider implements LoadBalancerProvider {
 		//add pools
 		for (action in item.actionsReference?.items) {
 			if(action.pool) {
-				def poolMatch = morpheus.loadBalancer.pool.findByLoadBalancerAndExternalId(loadBalancer, action.pool)
-				if(poolMatch) {
-					add.pools.add(poolMatch)
+				def poolMatch = morpheus.loadBalancer.pool.findByLoadBalancerAndExternalId(loadBalancer, action.pool).blockingGet()
+				if(poolMatch.isPresent()) {
+					add.pools.add(poolMatch.get())
 				}
 			}
 		}

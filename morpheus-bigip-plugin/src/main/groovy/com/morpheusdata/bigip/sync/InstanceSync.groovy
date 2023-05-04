@@ -70,7 +70,7 @@ class InstanceSync extends BigIPEntitySync {
 				morpheusContext.loadBalancer.restartLoadBalancerUsage(loadBalancer.id, true)
 
 			}.onUpdate { List<SyncTask.UpdateItem<NetworkLoadBalancerInstance, Map>> updateItems ->
-				List<NetworkLoadBalancerInstance> itemsToUpdate = new ArrayList<NetworkLoadBalancerInstance>()
+ 				List<NetworkLoadBalancerInstance> itemsToUpdate = new ArrayList<NetworkLoadBalancerInstance>()
 				for (update in updateItems) {
 					def source = update.masterItem
 					NetworkLoadBalancerInstance existingInstance = update.existingItem
@@ -121,12 +121,14 @@ class InstanceSync extends BigIPEntitySync {
 			Observable.fromIterable(existingVip.profiles), sourceProfiles
 		)
 		syncTask.addMatchFunction { NetworkLoadBalancerProfile existingItem, Map syncItem ->
-			existingItem.externalId == syncItem.fullPath
+			return existingItem.externalId == syncItem.fullPath
+		}.onError { exception ->
+			log.error("Failed to syn virtual server profiles for ${existingVip.vipName}: ${exception.message}", exception)
 		}.onAdd { addItems ->
 			for (item in addItems) {
 				def profile = profileSvc.findByExternalIdAndLoadBalancer(item.fullPath, loadBalancer).blockingGet()
-				if (profile.value.isPresent()) {
-					existingVip.addToProfiles(profile.value.get())
+				if (profile.isPresent()) {
+					existingVip.addToProfiles(profile.get())
 					doUpdate = true
 				}
 			}
@@ -136,7 +138,7 @@ class InstanceSync extends BigIPEntitySync {
 				return removeIds.contains(profile.externalId)
 			}
 			doUpdate = true
-		}
+		}.start()
 
 		return doUpdate
 	}
@@ -159,8 +161,8 @@ class InstanceSync extends BigIPEntitySync {
 		}.onAdd { addItems ->
 			for (item in addItems) {
 				def policy = policySvc.findByExternalIdAndLoadBalancer(item.fullPath, loadBalancer).blockingGet()
-				if (policy.value.isPresent()) {
-					existingVip.addToPolicies(policy.value.get())
+				if (policy.isPresent()) {
+					existingVip.addToPolicies(policy.get())
 					doUpdate = true
 				}
 			}
@@ -170,7 +172,7 @@ class InstanceSync extends BigIPEntitySync {
 				return removeIds.contains(policy.externalId)
 			}
 			doUpdate = true
-		}
+		}.start()
 
 		return doUpdate
 	}
