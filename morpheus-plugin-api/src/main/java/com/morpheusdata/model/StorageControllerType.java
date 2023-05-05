@@ -7,8 +7,10 @@ package com.morpheusdata.model;
  * @since 0.13.0
  */
 public class StorageControllerType extends MorpheusModel {
+
 	private String name;
 	private String code;
+	private String internalId;
 	private String externalId;
 	private Integer reservedUnitNumber;
 	protected String category;
@@ -36,6 +38,15 @@ public class StorageControllerType extends MorpheusModel {
 		markDirty("code", code);
 	}
 
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+		markDirty("internalId", internalId)
+	}
+	
 	public String getExternalId() {
 		return externalId;
 	}

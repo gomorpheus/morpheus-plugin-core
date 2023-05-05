@@ -175,6 +175,15 @@ public class InstanceTypeLayout extends MorpheusModel implements IModelUuidCodeN
 		markDirty("osCategory", osCategory);
 	}
 
+	public InstanceType getInstanceType() {
+		return instanceType;
+	}
+
+	public void setInstanceType(InstanceType instanceType) {
+		this.instanceType = instanceType;
+		markDirty("instanceType", instanceType);
+	}
+
 	public ProvisionType getProvisionType() {
 		return provisionType;
 	}
