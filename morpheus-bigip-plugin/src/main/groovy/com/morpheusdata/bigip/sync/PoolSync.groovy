@@ -104,8 +104,8 @@ class PoolSync extends BigIPEntitySync {
 				def nodeId = item.fullPath.substring(0, portIndex)
 				def portNumber = item.fullPath.substring(portIndex + 1).toInteger()
 				def node = nodeSvc.findByLoadBalancerAndExternalId(pool.loadBalancer, item.fullPath).blockingGet()
-				if (node.value.isPresent()) {
-					def nodeModel = node.value.get()
+				if (node.isPresent()) {
+					def nodeModel = node.get()
 					def addConfig = [externalId: item.fullPath, node:nodeModel, pool:pool, port:portNumber]
 					adds << new NetworkLoadBalancerMember(addConfig)
 				}
