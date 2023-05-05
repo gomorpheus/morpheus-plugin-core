@@ -44,7 +44,7 @@ public class StorageControllerType extends MorpheusModel {
 
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
-		markDirty("internalId", internalId)
+		markDirty("internalId", internalId);
 	}
 	
 	public String getExternalId() {
