@@ -59,7 +59,7 @@ public class WorkloadType extends MorpheusModel {
 	protected String uuid;
 	protected String syncSource;
 	//associations
-	@JsonSerialize(using = ModelIdCodeNameSerializer.class)
+	@JsonSerialize(using = ModelAsIdOnlySerializer.class)
 	protected VirtualImage virtualImage;
 	@JsonSerialize(using = ModelIdCodeNameSerializer.class)
 	protected ProvisionType provisionType;

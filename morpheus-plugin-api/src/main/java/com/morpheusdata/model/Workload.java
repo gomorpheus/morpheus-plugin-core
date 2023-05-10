@@ -15,20 +15,14 @@ import java.util.Date;
  * @author David Estes
  */
 public class Workload extends WorkloadIdentityProjection {
-	protected String uuid;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeServer server;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ServicePlan plan;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool computeZonePool;
-	protected Boolean privateNetworking;
-	protected String userData;
 
+	//ownership
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected Instance instance;
+	//fields
+	protected String uuid;
+	protected Boolean privateNetworking;
+	protected String userData;
 	protected String internalName;
 	protected String displayName;
 	protected String category;
@@ -60,8 +54,6 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Long usedMemory;
 	protected Float usedCpu;
 	protected Long provisionTime = 0L;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected Network network;
 	protected String configGroup;
 	protected String configId;
 	protected String configRole;
@@ -95,6 +87,19 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Boolean inService = true;
 	protected String itemSource = "user";
 	protected Boolean managed = true;
+	//associations
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeServer server;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ServicePlan plan;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeZonePool computeZonePool;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Instance instance;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Network network;
+	@JsonSerialize(using= ModelCollectionIdUuidCodeNameSerializer.class)
+	protected Network workloadType;
 
 	public String getUuid() {
 		return uuid;
@@ -451,6 +456,15 @@ public class Workload extends WorkloadIdentityProjection {
 	public void setNetwork(Network network) {
 		this.network = network;
 		markDirty("network", network);
+	}
+
+	public WorkloadType getWorkloadType() {
+		return workloadType;
+	}
+
+	public void setWorkloadType(WorkloadType workloadType) {
+		this.workloadType = workloadType;
+		markDirty("workloadType", workloadType);
 	}
 
 	public String getConfigGroup() {
