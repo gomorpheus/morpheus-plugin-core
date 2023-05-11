@@ -11,6 +11,7 @@ Incoming requests come with a `ViewModel` object populated with the http request
 [source,groovy]
 ----
 class MyPluginController implements PluginController {
+
 	List<Route> getRoutes() {
 		[
 			Route.build("/myPrefix/example", "html", Permission.build("admin", "full")),
@@ -31,6 +32,8 @@ class MyPluginController implements PluginController {
 
 Route provides a builder to allow your plugin to easily build a route with permissions. It takes the `url`, the `method` in this class to call, and a list of `permissions` which can be built with the `Permission` builder.
 
+Note that a route registered with a url of `/reverseTask/json` will be accessible at `https://<yourappliance>/plugin/reverseTask/json` on your appliance (note the `plugin` prefix).
+
 The route can either return:
 
 * `HTMLResponse` - simple text, or a full rendered view.
@@ -43,10 +46,14 @@ After creating a `PluginController`, register it in your plugin like so:
 ----
 	@Override
 	void initialize() {
-		this.setName("My Custom Task Plugin");
-		CustomTaskProvider taskProvider = new CustomTaskProvider(this, morpheusContext);
-		this.pluginProviders.put(taskProvider.providerCode, taskProvider);
+		this.setName("My Custom Task Plugin")
+		CustomTaskProvider taskProvider = new CustomTaskProvider(this, morpheusContext)
+		this.pluginProviders.put(taskProvider.providerCode, taskProvider)
 
-		this.controllers.add(new MyPluginController());
+		// set a renderer
+		this.setRenderer(new HandlebarsRenderer(this.classLoader))
+
+		// register the controller
+		this.controllers.add(new MyPluginController())
 	}
 ----
