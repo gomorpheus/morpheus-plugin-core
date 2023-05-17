@@ -115,7 +115,6 @@ class ClusterCapacityWidget extends React.Component {
           memoryChartColor = 'yellow';
       }
 
-      window.items = this.state.data.items;
       //cpu
       cpuPercentUsed = this.findDataItem('usedCpu');
       if(cpuPercentUsed)
