@@ -55,7 +55,6 @@ class ClusterCapacityWidget extends React.Component {
 
   setData(results) {
     //set it
-    console.log('the results be ', results);
     var newState = {};
     newState.data = {};
     newState.data.config = results.config;
