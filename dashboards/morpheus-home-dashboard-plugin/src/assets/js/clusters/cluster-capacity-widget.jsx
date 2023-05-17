@@ -18,6 +18,7 @@ class ClusterCapacityWidget extends React.Component {
     //bind methods
     this.setData = this.setData.bind(this);
     this.refreshData = this.refreshData.bind(this);
+    this.findDataItem = this.findDataItem.bind(this);
   }
 
   componentDidMount() {
@@ -48,8 +49,13 @@ class ClusterCapacityWidget extends React.Component {
     Morpheus.api.servers.count(apiQuery, apiOptions).then(this.setData);
   }
 
+  findDataItem(itemName) {
+    return this.state.data.items.find(el => el[0] == itemName);
+  }
+
   setData(results) {
     //set it
+    console.log('the results be ', results);
     var newState = {};
     newState.data = {};
     newState.data.config = results.config;
@@ -88,14 +94,17 @@ class ClusterCapacityWidget extends React.Component {
     var storagePercentUsed = 0;
     var storageChartColor = 'green';
     //if loaded
-    if(this.state.data && this.state.data.loaded == true) {
+    if(this.state.data && this.state.data.loaded == true && this.state.data.items.length > 0) {
       //memory
       var usedMemory = 0;
       var maxMemory = 0;
-      if(this.state.data.items.length > 0)
-        usedMemory = this.state.data.items[0].value;
-      if(this.state.data.items.length > 1)
-        maxMemory = this.state.data.items[1].value;
+      usedMemory = this.findDataItem('usedMemory');
+      if(usedMemory)
+        usedMemory = usedMemory[1];
+      
+      maxMemory = this.findDataItem('maxMemory');
+      if(maxMemory)
+        maxMemory = maxMemory[1];
       if(maxMemory > 0) {
         memoryPercentUsed = (usedMemory / maxMemory * 100);
         memoryChartTitle = Morpheus.utils.formatBytes(usedMemory, 0) + ' of ' + Morpheus.utils.formatBytes(maxMemory);
@@ -105,9 +114,12 @@ class ClusterCapacityWidget extends React.Component {
         else if(memoryPercentUsed > 75)
           memoryChartColor = 'yellow';
       }
+
+      window.items = this.state.data.items;
       //cpu
-      if(this.state.data.items.length > 2)
-        cpuPercentUsed = this.state.data.items[2].value;
+      cpuPercentUsed = this.findDataItem('usedCpu');
+      if(cpuPercentUsed)
+        cpuPercentUsed = cpuPercentUsed[1]
       if(cpuPercentUsed > 0) {
         cpuChartTitle = Math.round(cpuPercentUsed) + '%';
         //set threshold
@@ -116,13 +128,16 @@ class ClusterCapacityWidget extends React.Component {
         else if(cpuPercentUsed > 75)
           cpuChartColor = 'yellow';
       }
+
       //storage
       var usedStorage = 0;
       var maxStorage = 0;
-      if(this.state.data.items.length > 3)
-        usedStorage = this.state.data.items[3].value;
-      if(this.state.data.items.length > 4)
-        maxStorage = this.state.data.items[4].value;
+      var fetchedUsed = this.findDataItem('usedStorage');
+      var fetchedMax = this.findDataItem('maxStorage');
+      if(fetchedUsed)
+        usedStorage = fetchedUsed[1]
+      if(fetchedMax)
+        maxStorage = fetchedMax[1]
       if(maxStorage > 0) {
         storagePercentUsed = (usedStorage / maxStorage * 100);
         storageChartTitle = Morpheus.utils.formatBytes(usedStorage, 0) + ' of ' + Morpheus.utils.formatBytes(maxStorage);
