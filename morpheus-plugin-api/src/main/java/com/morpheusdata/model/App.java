@@ -1,5 +1,9 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
+import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
+
 public class App extends MorpheusModel {
 
 	protected String name;
@@ -8,6 +12,11 @@ public class App extends MorpheusModel {
 	protected String externalId;
 	protected String status;
 	protected String uuid;
+	//associations
+	@JsonSerialize(using=ModelIdUuidCodeNameSerializer.class)
+	protected AppTemplate template;
+	@JsonSerialize(using=ModelIdCodeNameSerializer.class)
+	protected AppTemplate templateType;
 
 	public String getName() {
 		return name;
@@ -62,4 +71,5 @@ public class App extends MorpheusModel {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
 	}
+
 }
