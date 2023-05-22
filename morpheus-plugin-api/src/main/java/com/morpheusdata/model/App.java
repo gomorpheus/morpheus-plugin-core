@@ -72,4 +72,21 @@ public class App extends MorpheusModel {
 		markDirty("uuid", uuid);
 	}
 
+	public AppTemplate getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(AppTemplate template) {
+		this.template = template;
+		markDirty("template", template);
+	}
+
+	public AppTemplate getTemplateType() {
+		return templateType;
+	}
+
+	public void setTemplateType(AppTemplate templateType) {
+		this.templateType = templateType;
+		markDirty("templateType", templateType);
+	}
 }
