@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
 
 import java.util.Date;
 
@@ -99,7 +100,7 @@ public class Workload extends WorkloadIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Network network;
 	@JsonSerialize(using= ModelCollectionIdUuidCodeNameSerializer.class)
-	protected Network workloadType;
+	protected WorkloadType workloadType;
 
 	public String getUuid() {
 		return uuid;
