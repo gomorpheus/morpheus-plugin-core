@@ -147,7 +147,14 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * Indicates if this provider supports node types
 	 * @return Boolean
 	 */
-	public  Boolean hasNodeTypes();
+	public Boolean hasNodeTypes();
+
+	/**
+	 * The node format for this provider
+	 * valid options are: vm, server, container
+	 * @return String
+	 */
+	public String getNodeFormat();
 
 	/**
 	 * Indicates if this provider supports custom layouts

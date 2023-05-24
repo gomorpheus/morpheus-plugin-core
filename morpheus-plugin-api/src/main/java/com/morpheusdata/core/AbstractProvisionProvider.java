@@ -73,6 +73,9 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	public  Boolean hasNodeTypes() { return true; }
 
 	@Override
+	public String getNodeFormat() { return null; }
+
+	@Override
 	public Boolean customSupported() { return true; }
 
 	@Override
