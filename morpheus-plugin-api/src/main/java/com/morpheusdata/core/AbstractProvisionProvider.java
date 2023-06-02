@@ -76,6 +76,9 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	public String getNodeFormat() { return null; }
 
 	@Override
+	public Boolean hasCloneTemplate() { return false; }
+
+	@Override
 	public Boolean customSupported() { return true; }
 
 	@Override

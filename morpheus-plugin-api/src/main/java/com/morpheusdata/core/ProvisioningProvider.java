@@ -157,6 +157,12 @@ public interface ProvisioningProvider extends PluginProvider {
 	public String getNodeFormat();
 
 	/**
+	 * Indicates if this provider supports cloning a vm to a template
+	 * @return Boolean
+	 */
+	public Boolean hasCloneTemplate();
+
+	/**
 	 * Indicates if this provider supports custom layouts
 	 * @return Boolean
 	 */
