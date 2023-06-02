@@ -18,6 +18,7 @@ public class ComputeZonePoolIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String category;
 	protected Long ownerId;
+	protected Boolean inventory;
 
 	public String getType() {
 		return type;
@@ -82,5 +83,12 @@ public class ComputeZonePoolIdentityProjection extends MorpheusIdentityModel {
 		markDirty("ownerId", ownerId);
 	}
 
+	public Boolean getInventory() {
+		return inventory;
+	}
 
+	public void setInventory(Boolean inventory) {
+		this.inventory = inventory;
+		markDirty("inventory", inventory);
+	}
 }

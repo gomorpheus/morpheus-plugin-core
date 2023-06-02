@@ -19,7 +19,7 @@ import java.util.*;
  * };
  *
  * SyncList<VirtualImage,Map> syncList = new SyncList(matchFunction1);
- * SyncListResult syncResult = syncList.buildSyncLists(existingItems, masterItems);
+ * SyncResult syncResult = syncList.buildSyncLists(existingItems, masterItems);
  * System.out.println("Items to add: " + syncResult.addList.size());
  * System.out.println("Items to update: " + syncResult.updateList.size());
  * System.out.println("Items to remove: " + syncResult.removeList.size());

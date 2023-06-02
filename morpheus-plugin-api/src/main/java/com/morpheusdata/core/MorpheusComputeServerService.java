@@ -3,7 +3,6 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
 import com.morpheusdata.model.ComputePort;
-import com.morpheusdata.model.Network;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
 import io.reactivex.Observable;
@@ -29,15 +28,16 @@ public interface MorpheusComputeServerService {
 	/**
 	 * Get a list of {@link ComputeServer} projections based on Cloud id
 	 * @param cloudId Cloud id
+	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ComputeServerIdentityProjection> listIdentityProjections(Long cloudId);
+	Observable<ComputeServerIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
 
 	/**
 	 * Get a list of {@link ComputeServer} projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
-	 * @deprecated replaced by {{@link #listIdentityProjections(Long)}}
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long, String)}}
 	 */
 	@Deprecated
 	Observable<ComputeServerIdentityProjection> listSyncProjections(Long cloudId);

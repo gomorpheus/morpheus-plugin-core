@@ -23,6 +23,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected String location;
 	protected String timezone;
 	//	public ComputeZoneType zoneType;
+	protected Boolean hasNativeSecurityGroups;
 	protected Date dateCreated;
 	protected Date lastUpdated;
 	//	public ComputeAclChain chain;
@@ -128,6 +129,10 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getTimezone() {
 		return timezone;
+	}
+
+	public Boolean getHasNativeSecurityGroups() {
+		return hasNativeSecurityGroups;
 	}
 
 	public Date getDateCreated() {
@@ -436,6 +441,11 @@ public class Cloud extends CloudIdentityProjection {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 		markDirty("timezone", timezone);
+	}
+
+	public void setHasNativeSecurityGroups(Boolean hasNativeSecurityGroups) {
+		this.hasNativeSecurityGroups = hasNativeSecurityGroups;
+		markDirty("hasNativeSecurityGroups", hasNativeSecurityGroups);
 	}
 
 	public void setDateCreated(Date dateCreated) {
