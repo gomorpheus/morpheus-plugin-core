@@ -109,7 +109,9 @@ public class SyncTask<Projection, ApiItem, Model> {
 			for (int x = 0; x < updateItems.size(); x++) {
 				Projection updateDtoItem = updateItems.get(x).existingItem;
 				if (updateDtoItem instanceof MorpheusModel && modelData instanceof MorpheusModel) {
-					if (((MorpheusModel) updateDtoItem).getId() == ((MorpheusModel) modelData).getId()) {
+					Long updateItemId = ((MorpheusModel) updateDtoItem).getId();
+					Long modelId = ((MorpheusModel) modelData).getId();
+					if (updateItemId != null && modelId != null && updateItemId.longValue() == modelId.longValue()) {
 						updateItem.masterItem = updateItems.get(x).masterItem;
 						break;
 					}
