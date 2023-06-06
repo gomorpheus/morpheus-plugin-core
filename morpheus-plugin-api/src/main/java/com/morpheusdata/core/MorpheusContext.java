@@ -309,6 +309,24 @@ public interface MorpheusContext {
 	 */
 	MorpheusBackupProviderService getBackupProvider();
 
+	/**
+	 * Returns the MorpheusAccountPriceSetService
+	 * @return an instance of the MorpheusAccountPriceSetService
+	 */
+	MorpheusAccountPriceSetService getAccountPriceSet();
+
+	/**
+	 * Returns the MorpheusAccountPriceService
+	 * @return an instance of the MorpheusAccountPriceService
+	 */
+	MorpheusAccountPriceService getAccountPrice();
+
+	/**
+	 * Returns the MorpheusServicePlanPriceSetService
+	 * @return an instance of the MorpheusServicePlanPriceSetService
+	 */
+	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
+
 	//Common methods used across various contexts
 
 	/**

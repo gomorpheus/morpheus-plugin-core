@@ -11,6 +11,7 @@ import com.morpheusdata.model.ImageType;
  * @since 0.8.0
  */
 public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
+	
 	protected String externalId;
 	protected String name;
 	protected ImageType imageType;

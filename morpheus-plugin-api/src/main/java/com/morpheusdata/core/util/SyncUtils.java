@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class SyncUtils {
 
@@ -33,18 +34,18 @@ public class SyncUtils {
 		if(account != null) {
 			availablePlans = new ArrayList<ServicePlan>();
 			for(ServicePlan pl : allPlans) {
-				if(pl.visibility == "public" ||
-						(pl.account != null && pl.account.getId() == account.getId()) ||
-						(pl.owner != null && pl.owner.getId() == account.getId()) ||
-						(pl.account == null && pl.visibility == "public")) {
+				if(pl.visibility.equals("public") ||
+						(pl.account != null && Objects.equals(pl.account.getId(), account.getId())) ||
+						(pl.owner != null && Objects.equals(pl.owner.getId(), account.getId())) ||
+						(pl.account == null && pl.visibility.equals("public"))) {
 					availablePlans.add(pl);
 				}
 			}
 			if(existingPlan != null) {
-				if(existingPlan.visibility == "public" ||
-						(existingPlan.account != null && existingPlan.account.getId() == account.getId()) ||
-						(existingPlan.owner != null && existingPlan.owner.getId() == account.getId()) ||
-						(existingPlan.account == null && existingPlan.visibility == "public") ) {
+				if(existingPlan.visibility.equals("public") ||
+						(existingPlan.account != null && Objects.equals(existingPlan.account.getId(), account.getId())) ||
+						(existingPlan.owner != null && Objects.equals(existingPlan.owner.getId(), account.getId())) ||
+						(existingPlan.account == null && existingPlan.visibility.equals("public")) ) {
 					existingPlan = existingPlan;
 				} else {
 					existingPlan = null; //we have to correct a plan discrepency due to permissions on the vm
@@ -53,30 +54,30 @@ public class SyncUtils {
 		}
 
 		//first lets try to find a match by zone and an exact match at that
-		if(existingPlan != null && existingPlan.getId() != fallbackPlan.getId()) {
-			if((existingPlan.maxMemory == maxMemory || existingPlan.customMaxMemory) &&
-					((existingPlan.maxCores == 0 && maxCores == 1) || existingPlan.maxCores == maxCores || existingPlan.customCores) &&
-					((coresPerSocket == null || coresPerSocket == 0) || (existingPlan.coresPerSocket == coresPerSocket || existingPlan.customCores))) {
+		if(existingPlan != null && !existingPlan.getId().equals(fallbackPlan.getId())) {
+			if((Objects.equals(existingPlan.maxMemory, maxMemory) || existingPlan.customMaxMemory) &&
+					((Objects.equals(existingPlan.maxCores, 0L) && maxCores == 1) || Objects.equals(existingPlan.maxCores, maxCores) || existingPlan.customCores) &&
+					((coresPerSocket == null || coresPerSocket == 0) || (Objects.equals(existingPlan.coresPerSocket, coresPerSocket) || existingPlan.customCores))) {
 				return existingPlan; //existingPlan is still sufficient
 			}
 		}
 		Collection<ServicePlan> matchedPlans = new ArrayList<ServicePlan>();
 		if((coresPerSocket == null || coresPerSocket == 0) || coresPerSocket == 1) {
 			for(ServicePlan it : availablePlans) {
-				if(it.maxMemory == maxMemory &&
-						it.customMaxMemory != true &&
-						it.customCores != true &&
-						((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && (it.coresPerSocket == null || it.coresPerSocket == 1)){
+				if(Objects.equals(it.maxMemory, maxMemory) &&
+					!it.customMaxMemory &&
+					!it.customCores &&
+						((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || Objects.equals(it.maxCores, maxCores)) && (it.coresPerSocket == null || it.coresPerSocket == 1)){
 					matchedPlans.add(it);
 				}
 			}
 		} else {
 			for(ServicePlan it : availablePlans) {
-				if(it.maxMemory == maxMemory &&
-						((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) &&
-						it.customMaxMemory != true &&
-						it.customCores != true &&
-						it.coresPerSocket == coresPerSocket){
+				if(Objects.equals(it.maxMemory, maxMemory) &&
+						((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || Objects.equals(it.maxCores, maxCores)) &&
+						!it.customMaxMemory &&
+						!it.customCores &&
+					Objects.equals(it.coresPerSocket, coresPerSocket)){
 					matchedPlans.add(it);
 				}
 			}
@@ -84,7 +85,7 @@ public class SyncUtils {
 
 		if(matchedPlans.size() == 0) {
 			for(ServicePlan it : availablePlans) {
-				if(it.maxMemory == maxMemory && it.customCores) {
+				if(Objects.equals(it.maxMemory, maxMemory) && it.customCores) {
 					matchedPlans.add(it);
 				}
 			}
@@ -95,13 +96,13 @@ public class SyncUtils {
 			//we need to look by custom
 			if((coresPerSocket == null || coresPerSocket == 0) || coresPerSocket == 1) {
 				for(ServicePlan it : availablePlans) {
-					if(((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && (it.coresPerSocket == null || it.coresPerSocket == 1) && it.customMaxMemory) {
+					if(((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || Objects.equals(it.maxCores, maxCores)) && (it.coresPerSocket == null || it.coresPerSocket == 1) && it.customMaxMemory) {
 						matchedPlans.add(it);
 					}
 				}
 			} else {
 				for(ServicePlan it : availablePlans) {
-					if(((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || it.maxCores == maxCores) && it.coresPerSocket == coresPerSocket && it.customMaxMemory){
+					if(((maxCores == 1 && (it.maxCores == null || it.maxCores == 0)) || Objects.equals(it.maxCores, maxCores)) && Objects.equals(it.coresPerSocket, coresPerSocket) && it.customMaxMemory){
 						matchedPlans.add(it);
 					}
 				}

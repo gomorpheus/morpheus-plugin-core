@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-public class NetworkRouterType {
+public class NetworkRouterType extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String description;

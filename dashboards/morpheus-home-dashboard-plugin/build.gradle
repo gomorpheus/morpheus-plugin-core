@@ -17,7 +17,7 @@ apply plugin:'maven-publish'
 apply plugin:'asset-pipeline'
 
 group = 'com.morpheusdata'
-version '1.0.0'
+version '1.0.3'
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'

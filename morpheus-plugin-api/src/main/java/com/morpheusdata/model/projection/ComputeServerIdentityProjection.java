@@ -18,6 +18,8 @@ public class ComputeServerIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected String hostname;
+	protected String externalIp;
+	protected String internalIp;
 
 	public String getStatus() {
 		return status;
@@ -80,5 +82,23 @@ public class ComputeServerIdentityProjection extends MorpheusIdentityModel {
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
 		markDirty("hostname", hostname);
+	}
+
+	public String getExternalIp() {
+		return externalIp;
+	}
+
+	public void setExternalIp(String externalIp) {
+		this.externalIp = externalIp;
+		markDirty("externalIp", externalIp);
+	}
+
+	public String getInternalIp() {
+		return internalIp;
+	}
+
+	public void setInternalIp(String internalIp) {
+		this.internalIp = internalIp;
+		markDirty("internalIp", internalIp);
 	}
 }

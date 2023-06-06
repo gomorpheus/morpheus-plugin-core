@@ -91,7 +91,7 @@ class UserFavoritesWidget extends React.Component {
               { itemList.map(row => (
                 <tr key={row.id}>
                   <td className="nowrap">
-                    <ResourceLink type="instance" value={row.id} content={Morpheus.utils.clipLongText(row.name, 32)}/>
+                    <ResourceLink type="instance" value={row.id} content={Morpheus.utils.clipLongText(row.displayName != null ? row.displayName : row.name, 32)}/>
                   </td>
                   <td className="nowrap">{row.instanceType ? row.instanceType.name : ''}</td>
                   <td className="nowrap"><TableCellInstanceIpAddress data={row} showName={false} max={1}/></td>

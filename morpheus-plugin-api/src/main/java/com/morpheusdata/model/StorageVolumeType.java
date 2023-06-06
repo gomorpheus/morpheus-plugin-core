@@ -24,6 +24,10 @@ public class StorageVolumeType extends MorpheusModel {
 	protected Boolean resizable = false;
 	protected Boolean planResizable = false; // used to override resizable if the user can't resize the volume but plan changes will resize the volume;
 	protected Long minStorage = null;
+	protected Boolean configurableIOPS = false;
+	protected Long minIOPS = null;
+	protected Long maxIOPS = null;
+
 	public String getName() {
 		return name;
 	}
@@ -161,5 +165,29 @@ public class StorageVolumeType extends MorpheusModel {
 
 	public void setMinStorage(Long minStorage) {
 		this.minStorage = minStorage;
+	}
+
+	public Boolean getConfigurableIOPS() {
+		return configurableIOPS;
+	}
+
+	public void setConfigurableIOPS(Boolean configurableIOPS) {
+		this.configurableIOPS = configurableIOPS;
+	}
+
+	public Long getMinIOPS() {
+		return minIOPS;
+	}
+
+	public void setMinIOPS(Long minIOPS) {
+		this.minIOPS = minIOPS;
+	}
+
+	public Long getMaxIOPS() {
+		return maxIOPS;
+	}
+
+	public void setMaxIOPS(Long minIOPS) {
+		this.maxIOPS = maxIOPS;
 	}
 }

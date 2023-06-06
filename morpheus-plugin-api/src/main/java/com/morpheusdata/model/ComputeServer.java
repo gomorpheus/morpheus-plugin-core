@@ -112,6 +112,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String cloudConfigMeta;
 	protected String cloudConfigNetwork;
 	protected ComputeZoneRegion region;
+	protected Boolean discovered;
 
 	public String getUuid() {
 		return uuid;
@@ -834,6 +835,13 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setConsolePort(Integer consolePort) {
 		this.consolePort = consolePort;
 		markDirty("consolePort",consolePort);
+	}
+
+	public Boolean getDiscovered() { return discovered; }
+
+	public void setDiscovered(Boolean discovered) {
+		this.discovered = discovered;
+		markDirty("discovered", discovered);
 	}
 
 	public void setMetadata(List<MetadataTag> metadata) {

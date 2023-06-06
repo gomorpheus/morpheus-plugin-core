@@ -17,19 +17,24 @@ public class KeyUtility {
 	static String passwordCharSet = UPPER_ALPHA+LOWER_ALPHA+NUMERIC+PASSWORD_CHARS;
 	static Random random = new Random();
 
-
 	public static String generateKey(int length) {
+		return _generateKey(length, charSet);
+	}
+
+	public static String generateSimpleKey(int length) {
+		return _generateKey(length, simpleCharSet);
+	}
+
+	public static String generateDateKey(int keyLength) {
+		return String.valueOf(new Date().getTime()) + generateKey(keyLength);
+	}
+
+	private static String _generateKey(int length, String charSet) {
 		String rtn = "";
 		for(int i=0; i<length; i++) {
 			rtn += charSet.charAt(random.nextInt(charSet.length()));
 		}
-
 		return rtn;
-	}
-
-
-	public static String generateDateKey(int keyLength) {
-		return String.valueOf(new Date().getTime()) + generateKey(keyLength);
 	}
 
 }

@@ -33,10 +33,17 @@ public interface MorpheusServicePlanService {
 
 	/**
 	 * Get a list of ServicePlan objects from a list of projection ids
-	 * @param ids VirtualImage ids
+	 * @param ids ServicePlan ids
 	 * @return Observable stream of servicePlans
 	 */
 	Observable<ServicePlan> listById(Collection<Long> ids);
+
+	/**
+	 * Get a list of ServicePlan objects from a list of projection codes
+	 * @param codes ServicePlan codes
+	 * @return Observable stream of servicePlans
+	 */
+	Observable<ServicePlan> listByCode(Collection<String> codes);
 
 	/**
 	 * Save updates to existing ServicePlans
