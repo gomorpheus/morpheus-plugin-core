@@ -21,7 +21,7 @@ class MorpheusI18nPackage extends DefaultTask {
 	}
 
 	void setI18nDir(File i18nDir) {
-		pluginExtension.i18nDir = i18nDir.absolutePath
+		pluginExtension.i18nSource = i18nDir.absolutePath
 	}
 
 	@OutputDirectory

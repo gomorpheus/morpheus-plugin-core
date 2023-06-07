@@ -41,12 +41,12 @@ publishing {
 	
 	publications {
 		maven(MavenPublication) {
-			artifactId 'morpheus-scribe-gradle'
+			artifactId 'morpheus-plugin-gradle'
 			pom.withXml {
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
-					name 'Morpheus Scribe Gradle Plugin'
-					description 'Implements a standard convention for adding scribe resource files or packages to your Grails application.'
+					name 'Morpheus Gradle Plugin'
+					description 'A gradle plugin for packaging resources into a morpheus plugin such as scribe resources, packages, as well as i18n message definitions.'
 					url 'https://github.com/morpheusdata/morpheus-plugin-core'
 					scm {
 						url 'https://github.com/morpheusdata/morpheus-plugin-core'

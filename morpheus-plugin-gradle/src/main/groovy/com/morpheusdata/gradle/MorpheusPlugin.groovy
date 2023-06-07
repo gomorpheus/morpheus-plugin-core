@@ -62,6 +62,12 @@ class MorpheusPlugin implements Plugin<Project> {
 				scribeDir = project.file(morpheusPluginConfig.scribeSource)
 				destinationDir = project.file("${processResources?.destinationDir}/${morpheusPluginConfig.scribeTarget}")
 			}
+
+			//configure the resource tasks
+			morpheusI18nPackageTask.configure {
+				i18nDir = project.file(morpheusPluginConfig.i18nSource)
+				destinationDir = project.file("${processResources?.destinationDir}/${morpheusPluginConfig.i18nTarget}")
+			}
 			//add task dependencies
 			processResources.dependsOn(morpheusI18nPackageTask)
 			processResources.dependsOn(scribePackageTask)
