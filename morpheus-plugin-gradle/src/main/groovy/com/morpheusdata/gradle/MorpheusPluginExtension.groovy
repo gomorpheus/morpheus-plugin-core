@@ -14,13 +14,13 @@
 * limitations under the License.
 */
 
-package com.morpheus.scribe.gradle
+package com.morpheusdata.gradle
 
 /**
  * Allows configuration of the Gradle plugin
  * @author bdwheeler
  */
-class MorpheusScribeExtension {
+class MorpheusPluginExtension {
 	
 	String scribeSource = 'src/main/resources/scribe'
 	String scribeTarget = 'scribe'
@@ -30,14 +30,22 @@ class MorpheusScribeExtension {
 	String packageTarget = 'packages'
 	String packageManifest = 'packages.manifest'
 
+	String i18nSource = 'src/main/resources/i18n'
+	String i18nTarget = 'i18n'
+	String i18nManifest = 'i18n.manifest'
+
+
 	Map toMap() {
 		return [
-			scribeSource:scribeSource,
-			scribeTarget:scribeTarget,
-			scribeManifest:scribeManifest,
-			packageSource:packageSource,
-			packageTarget:packageTarget,
-			packageManifest:packageManifest
+			scribeSource: scribeSource,
+			scribeTarget: scribeTarget,
+			scribeManifest: scribeManifest,
+			packageSource: packageSource,
+			packageTarget: packageTarget,
+			packageManifest: packageManifest,
+			i18nSource: i18nSource,
+			i18nTarget: i18nTarget,
+			i18nManifest: i18nManifest
 		]
 	}
 

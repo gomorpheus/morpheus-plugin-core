@@ -14,42 +14,38 @@
 * limitations under the License.
 */
 
-package com.morpheus.scribe.gradle
+package com.morpheusdata.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
-import org.gradle.api.UnknownDomainObjectException
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.distribution.DistributionContainer
-import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.Exec
-import org.gradle.api.tasks.bundling.Jar
-import groovy.io.FileType
 import org.gradle.language.jvm.tasks.ProcessResources
 
 /**
  * task: sribePackage - builds a manifest of your scribe packages
  * task: sribeResources - builds a manifest of your scribe resources
+ * task: morpheusI18n - packages i18n properties files for localization efforts
  * @author bdwheeler
  */
-class MorpheusScribePlugin implements Plugin<Project> {
+class MorpheusPlugin implements Plugin<Project> {
 
 	void apply(Project project) {
 		//default config
-		def defaultConfiguration = project.extensions.create('scribe', MorpheusScribeExtension)
+		def defaultConfiguration = project.extensions.create('morpheusPlugin', MorpheusPluginExtension)
 		//setup package task
 		project.tasks.create('scribePackage', MorpheusScribePackage)
 		//setup scribe task
 		project.tasks.create('scribeResources', MorpheusScribeResources)
+		//setup i18n task
+		project.tasks.create('i18nPackage',MorpheusI18nPackage)
 		//get the package task
 		def scribePackageTask = project.tasks.getByName('scribePackage')
 		def scribeResourcesTask = project.tasks.getByName('scribeResources')
+		def morpheusI18nPackageTask = project.tasks.getByName('i18nPackage')
 		//needed?
 		project.afterEvaluate {
 			//get loaded config
-			def scribeConfig = project.extensions.getByType(MorpheusScribeExtension)
+			def morpheusPluginConfig = project.extensions.getByType(MorpheusPluginExtension)
 			ProcessResources processResources
 			try {
 				processResources = (ProcessResources)project.tasks.processResources
@@ -58,15 +54,16 @@ class MorpheusScribePlugin implements Plugin<Project> {
 			}
 			//configure the package tasks
 			scribePackageTask.configure {
-				packageDir = project.file(scribeConfig.packageSource)
-				destinationDir = project.file("${processResources?.destinationDir}/${scribeConfig.packageTarget}")
+				packageDir = project.file(morpheusPluginConfig.packageSource)
+				destinationDir = project.file("${processResources?.destinationDir}/${morpheusPluginConfig.packageTarget}")
 			}
 			//configure the resource tasks
 			scribeResourcesTask.configure {
-				scribeDir = project.file(scribeConfig.scribeSource)
-				destinationDir = project.file("${processResources?.destinationDir}/${scribeConfig.scribeTarget}")
+				scribeDir = project.file(morpheusPluginConfig.scribeSource)
+				destinationDir = project.file("${processResources?.destinationDir}/${morpheusPluginConfig.scribeTarget}")
 			}
 			//add task dependencies
+			processResources.dependsOn(morpheusI18nPackageTask)
 			processResources.dependsOn(scribePackageTask)
 			processResources.dependsOn(scribeResourcesTask)
 		}

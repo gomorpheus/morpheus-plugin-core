@@ -1,4 +1,4 @@
-package com.morpheus.scribe.gradle
+package com.morpheusdata.gradle
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
@@ -14,85 +14,84 @@ import groovy.io.FileType
  * bdwheeler
  */
 @CompileStatic
-class MorpheusScribeResources extends DefaultTask {
+class MorpheusScribePackage extends DefaultTask {
 
 	private String destinationDirectoryPath
 
-	@Delegate MorpheusScribeExtension scribeExtension = new MorpheusScribeExtension()
+	@Delegate MorpheusPluginExtension scribeExtension = new MorpheusPluginExtension()
 
 	@Input
-	File getScribeDir() {
-		def path = scribeExtension.scribeSource
+	File getPackageDir() {
+		def path = scribeExtension.packageSource
 		return path ? new File(path) : null
 	}
 
-	void setScribeDir(File scribeDir) {
-		scribeExtension.scribeSource = scribeDir.absolutePath
+	void setPackageDir(File packageDir) {
+		scribeExtension.packageSource = packageDir.absolutePath
 	}
 
 	@OutputDirectory
 	File getDestinationDir() {
-		def path = scribeExtension.scribeTarget
+		def path = scribeExtension.packageTarget
 		return path ? new File(path) : null
 	}
 
 	void setDestinationDir(File dir) {
-		scribeExtension.scribeTarget = dir.absolutePath
+		scribeExtension.packageTarget = dir.absolutePath
 	}
 
 	@InputFiles
 	FileTree getSource() {
-		FileTree src = getProject().files(this.getScribeDir()).getAsFileTree()
+		FileTree src = getProject().files(this.getPackageDir()).getAsFileTree()
 		return src
 	}
 
 	File getManifestFile() {
 		def outputDir = getDestinationDir()
-		def outputFile = scribeExtension.scribeManifest
+		def outputFile = scribeExtension.packageManifest
 		return outputFile ? new File(outputDir, outputFile) : null
 	}
 
 	void setManifestFile(File manifestFile) {
-		scribeExtension.scribeManifest = manifestFile.name	
+		scribeExtension.packageManifest = manifestFile.name	
 	}
 
 	@TaskAction
 	@CompileDynamic
 	void compile() {
 		//list of file names
-		def scribeNames = []
+		def packageNames = []
 		//input directory
-		def scribeSource = getScribeDir()
-		//if we have a scribe dir
-		if(scribeSource.exists()) {
+		def packageSource = getPackageDir()
+		//if we have a package dir
+		if(packageSource.exists()) {
 			//output directory
-			def scribeTarget = getDestinationDir()
+			def packageTarget = getDestinationDir()
 			//manifest
-			def scribeManifest = getManifestFile()
+			def packageManifest = getManifestFile()
 			//ensure it exists
-			if(!scribeTarget.exists())
-				scribeTarget.mkdirs()
+			if(!packageTarget.exists())
+				packageTarget.mkdirs()
 			//iterate the files
-			scribeSource.eachFileRecurse(FileType.FILES) { file ->
+			packageSource.eachFileRecurse(FileType.FILES) { file ->
 				//get the relative path
-				def relativePath = relativePathToResolver(file.canonicalPath, scribeSource.canonicalPath)
-				//println("scribe file: ${relativePath}")
+				def relativePath = relativePathToResolver(file.canonicalPath, packageSource.canonicalPath)
 				if(relativePath.indexOf('.') == 0) {
-					println("ignoring hidden file: ${relativePath} at ${file} and not adding to scribe manifest")
+					println("ignoring hidden file: ${relativePath} at ${file} and not adding to package manifest")
 				} else {
-					scribeNames << relativePath
+					packageNames << relativePath
 				}
 			}
 			//make the manifest
-			if(!scribeManifest.exists()) {
-				scribeManifest.parentFile.mkdirs()
-				scribeManifest.createNewFile()
+			if(!packageManifest.exists()) {
+				packageManifest.parentFile.mkdirs()
+				packageManifest.createNewFile()
 			}
 			//write the manifest
 			OutputStream manifestOutput
 			try {
-				manifestOutput = scribeManifest.newOutputStream()
-				manifestOutput <<  scribeNames.join('\n')
+				manifestOutput = packageManifest.newOutputStream()
+				manifestOutput <<  packageNames.join('\n')
 			} finally {
 				manifestOutput.flush()
 				manifestOutput.close()
@@ -106,5 +105,5 @@ class MorpheusScribeResources extends DefaultTask {
 		}
 		return filePath
 	}
-	
+
 }
