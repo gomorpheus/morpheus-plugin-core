@@ -4,7 +4,7 @@ import com.morpheusdata.model.ComputeZonePool;
 import com.morpheusdata.model.SecurityGroupLocation;
 import com.morpheusdata.model.SecurityGroupRule;
 import com.morpheusdata.model.SecurityGroupRuleLocation;
-import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.SecurityGroupLocationIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -67,6 +67,14 @@ public interface MorpheusSecurityGroupLocationService {
 	 * @return whether the sync was successful
 	 */
 	Single<Boolean> syncRules(SecurityGroupLocation securityGroupLocation, List<SecurityGroupRuleLocation> rules);
+
+	/**
+	 * Adds, removes, and updates associations between SecurityGroups and SecurityGroupLocations
+	 * @param securityGroupLocations the list of SecurityGroupLocations for which to sync the SecurityGroup associations
+	 * @param server the ComputeServer for which to sync the securityGroupLocations
+	 * @return whether the sync was successful
+	 */
+	Single<Boolean> syncAssociations(ComputeServerIdentityProjection server, List<SecurityGroupLocationIdentityProjection> securityGroupLocations);
 
 	/**
 	 * Remove SecurityGroupLocations from Morpheus

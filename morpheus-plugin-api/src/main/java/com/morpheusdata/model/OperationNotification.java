@@ -29,6 +29,8 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	protected String refType;
 	protected Long refId;
 	protected String regionCode;
+	protected Long cloudId;
+	protected String cloudName;
 
 	/**
 	 * The account related to this OperationNotification
@@ -254,5 +256,37 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	 */
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
+	}
+
+	/**
+	 * Returns the cloudId for this OperationNotification
+	 * @return cloudId
+	 */
+	public Long getCloudId() {
+		return cloudId;
+	}
+
+	/**
+	 * Sets the cloudId for this OperationNotification. Set to the id of the cloud related to this OperationNotification.
+	 * @param cloudId cloudId
+	 */
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
+	}
+
+	/**
+	 * Returns the cloudName for this OperationNotification
+	 * @return cloudName the cloud
+	 */
+	public String getCloudName() {
+		return cloudName;
+	}
+
+	/**
+	 * Sets the cloudName for this OperationNotification.
+	 * @param cloudName cloudName for the cloud
+	 */
+	public void setCloudName(String cloudName) {
+		this.cloudName = cloudName;
 	}
 }

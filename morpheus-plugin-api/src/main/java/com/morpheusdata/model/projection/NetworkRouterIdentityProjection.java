@@ -8,7 +8,9 @@ public class NetworkRouterIdentityProjection extends MorpheusModel {
 	protected String refType;
 	protected Long refId;
 
-	public void NetworkIdentityProjection(Long id, String externalId, String refType, Long refId) {
+	public NetworkRouterIdentityProjection() {}
+
+	public NetworkRouterIdentityProjection(Long id, String externalId, String refType, Long refId) {
 		this.id = id;
 		this.externalId = externalId;
 		this.refType = refType;
