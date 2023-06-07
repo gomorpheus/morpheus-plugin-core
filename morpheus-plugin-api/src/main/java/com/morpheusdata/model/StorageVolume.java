@@ -22,6 +22,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String deviceName;
+	protected String deviceDisplayName;
 	protected Long maxStorage;
 	protected Long usedStorage;
 	protected StorageVolumeType type;
@@ -260,5 +261,14 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public void setControllerKey(String controllerKey) {
 		this.controllerKey = controllerKey;
+	}
+
+	public String getDeviceDisplayName() {
+		return deviceDisplayName;
+	}
+
+	public void setDeviceDisplayName(String deviceDisplayName) {
+		this.deviceDisplayName = deviceDisplayName;
+		markDirty("deviceDisplayName", deviceDisplayName);
 	}
 }
