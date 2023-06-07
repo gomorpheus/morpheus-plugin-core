@@ -77,7 +77,7 @@ class UserFavoritesWidget extends React.Component {
     //render
     return (
       <Widget>
-        <WidgetHeader icon="/assets/featured.svg#Layer_1" title="Favorites"/>
+        <WidgetHeader icon="/assets/featured.svg#Layer_1" title="Favorites" titleCode="gomorpheus.favorites"/>
         <div className="dashboard-widget-content">
           <table className="widget-table">
             <thead>
