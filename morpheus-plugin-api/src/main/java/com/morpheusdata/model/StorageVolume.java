@@ -39,6 +39,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String controllerKey;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
+	protected String refType;
+	protected Long refId;
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -260,5 +262,21 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public void setControllerKey(String controllerKey) {
 		this.controllerKey = controllerKey;
+	}
+
+	public String getRefType() {
+		return refType;
+	}
+
+	public void setRefType(String refType) {
+		this.refType = refType;
+	}
+
+	public Long getRefId() {
+		return refId;
+	}
+
+	public void setRefId(Long refId) {
+		this.refId = refId;
 	}
 }

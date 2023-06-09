@@ -27,6 +27,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeZoneRegion region;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ServicePlan plan;
@@ -51,6 +53,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected PowerState powerState;
 	protected Long maxStorage;
 	protected Long maxMemory;
+	protected Long maxCpu;
 	protected Long maxCores;
 	protected Long usedMemory;
 	protected Long usedStorage;
@@ -58,6 +61,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected Long coresPerSocket;
 	protected Boolean managed;
 	protected Boolean singleTenant = false;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServerType computeServerType;
 	protected Double hourlyPrice = 0D;
 	protected String internalIp;
@@ -111,8 +115,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String cloudConfigUser;
 	protected String cloudConfigMeta;
 	protected String cloudConfigNetwork;
-	protected ComputeZoneRegion region;
 	protected Boolean discovered;
+	protected Date dateCreated;
+	protected Date lastUpdated;
 
 	public String getUuid() {
 		return uuid;
@@ -280,6 +285,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public Long getMaxMemory() {
 		return maxMemory;
+	}
+
+	public Long getMaxCpu() {
+		return maxCpu;
+	}
+
+	public void setMaxCpu(Long maxCpu) {
+		this.maxCpu = maxCpu;
+		markDirty("maxCpu", maxCpu);
 	}
 
 	public Long getMaxCores() {
@@ -847,6 +861,24 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
 		markDirty("metadata", metadata);
+	}
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+		markDirty("dateCreated", dateCreated);
+	}
+
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
+		markDirty("lastUpdated", lastUpdated);
 	}
 
 	public enum GuestConsoleType {
