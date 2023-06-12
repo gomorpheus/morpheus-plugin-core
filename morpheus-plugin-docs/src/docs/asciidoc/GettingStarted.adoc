@@ -6,6 +6,8 @@ Developing plugins for Morpheus is a bit different than simply creating custom t
 
 The plugin pipeline leverages https://gradle.org[Gradle] as the build tooling. Gradle is a cross-platform programmatic build tool that is very commonly used and is most notably also used in the android space. To begin make sure your development environment has Gradle 6.5 (at least but if using newer Gradle make sure you are familiar with the definition changes needed) as well as Java 11 (if using openjdk over 11 make sure target compatibility is set to 1.11 within your project).
 
+**NOTE:** Currently Gradle 7.x is recommended as we upgrade support to Gradle 8
+
 
 The https://github.com/gomorpheus/morpheus-plugin-core[morpheus-plugin-core] git repository is structured such that sample plugins exist underneath the `samples` directory. They are part of a multi-project gradle project as can be defined in the root directories `settings.gradle`. This adds a bit of complexity and should be ignored when developing ones own plugin. Simply start with a blank project folder and a simple `build.gradle` as demonstrated below.
 
@@ -21,10 +23,20 @@ Create a new project with a `build.gradle` file. We will use the shadowjar plugi
 [source,groovy]
 ----
 plugins {
-    id "com.bertramlabs.asset-pipeline" version "4.0.0"
+    id "com.bertramlabs.asset-pipeline" version "4.3.0"
     id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.morpheusdata:morpheus-plugin-gradle:0.14.3"
+    }
+}
+
+apply plugin: 'com.morpheusdata.morpheus-plugin-gradle'
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
@@ -94,6 +106,9 @@ When writing plugin code, it is important to note a typical groovy/java project 
 build.gradle
 src/main/groovy/
 src/main/resources/renderer/hbs/
+src/main/resources/i18n
+src/main/resources/scribe
+src/main/resources/packages
 src/test/groovy/
 src/assets/images/
 src/assets/javascript/
