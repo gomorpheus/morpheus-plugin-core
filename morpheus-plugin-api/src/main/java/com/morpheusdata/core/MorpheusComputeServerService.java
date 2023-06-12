@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
+import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.ComputePort;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
