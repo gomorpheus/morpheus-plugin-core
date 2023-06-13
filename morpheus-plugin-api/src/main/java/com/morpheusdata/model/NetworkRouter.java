@@ -46,6 +46,7 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 	protected String providerId;
 	protected String updateId;
 	protected String availabilityZone;
+	protected String regionCode;
 	//active
 	protected Boolean enableSnat = true;
 	protected Boolean enabled = true;
@@ -723,5 +724,13 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
 	}
 }
