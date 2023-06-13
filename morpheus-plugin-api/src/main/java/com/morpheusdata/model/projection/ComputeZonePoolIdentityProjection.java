@@ -18,7 +18,7 @@ public class ComputeZonePoolIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String category;
 	protected Long ownerId;
-	protected Boolean inventory;
+	protected Boolean inventory = true;
 
 	public String getType() {
 		return type;
