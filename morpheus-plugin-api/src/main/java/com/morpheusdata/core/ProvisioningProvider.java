@@ -5,6 +5,7 @@ import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.HostResponse;
+import com.morpheusdata.response.PrepareWorkloadResponse;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResponse;
 
@@ -64,10 +65,14 @@ public interface ProvisioningProvider extends PluginProvider {
 
 
 	/**
-	 * Provides a Collection of ${@link ServicePlan} related to this ProvisioningProvider
-	 * @return Collection of ServicePlan
+	 * Provides a Collection of ${@link ServicePlan} related to this ProvisioningProvider that can be seeded in.
+	 * Some clouds do not use this as they may be synced in from the public cloud. This is more of a factor for
+	 * On-Prem clouds that may wish to have some precanned plans provided for it.
+	 * @return Collection of ServicePlan sizes that can be seeded in at plugin startup.
 	 */
-	public Collection<ServicePlan> getServicePlans();
+	default Collection<ServicePlan> getServicePlans() {
+		return null;
+	}
 
 	/**
 	 * Provides a Collection of {@link ComputeServerInterfaceType} related to this ProvisioningProvider
@@ -261,7 +266,9 @@ public interface ProvisioningProvider extends PluginProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+	default ServiceResponse<PrepareWorkloadResponse> prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * This method is a key entry point in provisioning a workload. This could be a vm, a container, or something else.
