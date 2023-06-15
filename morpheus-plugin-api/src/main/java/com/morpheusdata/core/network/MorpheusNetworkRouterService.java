@@ -16,6 +16,14 @@ import java.util.List;
  * @since 0.14.0
  */
 public interface MorpheusNetworkRouterService {
+
+	/**
+	 * Returns the {@link MorpheusNetworkRouteService} used for performing updates/queries on {@link NetworkRoute} related assets
+	 * within Morpheus
+	 * @return An instance of the {@link MorpheusNetworkRouteService}
+	 */
+	MorpheusNetworkRouteService getRoute();
+
 	//Network Router ORM Object Methods
 	/**
 	 * Lists all network projection objects for a specified integration id.
@@ -80,6 +88,7 @@ public interface MorpheusNetworkRouterService {
 	/**
 	 * Creates new Network Domains from cache / sync implementations
 	 * This ensures the refType and refId match the poolServer as well as the owner default
+	 * Any NetworkRoutes will not be added. They must be added/removed via MorpheusNetworkRouteService
 	 * @param addList List of new {@link NetworkRouter} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
 	 */
@@ -88,6 +97,7 @@ public interface MorpheusNetworkRouterService {
 	/**
 	 * Saves a list of {@link NetworkRouter} objects. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
+	 * Any NetworkRoutes will not be added/removed. They must be added/removed via MorpheusNetworkRouteService
 	 * @param routersToSave a List of Router objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
