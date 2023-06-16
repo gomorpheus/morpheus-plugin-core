@@ -2,6 +2,8 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.util.DatasetInfo;
 import com.morpheusdata.core.util.DatasetQuery;
+import io.reactivex.Single;
+import io.reactivex.Observable;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +42,7 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * the class type of the data for this provider
 	 * @return the class this provider operates on
 	 */
-	default Class<T> getItemType() {
-		return T;
-	}
+	Class<T> getItemType();
 
 	/**
 	 * list the values this provider provides 
@@ -56,12 +56,9 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * @param query the value to match the item in the list
 	 * @return the 
 	 */
-	default Single<Optional<T>> find(DatasetQuery query) {
-		T rtn = null;
-		List<T> listResults = list(query);
-		if(listResults != null && listResults.size() > 0)
-			rtn = listResults.get(0);
-		return rtn;
+	default Single<T> find(DatasetQuery query) {
+		Observable<T> listResults = list(query);
+		return Single.fromObservable(listResults);
 	}
 
 	/**
