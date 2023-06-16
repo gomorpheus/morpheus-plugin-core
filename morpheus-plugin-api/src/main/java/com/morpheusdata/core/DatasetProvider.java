@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.util.DatasetInfo;
 import com.morpheusdata.core.util.DatasetQuery;
-import io.reactivex.Single;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import java.util.List;
 import java.util.Map;
