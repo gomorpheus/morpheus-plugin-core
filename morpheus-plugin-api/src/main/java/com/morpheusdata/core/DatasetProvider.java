@@ -40,21 +40,23 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * the class type of the data for this provider
 	 * @return the class this provider operates on
 	 */
-	Class<T> getItemType();
+	default Class<T> getItemType() {
+		return T;
+	}
 
 	/**
 	 * list the values this provider provides 
 	 * @param query the user and map of query params or options to apply to the list
 	 * @return a list of maps that have name value pairs of the items
 	 */
-	List<T> list(DatasetQuery query);
+	Observable<T> list(DatasetQuery query);
 
 	/**
 	 * returns the matching item from the list with the value
 	 * @param query the value to match the item in the list
 	 * @return the 
 	 */
-	default T find(DatasetQuery query) {
+	default Single<Optional<T>> find(DatasetQuery query) {
 		T rtn = null;
 		List<T> listResults = list(query);
 		if(listResults != null && listResults.size() > 0)
@@ -67,7 +69,7 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * @param query the user and map of query params or options to apply to the list
 	 * @return a list of maps that have name value pairs of the items
 	 */
-	List<Map> listOptions(DatasetQuery query);
+	Observable<Map> listOptions(DatasetQuery query);
 
 	/**
 	 * returns the matching item from the list with the value
