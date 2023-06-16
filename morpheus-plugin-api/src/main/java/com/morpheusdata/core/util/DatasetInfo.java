@@ -3,7 +3,7 @@ package com.morpheusdata.core.util;
 /**
  * information about a dataset
  * @author bdwheeler
- * @since 0.15.0
+ * @since 0.15.1
  */
 public class DatasetInfo {
 

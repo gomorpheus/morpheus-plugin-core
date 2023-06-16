@@ -1,13 +1,14 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.util.DatasetInfo;
+import com.morpheusdata.core.util.DatasetQuery;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Provides support for defining custom data sets with option lookup or typeahead data
  * @author bdwheeler
- * @since 0.15.0
+ * @since 0.15.1
  * @param <T> The Model class type for this dataset - or just basic types for fixed lists
  * @param <V> The "value" or identifier type on the map of option items - usually a long or a string
  */
@@ -17,33 +18,56 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * info about this provider
 	 * @return a map of info abount the provider
 	 */
-	DatasetInfo info();
+	DatasetInfo getInfo();
 
 	/**
 	 * the key of this dataset
 	 * @return the key identifier used to access the dataset
 	 */
-	String key();
+	String getKey();
+
+	/**
+	 * the namespace of the dataset. Datasets are grouped by namespace so keys don't have to be globally unique
+	 * and to group related datasets together
+	 * a null namespace is for the global namespace
+	 * @return the namespace for this dataset
+	 */
+	default String getNamespace() {
+		return null;
+	}
 
 	/**
 	 * the class type of the data for this provider
 	 * @return the class this provider operates on
 	 */
-	Class<T> itemType();
+	Class<T> getItemType();
 
 	/**
 	 * list the values this provider provides 
-	 * @param options the map of query params or options to apply to the list
+	 * @param query the user and map of query params or options to apply to the list
 	 * @return a list of maps that have name value pairs of the items
 	 */
-	List<T> list(Map params);
+	List<T> list(DatasetQuery query);
+
+	/**
+	 * returns the matching item from the list with the value
+	 * @param query the value to match the item in the list
+	 * @return the 
+	 */
+	default T find(DatasetQuery query) {
+		T rtn = null;
+		List<T> listResults = list(query);
+		if(listResults != null && listResults.size() > 0)
+			rtn = listResults.get(0);
+		return rtn;
+	}
 
 	/**
 	 * list the values this provider provides 
-	 * @param options the map of query params or options to apply to the list
+	 * @param query the user and map of query params or options to apply to the list
 	 * @return a list of maps that have name value pairs of the items
 	 */
-	List<Map> listOptions(Map params);
+	List<Map> listOptions(DatasetQuery query);
 
 	/**
 	 * returns the matching item from the list with the value
