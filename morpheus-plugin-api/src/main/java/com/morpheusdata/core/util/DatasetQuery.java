@@ -3,6 +3,7 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.core.DatasetProvider;
 import com.morpheusdata.model.User;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * This is the query object to use to list data from a {@link DatasetProvider}
@@ -12,6 +13,8 @@ import java.util.Collection;
 public class DatasetQuery {
 
   public User user;
+  public String namespace;
+  public String key;
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
 
   public DatasetQuery(User user) {
@@ -30,6 +33,11 @@ public class DatasetQuery {
   public Object put(String key, Object value) {
     parameters.put(key, value);
     return value;
+  }
+
+  public void putAll(Map<String, Object> parameters) {
+    if(parameters != null && parameters.size() > 0)
+      this.parameters.putAll(parameters);
   }
 
   public Object getAt(String key) {
