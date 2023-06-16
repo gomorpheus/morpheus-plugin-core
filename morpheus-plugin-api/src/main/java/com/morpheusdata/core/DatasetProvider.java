@@ -56,9 +56,8 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * @param query the value to match the item in the list
 	 * @return the 
 	 */
-	default Single<T> find(DatasetQuery query) {
-		Observable<T> listResults = list(query);
-		return Single.fromObservable(listResults);
+	default Maybe<T> find(DatasetQuery query) {
+		return list(query).firstElement();
 	}
 
 	/**
