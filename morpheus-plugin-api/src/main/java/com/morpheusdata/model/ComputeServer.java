@@ -34,6 +34,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ComputeTypeSet typeSet;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeTypeLayout layout;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeServerGroup serverGroup;
 	protected String internalName;
 	protected String status = "provisioning";
 	protected Long provisionSiteId;
@@ -842,6 +844,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setDiscovered(Boolean discovered) {
 		this.discovered = discovered;
 		markDirty("discovered", discovered);
+	}
+
+	public ComputeServerGroup getServerGroup() {
+		return serverGroup;
+	}
+
+	public void setServerGroup(ComputeServerGroup serverGroup) {
+		this.serverGroup = serverGroup;
+		markDirty("serverGroup", serverGroup);
 	}
 
 	public void setMetadata(List<MetadataTag> metadata) {
