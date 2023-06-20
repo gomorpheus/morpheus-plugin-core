@@ -2,7 +2,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-import com.morpheusdata.core.CredentialProvider;
+import com.morpheusdata.core.providers.CredentialProvider;
 import java.util.Date;
 import java.util.Map;
 

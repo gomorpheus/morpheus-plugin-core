@@ -1,10 +1,9 @@
 package com.morpheusdata.vmware.plugin
 
-import com.morpheusdata.core.IPAMProvider
+import com.morpheusdata.core.providers.IPAMProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Icon
-import com.morpheusdata.model.Network
 import com.morpheusdata.model.NetworkDomain
 import com.morpheusdata.model.NetworkPool
 import com.morpheusdata.model.NetworkPoolIp

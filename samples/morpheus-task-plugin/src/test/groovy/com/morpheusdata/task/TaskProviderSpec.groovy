@@ -3,7 +3,7 @@ package com.morpheusdata.task
 import com.morpheusdata.test.MorpheusContextImpl
 import com.morpheusdata.core.ExecutableTaskInterface
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.TaskProvider
+import com.morpheusdata.core.providers.TaskProvider
 import com.morpheusdata.model.OptionType
 import spock.lang.Shared
 import spock.lang.Specification

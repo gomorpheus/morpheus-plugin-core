@@ -1,7 +1,7 @@
 package com.morpheusdata.core.network;
 
-import com.morpheusdata.core.DNSProvider;
-import com.morpheusdata.core.IPAMProvider;
+import com.morpheusdata.core.providers.DNSProvider;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;

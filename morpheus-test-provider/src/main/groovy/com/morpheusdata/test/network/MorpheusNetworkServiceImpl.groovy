@@ -19,7 +19,7 @@ class MorpheusNetworkServiceImpl implements MorpheusNetworkService {
 
 	/**
 	 * Returns the NetworkPoolContext used for performing updates or queries on {@link NetworkPool} related assets within Morpheus.
-	 * Typically this would be called by a {@link com.morpheusdata.core.DNSProvider} or {@link com.morpheusdata.core.IPAMProvider}.
+	 * Typically this would be called by a {@link com.morpheusdata.core.providers.DNSProvider} or {@link com.morpheusdata.core.providers.IPAMProvider}.
 	 * @return An Instance of the Network Pool Context to be used for calls by various network providers
 	 */
 	@Override

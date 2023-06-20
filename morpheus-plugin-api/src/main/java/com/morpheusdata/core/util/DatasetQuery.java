@@ -1,6 +1,6 @@
 package com.morpheusdata.core.util;
 
-import com.morpheusdata.core.DatasetProvider;
+import com.morpheusdata.core.providers.DatasetProvider;
 import com.morpheusdata.model.User;
 import java.util.Collection;
 import java.util.Map;

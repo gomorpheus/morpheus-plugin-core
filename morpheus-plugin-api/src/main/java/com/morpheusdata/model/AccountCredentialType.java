@@ -1,6 +1,6 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.core.CredentialProvider;
+import com.morpheusdata.core.providers.CredentialProvider;
 
 /**
  * Represents the type of an {@link AccountCredential}. These types can be usernames/passwords or keypairs depending on
