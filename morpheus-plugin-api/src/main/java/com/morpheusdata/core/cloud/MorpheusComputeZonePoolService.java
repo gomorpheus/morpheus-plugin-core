@@ -22,6 +22,17 @@ public interface MorpheusComputeZonePoolService {
 	 * @param category filter by category
 	 * @return Observable stream of sync projection
 	 */
+	Observable<ComputeZonePoolIdentityProjection> listIdentityProjections(Long cloudId, String category);
+
+	/**
+	 * Get a list of {@link ComputeZonePool} projections based on Cloud id
+	 *
+	 * @param cloudId  Cloud id
+	 * @param category filter by category
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long, String)}}
+	 */
+	@Deprecated
 	Observable<ComputeZonePoolIdentityProjection> listSyncProjections(Long cloudId, String category);
 
 	/**

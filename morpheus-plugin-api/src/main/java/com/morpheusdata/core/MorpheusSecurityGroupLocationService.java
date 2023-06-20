@@ -24,7 +24,7 @@ public interface MorpheusSecurityGroupLocationService {
 	 *
 	 * @return Observable stream of sync projection
 	 */
-	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId, Long computeZonePoolId, String category);
+	Observable<SecurityGroupLocationIdentityProjection> listIdentityProjections(Long cloudId, Long computeZonePoolId, String category);
 
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the refId and refType associated with the SecurityGroupLocation
@@ -32,8 +32,29 @@ public interface MorpheusSecurityGroupLocationService {
 	 * @param refId the refId to match on. Typically the id of the Cloud for Cloud related tags
 	 * @return Observable stream of sync projection
 	 */
-	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(String refType, Long refId);
+	Observable<SecurityGroupLocationIdentityProjection> listIdentityProjections(String refType, Long refId);
 
+	/**
+	 * Get a list of SecurityGroupLocation projections based on the Cloud associated with the SecurityGroupLocation
+	 * @param cloudId the id of the Cloud
+	 * @param computeZonePoolId (optional) id of the {@link ComputeZonePool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
+	 * @param category (optional) category name that the SecurityGroupLocation must have
+	 *
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long, Long, String)}}
+	 */
+	@Deprecated
+	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId, Long computeZonePoolId, String category);
+
+	/**
+	 * Get a list of SecurityGroupLocation projections based on the refId and refType associated with the SecurityGroupLocation
+	 * @param refType the refType to match on. Typically 'ComputeZone' for Cloud related tags
+	 * @param refId the refId to match on. Typically the id of the Cloud for Cloud related tags
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(String, Long)}}
+	 */
+	@Deprecated
+	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(String refType, Long refId);
 
 	/**
 	 * Fetch the SecurityGroups given a list of ids
@@ -58,6 +79,16 @@ public interface MorpheusSecurityGroupLocationService {
 	 * @return the SecurityGroupLocation
 	 */
 	Single<SecurityGroupLocation> create(SecurityGroupLocation securityGroupLocation);
+
+	/**
+	 * Create new SecurityGroupLocations in Morpheus.
+	 * If securityGroup is not specified, then the hash is used to locate an existing SecurityGroup in Morpheus and
+	 * it will then be associated with this SecurityGroupLocation. If the parent SecurityGroup is still not found, a new
+	 * one will be created
+	 * @param securityGroupLocations new SecurityGroupLocations to persist
+	 * @return success
+	 */
+	Single<Boolean> create(List<SecurityGroupLocation> securityGroupLocations);
 
 	/**
 	 * Adds, removes, and updates SecurityGroupRules and SecurityGroupRuleLocations for the SecurityGroup associated with
