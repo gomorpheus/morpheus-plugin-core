@@ -1,4 +1,4 @@
-package com.morpheusdata.core.util;
+package com.morpheusdata.core.data;
 
 /**
  * information about a dataset
@@ -11,6 +11,8 @@ public class DatasetInfo {
 	public String key;
 	public String name;
 	public String description;
+
+	public DatasetInfo() {}
 
 	public DatasetInfo(String namespace, String key) {
 		this.namespace = namespace;
@@ -28,6 +30,16 @@ public class DatasetInfo {
 		this.key = key;
 		this.name = name;
 		this.description = description;
+	}
+
+	public String getDatasetCode() {
+		String rtn;
+		if(namespace != null)
+			rtn = namespace;
+		else
+			rtn = "global";
+		rtn = rtn + "." + key;
+		return rtn;
 	}
 
 }

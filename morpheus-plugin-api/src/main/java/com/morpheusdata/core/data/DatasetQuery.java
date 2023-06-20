@@ -1,8 +1,9 @@
-package com.morpheusdata.core.util;
+package com.morpheusdata.core.data;
 
-import com.morpheusdata.core.DatasetProvider;
+import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.User;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +17,13 @@ public class DatasetQuery {
   public String namespace;
   public String key;
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
+  //paging
+  public Integer max = 1000;
+  public Integer offset = 0;
+  public String sort;
+  public String order;
+  
+  public DatasetQuery() {}
 
   public DatasetQuery(User user) {
     this.user = user;
@@ -50,6 +58,19 @@ public class DatasetQuery {
 
   public Collection<Object> list(String key) {
     return parameters.list(key);
+  }
+
+  public Map getPageConfig() {
+    Map rtn = new LinkedHashMap();
+    if(max != null && max > 0)
+      rtn.put("max", max);
+    if(offset != null && offset > 0)
+      rtn.put("offset", offset);
+    if(sort != null)
+      rtn.put("sort", sort);
+    if(order != null)
+      rtn.put("order", order);
+    return rtn;
   }
 
 }
