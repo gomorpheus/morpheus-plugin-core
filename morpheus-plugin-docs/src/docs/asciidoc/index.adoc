@@ -32,6 +32,8 @@ include::HttpApiClient.adoc[]
 
 include::Views.adoc[]
 
+include::Localization.adoc[]
+
 include::OptionSources.adoc[]
 
 include::Credentials.adoc[]
