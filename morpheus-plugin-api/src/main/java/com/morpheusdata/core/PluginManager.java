@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.views.ViewModel;

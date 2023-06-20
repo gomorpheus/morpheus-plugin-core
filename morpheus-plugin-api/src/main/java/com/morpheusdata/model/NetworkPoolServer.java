@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
@@ -9,10 +10,10 @@ import java.util.Map;
 /**
  * Represents an instance of an IPAM integration server. This integration type contains status fields, connection information
  * as well as a reference to a cloned {@link AccountIntegration} class for the type of pool server.
- * There are also some special properties on pool server instances for use in controlling behavior of an {@link com.morpheusdata.core.IPAMProvider}
+ * There are also some special properties on pool server instances for use in controlling behavior of an {@link IPAMProvider}
  *
  * @author David Estes, Eric Helgeson
- * @see com.morpheusdata.core.IPAMProvider
+ * @see IPAMProvider
  * @since 0.8.0
  */
 public class NetworkPoolServer extends MorpheusModel {

@@ -1,6 +1,6 @@
 package com.morpheusdata.web;
 
-import com.morpheusdata.core.PluginProvider;
+import com.morpheusdata.core.providers.PluginProvider;
 import java.util.List;
 
 /**

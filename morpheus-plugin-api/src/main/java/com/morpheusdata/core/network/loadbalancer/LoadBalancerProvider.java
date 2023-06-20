@@ -1,6 +1,6 @@
 package com.morpheusdata.core.network.loadbalancer;
 
-import com.morpheusdata.core.PluginProvider;
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 

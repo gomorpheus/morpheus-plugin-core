@@ -1,7 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.core.IPAMProvider;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
@@ -11,10 +11,10 @@ import java.util.List;
 
 /**
  * Provides a Model representation of a Network Pool typically provided or synced from an IPAM Provider. Some Providers
- * call these Subnets/Networks or IP Blocks. These should be synced via the relevant {@link com.morpheusdata.core.IPAMProvider} implementation.
+ * call these Subnets/Networks or IP Blocks. These should be synced via the relevant {@link IPAMProvider} implementation.
  * A Pool typically has a list of host record associated with it and keeps track of reservations that have been made on the particular pool.
  *
- * @see com.morpheusdata.core.IPAMProvider
+ * @see IPAMProvider
  *
  * @author David Estes
  */

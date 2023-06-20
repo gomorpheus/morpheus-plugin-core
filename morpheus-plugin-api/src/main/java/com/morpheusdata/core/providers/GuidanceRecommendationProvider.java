@@ -1,4 +1,4 @@
-package com.morpheusdata.core;
+package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.AccountDiscovery;
 import com.morpheusdata.model.Icon;

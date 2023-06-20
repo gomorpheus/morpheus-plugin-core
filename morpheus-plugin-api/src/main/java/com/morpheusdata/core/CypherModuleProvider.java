@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.cypher.CypherModule;
-import java.util.List;
 
 /**
  * Provides a means to register a Cypher Secret Backend and CypherModule for registry on storing secrets or auto generating

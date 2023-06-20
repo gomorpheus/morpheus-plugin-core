@@ -1,9 +1,10 @@
-package com.morpheusdata.core.data;
+package com.morpheusdata.core.providers;
 
-import com.morpheusdata.core.PluginProvider;
+import com.morpheusdata.core.data.DatasetInfo;
+import com.morpheusdata.core.data.DatasetQuery;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import java.util.List;
+
 import java.util.Map;
 
 /**

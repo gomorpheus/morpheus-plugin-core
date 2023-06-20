@@ -1,7 +1,8 @@
-package com.morpheusdata.core.data;
+package com.morpheusdata.core.providers;
 
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.core.Plugin;
+import com.morpheusdata.core.data.DatasetInfo;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import java.util.List;

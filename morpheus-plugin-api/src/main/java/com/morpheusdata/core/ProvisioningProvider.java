@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.model.provisioning.WorkloadRequest;

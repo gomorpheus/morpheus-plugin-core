@@ -1,4 +1,7 @@
-package com.morpheusdata.core;
+package com.morpheusdata.core.providers;
+
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
 
 /**
  * All Providers implement the Plugin Extension. Different Plugins for Morpheus provide different integration endpoints.

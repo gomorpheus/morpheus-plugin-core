@@ -1,6 +1,5 @@
 package com.morpheusdata.core.backup;
 
-import com.morpheusdata.core.PluginProvider;
 import com.morpheusdata.model.BackupJob;
 import com.morpheusdata.response.ServiceResponse;
 

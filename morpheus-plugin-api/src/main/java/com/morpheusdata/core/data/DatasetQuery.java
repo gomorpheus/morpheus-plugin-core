@@ -1,5 +1,6 @@
 package com.morpheusdata.core.data;
 
+import com.morpheusdata.core.providers.DatasetProvider;
 import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.User;
 import java.util.Collection;
