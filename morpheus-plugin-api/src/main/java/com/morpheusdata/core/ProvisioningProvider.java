@@ -163,6 +163,13 @@ public interface ProvisioningProvider extends PluginProvider {
 	public String getNodeFormat();
 
 	/**
+	 * The name of the deployment service for this provider
+	 * valid options include: vmDeployTargetService, dockerDeployTargetService, kubernetesDeployTargetService, and cloudFoundryDeployTargetService
+	 * @return String
+	 */
+	public String getDeployTargetService();
+
+	/**
 	 * Indicates if this provider supports cloning a vm to a template
 	 * @return Boolean
 	 */

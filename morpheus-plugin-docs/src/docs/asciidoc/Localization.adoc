@@ -1,0 +1,41 @@
+[#localization]
+== Localization
+
+Morpheus Plugins support using i18n localization properties. These are string maps for representing various sections of text in your plugin (or in morpheus itself) by a localized way. Creating a `messages.properties` file in the directory `src/main/resources/i18n` will allow you to set some key value maps.
+
+For Example `messages.properties`:
+
+[source,properties]
+----
+com.morpheusdata.label.hello=Hello
+----
+
+or for Spanish (ES) `messages_es.properties`:
+
+[source,properties]
+----
+com.morpheusdata.label.hello=Hola
+----
+
+These can be leveraged in the handlebarsRenderer for server side rendering via the `{{i18n}}` helper like so:
+
+[source,handlebars]
+----
+<strong>{{i18n 'com.morpheusdata.label.hello'}}</strong>
+----
+
+Or they can also be used in javascript rendering (like in dashboard widgets or other areas):
+
+[source,javascript]
+----
+var helloString = $L({code: 'com.morpheusdata.label.hello', default: 'Hello'});
+----
+
+If a matching string exists for the current browser locale, it will be used, if not it will fall back to the default `messages.properties` file.
+
+=== Localizing the Entire Application
+
+Plugin localization files are global. This means, if a language pack did not exist for the entire Morpheus Appliance for a specific locale and a developer/partner wanted to make one as a plugin, they could. The plugins properties are automatically checked system-wide. It is even possible to override single labels in the morpheus appliance if so desired.
+
+For information on localizing Morpheus, please refer to the https://share.morpheusdata.com/crowdin-localization-plugin/about[Morpheus Crowdin Localization Plugin]
+
