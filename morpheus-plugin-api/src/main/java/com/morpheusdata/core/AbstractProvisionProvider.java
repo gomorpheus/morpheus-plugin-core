@@ -4,6 +4,7 @@ import com.morpheusdata.model.*;
 import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
 import com.morpheusdata.response.HostResponse;
+import com.morpheusdata.response.PrepareWorkloadResponse;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
@@ -76,6 +77,9 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	public String getNodeFormat() { return null; }
 
 	@Override
+	public String getDeployTargetService() { return null; }
+
+	@Override
 	public Boolean hasCloneTemplate() { return false; }
 
 	@Override
@@ -103,7 +107,7 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 	}
 
 	@Override
-	public ServiceResponse prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
+	public ServiceResponse<PrepareWorkloadResponse> prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
 		return ServiceResponse.success();
 	}
 

@@ -6,6 +6,7 @@ import com.morpheusdata.model.projection.NetworkRouterIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
+import java.util.List;
 
 public class NetworkRouter extends NetworkRouterIdentityProjection {
 	protected Account owner;
@@ -111,6 +112,7 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 	protected Long createdById;
 	protected String createdByName;
 	protected String visibility = "private";
+	protected List<NetworkRoute> routes;
 
 	public Account getOwner() {
 		return owner;
@@ -732,5 +734,9 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
+	}
+
+	public List<NetworkRoute> getRoutes() {
+		return routes;
 	}
 }
