@@ -1,6 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.StorageVolume;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
@@ -34,6 +34,14 @@ public interface MorpheusStorageVolumeService {
 	Observable<StorageVolume> listById(Collection<Long> ids);
 
 	/**
+	 * Get a list of {@link StorageVolume} projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @return Observable stream of sync projection
+	 */
+	Observable<ComputeServerIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
+
+	/**
 	 * Create persisted StorageVolumes in Morpheus and add them to the VirtualImage.
 	 * Typically called during sync operations for the cloud
 	 * @param storageVolumes volumes to add
@@ -59,6 +67,14 @@ public interface MorpheusStorageVolumeService {
 	 * @return success
 	 */
 	Single<Boolean> create(List<StorageVolume> storageVolumes, ComputeServerIdentityProjection computeServer);
+
+	/**
+	 * Create persisted StorageVolumes in Morpheus.
+	 * Typically called during sync operations for the cloud.
+	 * @param storageVolumes volumes to add
+	 * @return success
+	 */
+	Single<Boolean> create(List<StorageVolume> storageVolumes);
 
 	/**
 	 * Remove persisted StorageVolumes from Morpheus and remove them from the VirtualImageLocation.

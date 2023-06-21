@@ -43,6 +43,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String refType;
 	protected Long refId;
 	protected String regionCode;
+	protected String status = "provisioned";
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -298,4 +299,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
 	}
+
+	public String getStatus() { return status; }
+
+	public void setStatus(String status) { this.status = status; }
 }
