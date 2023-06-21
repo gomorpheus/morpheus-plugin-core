@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.Account;
+import com.morpheusdata.model.projection.AccountIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -29,6 +30,13 @@ public interface MorpheusAccountService {
 	Observable<Account> listById(Collection<Long> ids);
 
 	/**
+	 * Get a list of {@link Account} projections based on Plugin
+	 * @param plugin Plugin owning the accounts
+	 * @return Observable stream of sync projection
+	 */
+	Observable<AccountIdentityProjection> listIdentityProjections(Plugin plugin);
+
+	/**
 	 * Lists all {@link Account} objects by a list of Identifiers. This is commonly used in sync / caching logic.
 	 * @param externalIds a Collection of external Ids to filter the list of Accounts by
 	 * @return an RxJava Observable stream of {@link Account} to be subscribed to.
@@ -38,6 +46,7 @@ public interface MorpheusAccountService {
 	/**
 	 * Save updates to existing Accounts that are managed by the provided Plugin
 	 * @param accounts updated Account
+	 * @param plugin Plugin owning the accounts
 	 * @return success
 	 */
 	Single<Boolean> save(List<Account> accounts, Plugin plugin);
@@ -45,6 +54,7 @@ public interface MorpheusAccountService {
 	/**
 	 * Create new Accounts in Morpheus under the provided Plugin management
 	 * @param accounts new Accounts to persist
+	 * @param plugin Plugin owning the accounts
 	 * @return success
 	 */
 	Single<Boolean> create(List<Account> accounts, Plugin plugin);
@@ -52,6 +62,7 @@ public interface MorpheusAccountService {
 	/**
 	 * Create a new Account in Morpheus under the provided Plugin management
 	 * @param account new Account to persist
+	 * @param plugin Plugin owning the accounts
 	 * @return the Account
 	 */
 	Single<Account> create(Account account, Plugin plugin);
