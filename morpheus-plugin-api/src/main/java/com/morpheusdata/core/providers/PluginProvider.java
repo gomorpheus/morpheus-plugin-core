@@ -8,6 +8,8 @@ import com.morpheusdata.core.Plugin;
  * These could range from DNS, IPAM, and all the way up to Cloud Integrations. Each integration type extends this as a
  * base interface for providing core methods.
  * @author David Estes
+ * @since 0.15.1
+ * 
  */
 public interface PluginProvider {
 
