@@ -102,6 +102,14 @@ public interface MorpheusContext {
 	 */
 	MorpheusComputeServerService getComputeServer();
 
+
+	/**
+	 * Returns the Account context used for syncing Accounts within Morpheus.
+	 * Typically this would be called from a provider that need to maintain Tenants
+	 * @return An instance of the workload Context to be used for calls by various providers
+	 */
+	MorpheusAccountService getAccount();
+
 	/**
 	 * Returns the workload context used for syncing workloads within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
