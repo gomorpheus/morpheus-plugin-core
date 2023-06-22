@@ -7,6 +7,7 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Context methods for syncing {@link Account} in Morpheus
@@ -55,15 +56,17 @@ public interface MorpheusAccountService {
 	 * Create new Accounts in Morpheus under the provided Plugin management
 	 * @param accounts new Accounts to persist
 	 * @param plugin Plugin owning the accounts
+	 * @param users users to add into account
 	 * @return success
 	 */
-	Single<Boolean> create(List<Account> accounts, Plugin plugin);
+	Single<Boolean> create(List<Account> accounts, Plugin plugin, List<Map<String, Object>> users);
 
 	/**
 	 * Create a new Account in Morpheus under the provided Plugin management
 	 * @param account new Account to persist
 	 * @param plugin Plugin owning the accounts
+	 * @param users users to add into account
 	 * @return the Account
 	 */
-	Single<Account> create(Account account, Plugin plugin);
+	Single<Account> create(Account account, Plugin plugin, List<Map<String, Object>> users);
 }
