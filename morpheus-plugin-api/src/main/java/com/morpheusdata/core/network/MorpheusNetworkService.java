@@ -1,7 +1,7 @@
 package com.morpheusdata.core.network;
 
-import com.morpheusdata.core.DNSProvider;
-import com.morpheusdata.core.IPAMProvider;
+import com.morpheusdata.core.providers.DNSProvider;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
@@ -53,6 +53,13 @@ public interface MorpheusNetworkService {
 	 * @return An instance of the {@link MorpheusNetworkRouterService}
 	 */
 	MorpheusNetworkRouterService getRouter();
+
+	/**
+	 * Returns the {@link MorpheusNetworkRouteTableService} used for performing updates/queries on {@link NetworkRouteTable} related assets
+	 * within Morpheus
+	 * @return An instance of the {@link MorpheusNetworkRouteTableService}
+	 */
+	MorpheusNetworkRouteTableService getRouteTable();
 
 	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.

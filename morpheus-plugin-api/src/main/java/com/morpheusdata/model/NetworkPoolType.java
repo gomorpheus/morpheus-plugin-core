@@ -1,11 +1,13 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.core.providers.IPAMProvider;
+
 /**
  * Each implementation of IPAM Typically define a pool type for human readable reference. This enables the user to correctly
- * select the pool of the appropriate type. It is also possible for some {@link com.morpheusdata.core.IPAMProvider} implementations to provide
+ * select the pool of the appropriate type. It is also possible for some {@link IPAMProvider} implementations to provide
  * multiple types (for example IPV6 vs. IPV4).
  *
- * @see com.morpheusdata.core.IPAMProvider
+ * @see IPAMProvider
  *
  * @author David Estes
  */
@@ -27,7 +29,7 @@ public class NetworkPoolType extends MorpheusModel{
 	protected String description;
 
 	/**
-	 * Defines whether or not a Pool can be created from the UI (Currently not supported by the {@link com.morpheusdata.core.IPAMProvider} implementation).
+	 * Defines whether or not a Pool can be created from the UI (Currently not supported by the {@link IPAMProvider} implementation).
 	 */
 	protected Boolean creatable = true;
 
@@ -49,7 +51,7 @@ public class NetworkPoolType extends MorpheusModel{
 
 	/**
 	 * Used for assigning a unique code for the NetworkPoolType. These should be globally unique and are typically provided via
-	 * the relevant {@link com.morpheusdata.core.IPAMProvider}.
+	 * the relevant {@link IPAMProvider}.
 	 * @param code a Unique code representation of a pool type. (i.e. 'infoblox').
 	 */
 	public void setCode(String code) {
@@ -95,7 +97,7 @@ public class NetworkPoolType extends MorpheusModel{
 
 	/**
 	 * Gets creatable flag from this particular pool type. It informs the UI whether or not this pool type can be created from the UI.
-	 * This is currently not supported by third party {@link com.morpheusdata.core.IPAMProvider} implementations.
+	 * This is currently not supported by third party {@link IPAMProvider} implementations.
 	 * @return whether or not this pool type can be created directly from the Morpheus UI
 	 */
 	public Boolean getCreatable() {
@@ -104,7 +106,7 @@ public class NetworkPoolType extends MorpheusModel{
 
 	/**
 	 * Sets creatable flag from this particular pool type. It informs the UI whether or not this pool type can be created from the UI.
-	 * This is currently not supported by third party {@link com.morpheusdata.core.IPAMProvider} implementations.
+	 * This is currently not supported by third party {@link IPAMProvider} implementations.
 	 * @param creatable whether or not this pool type can be created directly from the Morpheus UI
 	 */
 	public void setCreatable(Boolean creatable) {

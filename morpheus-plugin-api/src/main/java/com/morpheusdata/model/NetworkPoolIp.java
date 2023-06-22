@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
@@ -9,7 +10,7 @@ import java.util.Date;
 /**
  * An IP Address / Host Record within a {@link NetworkPool} typically used with IPAM Services.
  * Host records control allocations/reservations of both DHCP and Static IPs to associated workloads
- * @see com.morpheusdata.core.IPAMProvider
+ * @see IPAMProvider
  * @author David Estes
  */
 public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {

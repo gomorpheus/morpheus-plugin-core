@@ -1,6 +1,7 @@
 package com.morpheusdata.task
 
 import com.morpheusdata.core.*
+import com.morpheusdata.core.providers.TaskProvider
 import com.morpheusdata.model.Icon
 import com.morpheusdata.model.OptionType
 import com.morpheusdata.model.TaskType

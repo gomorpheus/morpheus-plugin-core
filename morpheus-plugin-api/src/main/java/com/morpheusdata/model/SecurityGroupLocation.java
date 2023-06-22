@@ -54,6 +54,7 @@ public class SecurityGroupLocation extends SecurityGroupLocationIdentityProjecti
 	protected String rawData;
 	protected Integer priority;
 	protected String groupLayer;
+	protected String regionCode;
 
 	public String getCode() {
 		return code;
@@ -271,5 +272,13 @@ public class SecurityGroupLocation extends SecurityGroupLocationIdentityProjecti
 
 	public void setGroupLayer(String groupLayer) {
 		this.groupLayer = groupLayer;
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
 	}
 }

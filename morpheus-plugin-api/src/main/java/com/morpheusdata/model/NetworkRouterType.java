@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NetworkRouterType extends MorpheusModel {
 	protected String code;
 	protected String name;
@@ -62,6 +65,10 @@ public class NetworkRouterType extends MorpheusModel {
 
 	//linking
 	protected String integrationCode;//matching integration type
+
+	private List<OptionType> optionTypes = new ArrayList<>();
+
+	private List<OptionType> routeOptionTypes = new ArrayList<>();
 
 	public String getCode() {
 		return code;
@@ -511,4 +518,17 @@ public class NetworkRouterType extends MorpheusModel {
 	public void setIntegrationCode(String integrationCode) {
 		this.integrationCode = integrationCode;
 	}
+
+	public List<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(List<OptionType> optionTypes) { this.optionTypes = optionTypes; }
+
+	public List<OptionType> getRouterOptionTypes() {
+		return routeOptionTypes;
+	}
+
+	public void setRouteOptionTypes(List<OptionType> optionTypes) { this.routeOptionTypes = routeOptionTypes; }
+
 }

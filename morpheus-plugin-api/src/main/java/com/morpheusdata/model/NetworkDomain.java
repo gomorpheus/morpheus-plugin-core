@@ -1,6 +1,8 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.core.providers.DNSProvider;
+import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
@@ -8,8 +10,8 @@ import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
  * This is a Model Representation of a Network Domain. It contains information related to any DNS Cloud that may be synced
  * via a DNS and/or IPAM provider.
  *
- * @see com.morpheusdata.core.IPAMProvider
- * @see com.morpheusdata.core.DNSProvider
+ * @see IPAMProvider
+ * @see DNSProvider
  *
  * @author David Estes
  */
@@ -155,7 +157,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 
 	/**
 	 * Sets the reference source property to mark where the Domain Record was created from. When creating during a sync operation
-	 * via an {@link com.morpheusdata.core.IPAMProvider} it is best to set this property to "integration".
+	 * via an {@link IPAMProvider} it is best to set this property to "integration".
 	 * @param refSource reference source String (should be of value "integration" or value "user") to determine where it came from.
 	 */
 	public void setRefSource(String refSource) {
@@ -207,7 +209,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	}
 
 	/**
-	 * Sets the DNSSec flag. this is typically done via a {@link com.morpheusdata.core.DNSProvider} sync operation. For more information
+	 * Sets the DNSSec flag. this is typically done via a {@link DNSProvider} sync operation. For more information
 	 * please refer to the documentation provided by icann.org regarding DNSSec and what it stands for.
 	 * @param dnssec Boolean representation indicating if the referred to cloud is providing DNSSec capabilities.
 	 */

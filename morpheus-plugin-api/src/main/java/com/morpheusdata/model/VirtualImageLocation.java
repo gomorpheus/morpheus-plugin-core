@@ -20,6 +20,8 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected String code;
 	protected String internalId;
 	protected String imageRegion;
+
+	protected String externalDiskId; //used for snapshot ids on amazon primarily
 	protected String imageFolder;
 	protected String uuid;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -119,5 +121,13 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 
 	public void setPublic(Boolean aPublic) {
 		isPublic = aPublic;
+	}
+
+	public String getExternalDiskId() {
+		return externalDiskId;
+	}
+
+	public void setExternalDiskId(String externalDiskId) {
+		this.externalDiskId = externalDiskId;
 	}
 }

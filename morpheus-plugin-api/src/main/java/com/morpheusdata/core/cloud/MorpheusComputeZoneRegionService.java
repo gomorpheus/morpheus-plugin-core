@@ -10,6 +10,7 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides service/context methods for querying {@link com.morpheusdata.model.ComputeZoneRegion} objects for use with syncing a clouds regions
@@ -42,6 +43,8 @@ public interface MorpheusComputeZoneRegionService {
 	 * @return success
 	 */
 	Single<Boolean> save(List<ComputeZoneRegion> regions);
+
+	Single<Optional<ComputeZoneRegion>> findByCloudAndRegionCode(Long cloudId, String regionCode);
 
 	/**
 	 * Create new ComputeZoneRegion in Morpheus

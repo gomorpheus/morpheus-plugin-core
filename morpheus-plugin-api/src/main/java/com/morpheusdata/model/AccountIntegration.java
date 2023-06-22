@@ -45,6 +45,9 @@ public class AccountIntegration extends MorpheusModel {
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<OptionType> optionTypes;
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected List<AccountIntegrationObjectRef> objectRefs;
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -317,6 +320,16 @@ public class AccountIntegration extends MorpheusModel {
 
 	public void setOptionTypes(List<OptionType> optionTypes) {
 		this.optionTypes = optionTypes;
+		markDirty("optionTypes", optionTypes, this.optionTypes);
+	}
+
+	public List<AccountIntegrationObjectRef> getObjectRefs() {
+		return objectRefs;
+	}
+
+	public void setObjectRefs(List<AccountIntegrationObjectRef> objectRefs) {
+		this.objectRefs = objectRefs;
+		markDirty("objectRefs", objectRefs, this.objectRefs);
 	}
 
 	public enum Status {

@@ -13,11 +13,12 @@ import java.util.LinkedHashMap;
  *
  */
 public class ApiParameterMap<K,V> extends LinkedHashMap<K,V> {
+
 	public ApiParameterMap() {
 		super();
 	}
 
-	Collection<V> list(K key) throws ClassCastException {
+	public Collection<V> list(K key) throws ClassCastException {
 		V value = get(key);
 		if(value instanceof Collection) {
 			return (Collection<V>) value;

@@ -42,6 +42,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
 	protected String refType;
 	protected Long refId;
+	protected String regionCode;
+	protected String status = "provisioned";
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -289,4 +291,16 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setRefId(Long refId) {
 		this.refId = refId;
 	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
+	}
+
+	public String getStatus() { return status; }
+
+	public void setStatus(String status) { this.status = status; }
 }

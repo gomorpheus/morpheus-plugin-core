@@ -2,6 +2,8 @@ package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusAccountCredentialService
 import com.morpheusdata.core.MorpheusAccountCredentialTypeService
+import com.morpheusdata.core.MorpheusAccountPriceService
+import com.morpheusdata.core.MorpheusAccountPriceSetService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusComputeTypeSetService
 import com.morpheusdata.core.MorpheusContainerTypeService
@@ -10,6 +12,7 @@ import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
 import com.morpheusdata.core.MorpheusReferenceDataService
 import com.morpheusdata.core.MorpheusSecurityGroupService
+import com.morpheusdata.core.MorpheusServicePlanPriceSetService
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
@@ -187,6 +190,21 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusBackupProviderService getBackupProvider() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountPriceSetService getAccountPriceSet() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountPriceService getAccountPrice() {
+		return null
+	}
+
+	@Override
+	MorpheusServicePlanPriceSetService getServicePlanPriceSet() {
 		return null
 	}
 

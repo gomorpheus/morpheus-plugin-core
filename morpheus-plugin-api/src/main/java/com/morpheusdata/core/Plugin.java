@@ -1,17 +1,11 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**

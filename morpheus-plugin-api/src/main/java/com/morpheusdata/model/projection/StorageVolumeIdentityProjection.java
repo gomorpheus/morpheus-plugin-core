@@ -12,6 +12,7 @@ import com.morpheusdata.model.projection.MorpheusIdentityModel;
 public class StorageVolumeIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
+	protected String storageVolumeTypeCode;
 
 	public String getExternalId() {
 		return externalId;
@@ -29,5 +30,12 @@ public class StorageVolumeIdentityProjection extends MorpheusIdentityModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getStorageVolumeTypeCode() { return storageVolumeTypeCode; }
+
+	public void setStorageVolumeTypeCode(String code) {
+		this.storageVolumeTypeCode = code;
+		markDirty("storageVolumeTypeCode", code);
 	}
 }

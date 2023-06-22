@@ -1,6 +1,6 @@
 package com.morpheusdata.core.backup;
 
-import com.morpheusdata.core.PluginProvider;
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.core.backup.util.BackupStatusUtility;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;

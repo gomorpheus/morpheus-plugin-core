@@ -1,6 +1,6 @@
 package com.morpheusdata.approvals
 
-import com.morpheusdata.core.ApprovalProvider
+import com.morpheusdata.core.providers.ApprovalProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.AccountIntegration

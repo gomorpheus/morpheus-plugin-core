@@ -1,9 +1,11 @@
 package com.morpheusdata.core.integration;
 
 
-import com.morpheusdata.model.AccountIntegration;
-import com.morpheusdata.model.NetworkPoolServer;
+import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
+import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 /**
  * Holds context methods for interacting with common integration type operations. This could be used for updating
@@ -38,4 +40,13 @@ public interface MorpheusIntegrationService {
 	 * @return the on complete state
 	 */
 	Completable updateAccountIntegrationStatus(AccountIntegration integration, AccountIntegration.Status status);
+
+	Single<ServiceResponse<AccountIntegration>> registerCloudIntegration(Long cloudId, AccountIntegration integration);
+
+	Single<ServiceResponse<NetworkServer>> registerCloudIntegration(Long cloudId, NetworkServer networkServer);
+
+	Single<ServiceResponse<StorageServer>> registerCloudIntegration(Long cloudId, StorageServer storageServer);
+
+	Single<ServiceResponse<NetworkLoadBalancer>> registerCloudIntegration(Long cloudId, NetworkLoadBalancer networkLoadBalancer);
+
 }

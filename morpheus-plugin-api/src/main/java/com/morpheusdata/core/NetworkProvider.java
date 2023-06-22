@@ -1,10 +1,9 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.*;
-import com.morpheusdata.response.RequestResponse;
 import com.morpheusdata.response.ServiceResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
@@ -113,4 +112,75 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network);
+
+	/**
+	 * Validate the submitted NetworkRouter information.
+	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * bubbled up to the user.
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
+	 * creation
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse validateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Create the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse createRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Update the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse updateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Delete the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteRouter(NetworkRouter router) { return ServiceResponse.success(); };
+
+	/**
+	 * Validate the submitted NetworkRoute information.
+	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * bubbled up to the user.
+	 * @param network Network information
+	 * @param networkRoute NetworkRoute information
+	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
+	 * creation
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse validateNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Create the NetworkRoute submitted
+	 * @param network Network information
+	 * @param networkRoute NetworkRoute information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse createNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Update the NetworkRoute submitted
+	 * @param network Network information
+	 * @param networkRoute NetworkRoute information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse updateNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Delete the NetworkRoute submitted
+	 * @param networkRoute NetworkRoute information
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteNetworkRoute(NetworkRoute networkRoute) { return ServiceResponse.success(); };
 }

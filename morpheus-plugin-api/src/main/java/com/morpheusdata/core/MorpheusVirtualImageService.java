@@ -81,6 +81,7 @@ public interface MorpheusVirtualImageService {
 	 */
 	Observable<VirtualImage> listById(Collection<Long> ids);
 
+
 	/**
 	 * Save updates to existing VirtualImages
 	 * NOTE: Any additions or removals of VirtualImageLocations related to the VirtualImage should be
