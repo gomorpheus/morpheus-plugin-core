@@ -43,6 +43,18 @@ public interface NetworkProvider extends PluginProvider {
 	Collection<NetworkRouterType> getRouterTypes();
 
 	/**
+	 * Prepare the network information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param network Network information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse prepareNetwork(Network network, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
 	 * Validates the submitted network information.
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.
@@ -50,7 +62,9 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	ServiceResponse validateNetwork(Network network, Map opts);
+	default ServiceResponse validateNetwork(Network network, Map opts) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Creates the Network submitted
@@ -76,6 +90,18 @@ public interface NetworkProvider extends PluginProvider {
 	ServiceResponse deleteNetwork(Network network);
 
 	/**
+	 * Prepare the subnet information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param subnet NetworkSubnet information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse prepareSubnet(NetworkSubnet subnet, Network network, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
 	 * Validates the submitted subnet information.
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.
@@ -85,7 +111,9 @@ public interface NetworkProvider extends PluginProvider {
 	 * creation
 	 * @return ServiceResponse
 	 */
-	ServiceResponse validateSubnet(NetworkSubnet subnet, Network network, Map opts);
+	default ServiceResponse validateSubnet(NetworkSubnet subnet, Network network, Map opts) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Creates the NetworkSubnet submitted
