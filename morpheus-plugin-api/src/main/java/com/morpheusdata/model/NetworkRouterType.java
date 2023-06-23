@@ -7,6 +7,7 @@ public class NetworkRouterType extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String description;
+	protected String routerService;
 	protected Boolean enabled = true;
 	protected Boolean creatable = true;
 	protected Boolean selectable = true;
@@ -92,6 +93,14 @@ public class NetworkRouterType extends MorpheusModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getRouterService() {
+		return routerService;
+	}
+
+	public void setRouterService(String routerService) {
+		this.routerService = routerService;
 	}
 
 	public Boolean getEnabled() {
