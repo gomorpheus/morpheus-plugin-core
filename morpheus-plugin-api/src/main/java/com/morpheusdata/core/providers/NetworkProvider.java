@@ -1,5 +1,6 @@
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.core.CloudProvider;
 import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
@@ -15,6 +16,15 @@ import java.util.Collection;
  * @author Bob Whiton, Dustin DeYoung
  */
 public interface NetworkProvider extends PluginProvider {
+
+	/**
+	 * Some older clouds have a network server type code that is the exact same as the cloud code. This allows one to set it
+	 * to match and in doing so the provider will be fetched via the cloud providers {@link CloudProvider#getDefaultNetworkServerTypeCode()} method.
+	 * @return code for overriding the ProvisionType record code property
+	 */
+	default String getNetworkServerTypeCode() {
+		return getCode();
+	}
 
 	/**
 	 * The CloudProvider code that this NetworkProvider should be attached to.
