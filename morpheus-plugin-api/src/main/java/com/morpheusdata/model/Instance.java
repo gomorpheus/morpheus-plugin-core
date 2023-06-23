@@ -65,6 +65,24 @@ public class Instance extends InstanceIdentityProjection {
 	protected User createdBy;
 	public List<UserGroup> userGroups;
 	protected List<MetadataTag> metadata;
+	public String externalId;
+	public String internalId;
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
 
 	public User getCreatedBy() {
 		return createdBy;

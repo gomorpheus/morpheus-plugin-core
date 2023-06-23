@@ -12,7 +12,15 @@ import com.morpheusdata.model.projection.MorpheusIdentityModel;
  */
 public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	protected String name;
+	protected String externalId;
 
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 
 	public String getName() {
 		return name;

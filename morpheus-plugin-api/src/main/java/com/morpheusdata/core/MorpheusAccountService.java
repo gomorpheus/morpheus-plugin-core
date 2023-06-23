@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.Account;
+import com.morpheusdata.model.ComputeSite;
 import com.morpheusdata.model.projection.AccountIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -66,7 +67,8 @@ public interface MorpheusAccountService {
 	 * @param account new Account to persist
 	 * @param plugin Plugin owning the accounts
 	 * @param users users to add into account
+	 * @param sites Initial sites to create
 	 * @return the Account
 	 */
-	Single<Account> create(Account account, Plugin plugin, List<Map<String, Object>> users);
+	Single<Account> create(Account account, Plugin plugin, List<Map<String, Object>> users, List<ComputeSite> sites);
 }

@@ -1,6 +1,9 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.Instance;
+import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.request.DeleteInstanceRequest;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.Observable;
@@ -29,11 +32,25 @@ public interface MorpheusInstanceService {
 	Observable<Instance> listById(Collection<Long> ids);
 
 	/**
+	 * Get a list of {@link Instance} projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projection
+	 */
+	Observable<InstanceIdentityProjection> listIdentityProjections(Long cloudId);
+
+	/**
 	 * Save updates to existing Instance
 	 * @param instances updated Instances
 	 * @return success
 	 */
 	Single<Boolean> save(List<Instance> instances);
+
+	/**
+	 * Create new Instances in Morpheus
+	 * @param instances new Instances to persist
+	 * @return success
+	 */
+	Single<Boolean> create(List<Instance> instances);
 
 	/**
 	 * Delete the existing Instance from Morpheus and the resources from the underlying Cloud.
