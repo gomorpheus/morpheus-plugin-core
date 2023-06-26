@@ -13,6 +13,8 @@ import com.morpheusdata.model.projection.MorpheusIdentityModel;
 public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	protected String name;
 	protected String externalId;
+	public String instanceTypeCode;
+
 
 	public String getExternalId() {
 		return externalId;
@@ -29,5 +31,13 @@ public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	public void setName(String name) {
 		this.name = name;
 		markDirty("name", name);
+	}
+
+	public String getInstanceTypeCode() {
+		return instanceTypeCode;
+	}
+
+	public void setInstanceTypeCode(String instanceTypeCode) {
+		this.instanceTypeCode = instanceTypeCode;
 	}
 }

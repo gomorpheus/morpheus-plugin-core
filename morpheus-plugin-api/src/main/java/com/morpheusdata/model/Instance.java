@@ -16,7 +16,6 @@ public class Instance extends InstanceIdentityProjection {
 	private String uuid;
 	private String description;
 	public String instanceTypeName;
-	public String instanceTypeCode;
 	public String provisionType;
 	public String layoutId;
 	public String layoutCode;
@@ -126,14 +125,6 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setInstanceTypeName(String instanceTypeName) {
 		this.instanceTypeName = instanceTypeName;
-	}
-
-	public String getInstanceTypeCode() {
-		return instanceTypeCode;
-	}
-
-	public void setInstanceTypeCode(String instanceTypeCode) {
-		this.instanceTypeCode = instanceTypeCode;
 	}
 
 	public String getProvisionType() {

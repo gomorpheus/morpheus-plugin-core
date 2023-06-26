@@ -1,7 +1,5 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.request.DeleteInstanceRequest;
@@ -32,6 +30,14 @@ public interface MorpheusInstanceService {
 	Observable<Instance> listById(Collection<Long> ids);
 
 	/**
+	 * Lists all {@link Instance} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param cloudId the cloud to filter the list of instances by.
+	 * @param externalIds a Collection of external Ids to filter the list of instances by
+	 * @return an RxJava Observable stream of {@link Instance} to be subscribed to.
+	 */
+	Observable<Instance> listByCloudAndExternalId(Long cloudId, Collection<String> externalIds);
+
+	/**
 	 * Get a list of {@link Instance} projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
@@ -51,6 +57,13 @@ public interface MorpheusInstanceService {
 	 * @return success
 	 */
 	Single<Boolean> create(List<Instance> instances);
+
+	/**
+	 * Create a new Instance in Morpheus
+	 * @param instance new Instance to persist
+	 * @return the Instance
+	 */
+	Single<Instance> create(Instance instance);
 
 	/**
 	 * Delete the existing Instance from Morpheus and the resources from the underlying Cloud.

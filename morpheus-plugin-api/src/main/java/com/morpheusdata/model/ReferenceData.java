@@ -148,17 +148,6 @@ public class ReferenceData extends ReferenceDataSyncProjection {
 		markDirty("description", description, this.description);
 	}
 
-	@Override
-	public String getInternalId() {
-		return internalId;
-	}
-
-	@Override
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
-		markDirty("internalId", internalId, this.internalId);
-	}
-
 	public String getRawData() {
 		return rawData;
 	}
