@@ -99,7 +99,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param network Network information
 	 * @return ServiceResponse
 	 */
-	ServiceResponse deleteNetwork(Network network);
+	ServiceResponse deleteNetwork(Network network, Map opts);
 
 	/**
 	 * Prepare the subnet information before validate, create, and update.
@@ -151,41 +151,19 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param network Network that this NetworkSubnet is attached to
 	 * @return ServiceResponse
 	 */
-	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network);
+	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network, Map opts);
 
 	/**
-	 * Validate the submitted NetworkRouter information.
-	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
-	 * bubbled up to the user.
-	 * @param router NetworkRouter information
-	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
-	 * creation
-	 * @return ServiceResponse
-	 */
-	default ServiceResponse validateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
-
-	/**
-	 * Create the NetworkRouter submitted
-	 * @param router NetworkRouter information
+	 * Prepare the route information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param network Network information
+	 * @param networkRoute NetworkRoute to prepare
+	 * @param routeConfig configuration options for the NetworkRoute
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRouter> createRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
-
-	/**
-	 * Update the NetworkRouter submitted
-	 * @param router NetworkRouter information
-	 * @param opts additional configuration options
-	 * @return ServiceResponse
-	 */
-	default ServiceResponse<NetworkRouter> updateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
-
-	/**
-	 * Delete the NetworkRouter submitted
-	 * @param router NetworkRouter information
-	 * @return ServiceResponse
-	 */
-	default ServiceResponse deleteRouter(NetworkRouter router) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> prepareNetworkRoute(Network network, NetworkRoute networkRoute, Map routeConfig, Map opts) { return ServiceResponse.success(); };
 
 	/**
 	 * Validate the submitted NetworkRoute information.
@@ -222,5 +200,106 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param networkRoute NetworkRoute information
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse deleteNetworkRoute(NetworkRoute networkRoute) { return ServiceResponse.success(); };
+	default ServiceResponse deleteNetworkRoute(NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+
+
+	/**
+	 * Prepare the router information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param router NetworkRouter information
+	 * @param routerConfig router configuration options
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<Network> prepareRouter(NetworkRouter router, Map routerConfig, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Validate the submitted NetworkRouter information.
+	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * bubbled up to the user.
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
+	 * creation
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse validateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Create the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<NetworkRouter> createRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Update the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<NetworkRouter> updateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Delete the NetworkRouter submitted
+	 * @param router NetworkRouter information
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+
+
+	/**
+	 * Prepare the route information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param router NetworkRouter information
+	 * @param route NetworkRoute to prepare
+	 * @param routeConfig configuration options for the NetworkRoute
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<NetworkRoute> prepareRouterRoute(NetworkRouter router, NetworkRoute route, Map routeConfig, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Validate the submitted NetworkRoute information.
+	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
+	 * bubbled up to the user.
+	 * @param router NetworkRouter information
+	 * @param route NetworkRoute information
+	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
+	 * creation
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse validateRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Create the NetworkRoute submitted
+	 * @param router NetworkRouter information
+	 * @param route NetworkRoute information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<NetworkRoute> createRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Update the NetworkRoute submitted
+	 * @param router NetworkRouter information
+	 * @param route NetworkRoute information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<NetworkRoute> updateRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+
+	/**
+	 * Delete the NetworkRoute submitted
+	 * @param router NetworkRouter information
+	 * @param route NetworkRoute information
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+
+
 }
