@@ -92,6 +92,8 @@ public interface MorpheusCloudService {
 
 	Single<Cloud> getCloudById(Long id);
 
+	Single<Cloud> getCloudByUUID(String uuid);
+
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
 
 	Single<Boolean> create(List<ReferenceData> referenceData, Cloud cloud, String category);
