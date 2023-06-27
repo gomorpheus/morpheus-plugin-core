@@ -78,8 +78,10 @@ public class Cloud extends CloudIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkSecurityServer securityServer; //integrated security service
 	protected String networkSecurityMode; // internal (to manage internal firewall for VMs) (ignored if securityServer is set - not used
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkServer networkServer; //virtual or physical network provider
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected CloudType type;
 	protected String backupMode = "internal"; //if backups are off,run by morpheus or a provider
 	//	public BackupProvider backupProvider; //integrated backup provider
 	//flags on if a cloud is ok to allow these types of provision - for ex, kvm needs a kvm host, kube mode need a master and 1 or more workers
@@ -738,4 +740,12 @@ public class Cloud extends CloudIdentityProjection {
 		markDirty("noProxy", noProxy);
 	}
 
+	public CloudType getType() {
+		return type;
+	}
+
+	public void setType(CloudType type) {
+		this.type = type;
+		markDirty("type", type);
+	}
 }

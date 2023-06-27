@@ -213,4 +213,11 @@ public interface CloudProvider extends PluginProvider {
 	 * @return the provision provider code
 	 */
 	default String getDefaultProvisionTypeCode() { return null; };
+
+	/**
+	 * Returns the default network code for fetching a {@link NetworkProvider} for this cloud.
+	 * This is only really necessary if the network type code is the exact same as the cloud code.
+	 * @return the network provider code
+	 */
+	default String getDefaultNetworkServerTypeCode() { return null; };
 }
