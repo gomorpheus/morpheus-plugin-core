@@ -108,6 +108,15 @@ public interface MorpheusStorageVolumeService {
 	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes, VirtualImageIdentityProjection virtualImage);
 
 	/**
+	 * Remove persisted StorageVolumes from Morpheus and remove them from the VirtualImage.
+	 * Typically called during sync operations for the cloud
+	 * to inform Morpheus that the StorageVolume no longer exists in the cloud
+	 * @param storageVolumes volumes to remove
+	 * @return success
+	 */
+	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes);
+
+	/**
 	 * Save updates to existing StorageVolumes
 	 * @param storageVolumes volumes to save
 	 * @return success
