@@ -18,7 +18,7 @@ class BackupStatsItemProvider extends AbstractDashboardItemTypeProvider {
 	Plugin plugin
 	MorpheusContext morpheusContext
 
-    BackupStatsItemProvider(Plugin plugin, MorpheusContext context) {
+	BackupStatsItemProvider(Plugin plugin, MorpheusContext context) {
 		this.plugin = plugin
 		this.morpheusContext = context
 	}

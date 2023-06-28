@@ -50,7 +50,7 @@ public class DataQuery {
   //if sort has been applied
   public Boolean sortApplied = false;
   //list of properties to load
-  public Collection properties;
+  public Collection propertyList = new ArrayList();
   //range query
   public Boolean rangeQuery = false;
   //range config

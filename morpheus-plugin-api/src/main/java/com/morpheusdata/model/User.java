@@ -14,20 +14,19 @@ import java.util.Map;
  * @author David Estes, Mike Truso
  */
 public class User extends MorpheusModel {
-	protected String username;
-    protected String firstName;
-    protected String lastName;
+
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-    protected Account account;
-    protected String email;
-    protected Boolean enabled;
-    protected Boolean accountLocked;
-    protected Boolean accountExpired;
-    protected Date lastLoginDate;
-    protected String linuxUsername;
-    protected String windowsUsername;
-
-
+  protected Account account;
+  protected String username;
+  protected String firstName;
+  protected String lastName;
+	protected String email;
+  protected Boolean enabled;
+  protected Boolean accountLocked;
+  protected Boolean accountExpired;
+  protected Date lastLoginDate;
+  protected String linuxUsername;
+  protected String windowsUsername;
 	protected Map<String, String> permissions;
 
 	/**
@@ -133,4 +132,5 @@ public class User extends MorpheusModel {
 	public void setPermissions(Map<String, String> permissions) {
 		this.permissions = permissions;
 	}
+	
 }
