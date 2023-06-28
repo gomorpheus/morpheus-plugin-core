@@ -42,6 +42,16 @@ public interface MorpheusNetworkDomainService {
 	Observable<NetworkDomainIdentityProjection> listIdentityProjections(Long accountIntegrationId);
 
 	/**
+	 * Lists all network domain projection objects for a specified integration id and region.
+	 * This is for amazon where each region has to be loaded separately .
+	 * The projection is a subset of the properties on a full {@link NetworkDomain} object for sync matching.
+	 * @param accountIntegrationId the {@link AccountIntegration} identifier associated to the domains to be listed.
+	 * @param region the The regionCode identifier to filter on
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkDomainIdentityProjection> listIdentityProjections(Long accountIntegrationId, String region);
+
+	/**
 	 * Lists all {@link NetworkDomain} objects by a list of Identifiers. This is commonly used in sync / caching logic.
 	 * @param ids list of ids to grab {@link NetworkDomain} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkDomain} to be subscribed to.

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface LoadBalancerProvider extends PluginProvider {
 	/**
-	 * Grabs the description for the CloudProvider
+	 * Grabs the description for the LoadBalancerProvider
 	 * @return String
 	 */
 	String getDescription();
@@ -47,6 +47,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @return ServiceResponse.  If ServiceResponse.success == false, ServiceResponse.errors will contain reasons.
 	 */
 	ServiceResponse validate(NetworkLoadBalancer loadBalancer, Map opts);
+	ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer);
+	ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer);
+	ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts);
 
 	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
 	ServiceResponse refresh(NetworkLoadBalancer loadBalancer);

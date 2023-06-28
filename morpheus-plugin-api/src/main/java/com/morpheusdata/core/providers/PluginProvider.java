@@ -9,7 +9,7 @@ import com.morpheusdata.core.Plugin;
  * base interface for providing core methods.
  * @author David Estes
  * @since 0.15.1
- * 
+ *
  */
 public interface PluginProvider {
 

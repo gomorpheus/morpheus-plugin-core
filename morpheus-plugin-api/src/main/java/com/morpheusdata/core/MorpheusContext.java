@@ -330,6 +330,12 @@ public interface MorpheusContext {
 	 */
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
 
+	/**
+	 * Returns the MorpheusAccountIntegrationService
+	 * @return an instance of the MorpheusAccountIntegrationService
+	 */
+	MorpheusAccountIntegrationService getAccountIntegration();
+
 	//Common methods used across various contexts
 
 	/**
