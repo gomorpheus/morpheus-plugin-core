@@ -81,6 +81,17 @@ public class DataQuery {
     this.parameters = parameters;
   }
 
+  public DataQuery(DatasetQuery datasetQuery) {
+    this.user = datasetQuery.user;
+    this.parameters = datasetQuery.parameters;
+    //dataset has a higher default max
+    if(datasetQuery.max != 100l)
+      this.max = datasetQuery.max;
+    this.offset = datasetQuery.offset;
+    this.sort = datasetQuery.sort;
+    this.order = datasetQuery.order;
+  }
+
   public Object putAt(String key, Object value) {
     return put(key, value);
   }

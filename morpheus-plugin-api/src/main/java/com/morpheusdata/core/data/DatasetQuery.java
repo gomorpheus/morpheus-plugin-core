@@ -19,8 +19,8 @@ public class DatasetQuery {
   public String key;
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
   //paging
-  public Integer max = 1000;
-  public Integer offset = 0;
+  public Long max = 100l;
+  public Long offset = 0l;
   public String sort;
   public String order;
   
