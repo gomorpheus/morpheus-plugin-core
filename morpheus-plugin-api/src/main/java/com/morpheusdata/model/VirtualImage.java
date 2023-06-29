@@ -17,9 +17,14 @@ import java.util.List;
 public class VirtualImage extends VirtualImageIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account owner;
 	protected String code;
 	protected String description;
 	protected String uniqueId;
+	protected String architecture;
+	protected String kernelId;
+	protected String hypervisor;
 	protected String category;
 	protected String externalType;
 	protected Boolean isPublic;
@@ -27,9 +32,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String bucketId;
 	protected Long minDisk;
 	protected Long minRam;
+	protected String ramdiskId;
+	protected String rootDeviceName;
+	protected String rootDeviceType;
+	protected String enhancedNetwork;
+	protected String virtualizationType;
 	protected String internalId;
 	protected String remotePath;
 	protected String status;
+	protected String statusReason;
 	@JsonIgnore
 	protected List<String> locations;
 	protected OsType osType;
@@ -46,6 +57,9 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
 	protected String interfaceName = "eth0";
+	protected String tags;
+	protected String blockDeviceConfig;
+	protected String productCode;
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -87,6 +101,33 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 		markDirty("uniqueId", uniqueId);
+	}
+
+	public String getArchitecture() {
+		return architecture;
+	}
+
+	public void setArchitecture(String architecture) {
+		this.architecture = architecture;
+		markDirty("architecture", architecture);
+	}
+
+	public String getKernelId() {
+		return kernelId;
+	}
+
+	public void setKernelId(String kernelId) {
+		this.kernelId = kernelId;
+		markDirty("kernelId", kernelId);
+	}
+
+	public String getHypervisor() {
+		return hypervisor;
+	}
+
+	public void setHypervisor(String hypervisor) {
+		this.hypervisor = hypervisor;
+		markDirty("hypervisor", hypervisor);
 	}
 
 	public String getCategory() {
@@ -234,6 +275,28 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		this.minRam = minRam;
 	}
 
+	public String getRamdiskId() { return ramdiskId; }
+
+	public void setRamdiskId(String ramdiskId) { this.ramdiskId = ramdiskId; }
+
+	public String getRootDeviceName() { return rootDeviceName; }
+
+	public void setRootDeviceName(String rootDeviceName) { this.rootDeviceName = rootDeviceName; }
+
+	public String getRootDeviceType() { return rootDeviceType; }
+
+	public void setRootDeviceType(String rootDeviceType) { this.rootDeviceType = rootDeviceType; }
+
+	public String getEnhancedNetwork() { return enhancedNetwork; }
+
+	public void setEnhancedNetwork(String enhancedNetwork) { this.enhancedNetwork = enhancedNetwork; }
+
+	public String getVirtualizationType() { return virtualizationType; }
+
+	public void setVirtualizationType(String virtualizationType) {
+		this.virtualizationType = virtualizationType;
+	}
+
 	public String getInternalId() {
 		return internalId;
 	}
@@ -256,6 +319,14 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getStatusReason() {
+		return statusReason;
+	}
+
+	public void setStatusReason(String statusReason) {
+		this.statusReason = statusReason;
 	}
 
 	public Boolean getForceCustomization() {
@@ -325,6 +396,22 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		this.interfaceName = interfaceName;
 	}
 
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+		markDirty("tags",tags);
+	}
+
+	public String getBlockDeviceConfig() { return blockDeviceConfig; }
+
+	public void setBlockDeviceConfig(String config) { this.blockDeviceConfig = config; }
+
+	public String getProductCode() { return productCode; }
+
+	public void setProductCode(String code) { this.productCode = code; }
 
 	public Boolean getUserUploaded() {
 		return userUploaded;

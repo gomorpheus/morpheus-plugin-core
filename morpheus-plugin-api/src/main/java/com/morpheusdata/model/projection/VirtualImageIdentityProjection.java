@@ -21,6 +21,7 @@ public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	protected Boolean systemImage;
 	protected Boolean deleted;
 	protected String visibility;
+	protected String externalDiskId;
 
 	public String getExternalId() {
 		return externalId;
@@ -97,4 +98,10 @@ public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
 	}
+
+	public String getExternalDiskId() {
+		return externalDiskId;
+	}
+
+	public void setExternalDiskId(String externalDiskId) { this.externalDiskId = externalDiskId; }
 }
