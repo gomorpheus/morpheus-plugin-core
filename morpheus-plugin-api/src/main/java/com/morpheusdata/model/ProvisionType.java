@@ -9,11 +9,11 @@ public class ProvisionType extends MorpheusModel {
 	protected String serverType; //'morpheus-node' // 'ami', 'vm', 'unmanaged';
 	protected String nodeFormat;
 	protected String provisionService;
-	protected Boolean pickServer = false; //do we choose a server to provision too;
-	protected Boolean createServer = false; //do we create a compute server for each instance;
-	protected Boolean aclEnabled = true; //do we control the firewall;
-	protected Boolean multiTenant = true; //more than one instance on a box;
-	protected Boolean hostNetwork = true; //is the network on host or an overlay;
+	protected Boolean pickServer; //do we choose a server to provision too;
+	protected Boolean createServer; //do we create a compute server for each instance;
+	protected Boolean aclEnabled; //do we control the firewall;
+	protected Boolean multiTenant; //more than one instance on a box;
+	protected Boolean hostNetwork; //is the network on host or an overlay;
 	protected Boolean managed = false; //is morpheus provisioning;
 	protected Boolean customSupported = false; //byoc allowed;
 	protected Boolean mapPorts = false;

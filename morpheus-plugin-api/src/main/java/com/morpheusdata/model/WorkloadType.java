@@ -9,7 +9,7 @@ import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
 
-public class WorkloadType extends MorpheusModel {
+public class WorkloadType extends MorpheusModel implements IModelUuidCodeName {
 
 	//owndership
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)

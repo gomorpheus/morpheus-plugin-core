@@ -19,11 +19,11 @@ import java.util.List;
 public interface MorpheusDataService<T> {
 
 	//crud operations
-	Single<Boolean> create(T item);
+	Single<T> create(T item);
 
 	Single<Boolean> create(List<T> items);
 
-	Single<Boolean> save(T item);
+	Single<T> save(T item);
 
 	Single<Boolean> save(List<T> items);
 
@@ -32,7 +32,9 @@ public interface MorpheusDataService<T> {
 	Single<Boolean> remove(List<T> items);
 
 	//generic list and get
-	Single<T> get(Long id);
+	Single<Long> count(DataQuery query);
+
+	Maybe<T> get(Long id);
 
 	Observable<T> listById(List<Long> ids);
 
