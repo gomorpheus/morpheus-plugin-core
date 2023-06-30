@@ -2,67 +2,36 @@ package com.morpheusdata.core.data;
 
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.util.ApiParameterMap;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.projection.UserIdentity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * This is the query object to use to list data from a {@link MorpheusDataService}
+ * This is the query object to use to query data from a {@link MorpheusDataService}
+ * requires the user that is requesting data
+ * optionally pass a phrase as a search query and a map of filters
  * @author bdwheeler
  * @since 0.15.1
  */
 public class DataQuery {
-
+  
   //user executing the query
-  public User user;
-  //the actual query object - ie detached criteria if used in gorm
-  public Object query; 
-  //the search phrase
-  public String phrase;
-  //api map of input parameters
-  public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
-  //valid flag
-  public Boolean valid;
-  //success flag
-  public Boolean success;
-  //join configuration
-  public Collection joinList;
+  public UserIdentity user;
   //query mode - group, stats, query
-  public String mode;
-  //input columns
-  public Collection columns;
-  //optional view configurations
-  public Collection views;
-  //input filters
+  public String mode = "query";
+  //optional search phrase - ie: "type = 'typeValue' and name = 'fred'"
+  public String phrase;
+  //optional map of equal operator filter criteria query ie [type:'typeValue', name:'fred']
+  public Map query;
+  //api map of input parameters
+  //todo - document the parameters the query engine checks in this map
+  public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
+  //input filters - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
   public Collection filters = new ArrayList();
-  //applied filters
-  public Collection appliedFilters = new ArrayList();
-  //configured groupings
-  public Collection groups = new ArrayList();
-  //configured stats
-  public Collection stats = new ArrayList();
-  //alias ids used in query
-  public Collection aliasIds = new ArrayList();
-  //list of sort config
-  public Collection sorts;
-  //if sort has been applied
-  public Boolean sortApplied = false;
-  //list of properties to load
+  //list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
   public Collection propertyList = new ArrayList();
-  //range query
-  public Boolean rangeQuery = false;
-  //range config
-  public Map range;
-  //options used to pass paging and sort into the list methods on execution
-  public Map queryOptions;
-  //view / query config
-  public Map config;
-  //used during execution
-  public Class queryClass;
-  //optional name of item list
-  public String itemField;
 
   //paging - broken out - can get as a map with getPageConfig
   public Long max = 25l;
@@ -72,11 +41,11 @@ public class DataQuery {
   
   public DataQuery() {}
 
-  public DataQuery(User user) {
+  public DataQuery(UserIdentity user) {
     this.user = user;
   }
 
-  public DataQuery(User user, ApiParameterMap<String, Object> parameters) {
+  public DataQuery(UserIdentity user, ApiParameterMap<String, Object> parameters) {
     this.user = user;
     this.parameters = parameters;
   }
@@ -122,34 +91,18 @@ public class DataQuery {
 
   public Map toMap() {
     Map rtn = new LinkedHashMap();
-    rtn.put("valid", valid);
-    rtn.put("success", success);
     if(query != null)
       rtn.put("query", query);
     if(phrase != null)
       rtn.put("phrase", phrase);
-    if(parameters != null)
-      rtn.put("parameters", parameters);
-    if(joinList != null)
-      rtn.put("joinList", joinList);
-    if(mode != null)
-      rtn.put("mode", mode);
-    if(columns != null)
-      rtn.put("columns", columns);
     if(filters != null)
       rtn.put("filters", filters);
-    if(appliedFilters != null)
-      rtn.put("appliedFilters", appliedFilters);
-    if(groups != null)
-      rtn.put("groups", groups);
-    if(stats != null)
-      rtn.put("stats", stats);
-    if(aliasIds != null)
-      rtn.put("aliasIds", aliasIds);
-    if(queryOptions != null)
-      rtn.put("queryOptions", queryOptions);
-    if(config != null)
-      rtn.put("config", config);
+    if(parameters != null)
+      rtn.put("parameters", parameters);
+    if(mode != null)
+      rtn.put("mode", mode);
+    if(filters != null)
+      rtn.put("filters", filters);
     //page config
     rtn.put("pageConfig", getPageConfig());
     //done
