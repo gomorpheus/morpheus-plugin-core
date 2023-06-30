@@ -1,15 +1,13 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.MetadataTag;
+import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.Snapshot;
 import com.morpheusdata.model.StorageVolume;
-import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.SnapshotIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,22 +20,31 @@ public interface MorpheusSnapshotService {
 	 * @param ids list of ids
 	 * @return Observable list of Snapshots
 	 */
+	Observable<Snapshot> listById(List<Long> ids);
+
+	/**
+	 * Fetch the Snapshots given a list of ids
+	 * @param ids list of ids
+	 * @return Observable list of Snapshots
+	 */
 	Observable<Snapshot> listByIds(List<Long> ids);
 
+	/**
+	 * Get a list of Snapshot projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @return Observable stream of sync projections
+	 */
+	Observable<SnapshotIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
 
 	/**
 	 * Get a list of Snapshot projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long, String)}}
 	 */
+	@Deprecated
 	Observable<SnapshotIdentityProjection> listSyncProjections(Long cloudId);
-
-//	/**
-//	 * Fetch the Snapshots that have their parentSnapshot set to parentId
-//	 * @param parentId of the parent Snapshot
-//	 * @return Observable list of Snapshots
-//	 */
-//	Observable<Snapshot> listByChildrenOf(Long parentId);
 
 	/**
 	 * Create and return a new Snapshot in Morpheus
@@ -59,6 +66,14 @@ public interface MorpheusSnapshotService {
 	 * @return whether the save was successful
 	 */
 	Single<Boolean> save(List<Snapshot> snapshots);
+
+	/**
+	 * Remove the existing Snapshot from Morpheus. This will remove it from all associations (ComputeServer,
+	 * StorageVolume, etc) and then delete the Snapshot from Morpheus
+	 * @param snapshots existing Snapshots to remove
+	 * @return success
+	 */
+	Single<Boolean> remove(List<SnapshotIdentityProjection> snapshots);
 
 	/**
 	 * Add the existing Snapshot to the ComputeServer
