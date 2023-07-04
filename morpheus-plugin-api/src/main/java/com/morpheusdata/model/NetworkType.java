@@ -30,6 +30,7 @@ public class NetworkType extends MorpheusModel {
 	private Boolean hasCidr = true;
 	protected Boolean hasNetworkServer = false;
 	protected Boolean cidrRequired = false;
+	protected Boolean ipv6Editable = true;
 	private List<NetworkSubnetType> subnetTypes = new ArrayList<>();
 	private List<OptionType> optionTypes = new ArrayList<>();
 
@@ -209,5 +210,14 @@ public class NetworkType extends MorpheusModel {
 
 	public void setCidrRequired(Boolean cidrRequired) {
 		this.cidrRequired = cidrRequired;
+	}
+
+	public Boolean getIpv6Editable() {
+		return ipv6Editable;
+	}
+
+	public void setIpv6Editable(Boolean ipv6Editable) {
+		this.ipv6Editable = ipv6Editable;
+		markDirty("ipv6Editable", ipv6Editable, this.ipv6Editable);
 	}
 }
