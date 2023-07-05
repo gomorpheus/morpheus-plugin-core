@@ -1,7 +1,7 @@
 package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.cloud.MorpheusCloudService;
-import com.morpheusdata.model.projection.MorpheusIdentityModel;
+import java.util.Map;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.Instance} object for doing a sync match
@@ -14,7 +14,24 @@ public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	protected String name;
 	protected String externalId;
 	public String instanceTypeCode;
+	protected String internalId;
+	public String status;
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
 
 	public String getExternalId() {
 		return externalId;

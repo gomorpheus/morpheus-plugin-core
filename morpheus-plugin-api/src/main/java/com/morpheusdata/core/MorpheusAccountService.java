@@ -39,6 +39,14 @@ public interface MorpheusAccountService {
 	Observable<AccountIdentityProjection> listIdentityProjections(Plugin plugin);
 
 	/**
+	 * Get a list of {@link Account} projections based on Plugin
+	 * @param plugin Plugin owning the accounts
+	 * @return Observable stream of sync projection
+	 */
+	Observable<AccountIdentityProjection> listIdentityProjections(Plugin plugin, Boolean active, Boolean includeConfig);
+
+
+	/**
 	 * Lists all {@link Account} objects by a list of Identifiers. This is commonly used in sync / caching logic.
 	 * @param externalIds a Collection of external Ids to filter the list of Accounts by
 	 * @return an RxJava Observable stream of {@link Account} to be subscribed to.
@@ -71,4 +79,14 @@ public interface MorpheusAccountService {
 	 * @return the Account
 	 */
 	Single<Account> create(Account account, Plugin plugin, List<Map<String, Object>> users, List<ComputeSite> sites);
-}
+
+	/**
+	 * Add users to an account
+	 * @param account Account to update
+	 * @param plugin Plugin owning the account
+	 * @param users users to add into account
+	 * @return the Account
+	 */
+	Single<Account> addUsers(Account account, Plugin plugin, List<Map<String, Object>> users);
+
+	}

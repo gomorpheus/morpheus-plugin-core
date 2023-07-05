@@ -23,6 +23,14 @@ public interface MorpheusInstanceService {
 	Single<Instance> get(Long id);
 
 	/**
+	 * Get a {@link InstanceIdentityProjection} by id.
+	 * @param id Instance id
+	 * @return Observable stream of sync projection
+	 */
+	Single<InstanceIdentityProjection> getProjection(Long id);
+
+
+	/**
 	 * Get a list of Instance objects from a list of ids
 	 * @param ids Instance ids
 	 * @return Observable stream of Instance
@@ -43,6 +51,20 @@ public interface MorpheusInstanceService {
 	 * @return Observable stream of sync projection
 	 */
 	Observable<InstanceIdentityProjection> listIdentityProjections(Long cloudId);
+
+	/**
+	 * Get a list of {@link Instance} projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projection
+	 */
+	Observable<InstanceIdentityProjection> listIdentityProjections(Long cloudId, Long accountId, String instanceTypeCode);
+
+	/**
+	 * Get a list of {@link Instance} projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projection
+	 */
+	Observable<InstanceIdentityProjection> listIdentityProjections(Long cloudId, Long accountId, String instanceTypeCode, Boolean includeConfig);
 
 	/**
 	 * Save updates to existing Instance

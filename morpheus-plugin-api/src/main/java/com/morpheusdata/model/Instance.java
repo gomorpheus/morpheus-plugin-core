@@ -30,7 +30,6 @@ public class Instance extends InstanceIdentityProjection {
 	//public String domainName;
 	//public String assignedDomainName;
 	public Boolean firewallEnabled;
-	public String status;
 	public String userStatus;
 	public String scheduleStatus;
 	public String networkLevel;
@@ -65,7 +64,6 @@ public class Instance extends InstanceIdentityProjection {
 	public List<UserGroup> userGroups;
 	protected List<MetadataTag> metadata;
 	public String externalId;
-	public String internalId;
 
 	public String getExternalId() {
 		return externalId;
@@ -189,14 +187,6 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setFirewallEnabled(Boolean firewallEnabled) {
 		this.firewallEnabled = firewallEnabled;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public String getUserStatus() {
