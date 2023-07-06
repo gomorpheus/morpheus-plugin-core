@@ -282,6 +282,12 @@ public interface MorpheusContext {
 	MorpheusAccountCredentialService getAccountCredential();
 
 	/**
+	 * Returns the MorpheusKeyPairService
+	 * @return An instance of the MorpheusKeyPairService
+	 */
+	MorpheusKeyPairService getKeyPair();
+
+	/**
 	 * Returns the SecurityGroup Service
 	 *
 	 * @return An instance of the SecurityGroup Service
