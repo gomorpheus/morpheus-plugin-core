@@ -16,6 +16,24 @@ public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	public String instanceTypeCode;
 	protected String internalId;
 	public String status;
+	public String planCode;
+	public String layoutCode;
+
+	public String getLayoutCode() {
+		return layoutCode;
+	}
+
+	public void setLayoutCode(String layoutCode) {
+		this.layoutCode = layoutCode;
+	}
+
+	public String getPlanCode() {
+		return planCode;
+	}
+
+	public void setPlanCode(String planCode) {
+		this.planCode = planCode;
+	}
 
 	public String getStatus() {
 		return status;

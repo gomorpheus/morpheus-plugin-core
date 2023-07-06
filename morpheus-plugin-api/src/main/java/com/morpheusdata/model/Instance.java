@@ -18,7 +18,6 @@ public class Instance extends InstanceIdentityProjection {
 	public String instanceTypeName;
 	public String provisionType;
 	public String layoutId;
-	public String layoutCode;
 	public String layoutName;
 	public String instanceVersion;
 
@@ -139,14 +138,6 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setLayoutId(String layoutId) {
 		this.layoutId = layoutId;
-	}
-
-	public String getLayoutCode() {
-		return layoutCode;
-	}
-
-	public void setLayoutCode(String layoutCode) {
-		this.layoutCode = layoutCode;
 	}
 
 	public String getLayoutName() {
