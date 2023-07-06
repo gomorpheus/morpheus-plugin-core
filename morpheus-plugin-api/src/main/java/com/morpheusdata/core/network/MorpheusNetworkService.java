@@ -110,6 +110,15 @@ public interface MorpheusNetworkService {
 	 * Lists all network projection objects for a specified cloud.
 	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
 	 * @param cloudId the id of the {@link Cloud} associated to the domains to be listed.
+	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
+
+	/**
+	 * Lists all network projection objects for a specified cloud.
+	 * The projection is a subset of the properties on a full {@link Network} object for sync matching.
+	 * @param cloudId the id of the {@link Cloud} associated to the domains to be listed.
 	 * @param zonePoolId the id of the {@link ComputeZonePool} that this network may be scoped to. NOTE: if a network is associated with many assignedZonePools this field zonePoolId is not used.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */

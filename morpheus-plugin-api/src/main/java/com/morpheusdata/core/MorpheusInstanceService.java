@@ -44,4 +44,11 @@ public interface MorpheusInstanceService {
 	 * will not capture any underlying errors experienced asynchronously.
 	 */
 	Single<ServiceResponse> delete(Instance instance, DeleteInstanceRequest deleteRequest);
+
+	/**
+	 * Returns the Instance Scale Service
+	 *
+	 * @return An instance of the Instance Scale Service
+	 */
+	MorpheusInstanceScaleService getScale();
 }
