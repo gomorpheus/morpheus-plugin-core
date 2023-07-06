@@ -23,12 +23,12 @@ public class DataQuery {
   public String mode = "query";
   //optional search phrase - ie: "type = 'typeValue' and name = 'fred'"
   public String phrase;
-  //optional map of equal operator filter criteria query ie [type:'typeValue', name:'fred']
-  public Map query;
   //api map of input parameters
   //todo - document the parameters the query engine checks in this map
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
-  //input filters - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
+  //optional input filter map of equal operator criteria query ie [type:'typeValue', name:'fred']
+  public Map filter;
+  //list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
   public Collection filters = new ArrayList();
   //list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
   public Collection propertyList = new ArrayList();
@@ -91,8 +91,8 @@ public class DataQuery {
 
   public Map toMap() {
     Map rtn = new LinkedHashMap();
-    if(query != null)
-      rtn.put("query", query);
+    if(filter != null)
+      rtn.put("filter", filter);
     if(phrase != null)
       rtn.put("phrase", phrase);
     if(filters != null)

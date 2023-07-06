@@ -9,6 +9,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides a standard base service interface to extends so all services provide consistent crud methods and finders
@@ -39,7 +40,9 @@ public interface MorpheusDataService<T> {
 	Observable<T> listById(List<Long> ids);
 
 	Observable<T> list(DataQuery query);
-	
+
+	Observable<Map> listOptions(DataQuery query);
+
 	default Maybe<T> find(DataQuery query) {
 		return list(query).firstElement();
 	}
