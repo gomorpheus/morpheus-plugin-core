@@ -9,6 +9,7 @@ import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusComputeTypeSetService
 import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
+import com.morpheusdata.core.MorpheusKeyPairService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
 import com.morpheusdata.core.MorpheusReferenceDataService
@@ -435,6 +436,11 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusAccountCredentialService getAccountCredential() {
+		return null
+	}
+
+	@Override
+	MorpheusKeyPairService getKeyPair() {
 		return null
 	}
 
