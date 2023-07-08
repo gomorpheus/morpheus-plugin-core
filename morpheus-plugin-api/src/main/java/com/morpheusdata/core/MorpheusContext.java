@@ -479,4 +479,13 @@ public interface MorpheusContext {
 	 */
 	Single<Boolean> releaseLock(String name, Map<String,Object> opts);
 
+	/**
+	 * Checks to see if a lock exists
+	 * It takes an optional set of opts for additional namespace requirements (typically not required)
+	 * @param name the key name of the lock to release
+	 * @param opts the opts map for the namespace args [namespace:x]
+	 * @return if lock exists Boolean
+	 */
+	Single<Boolean> checkLock(String name, Map<String,Object> opts);
+
 }

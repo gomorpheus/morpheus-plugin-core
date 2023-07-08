@@ -18,6 +18,15 @@ public class InstanceIdentityProjection extends MorpheusIdentityModel {
 	public String status;
 	public String planCode;
 	public String layoutCode;
+	public long accountId;
+
+	public long getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(long accountId) {
+		this.accountId = accountId;
+	}
 
 	public String getLayoutCode() {
 		return layoutCode;
