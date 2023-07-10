@@ -69,7 +69,7 @@ public class LoadBalancerNodeIdentityProjection extends MorpheusIdentityModel {
 
 	/**
 	 * This returns the nodes state (disabled, etc)
-	 * @return
+	 * @return a string representation of the node state
 	 */
 	public String getNodeState() {
 		return nodeState;
@@ -82,7 +82,7 @@ public class LoadBalancerNodeIdentityProjection extends MorpheusIdentityModel {
 
 	/**
 	 * Description of the load balancer node
-	 * @return
+	 * @return description of the node
 	 */
 	public String getDescription() {
 		return description;

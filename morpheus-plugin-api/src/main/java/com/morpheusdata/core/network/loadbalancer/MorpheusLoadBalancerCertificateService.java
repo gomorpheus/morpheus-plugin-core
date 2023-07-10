@@ -17,6 +17,7 @@ public interface MorpheusLoadBalancerCertificateService {
 	 * Get a list of {@link com.morpheusdata.model.ReferenceData} projections based on NetworkLoadBalancer id
 	 *
 	 * @param loadBalancerId the id of the load balancer
+	 * @param objCategory an additional category used for sync comparisons
 	 * @return Observable stream of sync projection
 	 */
 	Observable<ReferenceDataSyncProjection> listSyncProjections(Long loadBalancerId, String objCategory);
@@ -64,7 +65,7 @@ public interface MorpheusLoadBalancerCertificateService {
 	/**
 	 * This method will return a map containing details about an account certificate.  The source of the details may
 	 * come from morpheus or another existing certificate integration if applicable
-	 * @param cert
+	 * @param cert {@link AccountCertificate}
 	 * @return a Map containing details about an account certificate
 	 */
 	Single<Map> getCertificateContent(AccountCertificate cert);

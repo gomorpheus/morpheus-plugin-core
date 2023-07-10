@@ -44,10 +44,13 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * Validates the user submitted load balancer connection information to ensure the appliance can communicate with it.
 	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
 	 * bubbled up to the user.
+	 * @param loadBalancer {@link NetworkLoadBalancer}
+	 * @param opts a map of additional optional properties
 	 * @return ServiceResponse.  If ServiceResponse.success == false, ServiceResponse.errors will contain reasons.
 	 */
 	ServiceResponse validate(NetworkLoadBalancer loadBalancer, Map opts);
 	ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer);
+	ServiceResponse deleteLoadBalancer(NetworkLoadBalancer loadBalancer);
 	ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer);
 	ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts);
 
@@ -59,48 +62,48 @@ public interface LoadBalancerProvider extends PluginProvider {
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a profile
 	 * within the provider using the {@link NetworkLoadBalancerProfile} model.
-	 * @param profile
-	 * @return
+	 * @param profile {@link NetworkLoadBalancerProfile}
+	 * @return {@link ServiceResponse}
 	 */
 
 	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile);
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a profile
 	 * within the provider using the {@link NetworkLoadBalancerProfile} model.
-	 * @param profile
-	 * @return
+	 * @param profile {@link NetworkLoadBalancerProfile}
+	 * @return {@link ServiceResponse}
 	 */
 
 	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile);
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a profile
 	 * within the provider using the {@link NetworkLoadBalancerProfile} model.
-	 * @param profile
-	 * @return
+	 * @param profile {@link NetworkLoadBalancerProfile}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateLoadBalancerProfile(NetworkLoadBalancerProfile profile);
 
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a health monitor
 	 * within the provider using the {@link NetworkLoadBalancerMonitor} model
-	 * @param monitor
-	 * @return
+	 * @param monitor {@link NetworkLoadBalancerMonitor}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a health monitor
 	 * within the provider using the {@link NetworkLoadBalancerMonitor} model
-	 * @param monitor
-	 * @return
+	 * @param monitor {@link NetworkLoadBalancerMonitor}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a health monitor
 	 * within the provider using the {@link NetworkLoadBalancerMonitor} model
-	 * @param monitor
-	 * @return
+	 * @param monitor {@link NetworkLoadBalancerMonitor}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
 	ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
@@ -116,24 +119,24 @@ public interface LoadBalancerProvider extends PluginProvider {
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a node
 	 * within the provider using the {@link NetworkLoadBalancerNode} model
-	 * @param node
-	 * @return
+	 * @param node {@link NetworkLoadBalancerNode}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse createLoadBalancerNode(NetworkLoadBalancerNode node);
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a node
 	 * within the provider using the {@link NetworkLoadBalancerNode} model
-	 * @param node
-	 * @return
+	 * @param node {@link NetworkLoadBalancerNode}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode node);
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a node
 	 * within the provider using the {@link NetworkLoadBalancerNode} model
-	 * @param node
-	 * @return
+	 * @param node {@link NetworkLoadBalancerNode}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node);
 	ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node);
@@ -141,24 +144,24 @@ public interface LoadBalancerProvider extends PluginProvider {
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a pool
 	 * within the provider using the {@link NetworkLoadBalancerPool} model
-	 * @param pool
-	 * @return
+	 * @param pool {@link NetworkLoadBalancerPool}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse createLoadBalancerPool(NetworkLoadBalancerPool pool);
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a pool
 	 * within the provider using the {@link NetworkLoadBalancerPool} model
-	 * @param pool
-	 * @return
+	 * @param pool {@link NetworkLoadBalancerPool}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse deleteLoadBalancerPool(NetworkLoadBalancerPool pool);
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a pool
 	 * within the provider using the {@link NetworkLoadBalancerPool} model
-	 * @param pool
-	 * @return
+	 * @param pool {@link NetworkLoadBalancerPool}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool);
 	ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool);
@@ -166,24 +169,24 @@ public interface LoadBalancerProvider extends PluginProvider {
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a virtual server
 	 * within the provider using the {@link NetworkLoadBalancerInstance} model
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a virtual server
 	 * within the provider using the {@link NetworkLoadBalancerInstance} model
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a virtual server
 	 * within the provider using the {@link NetworkLoadBalancerInstance} model
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
@@ -193,24 +196,24 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * Implement this method to handle morpheus setting up a load balancer pool from a morpheus instance.  This operation
 	 * should handle every operation necessary to setup a load balanced pool for one or more vms/containers within a morpheus
 	 * instance
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse addInstance(NetworkLoadBalancerInstance instance);
 
 	/**
 	 * Implement this method to remove all entities involved in a {@link NetworkLoadBalancerInstance} such ass policies, pools,
 	 * profiles, nodes, virtual servers, etc.  This method should clean said entities from the load balancer integration itself
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse removeInstance(NetworkLoadBalancerInstance instance);
 
 	/**
 	 * Implement this method to update all entities involved in a {@link NetworkLoadBalancerInstance} such as policies, pools,
 	 * profiles, nodes, virtual servers, etc.  This method is usually called when a node is added/removed from an instance
-	 * @param instance
-	 * @return
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
 	 */
 	ServiceResponse updateInstance(NetworkLoadBalancerInstance instance);
 }
