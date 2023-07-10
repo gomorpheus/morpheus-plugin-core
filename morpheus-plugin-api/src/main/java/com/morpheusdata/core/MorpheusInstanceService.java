@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.Instance;
 import com.morpheusdata.request.DeleteInstanceRequest;
 import com.morpheusdata.response.ServiceResponse;
@@ -44,6 +45,8 @@ public interface MorpheusInstanceService {
 	 * will not capture any underlying errors experienced asynchronously.
 	 */
 	Single<ServiceResponse> delete(Instance instance, DeleteInstanceRequest deleteRequest);
+
+	Observable<Cloud> getInstanceClouds(Instance instance);
 
 	/**
 	 * Returns the Instance Scale Service
