@@ -187,6 +187,7 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 */
 	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance);
 
 	/**
 	 * Implement this method to handle morpheus setting up a load balancer pool from a morpheus instance.  This operation
