@@ -3,11 +3,13 @@ package com.morpheusdata.core.network.loadbalancer;
 import com.morpheusdata.model.AccountCertificate;
 import com.morpheusdata.model.ReferenceData;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface MorpheusLoadBalancerCertificateService {
@@ -15,6 +17,7 @@ public interface MorpheusLoadBalancerCertificateService {
 	 * Get a list of {@link com.morpheusdata.model.ReferenceData} projections based on NetworkLoadBalancer id
 	 *
 	 * @param loadBalancerId the id of the load balancer
+	 * @param objCategory an additional category used for sync comparisons
 	 * @return Observable stream of sync projection
 	 */
 	Observable<ReferenceDataSyncProjection> listSyncProjections(Long loadBalancerId, String objCategory);
@@ -58,6 +61,14 @@ public interface MorpheusLoadBalancerCertificateService {
 	Single<ReferenceData> createCertInstallToken(AccountCertificate cert, String name, String category);
 
 	Single<Boolean> expireCertInstallToken(ReferenceData token);
+
+	/**
+	 * This method will return a map containing details about an account certificate.  The source of the details may
+	 * come from morpheus or another existing certificate integration if applicable
+	 * @param cert {@link AccountCertificate}
+	 * @return a Map containing details about an account certificate
+	 */
+	Single<Map> getCertificateContent(AccountCertificate cert);
 
 	String getSslInstallTokenName();
 }

@@ -56,7 +56,7 @@ public class LoadBalancerMonitorIdentityProjection extends MorpheusIdentityModel
 
 	/**
 	 * Returns a code describing the monitor type (will vary based on load balancer provider)
-	 * @return
+	 * @return description of monitor type
 	 */
 	public String getMonitorType() {
 		return monitorType;
@@ -69,7 +69,7 @@ public class LoadBalancerMonitorIdentityProjection extends MorpheusIdentityModel
 
 	/**
 	 * The partition that the health monitor belongs to
-	 * @return
+	 * @return the partition that the health monitor belongs to
 	 */
 	public String getPartition() {
 		return partition;
