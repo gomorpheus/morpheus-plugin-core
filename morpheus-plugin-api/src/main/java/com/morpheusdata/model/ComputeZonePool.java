@@ -18,7 +18,6 @@ public class ComputeZonePool extends ComputeZonePoolIdentityProjection {
 	public String rawData;
 	public String type = "default";
 	public String description;
-	public String regionCode;
 	public String refType;
 	public Long refId;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)

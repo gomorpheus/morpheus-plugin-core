@@ -19,6 +19,7 @@ public class ComputeZonePoolIdentityProjection extends MorpheusIdentityModel {
 	protected String category;
 	protected Long ownerId;
 	protected Boolean inventory = true;
+	protected String regionCode;
 
 	public String getType() {
 		return type;
@@ -90,5 +91,14 @@ public class ComputeZonePoolIdentityProjection extends MorpheusIdentityModel {
 	public void setInventory(Boolean inventory) {
 		this.inventory = inventory;
 		markDirty("inventory", inventory);
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
+		markDirty("regionCode", regionCode);
 	}
 }

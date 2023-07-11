@@ -3,10 +3,12 @@ package com.morpheusdata.core.network;
 import com.morpheusdata.model.NetworkRoute;
 import com.morpheusdata.model.NetworkRouter;
 import com.morpheusdata.model.projection.NetworkRouteIdentityProjection;
+import com.morpheusdata.model.projection.NetworkRouteTableIdentityProjection;
 import com.morpheusdata.model.projection.NetworkRouterIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,6 +23,21 @@ import java.util.List;
  *
  */
 public interface MorpheusNetworkRouteService {
+
+	/**
+	 * Lists NetworkRouteIdentityProjections for a specified network route table.
+	 * The projection is a subset of the properties on a full {@link NetworkRoute} object for sync matching.
+	 * @param routeTable the {@link NetworkRouteTableIdentityProjection} identifier associated to the route table to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkRouteIdentityProjection> listIdentityProjections(NetworkRouteTableIdentityProjection routeTable);
+
+	/**
+	 * Lists all {@link NetworkRoute} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * @param ids list of ids to grab {@link NetworkRoute} objects from.
+	 * @return an RxJava Observable stream of {@link NetworkRoute} to be subscribed to.
+	 */
+	Observable<NetworkRoute> listById(Collection<Long> ids);
 
 	/**
 	 * Removes Missing Network Routes on the Morpheus side. This accepts the Projection Object instead of the main Object.
@@ -48,5 +65,5 @@ public interface MorpheusNetworkRouteService {
 	 * @param networkRoute the Network Route we wish to persist changes to
 	 * @return the resultant Host Record Object containing any additional metadata that may have been applied
 	 */
-	Single<NetworkRoute> save(NetworkRoute networkRoute);
+	Single<NetworkRoute> save(NetworkRouterIdentityProjection networkRouter, NetworkRoute networkRoute);
 }
