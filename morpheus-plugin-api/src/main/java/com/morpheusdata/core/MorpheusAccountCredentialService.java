@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Context methods for AccountCredential
  */
-public interface MorpheusAccountCredentialService {
+public interface MorpheusAccountCredentialService extends MorpheusDataService<AccountCredential> {
 
 	/**
 	 * A utility method to loads credential data config from the args of an input form.
@@ -19,10 +19,4 @@ public interface MorpheusAccountCredentialService {
 	 */
 	Single<Map> loadCredentialConfig(Map credentialConfig, Map refConfig);
 
-	/**
-	 * Load the AccountCredential requested
-	 * @param credentialId
-	 * @return
-	 */
-	Single<AccountCredential> get(Long credentialId);
 }
