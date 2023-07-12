@@ -49,10 +49,10 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @return ServiceResponse.  If ServiceResponse.success == false, ServiceResponse.errors will contain reasons.
 	 */
 	ServiceResponse validate(NetworkLoadBalancer loadBalancer, Map opts);
-	ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer);
-	ServiceResponse deleteLoadBalancer(NetworkLoadBalancer loadBalancer);
-	ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer);
-	ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts);
+	default ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
+	default ServiceResponse deleteLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
+	default ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
+	default ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts) { return null; }
 
 	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
 	ServiceResponse refresh(NetworkLoadBalancer loadBalancer);
@@ -190,7 +190,7 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 */
 	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
-	ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance);
+	default ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance) { return null; }
 
 	/**
 	 * Implement this method to handle morpheus setting up a load balancer pool from a morpheus instance.  This operation
