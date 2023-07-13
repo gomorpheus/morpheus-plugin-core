@@ -5,8 +5,10 @@ import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.projection.UserIdentity;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is the query object to use to query data from a {@link MorpheusDataService}
@@ -74,6 +76,20 @@ public class DataQuery {
 
   public Collection<Object> list(String key) {
     return parameters.list(key);
+  }
+
+  public String findParameter(String key) {
+    String rtn = null;
+    Set<String> keySet = parameters.keySet();
+    Iterator<String> keyIterator = keySet.iterator();
+    while(keyIterator.hasNext()) {
+      String row = keyIterator.next();
+      if(row.equals(key) || row.endsWith(key)) {
+        rtn = row;
+        break;
+      }
+    }
+    return rtn;
   }
 
   public Map getPageConfig() {

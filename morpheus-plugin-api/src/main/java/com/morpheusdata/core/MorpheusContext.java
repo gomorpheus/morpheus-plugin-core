@@ -6,6 +6,7 @@ import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
 import com.morpheusdata.core.providers.DNSProvider;
@@ -341,6 +342,12 @@ public interface MorpheusContext {
 	 * @return an instance of the MorpheusAccountIntegrationService
 	 */
 	MorpheusAccountIntegrationService getAccountIntegration();
+
+	/**
+	 * Returns the MorpheusAccountInventoryService
+	 * @return an instance of the MorpheusAccountInventoryService
+	 */
+	MorpheusAccountInventoryService getAccountInventory();
 
 	//Common methods used across various contexts
 

@@ -16,6 +16,7 @@ public class DatasetQuery extends DataQuery {
 
   public String namespace;
   public String key;
+  public String valueField;
   
   public DatasetQuery() {}
 
