@@ -62,6 +62,13 @@ public interface MorpheusNetworkService {
 	MorpheusNetworkRouteTableService getRouteTable();
 
 	/**
+	 * Returns the {@link MorpheusNetworkProxyService} used for performing updates/queries on {@link NetworkProxy} related assets
+	 * within Morpheus
+	 * @return An instance of the {@link MorpheusNetworkProxyService}
+	 */
+	MorpheusNetworkProxyService getNetworkProxy();
+
+	/**
 	 * Used for updating the status of a {@link NetworkPoolServer} integration.
 	 * @param poolServer the pool integration with which we want to update the status.
 	 * @param status the status of the pool server (ok,syncing,error)
