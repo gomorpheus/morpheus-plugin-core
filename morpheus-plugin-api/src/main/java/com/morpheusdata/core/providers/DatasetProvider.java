@@ -44,6 +44,7 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 */
 	Class<T> getItemType();
 
+	
 	/**
 	 * list the values this provider provides 
 	 * @param query the user and map of query params or options to apply to the list
@@ -66,6 +67,15 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	 * @return a list of maps that have name value pairs of the items
 	 */
 	Observable<Map> listOptions(DatasetQuery query);
+
+	/**
+	 * returns the matching item from the list with the value as a string or object - since option values 
+	 *   are often stored or passed as strings or unknown types. lets the provider do its own conversions to call 
+	 *   item with the proper type. did object for felxibility but probably is usually a string
+	 * @param value the value to match the item in the list
+	 * @return the item
+	 */
+	T fetchItem(Object value);
 
 	/**
 	 * returns the matching item from the list with the value
