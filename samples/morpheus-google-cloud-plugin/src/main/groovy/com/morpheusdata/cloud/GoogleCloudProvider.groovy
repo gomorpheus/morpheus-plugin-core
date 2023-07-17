@@ -1,10 +1,10 @@
 package com.morpheusdata.cloud
 
 
-import com.morpheusdata.core.CloudProvider
+import com.morpheusdata.core.providers.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisioningProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse

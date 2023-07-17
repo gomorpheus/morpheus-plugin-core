@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.NetworkTabProvider;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 
@@ -8,7 +9,7 @@ import com.morpheusdata.views.Renderer;
  * NSX or ACI. It may be beneficial to render an additional tab on network details that would provide useful information
  *
  * @author David Estes
- * @see com.morpheusdata.core.NetworkTabProvider
+ * @see NetworkTabProvider
  */
 public abstract class AbstractNetworkTabProvider implements NetworkTabProvider {
 	private HandlebarsRenderer renderer;

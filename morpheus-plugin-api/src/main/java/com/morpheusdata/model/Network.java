@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a Network that is typically provided via a {@link com.morpheusdata.core.CloudProvider}. These are typically
+ * Represents a Network that is typically provided via a {@link CloudProvider}. These are typically
  * used during provisioning of compute or services. They also can be used to allow the user to specify network specific information
  * such as Gateway information or network CIDR specifications. Networks can also be linked to {@link NetworkPool} or {@link NetworkDomain} objects
  * which affect how various compute instances are orchestrated via Morpheus.

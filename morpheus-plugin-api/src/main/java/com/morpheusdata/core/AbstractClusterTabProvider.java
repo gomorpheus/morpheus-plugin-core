@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.ClusterTabProvider;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 
@@ -9,7 +10,7 @@ import com.morpheusdata.views.Renderer;
  * with that. This abstract class adds a default Handlebars Java Renderer for easier use.
  *
  * @author David Estes
- * @see com.morpheusdata.core.ClusterTabProvider
+ * @see ClusterTabProvider
  */
 public abstract class AbstractClusterTabProvider implements ClusterTabProvider {
 	private HandlebarsRenderer renderer;

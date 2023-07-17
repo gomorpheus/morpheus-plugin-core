@@ -1,12 +1,10 @@
 package com.morpheusdata.core.dashboard;
 
-import com.morpheusdata.core.UIExtensionProvider;
+import com.morpheusdata.core.providers.UIExtensionProvider;
 import com.morpheusdata.model.*;
-import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.views.HTMLResponse;
 import com.morpheusdata.views.Renderer;
 
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.ReportProvider;
 import com.morpheusdata.model.ReportResult;
 import com.morpheusdata.model.ReportResultRow;
 import io.reactivex.Completable;

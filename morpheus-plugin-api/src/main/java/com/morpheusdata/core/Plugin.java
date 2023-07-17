@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.providers.PluginProvider;
+import com.morpheusdata.core.providers.UIExtensionProvider;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.Renderer;
