@@ -1,4 +1,7 @@
 package com.morpheusdata.core;
+
+import com.morpheusdata.core.providers.UIExtensionProvider;
+
 /**
  * This provider creates a means to render global components into the main layout of Morpheus. This could be a global chat component
  * or other type of overlay code that one might want to run throughout the entire application render lifecycle.

@@ -3,7 +3,6 @@ package com.morpheusdata.maas.plugin
 import com.morpheusdata.core.AbstractProvisionProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.ProvisioningProvider
 import com.morpheusdata.core.ProvisionInstanceServers
 import com.morpheusdata.core.util.*
 import com.morpheusdata.model.*

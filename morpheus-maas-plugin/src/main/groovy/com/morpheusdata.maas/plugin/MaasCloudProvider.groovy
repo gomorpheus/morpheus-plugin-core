@@ -1,10 +1,10 @@
 package com.morpheusdata.maas.plugin
 
 import com.morpheusdata.core.backup.BackupProvider;
-import com.morpheusdata.core.CloudProvider
+import com.morpheusdata.core.providers.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisioningProvider
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer

@@ -9,6 +9,8 @@ import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
+import com.morpheusdata.core.providers.*;
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.providers.TaskProvider;

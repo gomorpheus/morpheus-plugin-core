@@ -1,6 +1,7 @@
-package com.morpheusdata.core;
+package com.morpheusdata.core.providers;
 
 
+import com.morpheusdata.core.providers.UIExtensionProvider;
 import com.morpheusdata.model.CatalogItemType;
 import com.morpheusdata.model.User;
 import com.morpheusdata.views.HTMLResponse;
@@ -9,7 +10,7 @@ import com.morpheusdata.views.HTMLResponse;
  * This provider provides a means to define custom layouts for rendering catalog item detail pages. The default layout easily renders markdown, and the user input form
  * via the {@link com.morpheusdata.model.OptionType} model. This enables full customizability of the page.
  *
- * @since 0.9.0
+ * @since 0.15.2
  * @author David Estes
  */
 public interface CatalogItemLayoutProvider extends UIExtensionProvider {

@@ -1,5 +1,6 @@
 package com.morpheusdata.vmware.plugin.sync
 
+import com.morpheusdata.core.providers.ProvisioningProvider
 import com.morpheusdata.core.util.HttpApiClient
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*

@@ -1,7 +1,5 @@
 package com.morpheusdata.core.providers;
 
-import com.morpheusdata.core.CloudProvider;
-import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 

@@ -1,13 +1,12 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.ReportProvider;
 import com.morpheusdata.model.ReportResult;
 import com.morpheusdata.model.ReportType;
-import com.morpheusdata.model.UIScope;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
-import io.reactivex.Observable;
+
 import java.sql.Connection;
-import java.util.List;
 import java.util.Map;
 
 /**
