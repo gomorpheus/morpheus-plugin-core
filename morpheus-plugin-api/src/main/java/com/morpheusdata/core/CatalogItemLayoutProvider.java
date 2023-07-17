@@ -1,6 +1,5 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.core.providers.CatalogItemLayoutProvider;
 /**
  * This provider provides a means to define custom layouts for rendering catalog item detail pages. The default layout easily renders markdown, and the user input form
  * via the {@link com.morpheusdata.model.OptionType} model. This enables full customizability of the page.
@@ -13,5 +12,5 @@ import com.morpheusdata.core.providers.CatalogItemLayoutProvider;
  * @see CatalogItemLayoutProvider
  */
 @Deprecated
-public interface CatalogItemLayourProvider extends CatalogItemLayoutProvider {
+public interface CatalogItemLayoutProvider extends com.morpheusdata.core.providers.CatalogItemLayoutProvider {
 }
