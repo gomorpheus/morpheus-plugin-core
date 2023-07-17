@@ -57,7 +57,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
 	protected String interfaceName = "eth0";
-	protected String tags;
 	protected String blockDeviceConfig;
 	protected String productCode;
 	@JsonIgnore
@@ -66,6 +65,8 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 	@JsonIgnore
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
+	@JsonIgnore
+	protected List<MetadataTag> metadata = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -396,15 +397,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		this.interfaceName = interfaceName;
 	}
 
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-		markDirty("tags",tags);
-	}
-
 	public String getBlockDeviceConfig() { return blockDeviceConfig; }
 
 	public void setBlockDeviceConfig(String config) { this.blockDeviceConfig = config; }
@@ -435,5 +427,13 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setUserDefined(Boolean userDefined) {
 		this.userDefined = userDefined;
+	}
+
+	public List<MetadataTag> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(List<MetadataTag> metadata) {
+		this.metadata = metadata;
 	}
 }
