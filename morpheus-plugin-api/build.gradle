@@ -122,7 +122,12 @@ publishing {
                         username = labsNexusUser
                         password = labsNexusPassword
                     }
-                }
+                }  else {
+					credentials {
+						username = System.getenv('LABS_NEXUS_USER')
+						password = System.getenv('LABS_NEXUS_PASSWORD')
+					}
+				}
             }
         }
     }
