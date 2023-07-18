@@ -32,6 +32,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.integration.MorpheusAccountInventoryService
 import com.morpheusdata.core.integration.MorpheusIntegrationService
 import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService
@@ -212,6 +213,11 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusAccountIntegrationService getAccountIntegration() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountInventoryService getAccountInventory() {
 		return null
 	}
 
