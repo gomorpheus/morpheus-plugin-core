@@ -61,7 +61,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	default ServiceResponse<Network> prepareNetwork(Network network, Map opts) {
-		return ServiceResponse.success();
+		return ServiceResponse.success(network);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return ServiceResponse
 	 */
 	default ServiceResponse<NetworkSubnet> prepareSubnet(NetworkSubnet subnet, Network network, Map opts) {
-		return ServiceResponse.success();
+		return ServiceResponse.success(subnet);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> prepareNetworkRoute(Network network, NetworkRoute networkRoute, Map routeConfig, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> prepareNetworkRoute(Network network, NetworkRoute networkRoute, Map routeConfig, Map opts) { return ServiceResponse.success(networkRoute); };
 
 	/**
 	 * Validate the submitted NetworkRoute information.
@@ -182,7 +182,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> createNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> createNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(networkRoute); };
 
 	/**
 	 * Update the NetworkRoute submitted
@@ -191,7 +191,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> updateNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> updateNetworkRoute(Network network, NetworkRoute networkRoute, Map opts) { return ServiceResponse.success(networkRoute); };
 
 	/**
 	 * Delete the NetworkRoute submitted
@@ -210,8 +210,8 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<Network> prepareRouter(NetworkRouter router, Map routerConfig, Map opts) {
-		return ServiceResponse.success();
+	default ServiceResponse<NetworkRouter> prepareRouter(NetworkRouter router, Map routerConfig, Map opts) {
+		return ServiceResponse.success(router);
 	}
 
 	/**
@@ -231,7 +231,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRouter> createRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRouter> createRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(router); };
 
 	/**
 	 * Update the NetworkRouter submitted
@@ -239,7 +239,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRouter> updateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRouter> updateRouter(NetworkRouter router, Map opts) { return ServiceResponse.success(router); };
 
 	/**
 	 * Delete the NetworkRouter submitted
@@ -259,7 +259,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> prepareRouterRoute(NetworkRouter router, NetworkRoute route, Map routeConfig, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> prepareRouterRoute(NetworkRouter router, NetworkRoute route, Map routeConfig, Map opts) { return ServiceResponse.success(route); };
 
 	/**
 	 * Validate the submitted NetworkRoute information.
@@ -280,7 +280,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> createRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> createRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(route); };
 
 	/**
 	 * Update the NetworkRoute submitted
@@ -289,7 +289,7 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<NetworkRoute> updateRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
+	default ServiceResponse<NetworkRoute> updateRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(route); };
 
 	/**
 	 * Delete the NetworkRoute submitted

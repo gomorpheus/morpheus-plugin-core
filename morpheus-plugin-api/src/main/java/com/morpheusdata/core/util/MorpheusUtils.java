@@ -1,8 +1,10 @@
 package com.morpheusdata.core.util;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import org.slf4j.Logger;
@@ -181,6 +183,167 @@ public class MorpheusUtils {
 		return compareResult;
 	}
 
+	static Long getZoneId(Map opts) {
+		Object tmpValue = null;
+		if(opts.get("zoneId") != null) {
+			tmpValue = opts.get("zoneId");
+		} else if(opts.get("cloudId") != null) {
+			tmpValue = opts.get("cloudId");
+		} else if (opts.get("zone") instanceof Map) {
+			tmpValue = ((Map)opts.get("zone")).get("id");
+		} else if (opts.get("cloud") instanceof Map) {
+			tmpValue = ((Map)opts.get("cloud")).get("id");
+		} else if (opts.get("storageServer") instanceof Map) {
+			tmpValue = ((Map)opts.get("storageServer")).get("refId");
+		}
+		if(tmpValue == null) {
+			Map tmpMap = null;
+			if(opts.get("server") != null) {
+				tmpMap = (Map)opts.get("server");
+			} else if(opts.get("network") != null) {
+				tmpMap = (Map)opts.get("network");
+			} else if(opts.get("router") != null) {
+				tmpMap = (Map)opts.get("router");
+			}
+
+			if(tmpValue == null && tmpMap != null) {
+				if(tmpMap.get("zone") != null) {
+					tmpValue = ((Map)tmpMap.get("zone")).get("id");
+				} else {
+					tmpValue = tmpMap.get("zoneId");
+				}
+			}
+		}
+
+		if(tmpValue == null && opts.get("parent") instanceof Map) {
+			if(((Map)opts.get("parent")).get("zone") != null) {
+				tmpValue = ((Map)((Map)opts.get("parent")).get("zone")).get("id");
+			} else {
+				tmpValue = ((Map)opts.get("parent")).get("zoneId");
+			}
+		}
+
+		return parseLongConfig(tmpValue);
+	}
+
+	static Long getResourcePoolId(Map opts) {
+		Object rtn = null;
+		if(opts.get("resourcePoolId") != null) {
+			rtn = opts.get("resourcePoolId");
+		} else if(opts.get("zonePoolId") != null) {
+			rtn = opts.get("zonePoolId");
+		} else if(opts.get("config") != null) {
+			Map tmpMap = (Map)opts.get("config");
+			if(tmpMap.get("resourcePool") != null) {
+				rtn = tmpMap.get("resourcePool");
+			} else if(tmpMap.get("resourcePoolId") != null) {
+				rtn = tmpMap.get("resourcePoolId");
+			} else if(tmpMap.get("zonePoolId") != null) {
+			rtn = tmpMap.get("zonePoolId");
+			} else if(tmpMap.get("zonePool") != null) {
+				rtn = ((Map)tmpMap.get("zonePool")).get("id");
+			}
+		} else if(opts.get("zonePool") != null) {
+			rtn = ((Map)opts.get("zonePool")).get("id");
+		}
+
+		return parseLongConfig(rtn);
+	}
+
+	static public Long getSiteId(Map opts) {
+		//get the value
+		Object rtn = opts.get("siteId");
+		if (rtn == null && opts.get("site") instanceof Map) {
+			rtn = ((Map) opts.get("site")).get("id");
+		}
+		if (rtn == null && opts.get("instance") instanceof Map) {
+			Map instanceMap = (Map) opts.get("instance");
+			if (instanceMap.containsKey("site")) {
+				rtn = ((Map) instanceMap.get("site")).get("id");
+			}
+		}
+		if (rtn == null) {
+			rtn = opts.get("groupId");
+		}
+		if (rtn == null && opts.get("group") instanceof Map) {
+			rtn = ((Map) opts.get("group")).get("id");
+		}
+
+		if (rtn == null) {
+			if (opts.get("server") instanceof Map) {
+				Map serverMap = (Map) opts.get("server");
+				if (serverMap.get("site") instanceof Map) {
+					rtn = ((Map) serverMap.get("site")).get("id");
+				}
+				if (rtn == null) {
+					rtn = serverMap.get("siteId");
+				}
+			}
+			if (rtn == null && opts.get("instance") instanceof Map) {
+				Map instanceMap = (Map) opts.get("instance");
+				if (instanceMap.get("site") instanceof Map) {
+					rtn = ((Map) instanceMap.get("site")).get("id");
+				}
+				if (rtn == null) {
+					rtn = instanceMap.get("siteId");
+				}
+			}
+			if (rtn == null) {
+				//by domain or parent
+				if (opts.containsKey("domain")) {
+					if (opts.get("domain") instanceof Map) {
+						Map domainMap = (Map) opts.get("domain");
+						if (domainMap.get("site") instanceof Map) {
+							rtn = ((Map) domainMap.get("site")).get("id");
+						}
+						if (rtn == null) {
+							rtn = domainMap.get("siteId");
+						}
+					}
+				}
+				if (rtn == null) {
+					if (opts.containsKey("parent")) {
+						if (opts.get("parent") instanceof Map) {
+							Map parentMap = (Map) opts.get("parent");
+							if (parentMap.get("site") instanceof Map) {
+								rtn = ((Map) parentMap.get("site")).get("id");
+							}
+							if (rtn == null) {
+								rtn = parentMap.get("siteId");
+							}
+						}
+					}
+				}
+			}
+		}
+		return rtn != null ? Long.parseLong(rtn.toString()) : null;
+	}
+
+	static public Long getPlanId(Map opts) {
+		Long rtn = getFieldId(opts, "plan");
+		if(rtn == null)
+			rtn = getFieldId(opts, "servicePlan");
+		return rtn;
+	}
+
+	static public Long getFieldId(Map data, String fieldName) {
+		Object rtn = null;
+		if(data.get(fieldName + "Id") != null && isNumber(data.get(fieldName + "Id"))) {
+			rtn = data.get(fieldName + "Id");
+		} else if(data.get(fieldName + ".id") != null && isNumber(data.get(fieldName + ".id"))) {
+			rtn = data.get(fieldName + ".id");
+		}
+		if(rtn == null && data.get(fieldName) != null) {
+			if(isNumber(data.get(fieldName))) {
+				rtn = data.get(fieldName);
+			} else if(data.get(fieldName) instanceof Map) {
+				if(isNumber(((Map)data.get(fieldName)).get("id")))
+					rtn = ((Map)data.get(fieldName)).get("id");
+			}
+		}
+		return rtn != null ? Long.parseLong(rtn.toString()) : null;
+	}
+
 	/**
 	 * This utility method is used to compare an object to various forms of boolean truth.  Values usually come from
 	 * submitted web forms and have different values for boolean truth
@@ -198,5 +361,32 @@ public class MorpheusUtils {
 		else {
 			return false;
 		}
+	}
+
+	/**
+	 * This is a convenience utility method to get a long value from form inputs. It checks for null
+	 * and verifies the value is a number before parsing into a Long
+	 * @param val assumed long value from input
+	 * @return the value converted to a Long
+	 */
+	static Long parseLongConfig(Object val) {
+		if(val != null && isNumber(val.toString())) {
+			return Long.parseLong(val.toString());
+		}
+		return null;
+	}
+
+	static public Boolean isNumber(Object obj) {
+		Boolean rtn;
+		rtn = obj != null && (obj instanceof Number);
+		if(rtn == false && obj instanceof CharSequence) {
+			try {
+				new BigDecimal(obj.toString().trim());
+				rtn = true;
+			} catch (NumberFormatException nfe) {
+				// ignore
+			}
+		}
+		return rtn;
 	}
 }
