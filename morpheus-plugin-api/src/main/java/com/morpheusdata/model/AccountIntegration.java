@@ -40,6 +40,9 @@ public class AccountIntegration extends MorpheusModel {
 	protected String servicePublicKey;
 	protected String authPrivateKey;
 	protected String authPublicKey;
+
+	protected Map configMap;
+
 	protected Map credentialData;
 	protected Boolean credentialLoaded = false;
 
@@ -348,6 +351,15 @@ public class AccountIntegration extends MorpheusModel {
 	public void setObjectRefs(List<AccountIntegrationObjectRef> objectRefs) {
 		this.objectRefs = objectRefs;
 		markDirty("objectRefs", objectRefs, this.objectRefs);
+	}
+
+	@Override
+	public Map getConfigMap() {
+		return configMap;
+	}
+
+	public void setConfigMap(Map configMap) {
+		this.configMap = configMap;
 	}
 
 	public enum Status {
