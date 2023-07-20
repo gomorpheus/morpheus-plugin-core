@@ -39,6 +39,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	protected String reverseName;
 	protected String reverseFqdn;
 	protected String reverseExternalId;
+	protected String regionCode;
 	//tasks
 	//bluecat field for configuration
 	protected String configuration;
@@ -311,5 +312,13 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
 	}
 }

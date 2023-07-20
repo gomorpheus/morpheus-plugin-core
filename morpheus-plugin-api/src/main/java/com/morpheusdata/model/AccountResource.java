@@ -106,9 +106,9 @@ public class AccountResource extends AccountResourceIdentityProjection {
 	protected Long coresPerSocket;
 	protected Long maxCpu;
 	//pricing estimates
-	protected Double hourlyPrice ;
-	protected Double hourlyCost;
-	protected Double runningMultiplier;
+	protected Double hourlyPrice = 0.0;
+	protected Double hourlyCost = 0.0;
+	protected Double runningMultiplier = 0.0;
 	protected Double runningPrice;
 	protected Double runningCost;
 	//audit

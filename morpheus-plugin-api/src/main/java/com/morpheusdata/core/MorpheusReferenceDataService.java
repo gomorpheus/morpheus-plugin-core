@@ -16,7 +16,29 @@ public interface MorpheusReferenceDataService {
 
 	Single<Boolean> remove(List<ReferenceDataSyncProjection> removeItems);
 
-	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategory(Long AccountId, String category);
+	/**
+	 * List {@link ReferenceDataSyncProjection } by an Account ID and a category.
+	 * @param accountId the ID of the account
+	 * @param category a category
+	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
+	 */
+	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategory(Long accountId, String category);
+
+	/**
+	 * List {@link ReferenceDataSyncProjection } by an Account ID and a partial category.
+	 * @param accountId the ID of the account
+	 * @param categorySubString a list of categories
+	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
+	 */
+	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategoryMatch(Long accountId, String categorySubString);
+
+	/**
+	 * List {@link ReferenceDataSyncProjection } by an Account ID and multiple categories.
+	 * @param accountId the ID of the account
+	 * @param categories a partial category to match on.
+	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
+	 */
+	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategories(Long accountId, List<String> categories);
 
 	Observable<ReferenceDataSyncProjection> listByCategory(String category);
 

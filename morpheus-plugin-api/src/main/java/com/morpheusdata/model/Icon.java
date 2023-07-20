@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.providers.TaskProvider;
@@ -11,7 +12,7 @@ import com.morpheusdata.core.providers.TaskProvider;
  * @see IPAMProvider
  * @see TaskProvider
  * @see DNSProvider
- * @see com.morpheusdata.core.CloudProvider
+ * @see CloudProvider
  */
 public class Icon {
 	protected String path;

@@ -13,6 +13,7 @@ public interface MorpheusLoadBalancerPartitionService {
 	 * Get a list of {@link com.morpheusdata.model.ReferenceData} projections based on NetworkLoadBalancer id
 	 *
 	 * @param loadBalancerId the id of the load balancer
+	 * @param objCategory an additional category to use for sync comparison
 	 * @return Observable stream of sync projection
 	 */
 	Observable<ReferenceDataSyncProjection> listSyncProjections(Long loadBalancerId, String objCategory);

@@ -1,6 +1,8 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import com.morpheusdata.model.projection.AccountIdentity;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.Map;
  *
  * @author David Estes, Mike Truso, Eric Helgeson
  */
-public class Account extends MorpheusModel {
+public class Account extends MorpheusModel implements AccountIdentity {
 	
 	protected String name;
 	protected String description;

@@ -63,6 +63,7 @@ public class NetworkLoadBalancerType extends MorpheusModel {
 	protected Boolean createPricePlans = false;
 	protected Boolean profileSupportsPersistence = false;
 	protected Boolean profilesEditable = false;
+	protected CloudType cloudType;
 
 	// associations
 	Collection<OptionType> optionTypes;
@@ -706,6 +707,15 @@ public class NetworkLoadBalancerType extends MorpheusModel {
 	public void setInstanceRuleOptionTypes(Collection<OptionType> instanceRuleOptionTypes) {
 		markDirty("instanceRuleOptionTypes", this.instanceRuleOptionTypes);
 		this.instanceRuleOptionTypes = instanceRuleOptionTypes;
+	}
+
+	public CloudType getCloudType() {
+		return cloudType;
+	}
+
+	public void setCloudType(CloudType cloudType) {
+		this.cloudType = cloudType;
+		markDirty("cloudType", cloudType);
 	}
 
 	public Boolean getPlugin() {

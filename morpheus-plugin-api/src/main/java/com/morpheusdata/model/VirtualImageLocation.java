@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describes a pre-built system image. The {@link com.morpheusdata.core.CloudProvider} can be configured to sync
+ * Describes a pre-built system image. The {@link CloudProvider} can be configured to sync
  * existing images between your cloud provider and Morpheus.
  */
 public class VirtualImageLocation extends VirtualImageLocationIdentityProjection {
@@ -127,7 +128,5 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 		return externalDiskId;
 	}
 
-	public void setExternalDiskId(String externalDiskId) {
-		this.externalDiskId = externalDiskId;
-	}
+	public void setExternalDiskId(String externalDiskId) { this.externalDiskId = externalDiskId; }
 }

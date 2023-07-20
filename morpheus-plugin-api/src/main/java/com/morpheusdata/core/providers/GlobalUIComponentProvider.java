@@ -1,6 +1,5 @@
 package com.morpheusdata.core.providers;
 
-import com.morpheusdata.core.UIExtensionProvider;
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.User;
 import com.morpheusdata.views.HTMLResponse;

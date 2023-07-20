@@ -21,6 +21,8 @@ public class AccountIntegration extends MorpheusModel {
 	protected String serviceUrl;
 	protected String serviceSlave;
 	protected String repoUrl;
+	protected Long refId;
+	protected String refType;
 	protected String authType;
 	protected String authId;
 	protected String serviceUsername;
@@ -82,6 +84,12 @@ public class AccountIntegration extends MorpheusModel {
 
 	public String getRepoUrl() {
 		return repoUrl;
+	}
+
+	public Long getRefId() { return refId; }
+
+	public String getRefType() {
+		return refType;
 	}
 
 	public String getAuthType() {
@@ -195,6 +203,16 @@ public class AccountIntegration extends MorpheusModel {
 	public void setRepoUrl(String repoUrl) {
 		this.repoUrl = repoUrl;
 		markDirty("repoUrl", repoUrl);
+	}
+
+	public void setRefId(Long refId) {
+		this.refId = refId;
+		markDirty("refId", refId);
+	}
+
+	public void setRefType(String refType) {
+		this.refType = refType;
+		markDirty("refType", refType);
 	}
 
 	public void setAuthType(String authType) {

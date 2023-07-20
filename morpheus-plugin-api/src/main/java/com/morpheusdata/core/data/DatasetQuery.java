@@ -2,76 +2,30 @@ package com.morpheusdata.core.data;
 
 import com.morpheusdata.core.providers.DatasetProvider;
 import com.morpheusdata.core.util.ApiParameterMap;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.projection.UserIdentity;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * This is the query object to use to list data from a {@link DatasetProvider}
+ * This is the an extension of the {@link DataQuery} to use to list data from a {@link DatasetProvider}
  * @author bdwheeler
  * @since 0.15.1
  */
-public class DatasetQuery {
+public class DatasetQuery extends DataQuery {
 
-  public User user;
   public String namespace;
   public String key;
-  public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
-  //paging
-  public Integer max = 1000;
-  public Integer offset = 0;
-  public String sort;
-  public String order;
+  public String valueField;
   
   public DatasetQuery() {}
 
-  public DatasetQuery(User user) {
-    this.user = user;
+  public DatasetQuery(UserIdentity user) {
+    super(user);
   }
 
-  public DatasetQuery(User user, ApiParameterMap<String, Object> parameters) {
-    this.user = user;
-    this.parameters = parameters;
-  }
-
-  public Object putAt(String key, Object value) {
-    return put(key, value);
-  }
-
-  public Object put(String key, Object value) {
-    parameters.put(key, value);
-    return value;
-  }
-
-  public void putAll(Map<String, Object> parameters) {
-    if(parameters != null && parameters.size() > 0)
-      this.parameters.putAll(parameters);
-  }
-
-  public Object getAt(String key) {
-    return get(key);
-  }
-
-  public Object get(String key) {
-    return parameters.get(key);
-  }
-
-  public Collection<Object> list(String key) {
-    return parameters.list(key);
-  }
-
-  public Map getPageConfig() {
-    Map rtn = new LinkedHashMap();
-    if(max != null && max > 0)
-      rtn.put("max", max);
-    if(offset != null && offset > 0)
-      rtn.put("offset", offset);
-    if(sort != null)
-      rtn.put("sort", sort);
-    if(order != null)
-      rtn.put("order", order);
-    return rtn;
+  public DatasetQuery(UserIdentity user, ApiParameterMap<String, Object> parameters) {
+    super(user, parameters);
   }
 
 }

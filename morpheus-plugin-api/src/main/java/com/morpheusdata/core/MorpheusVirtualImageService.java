@@ -29,7 +29,7 @@ public interface MorpheusVirtualImageService {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projections
 	 */
-	Observable<VirtualImageIdentityProjection> listSyncProjections(Long cloudId);
+	Observable<VirtualImageIdentityProjection> listIdentityProjections(Long cloudId);
 
 	/**
 	 * Get a list of VirtualImage projections based on Provision Type Code
@@ -37,7 +37,7 @@ public interface MorpheusVirtualImageService {
 	 * @param provisionTypeCode Provision Type Code
 	 * @return Observable stream of sync projections
 	 */
-	Observable<VirtualImageIdentityProjection> listSyncProjections(String provisionTypeCode);
+	Observable<VirtualImageIdentityProjection> listIdentityProjections(String provisionTypeCode);
 
 	/**
 	 * Get a list of VirtualImage projections that matches one of the provided ImageTypes and either the account owns or
@@ -46,7 +46,7 @@ public interface MorpheusVirtualImageService {
 	 * @param imageTypes Array of ImageTypes
 	 * @return Observable stream of sync projections
 	 */
-	Observable<VirtualImageIdentityProjection> listSyncProjections(Long accountId, ImageType[] imageTypes);
+	Observable<VirtualImageIdentityProjection> listIdentityProjections(Long accountId, ImageType[] imageTypes);
 
 	/**
 	 * Get a list of VirtualImage projections that matches one of the provided categories and either the account owns or
@@ -55,7 +55,7 @@ public interface MorpheusVirtualImageService {
 	 * @param categories Array of categories
 	 * @return Observable stream of sync projections
 	 */
-	Observable<VirtualImageIdentityProjection> listSyncProjectionsByCategory(Long accountId, String[] categories);
+	Observable<VirtualImageIdentityProjection> listIdentityProjectionsByCategory(Long accountId, String[] categories);
 
 	/**
 	 * Get a list of VirtualImage projections that matches one of the provided categories and either the account owns or
@@ -65,6 +65,59 @@ public interface MorpheusVirtualImageService {
 	 * @param categories Array of categories
 	 * @return Observable stream of sync projections
 	 */
+	Observable<VirtualImageIdentityProjection> listIdentityProjectionsByCloudAndCategory(Long accountId, Long cloudId, String[] categories);
+
+	/**
+	 * Get a list of VirtualImage projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long)}}
+	 */
+	@Deprecated
+	Observable<VirtualImageIdentityProjection> listSyncProjections(Long cloudId);
+
+	/**
+	 * Get a list of VirtualImage projections based on Provision Type Code
+	 * @since 0.11.0
+	 * @param provisionTypeCode Provision Type Code
+	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listIdentityProjections(String)}}
+	 */
+	@Deprecated
+	Observable<VirtualImageIdentityProjection> listSyncProjections(String provisionTypeCode);
+
+	/**
+	 * Get a list of VirtualImage projections that matches one of the provided ImageTypes and either the account owns or
+	 * the account can access due to the visibility setting on the VirtualImage
+	 * @param accountId Account Id
+	 * @param imageTypes Array of ImageTypes
+	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long, ImageType[])}}
+	 */
+	@Deprecated
+	Observable<VirtualImageIdentityProjection> listSyncProjections(Long accountId, ImageType[] imageTypes);
+
+	/**
+	 * Get a list of VirtualImage projections that matches one of the provided categories and either the account owns or
+	 * the account can access due to the visibility setting on the VirtualImage
+	 * @param accountId Account ID
+	 * @param categories Array of categories
+	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listIdentityProjectionsByCategory(Long, String[])}}
+	 */
+	@Deprecated
+	Observable<VirtualImageIdentityProjection> listSyncProjectionsByCategory(Long accountId, String[] categories);
+
+	/**
+	 * Get a list of VirtualImage projections that matches one of the provided categories and either the account owns or
+	 * the account can access due to the visibility setting on the VirtualImage
+	 * @param accountId Account ID
+	 * @param cloudId – Cloud ID
+	 * @param categories Array of categories
+	 * @return Observable stream of sync projections
+	 * @deprecated replaced by {{@link #listSyncProjectionsByCloudAndCategory(Long, Long, String[])}}
+	 */
+	@Deprecated
 	Observable<VirtualImageIdentityProjection> listSyncProjectionsByCloudAndCategory(Long accountId, Long cloudId, String[] categories);
 
 	/**

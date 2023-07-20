@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.request.DeleteInstanceRequest;
@@ -96,4 +97,13 @@ public interface MorpheusInstanceService {
 	 * will not capture any underlying errors experienced asynchronously.
 	 */
 	Single<ServiceResponse> delete(Instance instance, DeleteInstanceRequest deleteRequest);
+
+	Observable<Cloud> getInstanceClouds(Instance instance);
+
+	/**
+	 * Returns the Instance Scale Service
+	 *
+	 * @return An instance of the Instance Scale Service
+	 */
+	MorpheusInstanceScaleService getScale();
 }

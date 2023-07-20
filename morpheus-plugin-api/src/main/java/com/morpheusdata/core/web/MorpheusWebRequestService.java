@@ -1,10 +1,12 @@
 package com.morpheusdata.core.web;
 
+import com.morpheusdata.core.providers.UIExtensionProvider;
+
 import java.util.Locale;
 
 /**
  * Provides accessor methods for some common servlet Request attributes.
- * NOTE: This should ONLY be used in {@link com.morpheusdata.core.UIExtensionProvider} based providers
+ * NOTE: This should ONLY be used in {@link UIExtensionProvider} based providers
  * It will fail in other scenarios. A common use case for this accessor is to grab the nonce token for injecting
  * stylesheets and javascript into custom views
  *

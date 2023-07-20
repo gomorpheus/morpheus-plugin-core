@@ -21,7 +21,7 @@ public interface MorpheusServicePlanService {
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ServicePlanIdentityProjection> listSyncProjections(Long cloudId);
+	Observable<ServicePlanIdentityProjection> listIdentityProjections(Long cloudId);
 
 	/**
 	 * Get a list of ServicePlan projections based on {@link ProvisionType}
@@ -29,6 +29,25 @@ public interface MorpheusServicePlanService {
 	 * @param provisionType {@link ProvisionType}
 	 * @return Observable stream of sync projection
 	 */
+	Observable<ServicePlanIdentityProjection> listIdentityProjections(ProvisionType provisionType);
+
+	/**
+	 * Get a list of ServicePlan projections based on Cloud id
+	 * @param cloudId Cloud id
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(Long)}}
+	 */
+	@Deprecated
+	Observable<ServicePlanIdentityProjection> listSyncProjections(Long cloudId);
+
+	/**
+	 * Get a list of ServicePlan projections based on {@link ProvisionType}
+	 * ProvisionType must, at least, have an id or code set
+	 * @param provisionType {@link ProvisionType}
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(ProvisionType)}}
+	 */
+	@Deprecated
 	Observable<ServicePlanIdentityProjection> listSyncProjections(ProvisionType provisionType);
 
 	/**

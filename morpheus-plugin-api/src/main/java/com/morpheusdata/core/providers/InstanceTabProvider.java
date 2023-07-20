@@ -1,10 +1,8 @@
 package com.morpheusdata.core.providers;
 
 
-import com.morpheusdata.core.UIExtensionProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.views.HTMLResponse;
-import com.morpheusdata.views.Renderer;
 
 /**
  * Provides support for custom UI tabs when viewing Instance details

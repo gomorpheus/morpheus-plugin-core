@@ -1,6 +1,7 @@
 package com.morpheusdata.cypher.random
 
 import com.morpheusdata.core.*
+import com.morpheusdata.core.providers.CypherModuleProvider
 import com.morpheusdata.cypher.CypherModule
 
 class RandomNumberCypherProvider implements CypherModuleProvider {

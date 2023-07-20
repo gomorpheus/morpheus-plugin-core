@@ -2,12 +2,14 @@ package com.morpheusdata.test
 
 import com.morpheusdata.core.MorpheusAccountCredentialService
 import com.morpheusdata.core.MorpheusAccountCredentialTypeService
+import com.morpheusdata.core.MorpheusAccountIntegrationService
 import com.morpheusdata.core.MorpheusAccountPriceService
 import com.morpheusdata.core.MorpheusAccountPriceSetService
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusComputeTypeSetService
 import com.morpheusdata.core.MorpheusContainerTypeService
 import com.morpheusdata.core.MorpheusInstanceService
+import com.morpheusdata.core.MorpheusKeyPairService
 import com.morpheusdata.core.MorpheusPermissionService
 import com.morpheusdata.core.MorpheusProcessService
 import com.morpheusdata.core.MorpheusReferenceDataService
@@ -30,6 +32,7 @@ import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.MorpheusOsTypeService
 import com.morpheusdata.core.MorpheusReportService
 import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.integration.MorpheusAccountInventoryService
 import com.morpheusdata.core.integration.MorpheusIntegrationService
 import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService
@@ -205,6 +208,16 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountIntegrationService getAccountIntegration() {
+		return null
+	}
+
+	@Override
+	MorpheusAccountInventoryService getAccountInventory() {
 		return null
 	}
 
@@ -429,6 +442,11 @@ class MorpheusContextImpl implements MorpheusContext {
 
 	@Override
 	MorpheusAccountCredentialService getAccountCredential() {
+		return null
+	}
+
+	@Override
+	MorpheusKeyPairService getKeyPair() {
 		return null
 	}
 

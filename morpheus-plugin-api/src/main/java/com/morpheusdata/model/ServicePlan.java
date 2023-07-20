@@ -4,6 +4,8 @@ import com.morpheusdata.model.projection.ServicePlanIdentityProjection;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
@@ -34,7 +36,7 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public Long maxStorage;
 	public Long maxLog;
 	public Long maxCpu;
-	public Long coresPerSocket;
+	public Long coresPerSocket = 1L;
 	public Long maxDataStorage = 0L;
 	public Long minDisks = 1L;
 	public Long maxDisks;
@@ -61,5 +63,5 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public Boolean noDisks = false;
 	public BigDecimal price_monthly;
 	public BigDecimal price_hourly;
-	
+	public Set<String> subRegionCodes;
 }

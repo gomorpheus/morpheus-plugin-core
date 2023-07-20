@@ -1,7 +1,6 @@
 package com.morpheusdata.core.network;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import com.morpheusdata.model.projection.NetworkRouterIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -32,6 +31,14 @@ public interface MorpheusNetworkRouterService {
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<NetworkRouterIdentityProjection> listIdentityProjections(AccountIntegration accountIntegration);
+
+	/**
+	 * Lists all network router projection objects for a specified zone pool.
+	 * The projection is a subset of the properties on a full {@link NetworkRouter} object for sync matching.
+	 * @param computeZonePool the {@link ComputeZonePool} identifier associated to the routers to be listed.
+	 * @return an RxJava Observable stream of result projection objects.
+	 */
+	Observable<NetworkRouterIdentityProjection> listIdentityProjections(ComputeZonePool computeZonePool);
 
 	/**
 	 * Lists all router projection objects for a specified cloud.

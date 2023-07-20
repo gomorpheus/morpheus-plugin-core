@@ -78,7 +78,7 @@ class MaasNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
-	ServiceResponse deleteNetwork(Network network) {
+	ServiceResponse deleteNetwork(Network network, Map opts) {
 		log.debug "deleteNetwork: ${network}"
 		ServiceResponse.success()
 	}
@@ -99,7 +99,7 @@ class MaasNetworkProvider implements NetworkProvider {
 	}
 
 	@Override
-	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network){
+	ServiceResponse deleteSubnet(NetworkSubnet subnet, Network network, Map opts){
 		ServiceResponse.success()
 	}
 }

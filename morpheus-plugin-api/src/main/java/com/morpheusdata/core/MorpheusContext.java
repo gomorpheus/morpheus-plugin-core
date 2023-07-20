@@ -6,8 +6,11 @@ import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
+import com.morpheusdata.core.providers.*;
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.providers.TaskProvider;
@@ -290,6 +293,12 @@ public interface MorpheusContext {
 	MorpheusAccountCredentialService getAccountCredential();
 
 	/**
+	 * Returns the MorpheusKeyPairService
+	 * @return An instance of the MorpheusKeyPairService
+	 */
+	MorpheusKeyPairService getKeyPair();
+
+	/**
 	 * Returns the SecurityGroup Service
 	 *
 	 * @return An instance of the SecurityGroup Service
@@ -337,6 +346,18 @@ public interface MorpheusContext {
 	 * @return an instance of the MorpheusServicePlanPriceSetService
 	 */
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
+
+	/**
+	 * Returns the MorpheusAccountIntegrationService
+	 * @return an instance of the MorpheusAccountIntegrationService
+	 */
+	MorpheusAccountIntegrationService getAccountIntegration();
+
+	/**
+	 * Returns the MorpheusAccountInventoryService
+	 * @return an instance of the MorpheusAccountInventoryService
+	 */
+	MorpheusAccountInventoryService getAccountInventory();
 
 	//Common methods used across various contexts
 

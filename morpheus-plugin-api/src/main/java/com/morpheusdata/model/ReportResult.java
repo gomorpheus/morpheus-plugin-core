@@ -1,13 +1,14 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.core.providers.ReportProvider;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Map;
 
 /**
  * Represents a report result. A report result is a particular report run containing all filter information, the user and account who
- * executed it as well as the status. This is passed often into the {@link com.morpheusdata.core.ReportProvider} methods for both
+ * executed it as well as the status. This is passed often into the {@link ReportProvider} methods for both
  * generating a report as well as displaying a report.
  *
  * @author David Estes

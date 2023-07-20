@@ -35,6 +35,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String instanceLevel;
 	public String deployGroup;
 	public String instanceContext;
+	public InstanceScale scale;
 	public Boolean autoScale;
 	public String statusMessage;
 	public Date expireDate;
@@ -226,6 +227,13 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setInstanceContext(String instanceContext) {
 		this.instanceContext = instanceContext;
+	}
+
+	public InstanceScale getScale() { return scale; }
+
+	public void setScale(InstanceScale scale) {
+		this.scale = scale;
+		markDirty("scale", scale);
 	}
 
 	public Boolean getAutoScale() {

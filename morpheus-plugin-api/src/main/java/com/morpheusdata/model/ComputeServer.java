@@ -110,6 +110,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected GuestConsoleType guestConsoleType;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServerIdentityProjection parentServer;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected InstanceScale scale;
 	protected ComputeStats computeStats;
 	@JsonIgnore
 	protected List<MetadataTag> metadata;
@@ -825,6 +827,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setParentServer(ComputeServerIdentityProjection parentServer) {
 		this.parentServer = parentServer;
 		markDirty("parentServer",parentServer);
+	}
+
+	public InstanceScale getScale() {
+		return scale;
+	}
+
+	public void setScale(InstanceScale scale) {
+		this.scale = scale;
+		markDirty("scale", scale);
 	}
 
 	/**
