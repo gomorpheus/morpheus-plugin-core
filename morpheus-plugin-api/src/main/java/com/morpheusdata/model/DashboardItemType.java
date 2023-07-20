@@ -12,6 +12,8 @@ public class DashboardItemType extends MorpheusModel {
 	protected String description;
 	protected Boolean enabled = true;
 	protected Boolean canExecute = true;
+
+	protected Boolean multiTenant = true;
 	//view info
 	protected String uiSize; //xs-1,s-1,m-1,l-1,xl-1
 	protected String uiType; //widget class etc.
@@ -113,6 +115,14 @@ public class DashboardItemType extends MorpheusModel {
 
 	public void setUiSection(String uiSection) {
 		this.uiSection = uiSection;
+	}
+
+	public Boolean getMultiTenant() {
+		return multiTenant;
+	}
+
+	public void setMultiTenant(Boolean multiTenant) {
+		this.multiTenant = multiTenant;
 	}
 
 	public String getScriptPath() {
