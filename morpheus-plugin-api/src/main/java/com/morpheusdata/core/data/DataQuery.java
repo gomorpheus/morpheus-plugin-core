@@ -48,15 +48,16 @@ public class DataQuery {
 
   public DataQuery(UserIdentity user) {
     this.user = user;
-    this.account = user.account;
+    this.account = user.getAccount();
   }
 
   public DataQuery(AccountIdentity account) {
-    this.account = user.account;
+    this.account = account;
   }
 
   public DataQuery(UserIdentity user, ApiParameterMap<String, Object> parameters) {
     this.user = user;
+    this.account = user.getAccount();
     this.parameters = parameters;
   }
 
