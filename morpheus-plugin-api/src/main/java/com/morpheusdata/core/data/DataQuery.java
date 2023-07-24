@@ -3,6 +3,7 @@ package com.morpheusdata.core.data;
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.projection.UserIdentity;
+import com.morpheusdata.model.projection.AccountIdentity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ public class DataQuery {
   
   //user executing the query
   public UserIdentity user;
+  //account executing the query
+  public AccountIdentity account;
   //query mode - group, stats, query
   public String mode = "query";
   //optional search phrase - ie: "type = 'typeValue' and name = 'fred'"
@@ -45,10 +48,20 @@ public class DataQuery {
 
   public DataQuery(UserIdentity user) {
     this.user = user;
+    this.account = user.account;
+  }
+
+  public DataQuery(AccountIdentity account) {
+    this.account = user.account;
   }
 
   public DataQuery(UserIdentity user, ApiParameterMap<String, Object> parameters) {
     this.user = user;
+    this.parameters = parameters;
+  }
+
+  public DataQuery(AccountIdentity account, ApiParameterMap<String, Object> parameters) {
+    this.account = account;
     this.parameters = parameters;
   }
 
