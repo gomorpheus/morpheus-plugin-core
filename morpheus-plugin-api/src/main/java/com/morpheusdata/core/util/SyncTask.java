@@ -1,15 +1,13 @@
 package com.morpheusdata.core.util;
 
-import com.morpheusdata.model.ComputeZonePool;
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.MorpheusModel;
-import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.observables.ConnectableObservable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +15,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * This Utility Class provides an rxJava compatible means for syncing remote API objects with local/morpheus backed models
  * in a persistent database. This handles an efficeint way to match data projection objects with api objects and batches
  * updates to the backend database for efficient sync. This should be considered the standard method for caching objects
- * within a {@link com.morpheusdata.core.CloudProvider} and many other provider types.
+ * within a {@link CloudProvider} and many other provider types.
  *
  * <p><strong>Example:</strong></p>
  * <pre>{@code

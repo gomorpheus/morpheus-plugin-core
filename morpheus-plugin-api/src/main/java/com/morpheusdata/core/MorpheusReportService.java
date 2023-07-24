@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.ReportProvider;
 import com.morpheusdata.model.ReportResult;
 import com.morpheusdata.model.ReportResultRow;
 import io.reactivex.Completable;
@@ -12,7 +13,7 @@ import java.util.Collection;
  * {@link ReportProvider} based plugins. Be mindful that things like grabbing a database connection will NOT work in other plugin
  * types when being run externally in a distributed worker scenario. Reports have a simply object model. Firstly a plugin defines
  * a {@link com.morpheusdata.model.ReportType} which contains information about the report and available filter options.
- * Finally a user runs said report which creates a {@link ReportResult} entry. These are tracked against when appending rows to the result
+ * Finally, a user runs said report which creates a {@link ReportResult} entry. These are tracked against when appending rows to the result
  * Rows have sections like 'data', or 'header'. This can affect the display in how you render things from the HTML output side.
  *
  * @see ReportProvider

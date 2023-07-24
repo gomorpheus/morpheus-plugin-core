@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describes a pre-built system image. The {@link com.morpheusdata.core.CloudProvider} can be configured to sync
+ * Describes a pre-built system image. The {@link CloudProvider} can be configured to sync
  * existing images between your cloud provider and Morpheus.
  */
 public class VirtualImage extends VirtualImageIdentityProjection {
@@ -57,7 +58,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean vmToolsInstalled = true;
 	protected Boolean installAgent = true;
 	protected String interfaceName = "eth0";
-	protected String tags;
 	protected String blockDeviceConfig;
 	protected String productCode;
 	@JsonIgnore
@@ -66,6 +66,8 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected List<StorageVolumeIdentityProjection> volumes = new ArrayList<>();
 	@JsonIgnore
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
+	@JsonIgnore
+	protected List<MetadataTag> metadata = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -396,15 +398,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		this.interfaceName = interfaceName;
 	}
 
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-		markDirty("tags",tags);
-	}
-
 	public String getBlockDeviceConfig() { return blockDeviceConfig; }
 
 	public void setBlockDeviceConfig(String config) { this.blockDeviceConfig = config; }
@@ -435,5 +428,13 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setUserDefined(Boolean userDefined) {
 		this.userDefined = userDefined;
+	}
+
+	public List<MetadataTag> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(List<MetadataTag> metadata) {
+		this.metadata = metadata;
 	}
 }

@@ -534,10 +534,10 @@ public class NetworkRouterType extends MorpheusModel {
 
 	public void setOptionTypes(List<OptionType> optionTypes) { this.optionTypes = optionTypes; }
 
-	public List<OptionType> getRouterOptionTypes() {
+	public List<OptionType> getRouteOptionTypes() {
 		return routeOptionTypes;
 	}
 
-	public void setRouteOptionTypes(List<OptionType> optionTypes) { this.routeOptionTypes = routeOptionTypes; }
+	public void setRouteOptionTypes(List<OptionType> optionTypes) { this.routeOptionTypes = optionTypes; }
 
 }

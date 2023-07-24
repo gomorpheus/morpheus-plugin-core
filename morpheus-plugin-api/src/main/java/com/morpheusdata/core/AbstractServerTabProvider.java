@@ -1,6 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.UIScope;
+import com.morpheusdata.core.providers.ServerTabProvider;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 

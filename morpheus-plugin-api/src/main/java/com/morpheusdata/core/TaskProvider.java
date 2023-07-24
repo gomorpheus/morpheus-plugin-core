@@ -1,5 +1,7 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.providers.ProvisioningProvider;
+
 /**
  * Provides a standard set of methods for interacting with cloud integrations or on-prem service providers.
  * This includes syncing assets related to things like VirtualMachines or Containers for various cloud types. For

@@ -7,7 +7,7 @@ import com.morpheusdata.model.Workload;
 import io.reactivex.Single;
 
 /**
- * The service to inform Morpheus of long running processes. This service is typically used during provisioning of
+ * The service to inform Morpheus of long-running processes. This service is typically used during provisioning of
  * Workloads to notify that various steps of a process have started and then completed. The actual underlying actions
  * performed during the execution of the process is not controlled via this service. Rather, it is purely a way to
  * notify Morpheus that various actions are currently being performed.
