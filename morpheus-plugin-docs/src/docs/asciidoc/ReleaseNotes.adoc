@@ -1,13 +1,34 @@
 === Release Notes
 
-**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum. 5.5.x Morpheus versions use 0.13.x plugin-api
+**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum. 6.0.x Morpheus versions use 0.14.x plugin-api and 6.2.x Morpheus versions use 0.15.x plugin-api. Efforts are being made to preserve some backwards compatibility as we get closer to 1.0 versions.
 
+* **0.15.1**
+** Moved most Providers new packages folder `com.morpheusdata.core.providers`
+** Deprecated `OptionSourceProvider` in favor of new `DatasetProvider`
+*** Enables scribe export/import object reference mapping and hcl data lookup as well
+** Service Consistency work in the `MorpheusContext`.
+*** Created new `MorpheusDataService` interface reference that allows for using dynamic db queries and object marshalling into the core/api models.
+** New `StorageProvider` work began for abstracting various storage providers within morpheus.
+** Enhanced `NetworkProvider` to support `Router` and `SecurityGroup` representations.
+* ** 0.15.0**
+** Filling in more Models and Cloud representations.
+* ** 0.14.3**
+** Filling in more Models and Cloud representations.
+** Completed Localization support. Plugins now can be fully localized in both server side, and client side rendering. Guide provided as well.
+* ** 0.14.2**
+** Filling in more Models and Cloud representations.
+** Added OptionType support for the `hidden` HTML Input.
+* ** 0.14.1.**
+** Filling in more Models and Cloud representations.
+* ** 0.14.0**
+** Filling in Cloud related gaps as we work to provide full cloud provider plugin support
+** F5 Load Balancer support added and full abstractions for the `LoadBalancerProvider`.
 * **0.13.4**
 ** Backup Plugin Support Added
 ** Cloud Plugin Coverage Improved
 ** DNS Plugins can now function standalone
 ** HTTP ApiClient now uses CharSequence for GString compatibility
-** Improved Javadod
+** Improved Javadoc
 ** IPAMProvider Interface removed unnecessary methods
 ** Task Type Icons now use a getIcon() method on the Provider
 ** Network Pool Objects added IPv6 information (more to come)
