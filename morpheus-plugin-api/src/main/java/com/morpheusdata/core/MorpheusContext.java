@@ -48,15 +48,37 @@ import java.util.Map;
 public interface MorpheusContext {
 
 	/**
+	 * Gets references to morpheus service calls for performing operations and/or queries within Morpheus.
+	 * These services are the synchronous representations and wrap all services within the `MorpheusAsyncServices`
+	 * class. This is useful when writing UI plugins or plugin sections that are probably blocking anyway.
+	 * @return references to all synchronous morpheus data services.
+	 */
+	MorpheusServices getServices();
+
+	/**
+	 * Gets references to all rxjava/async morpheus service calls. Most of these services will respond with `Observable`
+	 * , `Single`, `Maybe`, or  even `Completable` object types. These are most useful when performing high performance
+	 * operations as in sync for various plugin types. These are also the same references as the original services
+	 * and can be swapped in as the old service references are deprecated within the morpheusContext.
+	 * @return references to all the async morpheus data services.
+	 */
+	MorpheusAsyncServices getAsync();
+
+
+	/**
 	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
 	 * @return An Instance of the Cloud Service to be used typically by {@link CloudProvider} implementations.
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusCloudService getCloud();
 
 	/**
 	 * Returns the Provision Service used for performing provisioning related updates to objects.
 	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusProvisionService getProvision();
 
 
@@ -64,67 +86,87 @@ public interface MorpheusContext {
 	 * Returns the NetworkContext used for performing updates or queries on network related assets within Morpheus.
 	 * Typically this would be called by a {@link DNSProvider} or {@link IPAMProvider}.
 	 * @return An Instance of the Network Context to be used for calls by various network providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusNetworkService getNetwork();
 
 	/**
 	 * Returns the NetworkSubnetContext used for performing updates or queries on network subnet related assets within Morpheus.
 	 * @return An Instance of the NetworkSubnet Context to be used for calls by various network providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusNetworkSubnetService getNetworkSubnet();
 
 	/**
 	 * Returns the Task context used for automation tasks on assets within Morpheus.
 	 * Typically this would be called by a {@link TaskProvider}.
 	 * @return An Instance of the Task Context to be used for calls by various task providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusTaskService getTask();
 
 	/**
 	 * Returns the Integration context used for performing common operations on varioues integration types Morpheus
 	 * has to offer.
 	 * @return An instance of the Integration Context to bused for calls by various integration types
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusIntegrationService getIntegration();
 
 	/**
 	 * Returns the VirtualImage context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Virtual Image Context to be used for calls by various providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusVirtualImageService getVirtualImage();
 
 	/**
 	 * Returns the Service Plan context used for syncing Cloud images within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Service Plan Context to be used for calls by various providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusServicePlanService getServicePlan();
 
 	/**
 	 * Returns the Compute Server context used for syncing machines within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the Compute Server Context to be used for calls by various providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusComputeServerService getComputeServer();
 
 	/**
 	 * Returns the workload context used for syncing workloads within Morpheus.
 	 * Typically this would be called by a {@link CloudProvider}.
 	 * @return An instance of the workload Context to be used for calls by various providers
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusWorkloadService getWorkload();
 
 	/**
 	 * Returns the ComputeTypeSet context
 	 * @return
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusComputeTypeSetService getComputeTypeSet();
 
 	/**
 	 * Returns the ContainerType context
 	 * @return
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusContainerTypeService getContainerType();
 
 	/**
@@ -132,46 +174,59 @@ public interface MorpheusContext {
 	 * Typically this should only ever be used by a report provider as it may not be accessible in all other contexts.
 	 *
 	 * @return an instance of the Report Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusReportService getReport();
 
 	/**
 	 * Returns the Os Type Service
 	 *
 	 * @return an instance of the Os Type Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusOsTypeService getOsType();
 
 	/**
 	 * Returns the Cypher Service
 	 *
 	 * @return an instance of the Cypher Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusCypherService getCypher();
 
 	/**
 	 * Returns the Policy Service for Governance related Policy information.
 	 * @return an instance of the Policy Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusPolicyService getPolicy();
 
 	/**
 	 * Returns the Costing service and all related subservices for dealing with costing data.
 	 * @return an instance of the Costing Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusCostingService getCosting();
 
 	/**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
 	 *
 	 * @return an instance of the web request service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusWebRequestService getWebRequest();
 
 	/**
 	 * Returns the Operation Notification Service
 	 *
 	 * @return An instance of the Operation Notification Service
+	 * @deprecated
 	 */
 	MorpheusOperationNotificationService getOperationNotification();
 
@@ -179,6 +234,7 @@ public interface MorpheusContext {
 	 * Returns the Tag Service
 	 *
 	 * @return An instance of the Tag Service
+	 * @deprecated
 	 */
 	MorpheusMetadataTagService getMetadataTag();
 
@@ -186,35 +242,45 @@ public interface MorpheusContext {
 	 * Returns the Wiki Page Service
 	 *
 	 * @return An instance of the Wiki Page Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusWikiPageService getWikiPage();
 
 	/**
 	 * Returns the StorageVolume Service
 	 *
 	 * @return An instance of the StorageVolume Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusStorageVolumeService getStorageVolume();
 
 	/**
 	 * Returns the StorageController Service
 	 *
 	 * @return An instance of the StorageController Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusStorageControllerService getStorageController();
 
 	/**
 	 * Returns the Usage Service
 	 *
 	 * @return An instance of the Usage Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusUsageService getUsage();
 
 	/**
 	 * Returns the Stats Service
 	 *
 	 * @return An instance of the Stats Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusStatsService getStats();
 
 	/**
@@ -229,13 +295,17 @@ public interface MorpheusContext {
 	 * Returns the Instance Service
 	 *
 	 * @return An instance of the Instance Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusInstanceService getInstance();
 
 	/**
 	 * Returns the Snapshot service
 	 * @return An instance of the Snapshot Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusSnapshotService getSnapshot();
 
 	/**
@@ -249,7 +319,9 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link BackupProvider}.
 	 *
 	 * @return an instance of the Backup Context
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusBackupService getBackup();
 
 	/**
@@ -257,37 +329,49 @@ public interface MorpheusContext {
 	 * Typically this would be called by a {@link BackupProvider}.
 	 *
 	 * @return an instance of the Backup Job Context
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusBackupJobService getBackupJob();
 
 	/**
 	 * Returns the Process Service
 	 * @return An instance of the MorpheusProcessService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusProcessService getProcess();
 
 	/**
 	 * Returns the Permission Service
 	 * @return An instance of the MorpheusPermissionService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusPermissionService getPermission();
 
 	/**
 	 * Returns the MorpheusAccountCredentialTypeService
 	 * @return An instance of the MorpheusAccountCredentialTypeService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountCredentialTypeService getAccountCredentialType();
 
 	/**
 	 * Returns the MorpheusAccountCredentialService
 	 * @return An instance of the MorpheusAccountCredentialService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountCredentialService getAccountCredential();
 
 	/**
 	 * Returns the MorpheusKeyPairService
 	 * @return An instance of the MorpheusKeyPairService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusKeyPairService getKeyPair();
 
 	/**
@@ -300,55 +384,73 @@ public interface MorpheusContext {
 	/**
 	 * Returns the MorpheusDashboardService
 	 * @return An instance of the MorpheusDashboardService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusDashboardService getDashboard();
 
 	/**
 	 * Returns the MorpheusLoadBalancerService
 	 * @return An instance of the MorpheusLoadBalancerService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusLoadBalancerService getLoadBalancer();
 
 	/**
 	 * Returns the MorpheusReferenceDataService
 	 * @return an instance of the MorpheusReferenceDataService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusReferenceDataService getReferenceData();
 
 	/**
 	 * Returns the MorpheusBackupProviderService
 	 * @return an instance of the MorpheusBackupProviderService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusBackupProviderService getBackupProvider();
 
 	/**
 	 * Returns the MorpheusAccountPriceSetService
 	 * @return an instance of the MorpheusAccountPriceSetService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountPriceSetService getAccountPriceSet();
 
 	/**
 	 * Returns the MorpheusAccountPriceService
 	 * @return an instance of the MorpheusAccountPriceService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountPriceService getAccountPrice();
 
 	/**
 	 * Returns the MorpheusServicePlanPriceSetService
 	 * @return an instance of the MorpheusServicePlanPriceSetService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
 
 	/**
 	 * Returns the MorpheusAccountIntegrationService
 	 * @return an instance of the MorpheusAccountIntegrationService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountIntegrationService getAccountIntegration();
 
 	/**
 	 * Returns the MorpheusAccountInventoryService
 	 * @return an instance of the MorpheusAccountInventoryService
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAccountInventoryService getAccountInventory();
 
 	//Common methods used across various contexts

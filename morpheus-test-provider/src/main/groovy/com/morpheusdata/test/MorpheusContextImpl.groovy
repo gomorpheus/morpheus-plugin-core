@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusAccountCredentialTypeService
 import com.morpheusdata.core.MorpheusAccountIntegrationService
 import com.morpheusdata.core.MorpheusAccountPriceService
 import com.morpheusdata.core.MorpheusAccountPriceSetService
+import com.morpheusdata.core.MorpheusAsyncServices
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService
 import com.morpheusdata.core.MorpheusComputeTypeSetService
 import com.morpheusdata.core.MorpheusContainerTypeService
@@ -15,6 +16,7 @@ import com.morpheusdata.core.MorpheusProcessService
 import com.morpheusdata.core.MorpheusReferenceDataService
 import com.morpheusdata.core.MorpheusSecurityGroupService
 import com.morpheusdata.core.MorpheusServicePlanPriceSetService
+import com.morpheusdata.core.MorpheusServices
 import com.morpheusdata.core.MorpheusSnapshotService
 import com.morpheusdata.core.MorpheusStatsService
 import com.morpheusdata.core.MorpheusStorageControllerService
@@ -116,6 +118,27 @@ class MorpheusContextImpl implements MorpheusContext {
 		this.taskContext = taskContext
 		this.virtualImageContext = virtualImageContext
     }
+
+	/**
+	 * Gets references to morpheus service calls for performing operations and/or queries within Morpheus.
+	 * These services are the synchronous representations and wrap all services within the `MorpheusAsyncServices`
+	 * class. This is useful when writing UI plugins or plugin sections that are probably blocking anyway.
+	 * @return references to all synchronous morpheus data services.
+	 */
+	MorpheusServices getServices() {
+		return null;
+	}
+
+	/**
+	 * Gets references to all rxjava/async morpheus service calls. Most of these services will respond with `Observable`
+	 * , `Single`, `Maybe`, or  even `Completable` object types. These are most useful when performing high performance
+	 * operations as in sync for various plugin types. These are also the same references as the original services
+	 * and can be swapped in as the old service references are deprecated within the morpheusContext.
+	 * @return references to all the async morpheus data services.
+	 */
+	MorpheusAsyncServices getAsync() {
+		return null;
+	}
 
 	@Override
 	MorpheusStorageVolumeService getStorageVolume() {
