@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.core.data.DataQueryResult;
+import com.morpheusdata.model.MorpheusModel;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -37,7 +38,7 @@ import java.util.Map;
  * @see DataQuery
 
  */
-public interface MorpheusDataService<M> {
+public interface MorpheusDataService<M extends MorpheusModel> {
 
 	/**
 	 * Persists a new model object into the Morpheus database. It is important to note that when persisting more than
