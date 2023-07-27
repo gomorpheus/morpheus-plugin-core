@@ -156,8 +156,6 @@ public class DataQuery {
 
   public Map toMap() {
     Map rtn = new LinkedHashMap();
-    if(filter != null)
-      rtn.put("filter", filter);
     if(phrase != null)
       rtn.put("phrase", phrase);
     if(filters != null)
