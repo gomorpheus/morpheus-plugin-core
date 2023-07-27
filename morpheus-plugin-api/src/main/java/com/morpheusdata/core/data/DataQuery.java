@@ -135,8 +135,8 @@ public class DataQuery {
     return rtn;
   }
 
-  public Map getPageConfig() {
-    Map rtn = new LinkedHashMap();
+  public Map<String,Object> getPageConfig() {
+    Map<String,Object> rtn = new LinkedHashMap<>();
     if(max != null && max > 0)
       rtn.put("max", max);
     if(offset != null && offset > 0)
