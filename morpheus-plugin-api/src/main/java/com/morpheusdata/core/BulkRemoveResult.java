@@ -1,5 +1,7 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.MorpheusModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
  * @since 0.15.2
  * @param <M> the {@link com.morpheusdata.model.MorpheusModel} class this object represents
  */
-public class BulkRemoveResult<M> {
+public class BulkRemoveResult<M extends MorpheusModel> {
 	/**
 	 * A List of failed {@link com.morpheusdata.model.MorpheusModel} objects that were not saved.
 	 */
