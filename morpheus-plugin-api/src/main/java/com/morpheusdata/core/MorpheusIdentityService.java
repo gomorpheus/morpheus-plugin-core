@@ -3,7 +3,6 @@ package com.morpheusdata.core;
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.model.MorpheusModel;
 import io.reactivex.Observable;
-
 import java.util.Collection;
 
 /**
@@ -16,7 +15,9 @@ import java.util.Collection;
  * @see MorpheusDataService
  */
 public interface MorpheusIdentityService<I extends MorpheusModel> {
+
 	Observable<I> listIdentityProjections(DataQuery query);
 
 	Collection<String> getIdentityProperties();
+  
 }
