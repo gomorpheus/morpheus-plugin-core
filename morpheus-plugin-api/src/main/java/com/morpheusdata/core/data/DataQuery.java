@@ -4,12 +4,8 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.projection.UserIdentity;
 import com.morpheusdata.model.projection.AccountIdentity;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * This is the query object to use to query data from a {@link MorpheusDataService}
@@ -37,12 +33,11 @@ public class DataQuery {
   //api map of input parameters
   //todo - document the parameters the query engine checks in this map
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
-  //optional input filter map of equal operator criteria query ie [type:'typeValue', name:'fred']
-  public Map filter;
+
   //list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
-  public Collection filters = new ArrayList();
+  public Collection<Map<String,Object>> filters = new ArrayList<>();
   //list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
-  public Collection propertyList = new ArrayList();
+  public Collection<String> propertyList = new ArrayList<>();
 
   //paging - broken out - can get as a map with getPageConfig
   public Long max = 25l;
@@ -70,6 +65,40 @@ public class DataQuery {
   public DataQuery(AccountIdentity account, ApiParameterMap<String, Object> parameters) {
     this.account = account;
     this.parameters = parameters;
+  }
+
+  public DataQuery withFilters(Map<String,Object> filter) {
+	  for(String key : filter.keySet()) {
+		  LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+		  equalMap.put("name",key);
+		  equalMap.put("value",filter.get(key));
+		  equalMap.put("operator","=");
+		  this.filters.add(equalMap);
+	  }
+	  return this;
+  }
+
+  public DataQuery withFilter(String name, Object value) {
+	  LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+	  equalMap.put("name",name);
+	  equalMap.put("value",value);
+	  equalMap.put("operator","=");
+	  this.filters.add(equalMap);
+	  return this;
+  }
+
+  public DataQuery withFilter(String name,String operator, Object value) {
+	LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+	equalMap.put("name",name);
+	equalMap.put("value",value);
+	equalMap.put("operator",operator);
+	this.filters.add(equalMap);
+	return this;
+  }
+
+  public DataQuery withFilters(Collection<Map<String,Object>> filters) {
+  	this.filters.addAll(filters);
+	return this;
   }
 
   public Object putAt(String key, Object value) {
@@ -127,8 +156,6 @@ public class DataQuery {
 
   public Map toMap() {
     Map rtn = new LinkedHashMap();
-    if(filter != null)
-      rtn.put("filter", filter);
     if(phrase != null)
       rtn.put("phrase", phrase);
     if(filters != null)
