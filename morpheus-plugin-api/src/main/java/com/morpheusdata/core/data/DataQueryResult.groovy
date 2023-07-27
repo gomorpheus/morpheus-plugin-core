@@ -36,8 +36,8 @@ public class DataQueryResult<?> {
 	Collection stats = new ArrayList();
 	//applied alias ids
 	Collection aliasIds = new ArrayList();
-	//layout style for stat queries
-	String layout;
+	//organize map of grouped query results - key is the group - value is the data
+	Map layout;
 
 	//paging information
 	Long max;
