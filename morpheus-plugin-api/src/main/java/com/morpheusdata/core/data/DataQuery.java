@@ -30,7 +30,6 @@ import java.util.*;
  */
 public class DataQuery {
 
-
 	/**
 	 * Specifies the User object scope for the query. This is implemented by {@link com.morpheusdata.model.User} objects.
 	 */
@@ -242,6 +241,7 @@ public class DataQuery {
 		if (parameters != null)
 			rtn.put("parameters", parameters);
 		if (filters != null)
+
 			rtn.put("filters", filters);
 		//page config
 		rtn.put("pageConfig", getPageConfig());
@@ -249,14 +249,6 @@ public class DataQuery {
 		return rtn;
 	}
 
-
-	public enum Mode {
-		query,
-		count,
-		group,
-		stats,
-		lookup
-	}
 
 	public enum SortOrder {
 		asc,
