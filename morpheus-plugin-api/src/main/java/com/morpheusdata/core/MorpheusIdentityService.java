@@ -14,7 +14,7 @@ import java.util.Collection;
  * @author David Estes
  * @see MorpheusDataService
  */
-public interface MorpheusDataIdentityService<I> {
+public interface MorpheusIdentityService<I> {
 	Observable<I> listIdentityProjections(DataQuery query);
 
 	Collection<String> getIdentityProperties();

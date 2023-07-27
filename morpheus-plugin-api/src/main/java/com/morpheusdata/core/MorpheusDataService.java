@@ -18,13 +18,13 @@ import java.util.Map;
  *
  * <p><strong>Example:</strong></p>
  * <pre>{@code
- * public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusDataIdentityService<UserIdentity> {
+ * public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentity> {
  *
  * }
  * }</pre>
  *
- * Often times this interface is used in conjunction with the {@link MorpheusDataIdentityService} for providing
- * an efficient way to sync objects via the {@link MorpheusDataIdentityService#listIdentityProjections(DataQuery)} method.
+ * Often times this interface is used in conjunction with the {@link MorpheusIdentityService} for providing
+ * an efficient way to sync objects via the {@link MorpheusIdentityService#listIdentityProjections(DataQuery)} method.
  *
  * Another implementation also exists for synchronous non rxjava querying of the objects called the
  * {@link MorpheusSynchronousDataService}. Typically, both should be implemented for use within the plugin api.
@@ -32,7 +32,7 @@ import java.util.Map;
  * @author Brian Wheeler
  * @since 0.15.1
  * @param <M> The {@link com.morpheusdata.model.MorpheusModel} class type for this service to query against
- * @see MorpheusDataIdentityService
+ * @see MorpheusIdentityService
  * @see MorpheusSynchronousDataService
  * @see DataQuery
 
@@ -188,7 +188,7 @@ public interface MorpheusDataService<M> {
 
 	/**
 	 * Fetches a stream of {@link com.morpheusdata.model.MorpheusModel} objects based on a collection of Identifiers (id). This is often
-	 * used in conjunction with the {@link MorpheusDataIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
+	 * used in conjunction with the {@link MorpheusIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
 	 * for efficiently only fetching batches of objects we want to perform update operations on.
 	 *
 	 * <p><strong>Note:</strong> This is a reactive method and will not perform any operation until subscribed or blockingGet() is called on it.</p>

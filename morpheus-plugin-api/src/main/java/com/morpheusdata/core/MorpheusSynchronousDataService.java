@@ -2,7 +2,6 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.core.data.DataQueryResult;
-import io.reactivex.Single;
 
 import java.util.List;
 import java.util.Map;
@@ -16,12 +15,12 @@ import java.util.Map;
  *
  * <p><strong>Example:</strong></p>
  * <pre>{@code
- *  public interface MorpheusSynchronousUserService extends MorpheusSynchronousDataService<User>, MorpheusSynchronousDataIdentityService<UserIdentity> {
+ *  public interface MorpheusSynchronousUserService extends MorpheusSynchronousDataService<User>, MorpheusSynchronousIdentityService<UserIdentity> {
  *  }
  * }</pre>
  *
- * Often times this interface is used in conjunction with the {@link MorpheusSynchronousDataIdentityService} for providing
- * an efficient way to sync objects via the {@link MorpheusSynchronousDataIdentityService#listIdentityProjections(DataQuery)} method.
+ * Often times this interface is used in conjunction with the {@link MorpheusSynchronousIdentityService} for providing
+ * an efficient way to sync objects via the {@link MorpheusSynchronousIdentityService#listIdentityProjections(DataQuery)} method.
  *
  * Another implementation also exists for asynchronous rxjava querying of the objects called the
  * {@link MorpheusDataService}. Typically, both should be implemented for use within the plugin api.
@@ -35,7 +34,7 @@ import java.util.Map;
  * @author Brian Wheeler
  * @since 0.15.1
  * @param <T> The {@link com.morpheusdata.model.MorpheusModel} class type for this service to query against
- * @see MorpheusSynchronousDataIdentityService
+ * @see MorpheusSynchronousIdentityService
  * @see MorpheusDataService
  * @see DataQuery
  */
@@ -195,7 +194,7 @@ public interface MorpheusSynchronousDataService<T> {
 
 	/**
 	 * Fetches a stream of {@link com.morpheusdata.model.MorpheusModel} objects based on a collection of Identifiers (id). This is often
-	 * used in conjunction with the {@link MorpheusSynchronousDataIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
+	 * used in conjunction with the {@link MorpheusSynchronousIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
 	 * for efficiently only fetching batches of objects we want to perform update operations on.
 	 *
 	 * <p><strong>Note:</strong> This method does not factor in any sort of access/security control and should not be used in areas where this is required.</p>
