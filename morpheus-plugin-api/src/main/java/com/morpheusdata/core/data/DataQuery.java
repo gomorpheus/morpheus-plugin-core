@@ -33,8 +33,7 @@ public class DataQuery {
   //api map of input parameters
   //todo - document the parameters the query engine checks in this map
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
-  //optional input filter map of equal operator criteria query ie [type:'typeValue', name:'fred']
-  public Map<String,Object> filter = new LinkedHashMap<>();
+
   //list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
   public Collection<Map<String,Object>> filters = new ArrayList<>();
   //list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
@@ -71,14 +70,33 @@ public class DataQuery {
   public DataQuery withFilters(Map<String,Object> filter) {
 	  for(String key : filter.keySet()) {
 		  LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
-		  this.filters.add({name: key,value})
+		  equalMap.put("name",key);
+		  equalMap.put("value",filter.get(key));
+		  equalMap.put("operator","=");
+		  this.filters.add(equalMap);
 	  }
-	  this.filter.mer
-	  this.filter = filter;
 	  return this;
   }
 
-  public DataQuery withFilters(Collection<Map<>> filters) {
+  public DataQuery withFilter(String name, Object value) {
+	  LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+	  equalMap.put("name",name);
+	  equalMap.put("value",value);
+	  equalMap.put("operator","=");
+	  this.filters.add(equalMap);
+	  return this;
+  }
+
+  public DataQuery withFilter(String name,String operator, Object value) {
+	LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+	equalMap.put("name",name);
+	equalMap.put("value",value);
+	equalMap.put("operator",operator);
+	this.filters.add(equalMap);
+	return this;
+  }
+
+  public DataQuery withFilters(Collection<Map<String,Object>> filters) {
   	this.filters.addAll(filters);
 	return this;
   }

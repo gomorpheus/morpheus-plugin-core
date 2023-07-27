@@ -17,33 +17,76 @@ import java.util.Map;
  */
 public class DataQueryResult {
 
-  //flag indicating if the query succeeded
-  public Boolean success = false;
-  //flag indicating if the query created a warning
-  public Boolean warning = false;
-  //message if any returned from the query
-  public String message = null;
-  //error code casued by the query
-  public String errorCode;
-  //map of errors caused by the query
-  public Map<String,String> errors = new LinkedHashMap<>();
-  //the items found in the query
-  public Collection items;
-  //total number of items in the datastore that match the query
-  public Long total;
-  //number of items returned in this query - should match max if paged
-  public Long size; 
-  //the offset used in the paged query
-  public Long offset = 0l;
-  //the max per page value used in the query
-  public Long max;
-  //the sort used in the query
-  public String sort;
-  //the order used in the query
-  public String order;
-  
-  public DataQueryResult() {}
+	//flag indicating success
+	public Boolean success = false;
+	//the execution mode of the query - query,lookup,count,group,stats
+	public String mode;
+	//the actual items
+	public Collection<?> items;
+	//the number of items returned in the item list
+	public Long count;
+	//the total number of items in the data that would match the query
+	public Long total;
+	//applied filters
+	public Collection filters = new ArrayList();
+	//applied groups
+	public Collection groups = new ArrayList();
+	//applied stats
+	public Collection stats = new ArrayList();
+	//applied alias ids
+	public Collection aliasIds = new ArrayList();
+	//organize map of grouped query results - key is the group - value is the data
+	public Map layout;
 
-  //todo - add constructors for success and error case.
+	//paging information
+	public Long max;
+	public Long offset;
+	public String sort;
+	public String order;
+	//execution time
+	public Long queryTime;
+
+	public DataQueryResult() {}
+
+	public Map getPageConfig() {
+		Map rtn = new LinkedHashMap();
+		if(max != null && max > 0)
+			rtn.put("max", max);
+		if(offset != null && offset > 0)
+			rtn.put("offset", offset);
+		if(sort != null)
+			rtn.put("sort", sort);
+		if(order != null)
+			rtn.put("order", order);
+		return rtn;
+	}
+
+	public Map toMap() {
+		Map rtn = new LinkedHashMap();
+		if(success != null)
+			rtn.put("success", success);
+		if(mode != null)
+			rtn.put("mode", mode);
+		//info
+		if(filters != null)
+			rtn.put("filters", filters);
+		if(groups != null)
+			rtn.put("groups", groups);
+		if(stats != null)
+			rtn.put("stats", stats);
+		if(aliasIds != null)
+			rtn.put("aliasIds", aliasIds);
+		if(layout != null)
+			rtn.put("layout", layout);
+		//results
+		rtn.put("items", items);
+		rtn.put("count", count);
+		rtn.put("total", total);
+		//page config
+		rtn.put("pageConfig", getPageConfig());
+		//done
+		return rtn;
+	}
+
 
 }
