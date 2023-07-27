@@ -26,7 +26,7 @@ public class DataQuery {
 	//todo - document the parameters the query engine checks in this map
 	public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
 	//list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
-	public Collection<Map<String, Object>> filters = new ArrayList<>();
+	public Collection<DataFilter> filters = new ArrayList<>();
 	//list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
 	public Collection<String> propertyList = new ArrayList<>();
 
@@ -58,36 +58,32 @@ public class DataQuery {
 		this.parameters = parameters;
 	}
 
+	public DataQuery withFilter(DataFilter dataFilter) {
+		this.filters.add(dataFilter);
+		return this;
+	}
+
 	public DataQuery withFilter(String name, Object value) {
-		LinkedHashMap<String, Object> equalMap = new LinkedHashMap<>() {};
-		equalMap.put("name", name);
-		equalMap.put("value", value);
-		equalMap.put("operator", "=");
-		this.filters.add(equalMap);
+		DataFilter addFilter = new DataFilter(name, value);
+		this.filters.add(addFilter);
 		return this;
 	}
 
 	public DataQuery withFilter(String name, String operator, Object value) {
-		LinkedHashMap<String, Object> equalMap = new LinkedHashMap<>() {};
-		equalMap.put("name", name);
-		equalMap.put("value", value);
-		equalMap.put("operator", operator);
-		this.filters.add(equalMap);
+		DataFilter addFilter = new DataFilter(name, operator, value);
+		this.filters.add(addFilter);
 		return this;
 	}
 
 	public DataQuery withFilters(Map<String, Object> filter) {
 		for(String key : filter.keySet()) {
-			LinkedHashMap<String, Object> equalMap = new LinkedHashMap<>() {};
-			equalMap.put("name", key);
-			equalMap.put("value", filter.get(key));
-			equalMap.put("operator", "=");
-			this.filters.add(equalMap);
+			DataFilter addFilter = new DataFilter(key, filter.get(key));
+			this.filters.add(addFilter);
 		}
 		return this;
 	}
 
-	public DataQuery withFilters(Collection<Map<String, Object>> filters) {
+	public DataQuery withFilters(Collection<DataFilter> filters) {
 		this.filters.addAll(filters);
 		return this;
 	}
@@ -153,8 +149,6 @@ public class DataQuery {
 			rtn.put("filters", filters);
 		if(parameters != null)
 			rtn.put("parameters", parameters);
-		if(mode != null)
-			rtn.put("mode", mode);
 		if(filters != null)
 			rtn.put("filters", filters);
 		//page config
