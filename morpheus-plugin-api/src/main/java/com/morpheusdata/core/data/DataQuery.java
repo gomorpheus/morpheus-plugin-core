@@ -15,7 +15,7 @@ import java.util.*;
  * @since 0.15.1
  */
 public class DataQuery {
-	
+
   //user executing the query
   public UserIdentity user;
   //account executing the query
@@ -34,8 +34,8 @@ public class DataQuery {
   public Collection<String> propertyList = new ArrayList<>();
 
   //paging - broken out - can get as a map with getPageConfig
-  public Long max = 25l;
-  public Long offset = 0l;
+  public Long max = 25L;
+  public Long offset = 0L;
   public String sort;
   public String order;
   
@@ -148,8 +148,8 @@ public class DataQuery {
     return rtn;
   }
 
-  public Map toMap() {
-    Map rtn = new LinkedHashMap();
+  public Map<String,Object> toMap() {
+    Map<String,Object> rtn = new LinkedHashMap<>();
     if(phrase != null)
       rtn.put("phrase", phrase);
     if(filters != null)
