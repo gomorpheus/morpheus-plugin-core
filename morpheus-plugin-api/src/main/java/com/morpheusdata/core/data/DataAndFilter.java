@@ -32,4 +32,9 @@ public class DataAndFilter extends DataFilter<Collection<DataFilter>> {
 		return this;
 	}
 
+	public DataFilter withFilters(Collection<DataFilter> dataFilters) {
+		value.addAll(dataFilters);
+		return this;
+	}
+
 }
