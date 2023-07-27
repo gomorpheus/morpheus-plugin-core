@@ -1,6 +1,6 @@
 package com.morpheusdata.core.admin;
 
-import com.morpheusdata.core.MorpheusDataIdentityService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.User;
@@ -39,5 +39,5 @@ import com.morpheusdata.model.projection.UserIdentity;
  * @author David Estes
  * @since 0.15.2
  */
-public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusDataIdentityService<UserIdentity> {
+public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentity> {
 }

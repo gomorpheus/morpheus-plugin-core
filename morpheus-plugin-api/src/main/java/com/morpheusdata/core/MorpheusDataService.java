@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.core.data.DataQueryResult;
+import com.morpheusdata.model.MorpheusModel;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -18,13 +19,13 @@ import java.util.Map;
  *
  * <p><strong>Example:</strong></p>
  * <pre>{@code
- * public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusDataIdentityService<UserIdentity> {
+ * public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentity> {
  *
  * }
  * }</pre>
  *
- * Often times this interface is used in conjunction with the {@link MorpheusDataIdentityService} for providing
- * an efficient way to sync objects via the {@link MorpheusDataIdentityService#listIdentityProjections(DataQuery)} method.
+ * Often times this interface is used in conjunction with the {@link MorpheusIdentityService} for providing
+ * an efficient way to sync objects via the {@link MorpheusIdentityService#listIdentityProjections(DataQuery)} method.
  *
  * Another implementation also exists for synchronous non rxjava querying of the objects called the
  * {@link MorpheusSynchronousDataService}. Typically, both should be implemented for use within the plugin api.
@@ -32,12 +33,12 @@ import java.util.Map;
  * @author Brian Wheeler
  * @since 0.15.1
  * @param <M> The {@link com.morpheusdata.model.MorpheusModel} class type for this service to query against
- * @see MorpheusDataIdentityService
+ * @see MorpheusIdentityService
  * @see MorpheusSynchronousDataService
  * @see DataQuery
 
  */
-public interface MorpheusDataService<M> {
+public interface MorpheusDataService<M extends MorpheusModel> {
 
 	/**
 	 * Persists a new model object into the Morpheus database. It is important to note that when persisting more than
@@ -188,7 +189,7 @@ public interface MorpheusDataService<M> {
 
 	/**
 	 * Fetches a stream of {@link com.morpheusdata.model.MorpheusModel} objects based on a collection of Identifiers (id). This is often
-	 * used in conjunction with the {@link MorpheusDataIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
+	 * used in conjunction with the {@link MorpheusIdentityService#listIdentityProjections(DataQuery)} and the {@link com.morpheusdata.core.util.SyncTask}
 	 * for efficiently only fetching batches of objects we want to perform update operations on.
 	 *
 	 * <p><strong>Note:</strong> This is a reactive method and will not perform any operation until subscribed or blockingGet() is called on it.</p>
@@ -245,6 +246,17 @@ public interface MorpheusDataService<M> {
 		return list(query).firstElement();
 	}
 
+	/**
+	 * Performs a query operation on the database just like {@link MorpheusDataService#list(DataQuery)} with a query, but the result is no longer a
+	 * stream of individual {@link com.morpheusdata.model.MorpheusModel}.
+	 *
+	 * <p><strong>Note:</strong> This is a reactive method and will not perform any operation until subscribed or blockingGet() is called on it.</p>
+	 * <p><strong>Note:</strong> For more information on how to query please refer to the documentation for the {@link DataQuery} class.</p>
+	 *
+	 * @param query An instance of the {@link DataQuery} object used for filtering results. This should often include an account / user
+	 * 	            scope for security but does not always need to if being used for sync or multi-tenant reporting.
+	 * @return a Single DataQueryResult representing a collection of result objects along with the metadata about the result. This could be paging data for example.
+	 */
 	Single<DataQueryResult> search(DataQuery query);
 
 }
