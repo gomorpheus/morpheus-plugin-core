@@ -20,8 +20,6 @@ public class DataQuery {
 	public UserIdentity user;
 	//account executing the query
 	public AccountIdentity account;
-	//query mode - group, stats, query
-	public Mode mode = Mode.query;
 	//optional search phrase - ie: "type = 'typeValue' and name = 'fred'"
 	public String phrase;
 	//api map of input parameters
@@ -163,15 +161,6 @@ public class DataQuery {
 		rtn.put("pageConfig", getPageConfig());
 		//done
 		return rtn;
-	}
-
-
-	public enum Mode {
-		query,
-		count,
-		group,
-		stats,
-		lookup
 	}
 
 }
