@@ -1,10 +1,9 @@
 package com.morpheusdata.core.admin;
 
-import com.morpheusdata.core.MorpheusIdentityService;
-import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.User;
-import com.morpheusdata.model.projection.UserIdentity;
 import com.morpheusdata.model.projection.UserIdentityProjection;
 
 /**

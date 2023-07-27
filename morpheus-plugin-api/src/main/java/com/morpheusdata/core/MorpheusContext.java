@@ -9,7 +9,6 @@ import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
-import com.morpheusdata.core.providers.*;
 import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
@@ -30,8 +29,8 @@ import java.util.Map;
  * It is important to note that most methods in the context are asynchronous and rely on RxJava based interfaces to
  * present the ability for the implementation of the MorpheusContext to be disconnected from the core application.
  *
- * The MorpheusContext typically provides getters for multiple subcontexts. These Sub Context interfaces are useful for
- * organizing calls to reduce the size of the individual Context Class
+ * <p>The MorpheusContext typically provides getters for multiple services. These Service interfaces are useful for
+ * organizing calls to reduce the size of the individual Context Class</p>
  *
  * (i.e. a Connector app could implement the MorpheusContext and relay communication back to the Morpheus Application itself)
  *

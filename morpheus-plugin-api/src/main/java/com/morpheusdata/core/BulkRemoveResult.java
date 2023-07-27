@@ -26,7 +26,7 @@ public class BulkRemoveResult<M extends MorpheusModel> {
 	 */
 	protected String errorCode=null;
 
-	BulkRemoveResult(String msg, String errorCode, List<M> failedItems) {
+	public BulkRemoveResult(String msg, String errorCode, List<M> failedItems) {
 		this.msg = msg;
 		this.errorCode = errorCode;
 		this.failedItems = failedItems;

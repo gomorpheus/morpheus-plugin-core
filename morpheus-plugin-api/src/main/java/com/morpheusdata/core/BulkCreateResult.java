@@ -33,7 +33,7 @@ public class BulkCreateResult<M extends MorpheusModel> {
 	 */
 	protected String errorCode=null;
 
-	BulkCreateResult(String msg, String errorCode, List<M> persistedItems, List<M> failedItems) {
+	public BulkCreateResult(String msg, String errorCode, List<M> persistedItems, List<M> failedItems) {
 		this.msg = msg;
 		this.errorCode = errorCode;
 		this.persistedItems = persistedItems;

@@ -26,10 +26,10 @@ public interface GlobalUIComponentProvider extends UIExtensionProvider {
 
 	/**
 	 * The renderer for the global UI Component. This is typically rendered into the footer of the main layout. This is
-	 * useful for renderingr common components like a global support chat.
+	 * useful for rendering common components like a global support chat.
 	 * @param user The current user the page is being rendered for.
 	 * @param account The current account the page is being rendered for.
-	 * @return result of rendering an template
+	 * @return result of rendering a template
 	 */
 	HTMLResponse renderTemplate(User user, Account account);
 }
