@@ -27,11 +27,11 @@ import java.util.Map;
 
 /**
  * Provides a means to interact or query data from the main Morpheus application back into the various provider extensions
- * It is important to note that most methods in the context are asynchronous and rely on RxJava based interfaces so as
- * to present the ability for the implementation of the MorpheusContext to be disconnected from the core application.
+ * It is important to note that most methods in the context are asynchronous and rely on RxJava based interfaces to
+ * present the ability for the implementation of the MorpheusContext to be disconnected from the core application.
  *
  * The MorpheusContext typically provides getters for multiple subcontexts. These Sub Context interfaces are useful for
- * organizing calls so as to reduce the size of the individual Context Class
+ * organizing calls to reduce the size of the individual Context Class
  *
  * (i.e. a Connector app could implement the MorpheusContext and relay communication back to the Morpheus Application itself)
  *
