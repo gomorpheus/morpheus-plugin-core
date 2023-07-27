@@ -25,7 +25,7 @@ import java.util.*;
  * As can be seen in the example, the filters is an Array of Maps containing a property name (i.e. name), a property value (i.e. value), and an operator.
  * An operator can either be a "==","=","!=","&lt;","&lt;=","&gt;","&gt;=","=~","in","or,"and".
  *
- * @author bdwheeler
+ * @author Brian Wheeler
  * @since 0.15.1
  */
 public class DataQuery {
