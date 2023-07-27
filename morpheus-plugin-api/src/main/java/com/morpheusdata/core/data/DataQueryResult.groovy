@@ -19,33 +19,33 @@ import java.util.Set;
 public class DataQueryResult<?> {
 
 	//flag indicating success
-	Boolean success = false;
+	public Boolean success = false;
 	//the execution mode of the query - query,lookup,count,group,stats
-	String mode;
+	public String mode;
 	//the actual items
-	Collection<?> items;
+	public Collection<?> items;
 	//the number of items returned in the item list
-	Long count;
+	public Long count;
 	//the total number of items in the data that would match the query
-	Long total;
+	public Long total;
 	//applied filters
-	Collection filters = new ArrayList();
+	public Collection filters = new ArrayList();
 	//applied groups
-	Collection groups = new ArrayList();
+	public Collection groups = new ArrayList();
 	//applied stats
-	Collection stats = new ArrayList();
+	public Collection stats = new ArrayList();
 	//applied alias ids
-	Collection aliasIds = new ArrayList();
+	public Collection aliasIds = new ArrayList();
 	//organize map of grouped query results - key is the group - value is the data
-	Map layout;
+	public Map layout;
 
 	//paging information
-	Long max;
-	Long offset;
-	String sort;
-	String order;
+	public Long max;
+	public Long offset;
+	public String sort;
+	public String order;
 	//execution time
-	Long queryTime;
+	public Long queryTime;
 
 	public DataQueryResult() {}
 
