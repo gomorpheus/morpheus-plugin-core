@@ -1,6 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
+import com.morpheusdata.core.data.DataQueryResult;
+import io.reactivex.Single;
 
 import java.util.List;
 import java.util.Map;
@@ -249,5 +251,20 @@ public interface MorpheusSynchronousDataService<T> {
 	 */
 	default T find(DataQuery query) {
 		return getDataService().find(query).blockingGet();
+	}
+
+	/**
+	 * Performs a query operation on the database just like {@link MorpheusDataService#list(DataQuery)} with a query, but the result is no longer a
+	 * stream of individual {@link com.morpheusdata.model.MorpheusModel}.
+	 *
+	 * <p><strong>Note:</strong> This is a reactive method and will not perform any operation until subscribed or blockingGet() is called on it.</p>
+	 * <p><strong>Note:</strong> For more information on how to query please refer to the documentation for the {@link DataQuery} class.</p>
+	 *
+	 * @param query An instance of the {@link DataQuery} object used for filtering results. This should often include an account / user
+	 * 	            scope for security but does not always need to if being used for sync or multi-tenant reporting.
+	 * @return a Single DataQueryResult representing a collection of result objects along with the metadata about the result. This could be paging data for example.
+	 */
+	default DataQueryResult search(DataQuery query) {
+		return getDataService().search(query).blockingGet();
 	}
 }
