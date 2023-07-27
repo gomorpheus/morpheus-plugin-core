@@ -28,7 +28,7 @@ public class DataQuery {
 	//todo - document the parameters the query engine checks in this map
 	public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
 	//list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
-	public Collection<Map<String,Object>> filters = new ArrayList<>();
+	public Collection<Map<String, Object>> filters = new ArrayList<>();
 	//list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
 	public Collection<String> propertyList = new ArrayList<>();
 
