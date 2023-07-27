@@ -154,6 +154,13 @@ public class DataQuery {
 		return this;
 	}
 
+	/**
+	 * A chainable filter method for applying an "==" operator filter given a property name
+	 * and desired value to lookup.
+	 * @param name the property name for the filter to query against.
+	 * @param value the value to compare the property to
+	 * @return the current DataQuery object for chaining
+	 */
 	public DataQuery withFilter(String name, Object value) {
 		LinkedHashMap<String, Object> equalMap = new LinkedHashMap<>() {
 		};
@@ -164,6 +171,14 @@ public class DataQuery {
 		return this;
 	}
 
+	/**
+	 * A chainable filter method for applying an "==" operator filter given a property name
+	 * and desired value to lookup.
+	 * @param name the property name for the filter to query against.
+	 * @param operator the operator to be used for comparing the value (i.e. ==,!=,&lt;,&lt=,&gt;&gt=,in,=~,:)
+	 * @param value the value to compare the property to.
+	 * @return the current DataQuery object for chaining
+	 */
 	public DataQuery withFilter(String name, String operator, Object value) {
 		LinkedHashMap<String, Object> equalMap = new LinkedHashMap<>() {
 		};
@@ -174,6 +189,12 @@ public class DataQuery {
 		return this;
 	}
 
+	/**
+	 * Appends a set of filters to the existing filters list. This operation is additive and does not clear the current
+	 * filters list. For information on the available filter types please refer to the top of this classes description.
+	 * @param filters a Collection of Filter objects for building custom queries.
+	 * @return the current DataQuery object for chaining
+	 */
 	public DataQuery withFilters(Collection<Map<String, Object>> filters) {
 		this.filters.addAll(filters);
 		return this;
@@ -219,6 +240,12 @@ public class DataQuery {
 		return rtn;
 	}
 
+	/**
+	 * Generates a Map of page configuration data to be sent into the Morpheus DataViewService (internal).
+	 * This method is typically not used directly and is reserved for internal use.
+	 *
+	 * @return a Map of properties used for setting page metadata on the query
+	 */
 	public Map<String, Object> getPageConfig() {
 		Map<String, Object> rtn = new LinkedHashMap<>();
 		if (max != null && max > 0)
@@ -232,6 +259,10 @@ public class DataQuery {
 		return rtn;
 	}
 
+	/**
+	 * Converts the DataQuery to a Map
+	 * @return a Map of properties based on the values assigned in this object.
+	 */
 	public Map<String, Object> toMap() {
 		Map<String, Object> rtn = new LinkedHashMap<>();
 		if (phrase != null)
@@ -249,7 +280,9 @@ public class DataQuery {
 		return rtn;
 	}
 
-
+	/**
+	 * Represents a sort order direction for query results.
+	 */
 	public enum SortOrder {
 		asc,
 		desc
