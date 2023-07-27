@@ -4,12 +4,8 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.projection.UserIdentity;
 import com.morpheusdata.model.projection.AccountIdentity;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * This is the query object to use to query data from a {@link MorpheusDataService}
@@ -38,11 +34,11 @@ public class DataQuery {
   //todo - document the parameters the query engine checks in this map
   public ApiParameterMap<String, Object> parameters = new ApiParameterMap<>();
   //optional input filter map of equal operator criteria query ie [type:'typeValue', name:'fred']
-  public Map filter;
+  public Map<String,Object> filter = new LinkedHashMap<>();
   //list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
-  public Collection filters = new ArrayList();
+  public Collection<Map<String,Object>> filters = new ArrayList<>();
   //list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
-  public Collection propertyList = new ArrayList();
+  public Collection<String> propertyList = new ArrayList<>();
 
   //paging - broken out - can get as a map with getPageConfig
   public Long max = 25l;
@@ -70,6 +66,21 @@ public class DataQuery {
   public DataQuery(AccountIdentity account, ApiParameterMap<String, Object> parameters) {
     this.account = account;
     this.parameters = parameters;
+  }
+
+  public DataQuery withFilters(Map<String,Object> filter) {
+	  for(String key : filter.keySet()) {
+		  LinkedHashMap<String,Object> equalMap = new LinkedHashMap<>() {};
+		  this.filters.add({name: key,value})
+	  }
+	  this.filter.mer
+	  this.filter = filter;
+	  return this;
+  }
+
+  public DataQuery withFilters(Collection<Map<>> filters) {
+  	this.filters.addAll(filters);
+	return this;
   }
 
   public Object putAt(String key, Object value) {

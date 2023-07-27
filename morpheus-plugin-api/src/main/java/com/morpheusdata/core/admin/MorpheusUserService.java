@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.User;
 import com.morpheusdata.model.projection.UserIdentity;
+import com.morpheusdata.model.projection.UserIdentityProjection;
 
 /**
  * Provides data service access to user objects. This service is normally accessed via the {@link MorpheusContext} and
@@ -39,5 +40,5 @@ import com.morpheusdata.model.projection.UserIdentity;
  * @author David Estes
  * @since 0.15.2
  */
-public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentity> {
+public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentityProjection> {
 }
