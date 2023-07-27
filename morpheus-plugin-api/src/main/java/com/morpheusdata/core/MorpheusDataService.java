@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
+import com.morpheusdata.core.data.DataQueryResult;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -12,7 +13,7 @@ import java.util.Map;
  * This interface is a standard base service so all services provide consistent crud methods and finders. It features
  * the ability to create dynamic queries using the {@link DataQuery} object. There are methods that can be implemented
  * to provide both {@link com.morpheusdata.model.MorpheusModel} related objects as well as Map objects for use in
- * {@link com.morpheusdata.core.providers.DatasetProvider} use cases (dropdowns and type-aheads in UI option types).
+ * {@link com.morpheusdata.core.providers.DatasetProvider} use cases (dropdowns and type-ahead components in UI option types).
  * An example interface that leverages this one is the {@link com.morpheusdata.core.admin.MorpheusUserService}
  *
  * <p><strong>Example:</strong></p>
@@ -30,12 +31,13 @@ import java.util.Map;
  *
  * @author Brian Wheeler
  * @since 0.15.1
- * @param <T> The {@link com.morpheusdata.model.MorpheusModel} class type for this service to query against
+ * @param <M> The {@link com.morpheusdata.model.MorpheusModel} class type for this service to query against
  * @see MorpheusDataIdentityService
  * @see MorpheusSynchronousDataService
  * @see DataQuery
+
  */
-public interface MorpheusDataService<T> {
+public interface MorpheusDataService<M> {
 
 	/**
 	 * Persists a new model object into the Morpheus database. It is important to note that when persisting more than
@@ -47,7 +49,7 @@ public interface MorpheusDataService<T> {
 	 * @param item the {@link com.morpheusdata.model.MorpheusModel} object we want to persist into the database.
 	 * @return a Single subscribable representation of the saved object including its new persisted id.
 	 */
-	Single<T> create(T item);
+	Single<M> create(M item);
 
 	/**
 	 * Persists a collection of new model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -59,7 +61,7 @@ public interface MorpheusDataService<T> {
 	 *              database. These are supposed to be non previously saved objects.
 	 * @return a BulkCreateResult containing information on the items that were successfully persisted as well as the ones that failed.
 	 */
-	Single<BulkCreateResult<T>> bulkCreate(List<T> items);
+	Single<BulkCreateResult<M>> bulkCreate(List<M> items);
 
 	/**
 	 * Persists a collection of new model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -74,7 +76,7 @@ public interface MorpheusDataService<T> {
 	 * @see MorpheusDataService#bulkCreate(List)
 	 */
 	@Deprecated
-	default Single<Boolean> create(List<T> items) {
+	default Single<Boolean> create(List<M> items) {
 		return this.bulkCreate(items).map(BulkCreateResult::getSuccess);
 	}
 
@@ -87,7 +89,7 @@ public interface MorpheusDataService<T> {
 	 * @param item the previously existing {@link com.morpheusdata.model.MorpheusModel} object we want to persist into the database.
 	 * @return a Single subscribable representation of the saved object.
 	 */
-	Single<T> save(T item);
+	Single<M> save(M item);
 
 	/**
 	 * Persists a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -99,7 +101,7 @@ public interface MorpheusDataService<T> {
 	 *              database.
 	 * @return a BulkUpdateResult containing information on the items that were successfully persisted as well as the ones that failed.
 	 */
-	Single<BulkSaveResult<T>> bulkSave(List<T> items);
+	Single<BulkSaveResult<M>> bulkSave(List<M> items);
 
 	/**
 	 * Persists a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -114,7 +116,7 @@ public interface MorpheusDataService<T> {
 	 * @see MorpheusDataService#bulkSave(List)
 	 */
 	@Deprecated
-	default Single<Boolean> save(List<T> items) {
+	default Single<Boolean> save(List<M> items) {
 		return this.bulkSave(items).map(BulkSaveResult::getSuccess);
 	}
 
@@ -126,7 +128,7 @@ public interface MorpheusDataService<T> {
 	 * @param item the previously existing {@link com.morpheusdata.model.MorpheusModel} object to be removed from the database.
 	 * @return a single Boolean object that will confirm the success or failure of the removal
 	 */
-	Single<Boolean> remove(T item);
+	Single<Boolean> remove(M item);
 
 	/**
 	 * Removes a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -138,7 +140,7 @@ public interface MorpheusDataService<T> {
 	 *              database.
 	 * @return a BulkRemoveResult containing information on the items that were failed to be removed.
 	 */
-	Single<BulkRemoveResult<T>> bulkRemove(List<T> items);
+	Single<BulkRemoveResult<M>> bulkRemove(List<M> items);
 
 	/**
 	 * Removes a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -153,7 +155,7 @@ public interface MorpheusDataService<T> {
 	 * @see MorpheusDataService#bulkRemove(List)
 	 */
 	@Deprecated
-	default Single<Boolean> remove(List<T> items) {
+	default Single<Boolean> remove(List<M> items) {
 		return this.bulkRemove(items).map(BulkRemoveResult::getSuccess);
 	}
 
@@ -182,7 +184,7 @@ public interface MorpheusDataService<T> {
 	 * @param id the database identifier to fetch an object by.
 	 * @return a Maybe representation of a {@link com.morpheusdata.model.MorpheusModel} depending on if the object was found or not.
 	 */
-	Maybe<T> get(Long id);
+	Maybe<M> get(Long id);
 
 	/**
 	 * Fetches a stream of {@link com.morpheusdata.model.MorpheusModel} objects based on a collection of Identifiers (id). This is often
@@ -195,7 +197,7 @@ public interface MorpheusDataService<T> {
 	 * @param ids a collection of Identifiers (ids) to fetch the objects by.
 	 * @return an Observable stream of {@link com.morpheusdata.model.MorpheusModel} objects based on the ids passed in
 	 */
-	Observable<T> listById(List<Long> ids);
+	Observable<M> listById(List<Long> ids);
 
 	/**
 	 * Performs a query operation on the database returning the results as {@link com.morpheusdata.model.MorpheusModel} objects. These
@@ -209,7 +211,8 @@ public interface MorpheusDataService<T> {
 	 * 	            scope for security but does not always need to if being used for sync or multi-tenant reporting.
 	 * @return an Observable stream of {@link com.morpheusdata.model.MorpheusModel} objects based on the passed in query.
 	 */
-	Observable<T> list(DataQuery query);
+	Observable<M> list(DataQuery query);
+
 
 	/**
 	 * Performs a query operation on the database returning the results as Map objects typically containing keys of (name,value) for use
@@ -238,8 +241,10 @@ public interface MorpheusDataService<T> {
 	 * 	            scope for security but does not always need to if being used for sync or multi-tenant reporting.
 	 * @return a Maybe {@link com.morpheusdata.model.MorpheusModel} object based on the passed in query.
 	 */
-	default Maybe<T> find(DataQuery query) {
+	default Maybe<M> find(DataQuery query) {
 		return list(query).firstElement();
 	}
+
+	Single<DataQueryResult> search(DataQuery query);
 
 }

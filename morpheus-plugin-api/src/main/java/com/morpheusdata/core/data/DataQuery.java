@@ -19,13 +19,19 @@ import java.util.Set;
  * @since 0.15.1
  */
 public class DataQuery {
-  
+
+  public static final String MODE_QUERY = "query";
+  public static final String MODE_COUNT = "count";
+  public static final String MODE_GROUPED = "group";
+  public static final String MODE_STATS = "stats";
+  public static final String MODE_LOOKUP = "lookup";
+
   //user executing the query
   public UserIdentity user;
   //account executing the query
   public AccountIdentity account;
   //query mode - group, stats, query
-  public String mode = "query";
+  public String mode = MODE_QUERY;
   //optional search phrase - ie: "type = 'typeValue' and name = 'fred'"
   public String phrase;
   //api map of input parameters
