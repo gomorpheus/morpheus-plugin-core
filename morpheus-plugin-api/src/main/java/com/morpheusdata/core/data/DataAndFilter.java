@@ -14,28 +14,22 @@ import java.util.*;
  * @author bdwheeler
  * @since 0.15.1
  */
-public class DataFilter<T> {
+public class DataAndFilter extends DataFilter<Collection<DataFilter>> {
 	
-	public static String DEFAULT_OPERATOR = "=";
+	public static String AND_FIELD_NAME = "";
+	public static String AND_OPERATOR = "and";
 
-	public String name;
-
-	public String operator;
-
-	public T value;
-
-	public DataFilter() {}
-
-	public DataFilter(String name, T value) {
-		this.name = name;
-		this.value = value;
-		this.operator = DEFAULT_OPERATOR;
+	public DataAndFilter() {
+		super(AND_FIELD_NAME, AND_OPERATOR, new ArrayList<DataFilter>());
 	}
 
-	public DataFilter(String name, String operator, T value) {
-		this.name = name;
-		this.value = value;
-		this.operator = operator;
+	public DataAndFilter(Collection<DataFilter> dataFilters) {
+		super(AND_FIELD_NAME, AND_OPERATOR, dataFilters);
+	}
+
+	public DataFilter withFilter(DataFilter dataFilter) {
+		value.add(dataFilter);
+		return this;
 	}
 
 }
