@@ -175,7 +175,7 @@ public class DataQuery {
 	 * A chainable filter method for applying an "==" operator filter given a property name
 	 * and desired value to lookup.
 	 * @param name the property name for the filter to query against.
-	 * @param operator the operator to be used for comparing the value (i.e. ==,!=,&lt;,&lt=,&gt;&gt=,in,=~,:)
+	 * @param operator the operator to be used for comparing the value (i.e. ==,!=,&lt;,&lt;=,&gt;&gt;=,in,=~,:)
 	 * @param value the value to compare the property to.
 	 * @return the current DataQuery object for chaining
 	 */
