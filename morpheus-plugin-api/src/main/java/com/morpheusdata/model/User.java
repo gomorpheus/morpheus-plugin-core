@@ -123,10 +123,10 @@ public class User extends UserIdentityProjection implements UserIdentity {
 	}
 
 	public String getDisplayName() {
-		if(firstName && lastName) {
-			return "${firstName} ${lastName}"
+		if(this.firstName != null && lastName != null) {
+			return firstName + " " + lastName;
 		}
-		return username
+		return username;
 	}
 	
 }
