@@ -15,18 +15,25 @@ import java.util.*;
  *
  * <p>Additionally, complex filters can be applied using a new filter list syntax.</p>
  *
- * <p><strong>Example Filters Syntax (Groovy Map representation):</strong></p>
+ * <p><strong>Example Filters Syntax (Groovy representation):</strong></p>
  * <pre>{@code
  * dataQuery.withFilters(
- *   [[name:'propertyName', value:'propertyValue', operator:'='], ...]
+ *   new DataOrFilter(
+ *   	new DataFilter("name","=","David"),
+ *   	new DataAndFilter(
+ *   		new DataFilter("name","!=","Fred"),
+ *   		new DataFilter("name","!=","Al")
+ *   	)
+ *   )
  * )
  * }</pre>
  * <p>
- * As can be seen in the example, the filters is an Array of Maps containing a property name (i.e. name), a property value (i.e. value), and an operator.
+ * As can be seen in the example, the filters is a Collection of DataFilters containing a property name (i.e. name), a property value (i.e. value), and an operator.
  * An operator can either be a "==","=","!=","&lt;","&lt;=","&gt;","&gt;=","=~","in","or,"and".
  *
  * @author Brian Wheeler
  * @since 0.15.1
+ * @see DataFilter
  */
 public class DataQuery {
 
@@ -192,6 +199,8 @@ public class DataQuery {
 	 * filters list. For information on the available filter types please refer to the top of this classes description.
 	 * @param filters a Collection of Filter objects for building custom queries.
 	 * @return the current DataQuery object for chaining
+	 * @see DataAndFilter
+	 * @see DataOrFilter
 	 */
 	public DataQuery withFilters(Collection<DataFilter> filters) {
 		this.filters.addAll(filters);
