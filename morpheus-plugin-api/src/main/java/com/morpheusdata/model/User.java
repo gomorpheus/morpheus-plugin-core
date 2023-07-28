@@ -121,5 +121,12 @@ public class User extends UserIdentityProjection implements UserIdentity {
 	public void setPermissions(Map<String, String> permissions) {
 		this.permissions = permissions;
 	}
+
+	public String getDisplayName() {
+		if(firstName && lastName) {
+			return "${firstName} ${lastName}"
+		}
+		return username
+	}
 	
 }
