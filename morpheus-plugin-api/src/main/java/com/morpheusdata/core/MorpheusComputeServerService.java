@@ -4,6 +4,7 @@ import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
 import com.morpheusdata.model.ComputeZoneRegion;
 import com.morpheusdata.model.ComputePort;
+import com.morpheusdata.model.ComputeZonePool;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
 import io.reactivex.Observable;
@@ -36,12 +37,19 @@ public interface MorpheusComputeServerService extends MorpheusDataService<Comput
 	Observable<ComputeServerIdentityProjection> listSyncProjections(Long cloudId);
 
 	/**
-	 * Lists all {@link ComputeServer} objects by a list of Identifiers. This is commonly used in sync / caching logic.
+	 * Lists all {@link ComputeServer} objects by cloud ID and a list of External IDs.
 	 * @param cloudId the cloud to filter the list of servers by.
 	 * @param externalIds a Collection of external Ids to filter the list of servers by
 	 * @return an RxJava Observable stream of {@link ComputeServer} to be subscribed to.
 	 */
 	Observable<ComputeServer> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
+
+	/**
+	 * Lists all {@link ComputeServer} objects by a {@link ComputeZonePool }.
+	 * @param resourcePoolId the id of the resource pool (ComputeZonePool) to filter the list of servers by.
+	 * @return an RxJava Observable stream of {@link ComputeServer} to be subscribed to.
+	 */
+	Observable<ComputeServer> listByResourcePoolId(Long resourcePoolId);
 
 	/**
 	 * Update the power state of a server and any related vms
