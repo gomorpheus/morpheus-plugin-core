@@ -30,6 +30,10 @@ public class DataAndFilter extends DataFilter<Collection<DataFilter>> {
 		super(AND_FIELD_NAME, AND_OPERATOR, dataFilters);
 	}
 
+	public DataAndFilter(DataFilter... dataFilters) {
+		super(AND_FIELD_NAME, AND_OPERATOR, Arrays.asList(dataFilters));
+	}
+
 	/**
 	 * A Chainable operation to append a sub filter into the AND Operation
 	 * @param dataFilter the nested Filter to add
@@ -47,6 +51,11 @@ public class DataAndFilter extends DataFilter<Collection<DataFilter>> {
 	 */
 	public DataAndFilter withFilters(Collection<DataFilter> dataFilters) {
 		value.addAll(dataFilters);
+		return this;
+	}
+
+	public DataAndFilter withFilters(DataFilter... dataFilter) {
+		value.addAll(Arrays.asList(dataFilter));
 		return this;
 	}
 

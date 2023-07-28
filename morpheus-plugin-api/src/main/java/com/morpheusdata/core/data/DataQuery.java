@@ -21,8 +21,8 @@ import java.util.*;
  *   new DataOrFilter(
  *   	new DataFilter("name","=","David"),
  *   	new DataAndFilter(
- *   		new DataFilter("name","!=","Fred"),
- *   		new DataFilter("name","!=","Al")
+ *   		new DataFilter<String>("name","!=","Fred"),
+ *   		new DataFilter<String>("name","!=","Al")
  *   	)
  *   )
  * )
@@ -128,11 +128,24 @@ public class DataQuery {
 	public DataQuery() {
 	}
 
+	/**
+	 * Creates an initial DataQuery scoped to a User. This is useful for scoping some queries based on user tenant access.
+	 * <p><strong>Note: </strong> A user scoped query is not guaranteed to restrict based on resource permissions for the user.
+	 * This is up to the DataService implementation.</p>
+	 * @param user the User to scope the query to
+	 */
 	public DataQuery(UserIdentity user) {
 		this.user = user;
 		this.account = user.getAccount();
 	}
 
+	/**
+	 * Creates an initial DataQuery scoped to an Account. This is useful for scoping some queries based on tenant.
+	 * <p><strong>Note: </strong> A tenant scoped query is not guaranteed to restrict based on resource permissions for
+	 * the tenant. This is up to the DataService implementation.</p>
+	 *
+	 * @param account the Account to scope the query to
+	 */
 	public DataQuery(AccountIdentity account) {
 		this.account = account;
 	}

@@ -30,6 +30,10 @@ public class DataOrFilter extends DataFilter<Collection<DataFilter>> {
 		super(OR_FIELD_NAME, OR_OPERATOR, dataFilters);
 	}
 
+	public DataOrFilter(DataFilter... dataFilters) {
+		super(OR_FIELD_NAME, OR_OPERATOR, Arrays.asList(dataFilters));
+	}
+
 	/**
 	 * A Chainable operation to append a sub filter into the OR Operation
 	 * @param dataFilter the nested Filter to add
@@ -47,6 +51,11 @@ public class DataOrFilter extends DataFilter<Collection<DataFilter>> {
 	 */
 	public DataOrFilter withFilters(Collection<DataFilter> dataFilters) {
 		value.addAll(dataFilters);
+		return this;
+	}
+
+	public DataOrFilter withFilters(DataFilter... dataFilter) {
+		value.addAll(Arrays.asList(dataFilter));
 		return this;
 	}
 
