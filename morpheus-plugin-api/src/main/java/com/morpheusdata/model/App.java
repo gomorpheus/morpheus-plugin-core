@@ -1,11 +1,17 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
+import java.util.List;
+
 public class App extends MorpheusModel {
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
 	protected String name;
 	protected String description;
 	protected String internalId;
@@ -17,6 +23,12 @@ public class App extends MorpheusModel {
 	protected AppTemplate template;
 	@JsonSerialize(using=ModelIdCodeNameSerializer.class)
 	protected AppTemplate templateType;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeSite site;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<Instance> instances;
+
+	public Account getAccount() { return account; }
 
 	public String getName() {
 		return name;
@@ -40,6 +52,11 @@ public class App extends MorpheusModel {
 
 	public String getUuid() {
 		return uuid;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+		markDirty("account", account);
 	}
 
 	public void setName(String name) {
@@ -88,5 +105,23 @@ public class App extends MorpheusModel {
 	public void setTemplateType(AppTemplate templateType) {
 		this.templateType = templateType;
 		markDirty("templateType", templateType);
+	}
+
+	public ComputeSite getSite() {
+		return site;
+	}
+
+	public void setSite(ComputeSite site) {
+		this.site = site;
+		markDirty("site", site);
+	}
+
+	public List<Instance> getInstances() {
+		return instances;
+	}
+
+	public void setInstances(List<Instance> instances) {
+		this.instances = instances;
+		markDirty("instances", instances);
 	}
 }
