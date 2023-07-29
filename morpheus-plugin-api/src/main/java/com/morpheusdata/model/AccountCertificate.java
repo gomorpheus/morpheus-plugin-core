@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import com.morpheusdata.model.projection.AccountCertificateIdentityProjection;
+
 import java.util.Date;
 
 /**
@@ -7,11 +9,10 @@ import java.util.Date;
  * load balancers.
  * @author jsaardchit
  */
-public class AccountCertificate extends MorpheusModel {
+public class AccountCertificate extends AccountCertificateIdentityProjection {
 	protected Long integrationId;
 	protected Long accountId;
 	protected String domainName;
-	protected String name;
 	protected String category;
 	protected String description;
 	protected String keyFile;
@@ -28,7 +29,6 @@ public class AccountCertificate extends MorpheusModel {
 	protected Boolean generated = true;
 	protected Boolean wildcard = true;
 	protected String internalId;
-	protected String externalId;
 	protected String externalPath;
 	protected String uniqueId;
 	protected String parentId;
@@ -51,7 +51,6 @@ public class AccountCertificate extends MorpheusModel {
 	protected Boolean certLoaded = true;
 	protected Boolean certAvailable = true;
 	protected Boolean hasPassphrase = false;
-	protected String config;
 	protected String rawData;
 	protected AccountCertificateType type;
 	protected String organization;
@@ -66,6 +65,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setIntegrationId(Long integrationId) {
 		this.integrationId = integrationId;
+		markDirty("integrationId", integrationId);
 	}
 
 	public Long getAccountId() {
@@ -74,6 +74,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
+		markDirty("accountId", accountId);
 	}
 
 	public String getDomainName() {
@@ -82,14 +83,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setDomainName(String domainName) {
 		this.domainName = domainName;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		markDirty("domainName", domainName);
 	}
 
 	public String getCategory() {
@@ -98,6 +92,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCategory(String category) {
 		this.category = category;
+		markDirty("category", category);
 	}
 
 	public String getDescription() {
@@ -106,6 +101,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+		markDirty("description", description);
 	}
 
 	public String getKeyFile() {
@@ -114,6 +110,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setKeyFile(String keyFile) {
 		this.keyFile = keyFile;
+		markDirty("keyFile", keyFile);
 	}
 
 	public String getCertFile() {
@@ -122,6 +119,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertFile(String certFile) {
 		this.certFile = certFile;
+		markDirty("certFile", certFile);
 	}
 
 	public String getChainFile() {
@@ -130,6 +128,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setChainFile(String chainFile) {
 		this.chainFile = chainFile;
+		markDirty("chainFile", chainFile);
 	}
 
 	public String getCertSource() {
@@ -138,6 +137,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertSource(String certSource) {
 		this.certSource = certSource;
+		markDirty("certSource", certSource);
 	}
 
 	public String getRefType() {
@@ -146,6 +146,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setRefType(String refType) {
 		this.refType = refType;
+		markDirty("refType", refType);
 	}
 
 	public String getSerialNumber() {
@@ -154,6 +155,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
+		markDirty("serialNumber", serialNumber);
 	}
 
 	public Long getRefId() {
@@ -162,6 +164,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setRefId(Long refId) {
 		this.refId = refId;
+		markDirty("refId", refId);
 	}
 
 	public String getCertType() {
@@ -170,6 +173,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertType(String certType) {
 		this.certType = certType;
+		markDirty("certType", certType);
 	}
 
 	public String getCertUse() {
@@ -178,6 +182,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertUse(String certUse) {
 		this.certUse = certUse;
+		markDirty("certUse", certUse);
 	}
 
 	public String getCertRef() {
@@ -186,6 +191,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertRef(String certRef) {
 		this.certRef = certRef;
+		markDirty("certRef", certRef);
 	}
 
 	public String getStatus() {
@@ -194,6 +200,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+		markDirty("status", status);
 	}
 
 	public Boolean getGenerated() {
@@ -202,6 +209,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setGenerated(Boolean generated) {
 		this.generated = generated;
+		markDirty("generated", generated);
 	}
 
 	public Boolean getWildcard() {
@@ -210,6 +218,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setWildcard(Boolean wildcard) {
 		this.wildcard = wildcard;
+		markDirty("wildcard", wildcard);
 	}
 
 	public String getInternalId() {
@@ -218,14 +227,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+		markDirty("internalId", internalId);
 	}
 
 	public String getExternalPath() {
@@ -234,6 +236,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setExternalPath(String externalPath) {
 		this.externalPath = externalPath;
+		markDirty("externalPath", externalPath);
 	}
 
 	public String getUniqueId() {
@@ -242,6 +245,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+		markDirty("uniqueId", uniqueId);
 	}
 
 	public String getParentId() {
@@ -250,6 +254,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+		markDirty("parentId", parentId);
 	}
 
 	public String getCertSchema() {
@@ -258,6 +263,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertSchema(String certSchema) {
 		this.certSchema = certSchema;
+		markDirty("certSchema", certSchema);
 	}
 
 	public String getFingerprint() {
@@ -266,6 +272,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setFingerprint(String fingerprint) {
 		this.fingerprint = fingerprint;
+		markDirty("fingerprint", fingerprint);
 	}
 
 	public Integer getKeySize() {
@@ -274,6 +281,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setKeySize(Integer keySize) {
 		this.keySize = keySize;
+		markDirty("keySize", keySize);
 	}
 
 	public String getKeyAlgorithm() {
@@ -282,6 +290,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setKeyAlgorithm(String keyAlgorithm) {
 		this.keyAlgorithm = keyAlgorithm;
+		markDirty("keyAlgorithm", keyAlgorithm);
 	}
 
 	public String getIssuedTo() {
@@ -290,6 +299,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setIssuedTo(String issuedTo) {
 		this.issuedTo = issuedTo;
+		markDirty("issuedTo", issuedTo);
 	}
 
 	public String getIssuedBy() {
@@ -298,6 +308,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setIssuedBy(String issuedBy) {
 		this.issuedBy = issuedBy;
+		markDirty("issuedBy", issuedBy);
 	}
 
 	public Date getIssueDate() {
@@ -306,6 +317,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setIssueDate(Date issueDate) {
 		this.issueDate = issueDate;
+		markDirty("issueDate", issueDate);
 	}
 
 	public Date getExpireDate() {
@@ -314,6 +326,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setExpireDate(Date expireDate) {
 		this.expireDate = expireDate;
+		markDirty("expireDate", expireDate);
 	}
 
 	public String getKeyPassphrase() {
@@ -322,6 +335,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setKeyPassphrase(String keyPassphrase) {
 		this.keyPassphrase = keyPassphrase;
+		markDirty("keyPassphrase", keyPassphrase);
 	}
 
 	public String getCertName() {
@@ -330,6 +344,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertName(String certName) {
 		this.certName = certName;
+		markDirty("certName", certName);
 	}
 
 	public String getCommonName() {
@@ -338,6 +353,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCommonName(String commonName) {
 		this.commonName = commonName;
+		markDirty("commonName", commonName);
 	}
 
 	public String getUpnName() {
@@ -346,6 +362,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setUpnName(String upnName) {
 		this.upnName = upnName;
+		markDirty("upnName", upnName);
 	}
 
 	public String getObjectName() {
@@ -354,6 +371,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setObjectName(String objectName) {
 		this.objectName = objectName;
+		markDirty("objectName", objectName);
 	}
 
 	public Boolean getSelfSigned() {
@@ -362,6 +380,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setSelfSigned(Boolean selfSigned) {
 		this.selfSigned = selfSigned;
+		markDirty("selfSigned", selfSigned);
 	}
 
 	public Boolean getEnabled() {
@@ -370,6 +389,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+		markDirty("enabled", enabled);
 	}
 
 	public Boolean getCertLoaded() {
@@ -378,6 +398,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertLoaded(Boolean certLoaded) {
 		this.certLoaded = certLoaded;
+		markDirty("certLoaded", certLoaded);
 	}
 
 	public Boolean getCertAvailable() {
@@ -386,6 +407,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCertAvailable(Boolean certAvailable) {
 		this.certAvailable = certAvailable;
+		markDirty("certAvailable", certAvailable);
 	}
 
 	public Boolean getHasPassphrase() {
@@ -394,16 +416,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setHasPassphrase(Boolean hasPassphrase) {
 		this.hasPassphrase = hasPassphrase;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
+		markDirty("hasPassphrase", hasPassphrase);
 	}
 
 	public String getRawData() {
@@ -412,6 +425,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
+		markDirty("rawData", rawData);
 	}
 
 	public AccountCertificateType getType() {
@@ -420,6 +434,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setType(AccountCertificateType type) {
 		this.type = type;
+		markDirty("type", type);
 	}
 
 	public String getOrganization() {
@@ -428,6 +443,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setOrganization(String organization) {
 		this.organization = organization;
+		markDirty("organization", organization);
 	}
 
 	public String getOrganizationUnit() {
@@ -436,6 +452,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setOrganizationUnit(String organizationUnit) {
 		this.organizationUnit = organizationUnit;
+		markDirty("organizationalUnit", organizationUnit);
 	}
 
 	public String getCity() {
@@ -444,6 +461,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCity(String city) {
 		this.city = city;
+		markDirty("city", city);
 	}
 
 	public String getState() {
@@ -452,6 +470,7 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setState(String state) {
 		this.state = state;
+		markDirty("state", state);
 	}
 
 	public String getCountry() {
@@ -460,5 +479,6 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setCountry(String country) {
 		this.country = country;
+		markDirty("country", country);
 	}
 }
