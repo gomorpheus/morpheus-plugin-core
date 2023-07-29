@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.AppIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
@@ -8,11 +9,10 @@ import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
 import java.util.List;
 
-public class App extends MorpheusModel {
+public class App extends AppIdentityProjection {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-	protected String name;
 	protected String description;
 	protected String internalId;
 	protected String externalId;
@@ -29,10 +29,6 @@ public class App extends MorpheusModel {
 	protected List<Instance> instances;
 
 	public Account getAccount() { return account; }
-
-	public String getName() {
-		return name;
-	}
 
 	public String getDescription() {
 		return description;
