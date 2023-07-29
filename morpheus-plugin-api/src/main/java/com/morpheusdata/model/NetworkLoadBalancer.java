@@ -30,7 +30,6 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 	protected String managementUrl; //link to management UI
 	protected Integer apiPort;
 	protected Integer adminPort;
-	protected String config;
 	protected boolean sslEnabled = true;
 	protected boolean enabled = true;
 	protected Date dateCreated;
@@ -201,17 +200,6 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 	public void setAdminPort(Integer adminPort) {
 		this.adminPort = adminPort;
 		markDirty("adminPort", adminPort);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public boolean isSslEnabled() {

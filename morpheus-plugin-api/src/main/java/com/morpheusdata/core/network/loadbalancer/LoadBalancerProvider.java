@@ -55,7 +55,11 @@ public interface LoadBalancerProvider extends PluginProvider {
 	default ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts) { return null; }
 
 	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
-	ServiceResponse refresh(NetworkLoadBalancer loadBalancer);
+	default ServiceResponse refresh(NetworkLoadBalancer loadBalancer) {
+		// default implementation for this is to just return success as not all load balancer syncing is done from the
+		// load balancer provider.  In the case of amazon, the load balancer sync is down in the cloud provider.
+		return ServiceResponse.success();
+	}
 
 	// service methods for interacting with load balancer apis
 
@@ -190,7 +194,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 */
 	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
 	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
-	default ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance) { return null; }
+
+	default ServiceResponse validateLoadBalancerInstance(NetworkLoadBalancerInstance loadBalancerInstance) { return ServiceResponse.success(); }
+	default ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance) { return ServiceResponse.success(); }
 
 	/**
 	 * Implement this method to handle morpheus setting up a load balancer pool from a morpheus instance.  This operation
