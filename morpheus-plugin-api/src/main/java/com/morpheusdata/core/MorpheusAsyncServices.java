@@ -320,4 +320,11 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAdminService getAdmin();
 
+	/**
+	 * return the {@link MorpheusAccountCertificateService} which allows access to {@link com.morpheusdata.model.AccountCertificate}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusAccountCertificateService}
+	 */
+	MorpheusAccountCertificateService getCertificate();
+
 }
