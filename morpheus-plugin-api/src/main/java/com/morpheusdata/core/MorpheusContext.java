@@ -75,7 +75,9 @@ public interface MorpheusContext {
 	/**
 	 * Returns the ComputeSite Context used for performing updates or queries on compute related assets within Morpheus
 	 * @return An Instance of the ComputeSite Service to be used typically by {@link CloudProvider} implementations.
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusComputeSiteService getComputeSite();
 
 	/**
@@ -308,7 +310,9 @@ public interface MorpheusContext {
 	 * Returns the App Service
 	 *
 	 * @return An instance of the App Service
+	 * @deprecated
 	 */
+	@Deprecated
 	MorpheusAppService getApp();
 
 	/**
