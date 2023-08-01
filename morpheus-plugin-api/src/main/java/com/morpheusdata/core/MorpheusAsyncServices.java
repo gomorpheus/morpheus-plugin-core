@@ -30,6 +30,12 @@ public interface MorpheusAsyncServices {
 	MorpheusCloudService getCloud();
 
 	/**
+	 * Returns the ComputeSite Context used for performing updates or queries on compute related assets within Morpheus
+	 * @return An Instance of the ComputeSite Service to be used typically by {@link CloudProvider} implementations.
+	 */
+	MorpheusComputeSiteService getComputeSite();
+
+	/**
 	 * Returns the Provision Service used for performing provisioning related updates to objects.
 	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
 	 */
@@ -199,6 +205,13 @@ public interface MorpheusAsyncServices {
 	 * @return An instance of the Instance Service
 	 */
 	MorpheusInstanceService getInstance();
+
+	/**
+	 * Returns the App Service
+	 *
+	 * @return An instance of the App Service
+	 */
+	MorpheusAppService getApp();
 
 	/**
 	 * Returns the Snapshot service
