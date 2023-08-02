@@ -83,7 +83,8 @@ public class Cloud extends CloudIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected CloudType type;
 	protected String backupMode = "internal"; //if backups are off,run by morpheus or a provider
-	//	public BackupProvider backupProvider; //integrated backup provider
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	public BackupProvider backupProvider; //integrated backup provider
 	//flags on if a cloud is ok to allow these types of provision - for ex, kvm needs a kvm host, kube mode need a master and 1 or more workers
 	protected Boolean kvmEnabled = false;
 	protected Boolean dockerEnabled = false;
@@ -328,6 +329,8 @@ public class Cloud extends CloudIdentityProjection {
 	public String getBackupMode() {
 		return backupMode;
 	}
+
+	public BackupProvider getBackupProvider() { return backupProvider; }
 
 	public Boolean getKvmEnabled() {
 		return kvmEnabled;
@@ -688,6 +691,11 @@ public class Cloud extends CloudIdentityProjection {
 	public void setBackupMode(String backupMode) {
 		this.backupMode = backupMode;
 		markDirty("backupMode", backupMode);
+	}
+
+	public void setBackupProvider(BackupProvider backupProvider) {
+		this.backupProvider = backupProvider;
+		markDirty("backupProvider", backupProvider);
 	}
 
 	public void setKvmEnabled(Boolean kvmEnabled) {
