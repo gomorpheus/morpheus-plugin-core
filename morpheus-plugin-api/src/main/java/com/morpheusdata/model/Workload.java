@@ -4,6 +4,7 @@ import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
+import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
 import java.util.Date;
 
@@ -34,6 +35,7 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Workload.Status status = Workload.Status.pending;
 	protected String statusMessage;
 	protected String errorMessage;
+	protected String userStatus;
 	protected String environmentPrefix;
 	protected String lastStats;
 	protected String configs;
@@ -99,8 +101,10 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Instance instance;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Network network;
-	@JsonSerialize(using= ModelCollectionIdUuidCodeNameSerializer.class)
+	@JsonSerialize(using= ModelIdUuidCodeNameSerializer.class)
 	protected WorkloadType workloadType;
+	@JsonSerialize(using= ModelIdUuidCodeNameSerializer.class)
+	protected WorkloadTypeSet workloadTypeSet;
 
 	public String getUuid() {
 		return uuid;
@@ -259,6 +263,15 @@ public class Workload extends WorkloadIdentityProjection {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 		markDirty("errorMessage", errorMessage);
+	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+		markDirty("userStatus", userStatus);
 	}
 
 	public String getEnvironmentPrefix() {
@@ -466,6 +479,15 @@ public class Workload extends WorkloadIdentityProjection {
 	public void setWorkloadType(WorkloadType workloadType) {
 		this.workloadType = workloadType;
 		markDirty("workloadType", workloadType);
+	}
+
+	public WorkloadTypeSet getWorkloadTypeSet() {
+		return workloadTypeSet;
+	}
+
+	public void setWorkloadTypeSet(WorkloadTypeSet workloadTypeSet) {
+		this.workloadTypeSet = workloadTypeSet;
+		markDirty("workloadTypeSet", workloadTypeSet);
 	}
 
 	public String getConfigGroup() {

@@ -1,6 +1,7 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.core.providers.CredentialProvider;
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @since 0.13.1
  * @author David Estes
  */
-public class AccountCredential extends MorpheusModel {
+public class AccountCredential extends AccountCredentialIdentityProjection {
 	//ownership
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
@@ -35,10 +36,7 @@ public class AccountCredential extends MorpheusModel {
 	protected String refType;
 	protected Long refId;
 	protected String refName;
-	//external link
-	protected String externalId;
-	protected String internalId;
-	protected String providerId;
+
 
 	protected Boolean enabled = true;
 	protected Boolean editable = false;
@@ -149,27 +147,27 @@ public class AccountCredential extends MorpheusModel {
 	}
 
 	public String getExternalId() {
-		return externalId;
+		return super.getExternalId();
 	}
 
 	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+		super.setExternalId(externalId);
 	}
 
 	public String getInternalId() {
-		return internalId;
+		return super.getInternalId();
 	}
 
 	public void setInternalId(String internalId) {
-		this.internalId = internalId;
+		super.setInternalId(internalId);
 	}
 
 	public String getProviderId() {
-		return providerId;
+		return super.getProviderId();
 	}
 
 	public void setProviderId(String providerId) {
-		this.providerId = providerId;
+		super.setProviderId(providerId);
 	}
 
 	public Boolean getEnabled() {

@@ -13,28 +13,7 @@ import java.util.List;
 /**
  * Context methods for dealing with {@link Instance} in Morpheus
  */
-public interface MorpheusInstanceService {
-
-	/**
-	 * Get a {@link Instance} by id.
-	 * @param id Instance id
-	 * @return Observable stream of sync projection
-	 */
-	Single<Instance> get(Long id);
-
-	/**
-	 * Get a list of Instance objects from a list of ids
-	 * @param ids Instance ids
-	 * @return Observable stream of Instance
-	 */
-	Observable<Instance> listById(Collection<Long> ids);
-
-	/**
-	 * Save updates to existing Instance
-	 * @param instances updated Instances
-	 * @return success
-	 */
-	Single<Boolean> save(List<Instance> instances);
+public interface MorpheusInstanceService extends MorpheusDataService<Instance> {
 
 	/**
 	 * Delete the existing Instance from Morpheus and the resources from the underlying Cloud.

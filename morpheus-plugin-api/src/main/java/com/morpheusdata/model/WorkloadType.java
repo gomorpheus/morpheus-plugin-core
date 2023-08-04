@@ -84,6 +84,7 @@ public class WorkloadType extends MorpheusModel implements IModelUuidCodeName {
 	protected List<WorkloadTypeLog> logs;
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<WorkloadTypeConfig> workloadConfig;
+
 	//protected List<WorkloadTypeProvisionArgument> provisionArguments;
 	//protected List<Label> labels;
 	

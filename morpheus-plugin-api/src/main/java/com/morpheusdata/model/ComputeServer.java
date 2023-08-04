@@ -46,6 +46,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected VirtualImage sourceImage;
 	protected String osType = "linux"; //linux, windows, unmanaged
 	protected String platform;
+	protected String platformVersion;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZonePool resourcePool;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -70,6 +71,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String externalIp;
 	protected String sshHost;
 	protected String sshUsername;
+	protected String internalSshUsername;
 	protected String sshPassword;
 	@JsonIgnore
 	protected List<ComputeServerInterface> interfaces = new ArrayList<>();
@@ -178,6 +180,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("sshUsername", sshUsername);
 	}
 
+	public String getInternalSshUsername() {
+		return internalSshUsername;
+	}
+
+	public void setInternalSshUsername(String internalSshUsername) {
+		this.internalSshUsername = internalSshUsername;
+		markDirty("internalSshUsername", internalSshUsername);
+	}
+
 	public String getSshPassword() {
 		return sshPassword;
 	}
@@ -261,6 +272,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public String getPlatform() {
 		return platform;
+	}
+
+	public String getPlatformVersion() {
+		return platformVersion;
 	}
 
 	public ComputeZonePool getResourcePool() {
@@ -491,6 +506,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setPlatform(String platform) {
 		this.platform = platform;
 		markDirty("platform", platform);
+	}
+
+	public void setPlatformVersion(String platformVersion) {
+		this.platformVersion = platformVersion;
+		markDirty("platformVersion", platformVersion);
 	}
 
 	public void setResourcePool(ComputeZonePool resourcePool) {

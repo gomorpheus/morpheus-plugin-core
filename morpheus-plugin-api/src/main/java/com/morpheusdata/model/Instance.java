@@ -22,6 +22,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String layoutCode;
 	public String layoutName;
 	public String instanceVersion;
+	public String unformattedName;
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public ServicePlan plan;
@@ -165,6 +166,14 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public String getUnformattedName() {
+		return unformattedName;
+	}
+
+	public void setUnformattedName(String unformattedName) {
+		this.unformattedName = unformattedName;
 	}
 
 	public String getEnvironmentPrefix() {

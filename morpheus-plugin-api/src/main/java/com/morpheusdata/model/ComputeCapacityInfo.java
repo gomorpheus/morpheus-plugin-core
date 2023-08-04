@@ -10,7 +10,6 @@ import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
  * @author Bob Whiton
  */
 public class ComputeCapacityInfo extends MorpheusModel {
-	Long id;
 	Long maxCores;
 	Long maxMemory;
 	Long maxStorage;

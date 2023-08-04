@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import com.morpheusdata.model.projection.UserIdentity;
+import com.morpheusdata.model.projection.UserIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
@@ -15,11 +16,10 @@ import java.util.Map;
  *
  * @author David Estes, Mike Truso
  */
-public class User extends MorpheusModel implements UserIdentity {
+public class User extends UserIdentityProjection implements UserIdentity {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
   protected Account account;
-  protected String username;
   protected String firstName;
   protected String lastName;
 	protected String email;
@@ -30,19 +30,6 @@ public class User extends MorpheusModel implements UserIdentity {
   protected String linuxUsername;
   protected String windowsUsername;
 	protected Map<String, String> permissions;
-
-	/**
-	 * the User's login username
-	 * @return String the username
-	 */
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public String getFirstName() {
 		return firstName;
 	}
@@ -133,6 +120,13 @@ public class User extends MorpheusModel implements UserIdentity {
 
 	public void setPermissions(Map<String, String> permissions) {
 		this.permissions = permissions;
+	}
+
+	public String getDisplayName() {
+		if(this.firstName != null && lastName != null) {
+			return firstName + " " + lastName;
+		}
+		return username;
 	}
 	
 }

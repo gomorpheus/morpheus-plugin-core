@@ -24,6 +24,9 @@ public class MorpheusModel {
 
 	protected String config;
 
+	//TODO: Add validation errors property for all Models here. Think this should be a collection and not a map since
+	//a key could have multiple errors.
+
 	/**
 	 * Internal property used to keep track of a list of dirty fields on the currently extended Model class.
 	 */
