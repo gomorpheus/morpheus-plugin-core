@@ -49,10 +49,10 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @return ServiceResponse.  If ServiceResponse.success == false, ServiceResponse.errors will contain reasons.
 	 */
 	ServiceResponse validate(NetworkLoadBalancer loadBalancer, Map opts);
-	default ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
-	default ServiceResponse deleteLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
-	default ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer) { return null; }
-	default ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts) { return null; }
+	default ServiceResponse addLoadBalancer(NetworkLoadBalancer loadBalancer) { return ServiceResponse.success(); }
+	default ServiceResponse deleteLoadBalancer(NetworkLoadBalancer loadBalancer) { return ServiceResponse.success(); }
+	default ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer) { return ServiceResponse.success(); }
+	default ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts) { return ServiceResponse.success(); }
 
 	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
 	default ServiceResponse refresh(NetworkLoadBalancer loadBalancer) {
