@@ -22,6 +22,15 @@ public class ServicePlanPriceSet extends MorpheusModel {
 		markDirty("servicePlan", servicePlan, this.servicePlan);
 	}
 
+	public AccountPriceSet getPriceSet() {
+		return priceSet;
+	}
+
+	public void setPriceSet(AccountPriceSet priceSet) {
+		this.priceSet = priceSet;
+		markDirty("priceSet", priceSet, this.priceSet);
+	}
+
 	public Date getStartDate() {
 		return startDate;
 	}
