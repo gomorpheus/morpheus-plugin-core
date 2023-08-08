@@ -35,7 +35,7 @@ public class NetworkPoolType extends MorpheusModel{
 
 	protected Boolean hostRecordEditable = true;
 
-	private Boolean ipv6Pool = false;
+	protected Boolean ipv6Pool = false;
 
 
 	/**
