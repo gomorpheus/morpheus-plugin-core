@@ -29,14 +29,24 @@ public class NetworkPoolType extends MorpheusModel{
 	protected String description;
 
 	/**
-	 * Defines whether or not a Pool can be created from the UI (Currently not supported by the {@link IPAMProvider} implementation).
+	 * Defines whether a Pool can be created from the UI (Currently not supported by the {@link IPAMProvider} implementation).
 	 */
 	protected Boolean creatable = true;
 
+	/**
+	 * Does the range for the pool use a cidr block or does it use a set of {@link NetworkPoolRange} definitions
+	 */
 	protected Boolean rangeSupportsCidr = false;
 
+	/**
+	 * Can the Host Record be edited after it has been created?
+	 */
 	protected Boolean hostRecordEditable = true;
 
+	/**
+	 * Defines whether this Network Pool Type is meant for IPv6 or IPv4 allocations. If this is true, the pool list will
+	 * get filtered in Morpheus under the right network protocol type.
+	 */
 	protected Boolean ipv6Pool = false;
 
 
@@ -117,7 +127,7 @@ public class NetworkPoolType extends MorpheusModel{
 	/**
 	 * Used if the Pool range supports CIDR only as opposed to a start and end ip range. This is primarily used for NSX-T
 	 * TODO: Possibly not really needed
-	 * @return whether or not the range supports the CIDR definition
+	 * @return whether the range supports the CIDR definition
 	 */
 	public Boolean getRangeSupportsCidr() {
 		return rangeSupportsCidr;
@@ -141,12 +151,17 @@ public class NetworkPoolType extends MorpheusModel{
 	}
 
 	/**
-	 * Defines whether or not this pool type represents an IPv6 pool vs an IPv4
+	 * Defines whether this pool type represents an IPv6 pool vs an IPv4
 	 */
 	public Boolean getIpv6Pool() {
 		return ipv6Pool;
 	}
 
+	/**
+	 * Sets whether this pool is meant for IPv6 allocations or IPv4 allocations. If set to true it is meant for IPv6
+	 * and will be filtered in the Morpheus system appropriately.
+	 * @param ipv6Pool true if this is an IPv6 Pool type, false otherwise.
+	 */
 	public void setIpv6Pool(Boolean ipv6Pool) {
 		this.ipv6Pool = ipv6Pool;
 	}
