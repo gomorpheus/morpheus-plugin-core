@@ -140,7 +140,7 @@ public interface CloudProvider extends PluginProvider {
 	 * to perform it for all the clouds at once.
 	 * 
 	 */
-	default void refreshDailyZoneType() {}
+	default void refreshDailyCloudType() {}
 
 	/**
 	 * Called when a Cloud From Morpheus is removed. This is a hook provided to take care of cleaning up any state.
