@@ -49,6 +49,18 @@ public interface MorpheusCloudService {
 	 */
 	void updateZoneStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
 
+
+	/**
+	 * Updates the costing status of a cloud from a costing daily refresh operation. This is typically only
+	 * ever used when implementing a custom {@link com.morpheusdata.core.providers.CloudCostingProvider}
+	 * @param cloud Cloud instance we are updating cost status on
+	 * @param status cloud costing state status
+	 * @param message error or info message
+	 * @param syncDate time of cost refresh operation
+	 * @see com.morpheusdata.core.providers.CloudCostingProvider
+	 */
+	void updateZoneCostStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
+
 	/**
 	 * Save the Cloud
 	 * @param cloud Cloud instance
