@@ -4,16 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Calendar;
 public class InvoiceUtility {
-	static String getCurrentPeriodString() {
+	public static String getCurrentPeriodString() {
 		return getPeriodString(new Date());
 	}
 
-	static String getPeriodString(Date costDate) {
+	public static String getPeriodString(Date costDate) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
 		return dateFormat.format(costDate);
 	}
 
-	static Date getPeriodStartDate(String periodString) {
+	public static Date getPeriodStartDate(String periodString) {
 		int year = Integer.parseInt(periodString.substring(0,4));
 		int month = Integer.parseInt(periodString.substring(4,6));
 		Calendar rtn = Calendar.getInstance();
