@@ -40,7 +40,7 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 	 * @param owner The owner/manager of the object we are building an invoice for
 	 *              (important on shared clouds where this would be the master account).
 	 * @param account The current account this object belongs to that the invoice data should get associated with.
-	 * @param refType The polymorphic object class to associate the invoice too (i.e. ComputeZone,ComputeServer,VirtualImage,NetworkLoadBalancer,Snapshot,StorageVolume,etc)
+	 * @param refType The polymorphic object class to associate the invoice too (i.e. ComputeZone,ComputeServer,VirtualImage,NetworkLoadBalancer,Snapshot,StorageVolume,etc). See List From {@link AccountInvoice} REF_ properties
 	 * @param refId The database id of the object to associate based on the refType
 	 * @param refUUID The uuid of the object based on refType this is associated to. UUID Should always be used now to prevent id reuse
 	 * @param costDate The date the invoice is being built
@@ -59,7 +59,7 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 	 * @param owner The owner/manager of the object we are building an invoice for
 	 *              (important on shared clouds where this would be the master account).
 	 * @param account The current account this object belongs to that the invoice data should get associated with.
-	 * @param refType The polymorphic object class to associate the invoice too (i.e. ComputeZone,ComputeServer,VirtualImage,NetworkLoadBalancer,Snapshot,StorageVolume,etc)
+	 * @param refType The polymorphic object class to associate the invoice too (i.e. ComputeZone,ComputeServer,VirtualImage,NetworkLoadBalancer,Snapshot,StorageVolume,etc). See List From {@link AccountInvoice} REF_ properties
 	 * @param refId The database id of the object to associate based on the refType
 	 * @param refUUID The uuid of the object based on refType this is associated to. UUID Should always be used now to prevent id reuse
 	 * @param costDate The date the invoice is being built
@@ -69,8 +69,8 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 	Single<InvoiceLookupResults> ensureActiveAccountInvoice(Account owner,Account account, String refType, Long refId, String refUUID, Date costDate, AccountInvoice invoice);
 
 	public class InvoiceLookupResults {
-		Boolean found = false;
-		AccountInvoice invoice;
+		public Boolean found = false;
+		public AccountInvoice invoice;
 	}
 
 }
