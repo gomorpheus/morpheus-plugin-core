@@ -14,6 +14,12 @@ public class MorpheusUtils {
 
 	static Logger log = LoggerFactory.getLogger(MorpheusUtils.class);
 
+	/**
+	 * This method is now in {@link DateUtility}
+	 * @param date the date to parse as a String or Object
+	 * @return the parsed Date
+	 */
+	@Deprecated
 	static Date parseDate(Object date) {
 		Date rtn = null;
 		try {

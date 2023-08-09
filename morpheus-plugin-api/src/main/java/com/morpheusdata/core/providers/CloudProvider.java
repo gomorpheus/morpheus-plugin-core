@@ -135,6 +135,14 @@ public interface CloudProvider extends PluginProvider {
 
 
 	/**
+	 * Zones/Clouds sometimes need to have a daily sync for all instances of the same type on a daily basis. An example may be to refresh
+	 * common pricing data that is standard regardless of the cloud account. Rather than doing this once per cloud, it may be better
+	 * to perform it for all the clouds at once.
+	 * 
+	 */
+	default void refreshDailyZoneType() {}
+
+	/**
 	 * Called when a Cloud From Morpheus is removed. This is a hook provided to take care of cleaning up any state.
 	 * @param cloudInfo instance of the cloud object that is being removed.
 	 * @return ServiceResponse
@@ -221,4 +229,12 @@ public interface CloudProvider extends PluginProvider {
 	 * @return the network provider code
 	 */
 	default String getDefaultNetworkServerTypeCode() { return null; };
+
+
+	/**
+	 * Returns the Costing Provider to be used for costing services. If this is not specified a StandardCostingService
+	 * is utilized based on pricing and Morpheus metering data. This is often used for public clouds such as Amazon or Azure.
+	 * @return an instance of a cloud specific CostingProvider.
+	 */
+	default CloudCostingProvider getCloudCostingProvider() { return null; };
 }
