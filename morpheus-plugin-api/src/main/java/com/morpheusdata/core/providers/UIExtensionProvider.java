@@ -18,7 +18,9 @@ public interface UIExtensionProvider extends PluginProvider {
 	 *
 	 * @return policy directives for various source types
 	 */
-	ContentSecurityPolicy getContentSecurityPolicy();
+	default ContentSecurityPolicy getContentSecurityPolicy() {
+		return null;
+	}
 
 	/**
 	 * Default is Handlebars

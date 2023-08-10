@@ -17,6 +17,8 @@
 ** Enhanced `NetworkProvider` to support `Router` and `SecurityGroup` representations.
 * ** 0.15.0**
 ** Filling in more Models and Cloud representations.
+* ** 0.14.4**
+** Fixed an issue where the BackupProvider wasn't marshalled to the cloud on option sources.
 * ** 0.14.3**
 ** Filling in more Models and Cloud representations.
 ** Completed Localization support. Plugins now can be fully localized in both server side, and client side rendering. Guide provided as well.
