@@ -11,18 +11,8 @@ import com.morpheusdata.model.projection.MorpheusIdentityModel;
  * @since 0.8.0
  */
 public class WorkloadIdentityProjection extends MorpheusIdentityModel {
-	protected String name;
 	protected String externalId;
 	protected Long serverId;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
-	}
 
 	public String getExternalId() {
 		return externalId;
