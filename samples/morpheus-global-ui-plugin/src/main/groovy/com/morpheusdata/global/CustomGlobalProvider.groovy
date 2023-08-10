@@ -60,6 +60,7 @@ class CustomGlobalProvider extends AbstractGlobalUIComponentProvider {
 	@Override
 	HTMLResponse renderTemplate(User user, Account account) {
 		ViewModel<User> model = new ViewModel<>()
+		model.object = user
 		getRenderer().renderTemplate("hbs/global", model)
 	}
 

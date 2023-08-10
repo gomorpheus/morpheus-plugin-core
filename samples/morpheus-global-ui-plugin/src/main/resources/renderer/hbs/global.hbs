@@ -1,7 +1,3 @@
-<p>HELLO!!</p>
-{{asset "global.js"}}
-<script nonce="{{nonce ''}}">
-    console.log("Hello From test!");
+<p>Rendered from Global UI Plugin</p>
+<script src="{{asset '/global.js'}}" nonce="{{nonce ''}}"></script>
 
-</script>
-<script src="{{asset "global.js"}}" nonce="{{nonce ''}}"></script>
