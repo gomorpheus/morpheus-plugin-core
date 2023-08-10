@@ -103,8 +103,10 @@ public class Workload extends WorkloadIdentityProjection {
 	protected Network network;
 	@JsonSerialize(using= ModelIdUuidCodeNameSerializer.class)
 	protected WorkloadType workloadType;
-	@JsonSerialize(using= ModelIdUuidCodeNameSerializer.class)
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected WorkloadTypeSet workloadTypeSet;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected NetworkSubnet subnet;
 
 	public String getUuid() {
 		return uuid;
@@ -758,6 +760,13 @@ public class Workload extends WorkloadIdentityProjection {
 	public void setManaged(Boolean managed) {
 		this.managed = managed;
 		markDirty("managed", managed);
+	}
+
+	public NetworkSubnet getSubnet() { return subnet; }
+
+	public void setSubnet(NetworkSubnet subnet) {
+		this.subnet = subnet;
+		markDirty("subnet", subnet);
 	}
 
 	public enum Status {
