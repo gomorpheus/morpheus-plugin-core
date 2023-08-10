@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.core.admin.MorpheusSynchronousAdminService;
 import com.morpheusdata.core.integration.MorpheusSynchronousIntegrationService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
+import com.morpheusdata.core.localization.MorpheusLocalizationService;
 
 public interface MorpheusServices {
 	/**
@@ -25,4 +26,11 @@ public interface MorpheusServices {
 	 * @return an instance of the web request service
 	 */
 	MorpheusWebRequestService getWebRequest();
+
+	/**
+	 * Returns the localization services. Used by other services to fetch localized strings from
+	 * localization codes.
+	 * @return an instance of the localization service
+	 */
+	MorpheusLocalizationService getLocalization();
 }
