@@ -26,4 +26,12 @@ public class InvoiceUtility {
 		rtn.set(Calendar.YEAR,year - 1);
 		return rtn.getTime();
 	}
+
+	public static Date getPeriodStart(Date date) {
+		return DateUtility.getStartOfMonth(date);
+	}
+
+	public static Date getPeriodEnd(Date date) {
+		return DateUtility.getEndOfMonth(date);
+	}
 }
