@@ -150,15 +150,15 @@ public class DataQuery {
 		this.account = account;
 	}
 
-	public DataQuery(UserIdentity user, ApiParameterMap<String, Object> parameters) {
+	public DataQuery(UserIdentity user, Map<String, Object> parameters) {
 		this.user = user;
 		this.account = user.getAccount();
-		this.parameters = parameters;
+    putAll(parameters);
 	}
 
-	public DataQuery(AccountIdentity account, ApiParameterMap<String, Object> parameters) {
+	public DataQuery(AccountIdentity account, Map<String, Object> parameters) {
 		this.account = account;
-		this.parameters = parameters;
+		putAll(parameters);
 	}
 
 	/**
@@ -206,6 +206,12 @@ public class DataQuery {
 		}
 		return this;
 	}
+
+  public DataQuery withParameters(Map<String, Object> parameters) {
+    if(parameters != null && parameters.size() > 0)
+      this.parameters.putAll(parameters);
+    return this;
+  }
 
 	/**
 	 * Appends a set of filters to the existing filters list. This operation is additive and does not clear the current
