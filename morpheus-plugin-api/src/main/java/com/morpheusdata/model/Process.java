@@ -1,8 +1,7 @@
 package com.morpheusdata.model;
 
-public class Process {
+public class Process extends MorpheusModel {
 
-	public Long id;
 	public ProcessEvent.ProcessType type;
 	public String username;
 }

@@ -39,7 +39,7 @@ public interface MorpheusStorageVolumeService {
 	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ComputeServerIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
+	Observable<StorageVolumeIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
 
 	/**
 	 * Create persisted StorageVolumes in Morpheus and add them to the VirtualImage.

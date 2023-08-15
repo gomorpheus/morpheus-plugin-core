@@ -1,16 +1,14 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.ComputeServerInterface;
-import com.morpheusdata.model.ComputeZoneRegion;
-import com.morpheusdata.model.ComputePort;
-import com.morpheusdata.model.ComputeZonePool;
+import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
+import com.morpheusdata.model.projection.InstanceScaleIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Context methods for syncing {@link ComputeServer} in Morpheus
@@ -72,4 +70,12 @@ public interface MorpheusComputeServerService extends MorpheusDataService<Comput
 	 */
 	MorpheusComputePortService getComputePort();
 
+
+	/**
+	 * Remove persisted ComputeServers from Morpheus and remove them the {@link com.morpheusdata.model.InstanceScale} they are associated with
+	 * @param computeServers ComputeServers to delete
+	 * @param instanceScale the InstanceScale instance to remove the servers from
+	 * @return success
+	 */
+	Single<Boolean> remove(List<ComputeServer> computeServers, InstanceScale instanceScale);
 }
