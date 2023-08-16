@@ -1,6 +1,11 @@
 package com.morpheusdata.core.util;
 
+import com.github.jknack.handlebars.internal.lang3.ArrayUtils;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Calendar;
 public class InvoiceUtility {
@@ -33,5 +38,48 @@ public class InvoiceUtility {
 
 	public static Date getPeriodEnd(Date date) {
 		return DateUtility.getEndOfMonth(date);
+	}
+
+	public static Boolean checkDateCheckHash(Date billingStartDate, Date lineItemDate, String existingHash) throws DecoderException {
+
+		byte[] hashArray;
+		if(existingHash != null) {
+			hashArray = Hex.decodeHex(existingHash);
+		} else {
+			return false;
+		}
+
+		long hourLong = ((lineItemDate.getTime() - billingStartDate.getTime()) / 3600000L );
+		int currentHour = (int) hourLong;
+		int hourByteIndex = currentHour / 8;
+		int bitOffset = currentHour % 8;
+
+		byte hourByte = hashArray[hourByteIndex];
+		return (hourByte & (byte) ((byte) 0x01 << bitOffset)) != 0;
+	}
+
+	public static String updateDateCheckHash(Date billingStartDate, Date lineItemDate, String existingHash) throws DecoderException {
+
+		Byte[] hashArray;
+		if(existingHash != null) {
+			hashArray = ArrayUtils.toObject(Hex.decodeHex(existingHash));
+		} else {
+			hashArray = new Byte[96];
+			for(int x=0;x<96;x++) {
+				hashArray[x] = 0x00;
+			}
+		}
+
+
+		long hourLong = ((lineItemDate.getTime() - billingStartDate.getTime()) / 3600000L );
+		int currentHour = (int) hourLong;
+		int hourByteIndex = currentHour / 8;
+		int bitOffset = currentHour % 8;
+		if(hashArray[hourByteIndex] == null) {
+			hashArray[hourByteIndex] = 0x00;
+		}
+		hashArray[hourByteIndex] = (byte) (hashArray[hourByteIndex] | (byte)((byte)(0x01) << bitOffset));
+		return Arrays.toString(Hex.encodeHex(ArrayUtils.toPrimitive(hashArray)));
+
 	}
 }

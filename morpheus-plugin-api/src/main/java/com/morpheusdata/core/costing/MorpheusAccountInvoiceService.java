@@ -8,10 +8,13 @@ import com.morpheusdata.model.AccountInvoice;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.User;
 import com.morpheusdata.response.costing.CloudCostResponse;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,6 +70,18 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 	 * @return a Lookup result stating if the object was found or created and a copy of the saved invoice record with its populated identity.
 	 */
 	Single<InvoiceLookupResults> ensureActiveAccountInvoice(Account owner,Account account, String refType, Long refId, String refUUID, Date costDate, AccountInvoice invoice);
+
+	/**
+	 * Reconciles invoice totals based on the associated {@link com.morpheusdata.model.provisioning.AccountInvoiceItem}
+	 * records on the invoice.
+	 * @param invoiceIds a list of invoices to reconcile
+	 * @return completable state
+	 */
+	Completable bulkReconcileInvoices(Collection<Long> invoiceIds);
+
+	Completable summarizeCloudInvoice(Cloud cloud, String period, Date costDate, Collection<String> additionalCloudUUIDs);
+
+	Completable processProjectedCosts(Cloud cloud,String period,Collection<String> additionalCloudUUIDs);
 
 	public class InvoiceLookupResults {
 		public Boolean found = false;
