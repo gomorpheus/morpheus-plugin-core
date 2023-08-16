@@ -1,7 +1,11 @@
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.core.util.MorpheusUtils;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
+import groovy.util.logging.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Collection;
@@ -49,6 +53,36 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return Collection of NetworkRouterType
 	 */
 	Collection<NetworkRouterType> getRouterTypes();
+
+	Collection<OptionType> getOptionTypes();
+
+	Collection<OptionType> getScopeOptionTypes();
+
+	Collection<OptionType> getSwitchOptionTypes();
+
+	Collection<OptionType> getNetworkOptionTypes();
+
+	Collection<OptionType> getGatewayOptionTypes();
+
+	Collection<OptionType> getRouterOptionTypes();
+
+	Collection<OptionType> getLoadBalancerOptionTypes();
+
+	Collection<OptionType> getRouteTableOptionTypes();
+
+	Collection<OptionType> getSecurityGroupOptionTypes();
+
+	Collection<OptionType> getRuleOptionTypes();
+
+	Collection<OptionType> getFirewallGroupOptionTypes();
+
+	Collection<OptionType> getEdgeClusterOptionTypes();
+
+	Collection<OptionType> getDhcpServerOptionTypes();
+
+	Collection<OptionType> getDhcpRelayOptionTypes();
+
+	Collection<OptionType> getGroupOptionTypes();
 
 	default SecurityGroupProvider getSecurityGroupProvider() { return null; }
 
@@ -342,12 +376,12 @@ public interface NetworkProvider extends PluginProvider {
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse<SecurityGroup> createSecurityGroup(SecurityGroup securityGroup, Map opts) {
+	default ServiceResponse<SecurityGroupLocation> createSecurityGroup(SecurityGroup securityGroup, Map opts) {
 		SecurityGroupProvider provider = getSecurityGroupProvider();
 		if(provider != null) {
 			return provider.createSecurityGroup(securityGroup, opts);
 		} else {
-			return ServiceResponse.success(securityGroup);
+			return ServiceResponse.success(new SecurityGroupLocation());
 		}
 	}
 
@@ -367,16 +401,16 @@ public interface NetworkProvider extends PluginProvider {
 	}
 
 	/**
-	 * Deletes the security group submitted
-	 * @param securityGroup SecurityGroup information
+	 * Deletes the {@link SecurityGroupLocation}
+	 * @param securityGroupLocation SecurityGroupLocation information
 	 * @return ServiceResponse
 	 */
-	default ServiceResponse deleteSecurityGroup(SecurityGroup securityGroup, Map opts) {
+	default ServiceResponse deleteSecurityGroupLocation(SecurityGroupLocation securityGroupLocation) {
 		SecurityGroupProvider provider = getSecurityGroupProvider();
 		if(provider != null) {
-			return provider.deleteSecurityGroup(securityGroup, opts);
+			return provider.deleteSecurityGroupLocation(securityGroupLocation);
 		} else {
-			return ServiceResponse.success(securityGroup);
+			return ServiceResponse.success();
 		}
 	}
 }

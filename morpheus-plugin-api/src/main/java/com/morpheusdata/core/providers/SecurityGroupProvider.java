@@ -1,6 +1,7 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.SecurityGroup;
+import com.morpheusdata.model.SecurityGroupLocation;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Map;
 public interface  SecurityGroupProvider extends PluginProvider {
 
 	/**
-	 * Prepare the security group information before validate, create, and update.
+	 * Prepare the {@link SecurityGroup} information before validate, create, and update.
 	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
 	 * and the results may be presented to the user.
 	 * @param securityGroup SecurityGroup information
@@ -18,7 +19,7 @@ public interface  SecurityGroupProvider extends PluginProvider {
 	ServiceResponse<SecurityGroup> prepareSecurityGroup(SecurityGroup securityGroup, Map opts);
 
 	/**
-	 * Validates the submitted security group information.
+	 * Validates the submitted {@link SecurityGroup} information.
 	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
 	 * bubbled up to the user.
 	 * @param securityGroup SecurityGroup information
@@ -28,15 +29,15 @@ public interface  SecurityGroupProvider extends PluginProvider {
 	ServiceResponse validateSecurityGroup(SecurityGroup securityGroup, Map opts);
 
 	/**
-	 * Creates the security group submitted
+	 * Creates the {@link SecurityGroup}. A security group location will also be created
 	 * @param securityGroup SecurityGroup information
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
-	ServiceResponse<SecurityGroup> createSecurityGroup(SecurityGroup securityGroup, Map opts);
+	ServiceResponse<SecurityGroupLocation> createSecurityGroup(SecurityGroup securityGroup, Map opts);
 
 	/**
-	 * Updates the security group submitted
+	 * Updates the {@link SecurityGroup}
 	 * @param securityGroup SecurityGroup information
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
@@ -44,9 +45,9 @@ public interface  SecurityGroupProvider extends PluginProvider {
 	ServiceResponse<SecurityGroup> updateSecurityGroup(SecurityGroup securityGroup, Map opts);
 
 	/**
-	 * Deletes the security group submitted
-	 * @param securityGroup SecurityGroup information
+	 * Deletes the {@link SecurityGroupLocation}
+	 * @param securityGroupLocation SecurityGroupLocation information
 	 * @return ServiceResponse
 	 */
-	ServiceResponse deleteSecurityGroup(SecurityGroup securityGroup, Map opts);
+	ServiceResponse deleteSecurityGroupLocation(SecurityGroupLocation securityGroupLocation);
 }
