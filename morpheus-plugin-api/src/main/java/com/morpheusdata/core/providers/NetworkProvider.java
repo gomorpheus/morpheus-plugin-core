@@ -7,6 +7,8 @@ import groovy.util.logging.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
@@ -53,36 +55,64 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return Collection of NetworkRouterType
 	 */
 	Collection<NetworkRouterType> getRouterTypes();
-
+	
 	Collection<OptionType> getOptionTypes();
 
-	Collection<OptionType> getScopeOptionTypes();
+	default Collection<OptionType> getScopeOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getSwitchOptionTypes();
+	default Collection<OptionType> getSwitchOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getNetworkOptionTypes();
+	default Collection<OptionType> getNetworkOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getGatewayOptionTypes();
+	default Collection<OptionType> getGatewayOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getRouterOptionTypes();
+	default Collection<OptionType> getRouterOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getLoadBalancerOptionTypes();
+	default Collection<OptionType> getLoadBalancerOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getRouteTableOptionTypes();
+	default Collection<OptionType> getRouteTableOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getSecurityGroupOptionTypes();
+	default Collection<OptionType> getSecurityGroupOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getRuleOptionTypes();
+	default Collection<OptionType> getRuleOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getFirewallGroupOptionTypes();
+	default Collection<OptionType> getFirewallGroupOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getEdgeClusterOptionTypes();
+	default Collection<OptionType> getEdgeClusterOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getDhcpServerOptionTypes();
+	default Collection<OptionType> getDhcpServerOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getDhcpRelayOptionTypes();
+	default Collection<OptionType> getDhcpRelayOptionTypes() {
+		return new ArrayList<>();
+	}
 
-	Collection<OptionType> getGroupOptionTypes();
+	default Collection<OptionType> getGroupOptionTypes() {
+		return new ArrayList<>();
+	}
 
 	default SecurityGroupProvider getSecurityGroupProvider() { return null; }
 
