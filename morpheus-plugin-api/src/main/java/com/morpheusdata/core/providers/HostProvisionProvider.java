@@ -13,7 +13,7 @@ import java.util.Map;
  * @since 0.15.3
  * @author Alex Clement
  */
-public interface HostProvisioningProvider extends ProvisioningProvider {
+public interface HostProvisionProvider extends ComputeProvisionProvider {
 
 
 	/**

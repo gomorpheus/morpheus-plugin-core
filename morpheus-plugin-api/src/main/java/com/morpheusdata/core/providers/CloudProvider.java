@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * Provides a standard set of methods for interacting with cloud integrations or on-prem service providers.
  * This includes syncing assets related to things like VirtualMachines or Containers for various cloud types. For
- * integrating with actual provisioning a {@link ProvisioningProvider} is also available.
+ * integrating with actual provisioning a {@link ProvisionProvider} is also available.
  * TODO : Still a Work In Progress and not yet supported
  *
  * @since 0.15.2
@@ -54,9 +54,20 @@ public interface CloudProvider extends PluginProvider {
 	/**
 	 * Grabs available provisioning providers related to the target Cloud Plugin. Some clouds have multiple provisioning
 	 * providers or some clouds allow for service based providers on top like (Docker or Kubernetes).
-	 * @return Collection of ProvisioningProvider
+	 * @return Collection of ProvisionProvider
+	 * @deprecated replaced by {{@link #getAvailableProvisionProviders()}}
 	 */
-	Collection<ProvisioningProvider> getAvailableProvisioningProviders();
+	@Deprecated
+	default Collection<ProvisionProvider> getAvailableProvisioningProviders() {
+		return getAvailableProvisionProviders();
+	}
+
+	/**
+	 * Grabs available provisioning providers related to the target Cloud Plugin. Some clouds have multiple provisioning
+	 * providers or some clouds allow for service based providers on top like (Docker or Kubernetes).
+	 * @return Collection of ProvisionProvider
+	 */
+	Collection<ProvisionProvider> getAvailableProvisionProviders();
 
 	/**
 	 * Grabs available backup providers related to the target Cloud Plugin.
@@ -68,9 +79,21 @@ public interface CloudProvider extends PluginProvider {
 	 * Grabs the singleton instance of the provisioning provider based on the code defined in its implementation.
 	 * Typically Providers are singleton and instanced in the {@link Plugin} class
 	 * @param providerCode String representation of the provider short code
-	 * @return the ProvisioningProvider requested
+	 * @return the ProvisionProvider requested
+	 * @deprecated replaced by {{@link #getProvisionProvider(String)}}
 	 */
-	ProvisioningProvider getProvisioningProvider(String providerCode);
+	@Deprecated
+	default ProvisionProvider getProvisioningProvider(String providerCode) {
+		return getProvisionProvider(providerCode);
+	}
+
+	/**
+	 * Grabs the singleton instance of the provisioning provider based on the code defined in its implementation.
+	 * Typically Providers are singleton and instanced in the {@link Plugin} class
+	 * @param providerCode String representation of the provider short code
+	 * @return the ProvisionProvider requested
+	 */
+	ProvisionProvider getProvisionProvider(String providerCode);
 
 	/**
 	 * Provides a Collection of {@link NetworkType} related to this CloudProvider
@@ -217,7 +240,7 @@ public interface CloudProvider extends PluginProvider {
 
 
 	/**
-	 * Returns the default provision code for fetching a {@link ProvisioningProvider} for this cloud.
+	 * Returns the default provision code for fetching a {@link ProvisionProvider} for this cloud.
 	 * This is only really necessary if the provision type code is the exact same as the cloud code.
 	 * @return the provision provider code
 	 */

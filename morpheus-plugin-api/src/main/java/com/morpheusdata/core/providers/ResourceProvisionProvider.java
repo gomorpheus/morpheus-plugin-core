@@ -13,7 +13,7 @@ import java.util.Map;
  * @since 0.15.3
  * @author Alex Clement
  */
-public interface ResourceProvisioningProvider extends ProvisioningProvider {
+public interface ResourceProvisionProvider extends ProvisionProvider {
 
 	/**
 	 * Validate the provided provisioning options for an Instance. A return of success = false will halt the

@@ -5,7 +5,7 @@ import com.morpheusdata.core.backup.AbstractBackupTypeProvider
 import com.morpheusdata.core.providers.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.providers.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisionProvider
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
 import com.morpheusdata.model.ComputeServerType
@@ -321,8 +321,8 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
-		return plugin.getProvidersByType(ProvisioningProvider) as Collection<ProvisioningProvider>
+	Collection<ProvisionProvider> getAvailableProvisionProviders() {
+		return plugin.getProvidersByType(ProvisionProvider) as Collection<ProvisionProvider>
 	}
 
 	@Override
@@ -331,8 +331,8 @@ class VmwareCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ProvisioningProvider getProvisioningProvider(String providerCode) {
-		return getAvailableProvisioningProviders().find { it.code == providerCode }
+	ProvisionProvider getProvisionProvider(String providerCode) {
+		return getAvailableProvisionProviders().find { it.code == providerCode }
 	}
 
 	@Override

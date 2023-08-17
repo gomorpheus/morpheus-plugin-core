@@ -1,6 +1,6 @@
 package com.morpheusdata.vmware.plugin.sync
 
-import com.morpheusdata.core.providers.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisionProvider
 import com.morpheusdata.core.util.HttpApiClient
 import groovy.util.logging.Slf4j
 import com.morpheusdata.vmware.plugin.*
@@ -21,20 +21,20 @@ class VirtualMachineSync {
 	private Boolean createNew
 	private NetworkProxy proxySettings
 	private String apiVersion
-	private ProvisioningProvider provisioningProvider
+	private ProvisionProvider provisionProvider
 	private Collection<ComputeServerInterfaceType> netTypes
 	private HttpApiClient client
 	private VmwarePlugin vmwarePlugin
 
-	public VirtualMachineSync(VmwarePlugin vmwarePlugin, Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, ProvisioningProvider provisioningProvider, HttpApiClient client) {
+	public VirtualMachineSync(VmwarePlugin vmwarePlugin, Cloud cloud, Boolean createNew, NetworkProxy proxySettings, apiVersion, ProvisionProvider provisionProvider, HttpApiClient client) {
 		this.vmwarePlugin = vmwarePlugin
 		this.cloud = cloud
 		this.createNew = createNew
 		this.proxySettings = proxySettings
 		this.apiVersion = apiVersion
 		this.morpheusContext = vmwarePlugin.morpheusContext
-		this.netTypes = provisioningProvider.getComputeServerInterfaceTypes()
-		this.provisioningProvider = provisioningProvider
+		this.netTypes = provisionProvider.getComputeServerInterfaceTypes()
+		this.provisionProvider = provisionProvider
 		this.client = client
 	}
 
@@ -669,7 +669,7 @@ class VirtualMachineSync {
 	private getAllServicePlans(Cloud cloud) {
 		log.debug "getAllServicePlans: ${cloud}"
 		def servicePlanProjections = []
-		def provisionType = new ProvisionType(code: provisioningProvider.code)
+		def provisionType = new ProvisionType(code: provisionProvider.code)
 		morpheusContext.servicePlan.listSyncProjections(provisionType).blockingSubscribe { servicePlanProjections << it }
 		def plans = []
 		morpheusContext.servicePlan.listById(servicePlanProjections.collect { it.id }).blockingSubscribe {

@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Provides methods for fetching and creating required servers for instance provisioning. Should be implemented by
- * ProvisioningProviders that may need to create servers manually for new instances
+ * ProvisionProviders that may need to create servers manually for new instances
  *
  * @since 0.9.0
  * @author Bob Whiton

@@ -11,7 +11,7 @@ import com.morpheusdata.response.*;
  * @since 0.15.3
  * @author Alex Clement
  */
-public interface CloudNativeProvisioningProvider extends ResourceProvisioningProvider {
+public interface CloudNativeProvisionProvider extends ResourceProvisionProvider {
 
 
 	/**

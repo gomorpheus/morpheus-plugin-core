@@ -2,9 +2,11 @@ package com.morpheusdata.core.providers;
 
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService;
 import com.morpheusdata.model.*;
+import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Provides methods for interacting with the provisioning engine of Morpheus. This is akin to dealing with requests made
@@ -13,7 +15,7 @@ import java.util.Collection;
  * @since 0.8.0
  * @author David Estes
  */
-public interface ProvisioningProvider extends PluginProvider {
+public interface ProvisionProvider extends PluginProvider {
 
 	/**
 	 * Some older clouds have a provision type code that is the exact same as the cloud code. This allows one to set it
@@ -69,7 +71,7 @@ public interface ProvisioningProvider extends PluginProvider {
 
 
 	/**
-	 * Provides a Collection of ${@link ServicePlan} related to this ProvisioningProvider that can be seeded in.
+	 * Provides a Collection of ${@link ServicePlan} related to this ProvisionProvider that can be seeded in.
 	 * Some clouds do not use this as they may be synced in from the public cloud. This is more of a factor for
 	 * On-Prem clouds that may wish to have some precanned plans provided for it.
 	 * @return Collection of ServicePlan sizes that can be seeded in at plugin startup.
@@ -79,7 +81,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	}
 
 	/**
-	 * Provides a Collection of {@link ComputeServerInterfaceType} related to this ProvisioningProvider
+	 * Provides a Collection of {@link ComputeServerInterfaceType} related to this ProvisionProvider
 	 * @return Collection of ComputeServerInterfaceType
 	 */
 	default Collection<ComputeServerInterfaceType> getComputeServerInterfaceTypes() {
@@ -307,7 +309,7 @@ public interface ProvisioningProvider extends PluginProvider {
 	}
 
 	/**
-	 * Provides a Collection of {@link VirtualImage} related to this ProvisioningProvider. This provides a way to specify
+	 * Provides a Collection of {@link VirtualImage} related to this ProvisionProvider. This provides a way to specify
 	 * known VirtualImages in the Cloud environment prior to a typical 'refresh' on a Cloud. These are often used in
 	 * predefined layouts. For example, when building up ComputeTypeLayouts via the {@link MorpheusComputeTypeLayoutFactoryService}
 	 * @return Collection of {@link VirtualImage}
@@ -317,8 +319,8 @@ public interface ProvisioningProvider extends PluginProvider {
 	}
 
 	/**
-	 * Provides a Collection of {@link ComputeTypeLayout} related to this ProvisioningProvider. These define the types
-	 * of clusters that are exposed for this ProvisioningProvider. ComputeTypeLayouts have a collection of ComputeTypeSets,
+	 * Provides a Collection of {@link ComputeTypeLayout} related to this ProvisionProvider. These define the types
+	 * of clusters that are exposed for this ProvisionProvider. ComputeTypeLayouts have a collection of ComputeTypeSets,
 	 * which reference a ContainerType. When returning this structure from implementations, it is often helpful to start
 	 * with the ComputeTypeLayoutFactory to construct the default structure and modify fields as needed.
 	 * @return Collection of ComputeTypeLayout
@@ -326,6 +328,121 @@ public interface ProvisioningProvider extends PluginProvider {
 	default Collection<ComputeTypeLayout> getComputeTypeLayouts() {
 		return new ArrayList<ComputeTypeLayout>();
 	}
+
+
+	/**
+	 * Provides methods for interacting with provisioned vms to manage associated snapshots
+	 */
+	public interface SnapshotFacet {
+
+		/**
+		 * Request to create a snapshot for the given compute server
+		 * @since 0.13.8
+		 * @param server server to snapshot
+		 * @param opts additional options including the requested name and description of the snapshot
+		 * @return Success or failure
+		 */
+		default ServiceResponse createSnapshot(ComputeServer server, Map opts){
+			return null;
+		}
+
+		/**
+		 * Request to delete all snapshots for a given compute server
+		 * They only need to be deleted from the cloud, Morpheus will
+		 * handle the cleanup of snapshot database records after a successful response
+		 * @since 0.13.8
+		 * @param server server to remove snapshots from
+		 * @param opts additional options
+		 * @return Success or failure
+		 */
+		default ServiceResponse deleteSnapshots(ComputeServer server, Map opts){
+			return null;
+		}
+
+		/**
+		 * Request to delete a snapshot for a given compute server
+		 * It only needs to be deleted from the cloud, Morpheus will
+		 * handle the cleanup of snapshot database records after a successful response
+		 * @since 0.13.8
+		 * @param snapshot snapshot to delete
+		 * @param opts additional options will include serverId of the server the snapshot belongs to
+		 * @return Success or failure
+		 */
+		default ServiceResponse deleteSnapshot(Snapshot snapshot, Map opts){
+			return null;
+		}
+
+		/**
+		 * Request to restore a snapshot to a given compute server
+		 * @since 0.13.8
+		 * @param snapshot snapshot to restore
+		 * @param server server to restore to snapshot to
+		 * @param opts additional options
+		 * @return Success or failure
+		 */
+		default ServiceResponse revertSnapshot(ComputeServer server, Snapshot snapshot, Map opts){
+			return null;
+		}
+
+	}
+
+	/**
+	 * Provides methods for interacting with provisioned vms through a hypervisor console
+	 */
+	public interface HypervisorConsoleFacet {
+
+		/**
+		 * Builds the URL and authentication required to connect to the target server using noVNC
+		 * @since 0.13.8
+		 * @param server server to connect to
+		 * @return Url and authentication for an xvpVnc console connection to the server
+		 */
+		default ServiceResponse getXvpVNCConsoleUrl(ComputeServer server) {
+			return null;
+		}
+
+		/**
+		 * Builds the URL and authentication required to connect to the target server using noVNC
+		 * @since 0.13.8
+		 * @param server server to connect to
+		 * @return Url and authentication for a noVNC console connection to the server
+		 */
+		default ServiceResponse getNoVNCConsoleUrl(ComputeServer server){
+			return null;
+		}
+
+		/**
+		 * Builds the URL and authentication required to connect to the target server using noVNC
+		 * @since 0.13.8
+		 * @param server server to connect to
+		 * @return Url and authentication for a wmks console connection to the server
+		 */
+		default ServiceResponse getWMKSConsoleUrl(ComputeServer server){
+			return null;
+		}
+
+		/**
+		 * Method called before using the console host to ensure it is accurate
+		 * @since 0.13.8
+		 * @param server server to connect to
+		 * @return Success or failure
+		 */
+		default ServiceResponse updateServerHost(ComputeServer server){
+			return null;
+		}
+
+		/**
+		 * Method called before making a hypervisor vnc console connection to a server to ensure that the server settings are correct
+		 * @since 0.13.8
+		 * @param server server to connect to
+		 * @return Success or failure
+		 */
+		default ServiceResponse enableConsoleAccess(ComputeServer server){
+			return null;
+		}
+
+	}
+
 
 
 }

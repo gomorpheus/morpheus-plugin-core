@@ -26,7 +26,7 @@ Here we see a basic plugin that initializes some metadata (the Plugin Name) and 
 
 A plugin may contain any number of Plugin Providers. A Plugin Provider contains the functionality of your plugin such as a Custom Tab, IPAM, Backup Provider, etc.
 
-There are provided classes such as `TaskProvider`, `ProvisioningProvider`, `ApprovalProvider`, `ReportProvider`, `InstanceTabProvider`, `ServerTabProvider`, and others to get you started building your provider. For example the `InstanceTabProvider` provides a renderer, show method, and security checking method to make it easy to build your own custom tab on the instance page.
+There are provided classes such as `TaskProvider`, `ProvisionProvider`, `ApprovalProvider`, `ReportProvider`, `InstanceTabProvider`, `ServerTabProvider`, and others to get you started building your provider. For example the `InstanceTabProvider` provides a renderer, show method, and security checking method to make it easy to build your own custom tab on the instance page.
 
 Providers are registered in your plugin during the `initialize()` method call within the `Plugin` class as can be seen in the `MyPlugin.java` sample seen above.
 

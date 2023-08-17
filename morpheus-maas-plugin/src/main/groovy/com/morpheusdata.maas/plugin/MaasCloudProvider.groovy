@@ -4,7 +4,7 @@ import com.morpheusdata.core.backup.BackupProvider;
 import com.morpheusdata.core.providers.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.providers.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisionProvider
 import com.morpheusdata.core.util.SyncTask
 import com.morpheusdata.model.Cloud
 import com.morpheusdata.model.ComputeServer
@@ -117,8 +117,8 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
-		return plugin.getProvidersByType(ProvisioningProvider) as Collection<ProvisioningProvider>
+	Collection<ProvisionProvider> getAvailableProvisionProviders() {
+		return plugin.getProvidersByType(ProvisionProvider) as Collection<ProvisionProvider>
 	}
 
 	@Override
@@ -127,8 +127,8 @@ class MaasCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ProvisioningProvider getProvisioningProvider(String providerCode) {
-		return getAvailableProvisioningProviders().find { it.code == providerCode }
+	ProvisionProvider getProvisionProvider(String providerCode) {
+		return getAvailableProvisionProviders().find { it.code == providerCode }
 	}
 
 	@Override
@@ -255,7 +255,7 @@ class MaasCloudProvider implements CloudProvider {
 	@Override
 	ServiceResponse deleteServer(ComputeServer computeServer) {
 		log.debug "deleteServer: ${computeServer}.. looking for 'maas-provision-provider-plugin' provisionProvider"
-		return getProvisioningProvider('maas-provision-provider-plugin').removeServer(computeServer)
+		return getProvisionProvider('maas-provision-provider-plugin').removeServer(computeServer)
 	}
 
 	@Override

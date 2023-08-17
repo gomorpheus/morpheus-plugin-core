@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Provides a standard set of methods for interacting with cloud integrations or on-prem service providers.
  * This includes syncing assets related to things like VirtualMachines or Containers for various cloud types. For
- * integrating with actual provisioning a {@link ProvisioningProvider} is also available.
+ * integrating with actual provisioning a {@link ProvisionProvider} is also available.
  *
  * @author Mike Truso
  * @since 0.15.1

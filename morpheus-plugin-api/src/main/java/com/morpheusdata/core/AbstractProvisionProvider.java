@@ -1,13 +1,12 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.core.providers.ProvisioningProvider;
+import com.morpheusdata.core.providers.ProvisionProvider;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class AbstractProvisionProvider implements ProvisioningProvider {
+public abstract class AbstractProvisionProvider implements ProvisionProvider {
 
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
