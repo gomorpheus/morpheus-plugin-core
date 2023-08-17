@@ -2,168 +2,12 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.providers.ProvisioningProvider;
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.provisioning.HostRequest;
-import com.morpheusdata.model.provisioning.WorkloadRequest;
-import com.morpheusdata.response.HostResponse;
-import com.morpheusdata.response.PrepareWorkloadResponse;
-import com.morpheusdata.response.ServiceResponse;
-import com.morpheusdata.response.WorkloadResponse;
+import com.morpheusdata.response.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 public abstract class AbstractProvisionProvider implements ProvisioningProvider {
-
-	public Icon getCircularIcon() { return null; }
-
-	@Override
-	public Boolean hasComputeZonePools() {
-		return false;
-	}
-
-	@Override
-	public Boolean hasSnapshots() {
-		return false;
-	}
-
-	@Override
-	public Boolean canAddVolumes() {
-		return false;
-	}
-
-	@Override
-	public Boolean canCustomizeRootVolume() {
-		return false;
-	}
-
-	@Override
-	public Boolean canCustomizeDataVolumes() {
-		return false;
-	}
-
-	@Override
-	public Boolean canResizeRootVolume() { return false; }
-
-	@Override
-	public Boolean canReconfigureNetwork() { return false; }
-
-	@Override
-	public Boolean hasStorageControllers() {
-		return false;
-	}
-
-	@Override
-	public Boolean supportsAutoDatastore() {
-		return true;
-	}
-
-	@Override
-	public Boolean networksScopedToPools() {
-		return false;
-	}
-
-	@Override
-	public Boolean disableRootDatastore() { return false; }
-
-	@Override
-	public Boolean hasConfigurableSockets() { return false; }
-
-	@Override
-	public Boolean supportsCustomServicePlans() { return true; }
-
-	@Override
-	public  Boolean hasNodeTypes() { return true; }
-
-	@Override
-	public String getNodeFormat() { return null; }
-
-	@Override
-	public String getDeployTargetService() { return null; }
-
-	@Override
-	public Boolean hasCloneTemplate() { return false; }
-
-	@Override
-	public Boolean customSupported() { return true; }
-
-	@Override
-	public Boolean lvmSupported() { return false; }
-
-	@Override
-	public Boolean createServer() { return true; }
-
-	@Override
-	public Collection<StorageVolumeType> getRootVolumeStorageTypes() {
-		return new ArrayList<StorageVolumeType>();
-	}
-
-	@Override
-	public Collection<StorageVolumeType> getDataVolumeStorageTypes() {
-		return new ArrayList<StorageVolumeType>();
-	}
-
-	@Override
-	public Boolean computeZonePoolRequired() {
-		return false;
-	}
-
-	@Override
-	public ServiceResponse<PrepareWorkloadResponse> prepareWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts) {
-		return ServiceResponse.success();
-	}
-
-	@Override
-	public ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts) {
-		return ServiceResponse.success();
-	}
-
-	@Override
-	public ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts) {
-		return ServiceResponse.error();
-	}
-
-	@Override
-	public ServiceResponse<HostResponse> waitForHost(ComputeServer server) {
-		return ServiceResponse.success();
-	}
-
-	@Override
-	public ServiceResponse finalizeHost(ComputeServer server) {
-		return ServiceResponse.success();
-	}
-
-	@Override
-	public ServiceResponse finalizeWorkload(Workload workload) {
-		return ServiceResponse.success();
-	}
-
-	@Override
-	public ServiceResponse getXvpVNCConsoleUrl(ComputeServer server) { return null; }
-
-	@Override
-	public ServiceResponse getNoVNCConsoleUrl(ComputeServer server) { return null; }
-
-	@Override
-	public ServiceResponse updateServerHost(ComputeServer server) {return null; }
-
-	@Override
-	public ServiceResponse enableConsoleAccess(ComputeServer server) {return null; }
-
-	@Override
-	public ServiceResponse getWMKSConsoleUrl(ComputeServer server) { return null; }
-
-	@Override
-	public ServiceResponse createSnapshot(ComputeServer server, Map opts) { return null; }
-
-	@Override
-	public ServiceResponse deleteSnapshots(ComputeServer server, Map opts) { return null; }
-
-	@Override
-	public ServiceResponse deleteSnapshot(Snapshot snapshot, Map opts) { return null; }
-
-	@Override
-	public ServiceResponse revertSnapshot(ComputeServer server, Snapshot snapshot, Map opts) { return null; }
 
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
@@ -240,5 +84,7 @@ public abstract class AbstractProvisionProvider implements ProvisioningProvider 
 		hostResponse.skipNetworkWait = workloadResponse.skipNetworkWait;
 		return hostResponse;
 	}
+
+
 
 }
