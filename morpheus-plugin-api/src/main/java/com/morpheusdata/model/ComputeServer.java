@@ -204,7 +204,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 
 	public void setExternalHostname(String externalHostname) {
 		this.externalHostname = externalHostname;
-		markDirty("exteernalHostname", externalHostname);
+		markDirty("externalHostname", externalHostname);
 	}
 
 	public String getExternalDomain() {

@@ -1,7 +1,6 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeZoneRegion;
-import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.InstanceScale;
 import com.morpheusdata.model.projection.InstanceScaleIdentityProjection;
 import io.reactivex.Observable;
@@ -64,5 +63,4 @@ public interface MorpheusInstanceScaleService {
 	 * @return An instance of the Instance Scale Type Service
 	 */
 	MorpheusInstanceScaleTypeService getScaleType();
-
 }

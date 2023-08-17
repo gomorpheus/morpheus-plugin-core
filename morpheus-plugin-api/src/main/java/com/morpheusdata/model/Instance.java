@@ -31,7 +31,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String hostName;
 	//public String domainName;
 	//public String assignedDomainName;
-	public Boolean firewallEnabled;
+	public Boolean firewallEnabled = true;
 	public String status;
 	public String userStatus;
 	public String scheduleStatus;
@@ -40,7 +40,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String deployGroup;
 	public String instanceContext;
 	public InstanceScale scale;
-	public Boolean autoScale;
+	public Boolean autoScale = false;
 	public String statusMessage;
 	public Date expireDate;
 	public String tags;

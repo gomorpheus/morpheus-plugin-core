@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.Map;
+
 public class ProcessEvent {
 
 	public enum ProcessType {
@@ -102,5 +104,6 @@ public class ProcessEvent {
 	}
 
 	public ProcessType type;
-
+	public String jobName;
+	public Map jobConfig;
 }

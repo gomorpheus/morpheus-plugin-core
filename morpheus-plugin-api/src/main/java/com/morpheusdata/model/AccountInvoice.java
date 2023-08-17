@@ -3,6 +3,22 @@ package com.morpheusdata.model;
 import java.util.Date;
 
 public class AccountInvoice extends MorpheusModel {
+
+	public static final String REF_CLOUD = "ComputeZone";
+	public static final String REF_WORKLOAD = "Container";
+	public static final String REF_CONTAINER = "Container";
+	public static final String REF_INSTANCE = "Instance";
+	public static final String REF_APP = "App";
+	public static final String REF_COMPUTE_SERVER = "ComputeServer";
+	public static final String REF_VIRTUAL_IMAGE = "VirtualImage";
+	public static final String REF_ACCOUNT_RESOURCE = "AccountResource";
+	public static final String REF_STORAGE_VOLUME = "StorageVolume";
+	public static final String REF_LOAD_BALANCER = "NetworkLoadBalancer";
+	public static final String REF_SNAPSHOT = "Snapshot";
+	public static final String REF_ACCOUNT = "Account";
+	public static final String REF_TENANT = "Account";
+	public static final String REF_GROUP = "ComputeSite";
+	public static final String REF_USER = "User";
 	protected Long ownerId;
 	protected String ownerName;
 	protected Long accountId;

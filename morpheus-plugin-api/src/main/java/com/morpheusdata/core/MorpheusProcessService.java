@@ -1,9 +1,7 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.*;
 import com.morpheusdata.model.Process;
-import com.morpheusdata.model.ProcessEvent;
-import com.morpheusdata.model.User;
-import com.morpheusdata.model.Workload;
 import io.reactivex.Single;
 
 /**
@@ -23,6 +21,17 @@ public interface MorpheusProcessService {
 	 * @return Boolean indicating success
 	 */
 	Single<Process> startProcess(Workload workload, ProcessEvent.ProcessType processType, User user, String timerCategory);
+
+	/**
+	 * Start a new Process for the Workload
+	 * @param workload the Workload to associate the Process to
+	 * @param processType the ProcessType to start
+	 * @param user the User that starts the process (optional)
+	 * @param timerCategory a category to associate with this Process
+	 * @param eventTitle an event title to associate with this Process
+	 * @return Boolean indicating success
+	 */
+	Single<Process> startProcess(Workload workload, ProcessEvent.ProcessType processType, User user, String timerCategory, String eventTitle);
 
 	/**
 	 * Start a new ProcessEvent associated to the Process. This will end any currently running

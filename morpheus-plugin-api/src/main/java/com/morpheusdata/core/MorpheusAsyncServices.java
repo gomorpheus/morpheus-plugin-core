@@ -144,13 +144,6 @@ public interface MorpheusAsyncServices {
 	MorpheusCostingService getCosting();
 
 	/**
-	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
-	 *
-	 * @return an instance of the web request service
-	 */
-	MorpheusWebRequestService getWebRequest();
-
-	/**
 	 * Returns the Operation Notification Service
 	 *
 	 * @return An instance of the Operation Notification Service

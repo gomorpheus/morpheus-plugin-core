@@ -1,8 +1,14 @@
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.core.util.MorpheusUtils;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
+import groovy.util.logging.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
@@ -49,6 +55,66 @@ public interface NetworkProvider extends PluginProvider {
 	 * @return Collection of NetworkRouterType
 	 */
 	Collection<NetworkRouterType> getRouterTypes();
+	
+	Collection<OptionType> getOptionTypes();
+
+	default Collection<OptionType> getScopeOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getSwitchOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getNetworkOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getGatewayOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getRouterOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getLoadBalancerOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getRouteTableOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getSecurityGroupOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getRuleOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getFirewallGroupOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getEdgeClusterOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getDhcpServerOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getDhcpRelayOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default Collection<OptionType> getGroupOptionTypes() {
+		return new ArrayList<>();
+	}
+
+	default SecurityGroupProvider getSecurityGroupProvider() { return null; }
 
 	default ServiceResponse refresh() { return ServiceResponse.success(); }
 
@@ -66,7 +132,7 @@ public interface NetworkProvider extends PluginProvider {
 
 	/**
 	 * Validates the submitted network information.
-	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
 	 * bubbled up to the user.
 	 * @param network Network information
 	 * @param opts additional configuration options
@@ -113,7 +179,7 @@ public interface NetworkProvider extends PluginProvider {
 
 	/**
 	 * Validates the submitted subnet information.
-	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
 	 * bubbled up to the user.
 	 * @param subnet NetworkSubnet information
 	 * @param network Network to create the NetworkSubnet on
@@ -216,7 +282,7 @@ public interface NetworkProvider extends PluginProvider {
 
 	/**
 	 * Validate the submitted NetworkRouter information.
-	 * If a {@link ServiceResponse} is not marked as successful then the validation results will be
+	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
 	 * bubbled up to the user.
 	 * @param router NetworkRouter information
 	 * @param opts additional configuration options. Mode value will be 'update' for validations during an update vs
@@ -300,4 +366,81 @@ public interface NetworkProvider extends PluginProvider {
 	default ServiceResponse deleteRouterRoute(NetworkRouter router, NetworkRoute route, Map opts) { return ServiceResponse.success(); };
 
 
+	/**
+	 * Prepare the security group information before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param securityGroup SecurityGroup information
+	 * @param opts additional configuration options including any form data
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<SecurityGroup> prepareSecurityGroup(SecurityGroup securityGroup, Map opts) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.prepareSecurityGroup(securityGroup, opts);
+		} else {
+			return ServiceResponse.success(securityGroup);
+		}
+	}
+
+	/**
+	 * Validates the submitted security group information.
+	 * If a {@link ServiceResponse} is not marked as successful the validation results will be
+	 * bubbled up to the user.
+	 * @param securityGroup SecurityGroup information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse validateSecurityGroup(SecurityGroup securityGroup, Map opts) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.validateSecurityGroup(securityGroup, opts);
+		} else {
+			return ServiceResponse.success(securityGroup);
+		}
+	}
+
+	/**
+	 * Creates the security group submitted
+	 * @param securityGroup SecurityGroup information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<SecurityGroupLocation> createSecurityGroup(SecurityGroup securityGroup, Map opts) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.createSecurityGroup(securityGroup, opts);
+		} else {
+			return ServiceResponse.success(new SecurityGroupLocation());
+		}
+	}
+
+	/**
+	 * Updates the security group submitted
+	 * @param securityGroup SecurityGroup information
+	 * @param opts additional configuration options
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<SecurityGroup> updateSecurityGroup(SecurityGroup securityGroup, Map opts) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.updateSecurityGroup(securityGroup, opts);
+		} else {
+			return ServiceResponse.success(securityGroup);
+		}
+	}
+
+	/**
+	 * Deletes the {@link SecurityGroupLocation}
+	 * @param securityGroupLocation SecurityGroupLocation information
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteSecurityGroupLocation(SecurityGroupLocation securityGroupLocation) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.deleteSecurityGroupLocation(securityGroupLocation);
+		} else {
+			return ServiceResponse.success();
+		}
+	}
 }
