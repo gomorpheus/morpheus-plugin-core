@@ -81,7 +81,11 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 
 	Completable summarizeCloudInvoice(Cloud cloud, String period, Date costDate, Collection<String> additionalCloudUUIDs);
 
-	Completable processProjectedCosts(Cloud cloud,String period,Collection<String> additionalCloudUUIDs);
+	Completable summarizeCloudInvoice(Cloud cloud, String period, Date costDate, Collection<String> additionalCloudUUIDs, Date maxActualDate);
+
+	Completable processProjectedCosts(Cloud cloud,String period,Collection<String> additionalCloudExternalIds);
+
+	Completable processProjectedCosts(Cloud cloud,String period,Collection<String> additionalCloudExternalIds, Boolean definitive);
 
 	public class InvoiceLookupResults {
 		public Boolean found = false;
