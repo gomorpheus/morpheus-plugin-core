@@ -1,10 +1,7 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.Snapshot;
-import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.request.ResizeRequest;
-import com.morpheusdata.response.HostResponse;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Map;

@@ -1,13 +1,7 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.Snapshot;
-import com.morpheusdata.model.provisioning.HostRequest;
-import com.morpheusdata.request.ResizeRequest;
-import com.morpheusdata.response.HostResponse;
 import com.morpheusdata.response.ServiceResponse;
-
-import java.util.Map;
 
 /**
  * Provides methods for interacting with provisioned vms through a hypervisor console
@@ -15,7 +9,7 @@ import java.util.Map;
  * @since 0.15.3
  * @author Alex Clement
  */
-public interface HypervisorConsoleProvisioningProvider extends ProvisioningProvider {
+public interface HypervisorConsoleProvider {
 
 	/**
 	 * Builds the URL and authentication required to connect to the target server using noVNC
