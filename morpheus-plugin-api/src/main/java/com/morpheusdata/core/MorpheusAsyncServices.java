@@ -333,4 +333,10 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAccountCertificateService getCertificate();
 
+	MorpheusWorkloadStateService getWorkloadState();
+
+	MorpheusAccountResourceTypeService getAccountResourceType();
+
+	MorpheusResourceSpecService getResourceSpec();
+
 }
