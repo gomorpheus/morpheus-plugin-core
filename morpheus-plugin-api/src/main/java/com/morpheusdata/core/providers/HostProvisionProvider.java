@@ -41,8 +41,8 @@ public interface HostProvisionProvider extends ComputeProvisionProvider {
 	/**
 	 * This method is called to provision a Host (i.e. Docker host).
 	 * Information associated with the passed ComputeServer object is used to kick off the provision request. Implementations
-	 * of this method should populate HostResponse as complete as possible and as quickly as possible. Implementations
-	 * may choose to save the externalId on the ComputeServer or pass it back in HostResponse.
+	 * of this method should populate ProvisionResponse as complete as possible and as quickly as possible. Implementations
+	 * may choose to save the externalId on the ComputeServer or pass it back in ProvisionResponse.
 	 * @param server the ComputeServer object we intend to provision along with some of the associated data needed to determine
 	 *                 how best to provision the server
 	 * @param hostRequest the HostRequest object containing the various configurations that may be needed
@@ -50,16 +50,16 @@ public interface HostProvisionProvider extends ComputeProvisionProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse<HostResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts);
+	ServiceResponse<ProvisionResponse> runHost(ComputeServer server, HostRequest hostRequest, Map opts);
 
 	/**
 	 * This method is called after runHost returns successfully and provides implementations a mechanism to wait for the
-	 * ComputeServer to finish the creation process in the underlying Cloud. HostResponse should be filled out as
+	 * ComputeServer to finish the creation process in the underlying Cloud. ProvisionResponse should be filled out as
 	 * complete as possible.
 	 * @param server the ComputeServer object to wait for
 	 * @return
 	 */
-	default ServiceResponse<HostResponse> waitForHost(ComputeServer server) {
+	default ServiceResponse<ProvisionResponse> waitForHost(ComputeServer server) {
 		return ServiceResponse.success();
 	}
 

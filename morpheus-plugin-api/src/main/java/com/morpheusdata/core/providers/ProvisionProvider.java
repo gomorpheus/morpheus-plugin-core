@@ -114,15 +114,6 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
-	 * Determines if this provision type supports instance snapshots.
-	 * @since 0.13.8
-	 * @return Boolean representation of whether this provision type supports instance snapshots.
-	 */
-	default public Boolean hasSnapshots() {
-		return false;
-	}
-
-	/**
 	 * Determines if this provision type has ComputeZonePools that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has ComputeZonePools
 	 */
@@ -241,7 +232,7 @@ public interface ProvisionProvider extends PluginProvider {
 	 * @return String
 	 */
 	default public String serverType() {
-		return null;
+		return "vm";
 	}
 
 	/**
@@ -297,7 +288,7 @@ public interface ProvisionProvider extends PluginProvider {
 	 * @return maximum number of networks or 0,null if unlimited.
 	 */
 	default public Integer getMaxNetworks() {
-		return 0;
+		return null;
 	}
 
 	/**

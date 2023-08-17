@@ -1,8 +1,6 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
-import com.morpheusdata.response.ServiceResponse;
-import com.morpheusdata.response.WorkloadResponse;
 
 import java.util.Collection;
 import java.util.Map;

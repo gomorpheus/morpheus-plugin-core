@@ -31,9 +31,9 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 	 *                 how best to provision the instance
 	 * @param instanceRequest the InstanceRequest object containing the various configurations to update the instance
 	 * @param opts additional configuration options that may have been passed during provisioning
-	 * @return An InstanceResponse object the should at least contain the response from the API
+	 * @return A ProvisionResponse object the should at least contain the response from the API
 	 */
-	ServiceResponse<InstanceResponse> updateInstance(Instance instance, InstanceRequest instanceRequest, Map opts);
+	ServiceResponse<ProvisionResponse> updateInstance(Instance instance, InstanceRequest instanceRequest, Map opts);
 
 	/**
 	 * This method is called before runInstance and provides an opportunity to perform action or obtain configuration
@@ -55,9 +55,9 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 	 * @param instanceRequest the InstanceRequest object containing the various configurations that may be needed
 	 *                        in running the instance
 	 * @param opts additional configuration options that may have been passed during provisioning
-	 * @return An InstanceResponse object the should at least contain the response from the API
+	 * @return A ProvisionResponse object the should at least contain the response from the API
 	 */
-	ServiceResponse<InstanceResponse> runInstance(Instance instance, InstanceRequest instanceRequest, Map opts);
+	ServiceResponse<ProvisionResponse> runInstance(Instance instance, InstanceRequest instanceRequest, Map opts);
 
 	/**
 	 * This is the key method called to destroy / remove an instance. This should make the remote calls necessary to remove any assets

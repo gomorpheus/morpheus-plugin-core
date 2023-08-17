@@ -65,25 +65,4 @@ public abstract class AbstractProvisionProvider implements ProvisionProvider {
         return rtn;
     }
 
-	public HostResponse workloadResponseToHostResponse(WorkloadResponse workloadResponse) {
-		HostResponse hostResponse = new HostResponse();
-		hostResponse.unattendCustomized = workloadResponse.unattendCustomized;
-		hostResponse.externalId = workloadResponse.externalId;
-		hostResponse.publicIp = workloadResponse.publicIp;
-		hostResponse.privateIp = workloadResponse.privateIp;
-		hostResponse.installAgent = workloadResponse.installAgent;
-		hostResponse.noAgent = workloadResponse.noAgent;
-		hostResponse.createUsers = workloadResponse.createUsers;
-		hostResponse.success = workloadResponse.success;
-		hostResponse.customized = workloadResponse.customized;
-		hostResponse.licenseApplied = workloadResponse.licenseApplied;
-		hostResponse.poolId = workloadResponse.poolId;
-		hostResponse.hostname = workloadResponse.hostname;
-		hostResponse.message = workloadResponse.message;
-		hostResponse.skipNetworkWait = workloadResponse.skipNetworkWait;
-		return hostResponse;
-	}
-
-
-
 }
