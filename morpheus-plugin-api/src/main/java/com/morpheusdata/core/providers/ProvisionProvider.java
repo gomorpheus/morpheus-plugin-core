@@ -223,9 +223,7 @@ public interface ProvisionProvider extends PluginProvider {
 	 * Indicates if this provider creates a {@link ComputeServer} for each instance.
 	 * @return Boolean
 	 */
-	default public Boolean createServer() {
-		return true;
-	}
+	public Boolean createServer();
 
 	/**
 	 * Indicates if this provider should set a server type different from its code, e.g. "service" or "vm"
@@ -323,6 +321,8 @@ public interface ProvisionProvider extends PluginProvider {
 
 	/**
 	 * Provides methods for interacting with provisioned vms to manage associated snapshots
+	 * @author Alex Clement
+	 * @since 0.15.3
 	 */
 	public interface SnapshotFacet {
 
@@ -379,6 +379,8 @@ public interface ProvisionProvider extends PluginProvider {
 
 	/**
 	 * Provides methods for interacting with provisioned vms through a hypervisor console
+	 * @author Alex Clement
+	 * @since 0.15.3
 	 */
 	public interface HypervisorConsoleFacet {
 
