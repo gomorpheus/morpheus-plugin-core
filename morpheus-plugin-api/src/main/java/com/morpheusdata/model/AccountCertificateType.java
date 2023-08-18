@@ -8,6 +8,7 @@ package com.morpheusdata.model;
  * @author Jordon Saardchit
  */
 public class AccountCertificateType extends MorpheusModel {
+	
 	protected String code;
 	protected String name;
 	protected String description;

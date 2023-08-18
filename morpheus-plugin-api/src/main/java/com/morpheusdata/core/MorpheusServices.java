@@ -33,4 +33,5 @@ public interface MorpheusServices {
 	 * @return an instance of the localization service
 	 */
 	MorpheusLocalizationService getLocalization();
+	
 }

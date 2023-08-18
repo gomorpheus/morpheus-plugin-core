@@ -468,6 +468,14 @@ public interface MorpheusContext {
 	@Deprecated
 	MorpheusAccountInventoryService getAccountInventory();
 
+	/**
+	 * Returns the MorpheusAccountInventoryService
+	 * @return an instance of the MorpheusAccountInventoryService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusAccountInventoryTypeService getAccountInventoryType();
+
 	//Common methods used across various contexts
 
 	/**
