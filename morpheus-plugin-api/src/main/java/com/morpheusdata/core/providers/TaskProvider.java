@@ -1,16 +1,15 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.core.ExecutableTaskInterface;
-import com.morpheusdata.model.Icon;
-import com.morpheusdata.model.OptionType;
-import com.morpheusdata.model.TaskType;
+import com.morpheusdata.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides a standard set of methods for interacting with cloud integrations or on-prem service providers.
  * This includes syncing assets related to things like VirtualMachines or Containers for various cloud types. For
- * integrating with actual provisioning a {@link ProvisioningProvider} is also available.
+ * integrating with actual provisioning a {@link ProvisionProvider} is also available.
  *
  * @author Mike Truso
  * @since 0.15.1
@@ -19,8 +18,11 @@ public interface TaskProvider extends PluginProvider {
 
 	/**
 	 * A service class containing task execution logic
+	 * This interface is deprecated as the methods have been rolled up into the TaskProvider interface
 	 * @return a task service
+	 * @deprecated
 	 */
+	@Deprecated
 	ExecutableTaskInterface getService();
 
 	TaskType.TaskScope getScope();
@@ -76,4 +78,77 @@ public interface TaskProvider extends PluginProvider {
 	 * @return Icon representation of assets stored in the src/assets of the project.
 	 */
 	Icon getIcon();
+
+	/**
+	 * Task execution in a local context
+	 *
+	 * @param task Morpheus task to be executed
+	 * @param opts contains the values of any {@link OptionType} that were defined for this task
+	 * @param workload optional {@link Workload} details
+	 * @param server optional {@link ComputeServer} details
+	 * @param instance optional {@link Instance} details
+	 * @return the result of the task
+	 */
+	TaskResult executeLocalTask(Task task, Map opts, Workload workload, ComputeServer server, Instance instance);
+
+	/**
+	 * Task execution on a provisioned {@link ComputeServer}
+	 *
+	 * @param server server details
+	 * @param task Morpheus task to be executed
+	 * @param opts contains the values of any {@link OptionType} that were defined for this task
+	 * @return the result of the task
+	 */
+	TaskResult executeServerTask(ComputeServer server, Task task, Map opts);
+
+	/**
+	 * Task execution on a provisioned {@link ComputeServer}
+	 *
+	 * @param server {@link ComputeServer} details
+	 * @param task Morpheus task to be executed
+	 * @return the result of the task
+	 */
+	TaskResult executeServerTask(ComputeServer server, Task task);
+
+	/**
+	 * Task execution on a provisioned {@link Workload}
+	 *
+	 * @param workload {@link Workload} details
+	 * @param task Morpheus task to be executed
+	 * @param opts contains the values of any {@link OptionType} that were defined for this task
+	 * @return the result of the task
+	 */
+	TaskResult executeContainerTask(Workload workload, Task task, Map opts);
+
+	/**
+	 * Task execution on a provisioned {@link Workload}
+	 *
+	 * @param workload {@link Workload} details
+	 * @param task Morpheus task to be executed
+	 * @return the result of the task
+	 */
+	TaskResult executeContainerTask(Workload workload, Task task);
+
+	/**
+	 * Task execution in a remote context
+	 *
+	 * @param task Morpheus task to be executed
+	 * @param opts contains the values of any {@link OptionType} that were defined for this task
+	 * @param workload optional {@link Workload} details
+	 * @param server optional {@link ComputeServer} details
+	 * @param instance optional {@link Instance} details
+	 * @return the result of the task
+	 */
+	TaskResult executeRemoteTask(Task task, Map opts, Workload workload, ComputeServer server, Instance instance);
+
+	/**
+	 * Task execution in a remote context
+	 *
+	 * @param task Morpheus task to be executed
+	 * @param workload optional {@link Workload} details
+	 * @param server optional {@link ComputeServer} details
+	 * @param instance optional {@link Instance} details
+	 * @return the result of the task
+	 */
+	TaskResult executeRemoteTask(Task task, Workload workload, ComputeServer server, Instance instance);
 }

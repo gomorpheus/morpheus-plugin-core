@@ -61,6 +61,11 @@ public class Instance extends InstanceIdentityProjection {
 	public InstanceTypeLayout layout;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	public Collection<Workload> containers;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	public Collection<AccountResource> resources;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected ComputeServerGroup serverGroup;
+	public Collection<ResourceSpec> specs;
 	public NetworkDomain networkDomain;
 	public ComputeSite site;
 	public UserGroup userGroup;
@@ -369,6 +374,33 @@ public class Instance extends InstanceIdentityProjection {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public ComputeServerGroup getServerGroup() {
+		return serverGroup;
+	}
+
+	public void setServerGroup(ComputeServerGroup serverGroup) {
+		this.serverGroup = serverGroup;
+		markDirty("serverGroup", serverGroup);
+	}
+
+	public Collection<ResourceSpec> getSpecs() {
+		return specs;
+	}
+
+	public void setSpecs(Collection<ResourceSpec> specs) {
+		this.specs = specs;
+		markDirty("specs", specs);
+	}
+
+	public Collection<AccountResource> getResources() {
+		return resources;
+	}
+
+	public void setResources(Collection<AccountResource> resources) {
+		this.resources = resources;
+		markDirty("resources", resources);
 	}
 
 	public enum Status {

@@ -4,7 +4,7 @@ package com.morpheusdata.cloud
 import com.morpheusdata.core.providers.CloudProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
-import com.morpheusdata.core.providers.ProvisioningProvider
+import com.morpheusdata.core.providers.ProvisionProvider
 import com.morpheusdata.model.*
 import com.morpheusdata.request.ValidateCloudRequest
 import com.morpheusdata.response.ServiceResponse
@@ -145,7 +145,7 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	Collection<ProvisioningProvider> getAvailableProvisioningProviders() {
+	Collection<ProvisionProvider> getAvailableProvisionProviders() {
 		return null
 	}
 
@@ -170,8 +170,8 @@ class GoogleCloudProvider implements CloudProvider {
 	}
 
 	@Override
-	ProvisioningProvider getProvisioningProvider(String providerCode) {
-		return getAvailableProvisioningProviders()?.find { it.code == providerCode }
+	ProvisionProvider getProvisionProvider(String providerCode) {
+		return getAvailableProvisionProviders()?.find { it.code == providerCode }
 	}
 
 	@Override

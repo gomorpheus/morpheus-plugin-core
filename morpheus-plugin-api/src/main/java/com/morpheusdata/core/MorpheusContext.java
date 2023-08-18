@@ -82,7 +82,7 @@ public interface MorpheusContext {
 
 	/**
 	 * Returns the Provision Service used for performing provisioning related updates to objects.
-	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisionProvider}
 	 * @deprecated
 	 */
 	@Deprecated

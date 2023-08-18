@@ -18,7 +18,6 @@ import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.providers.TaskProvider;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
-import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.core.admin.MorpheusAdminService;
 
@@ -37,7 +36,7 @@ public interface MorpheusAsyncServices {
 
 	/**
 	 * Returns the Provision Service used for performing provisioning related updates to objects.
-	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisioningProvider}
+	 * @return An Instance of the Provision Service to be used typically by a {@link ProvisionProvider}
 	 */
 	MorpheusProvisionService getProvision();
 
@@ -332,5 +331,11 @@ public interface MorpheusAsyncServices {
 	 * @return an instance {@link MorpheusAccountCertificateService}
 	 */
 	MorpheusAccountCertificateService getCertificate();
+
+	MorpheusWorkloadStateService getWorkloadState();
+
+	MorpheusAccountResourceTypeService getAccountResourceType();
+
+	MorpheusResourceSpecService getResourceSpec();
 
 }

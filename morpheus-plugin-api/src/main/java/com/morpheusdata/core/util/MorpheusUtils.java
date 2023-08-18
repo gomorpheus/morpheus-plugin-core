@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -395,4 +396,24 @@ public class MorpheusUtils {
 		}
 		return rtn;
 	}
+
+	//parse or return a map if already a map
+	static public Map getJson(Object val) {
+		Map rtn = null;
+		if(val != null) {
+			if(val instanceof Map) {
+				rtn = (Map) val;
+            } else if(val instanceof Collection) {
+				rtn = (Map) val;
+            } else if(val instanceof CharSequence) {
+				try {
+					rtn = (Map) new groovy.json.JsonSlurper().parseText((String) val);
+				} catch(Exception e) {
+
+				}
+			}
+		}
+		return rtn;
+	}
+
 }

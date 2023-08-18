@@ -12,7 +12,6 @@ import com.google.api.services.compute.model.*
 import com.google.auth.oauth2.ServiceAccountCredentials
 import groovy.util.logging.Slf4j
 import com.morpheusdata.core.util.RestApiUtil
-import com.morpheusdata.core.util.RestApiUtil.*
 import org.apache.commons.beanutils.PropertyUtils
 import org.apache.http.*
 import org.apache.http.client.HttpClient

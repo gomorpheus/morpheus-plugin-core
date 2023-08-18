@@ -1,0 +1,28 @@
+package com.morpheusdata.response;
+
+import com.morpheusdata.model.Instance;
+import com.morpheusdata.model.VirtualImageLocation;
+import com.morpheusdata.model.Workload;
+
+import java.util.Map;
+
+public class PrepareInstanceResponse {
+	protected Instance instance;
+	protected Map<String,Object> options;
+
+	public Instance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
+	}
+
+	public Map<String, Object> getOptions() {
+		return options;
+	}
+
+	public void setOptions(Map<String, Object> options) {
+		this.options = options;
+	}
+}
