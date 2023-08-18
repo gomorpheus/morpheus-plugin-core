@@ -52,7 +52,7 @@ public interface WorkloadProvisionProvider extends ComputeProvisionProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
+	ServiceResponse<ProvisionResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts);
 
 	/**
 	 * This method is called after successful completion of runWorkload and provides an opportunity to perform some final
@@ -101,7 +101,7 @@ public interface WorkloadProvisionProvider extends ComputeProvisionProvider {
 	 * @param server to check status
 	 * @return Response from API. The publicIp and privateIp set on the WorkloadResponse will be utilized to update the ComputeServer
 	 */
-	ServiceResponse<WorkloadResponse> getServerDetails(ComputeServer server);
+	ServiceResponse<ProvisionResponse> getServerDetails(ComputeServer server);
 
 
 	/**

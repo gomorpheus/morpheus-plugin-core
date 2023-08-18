@@ -1,13 +1,12 @@
 package com.morpheusdata.response;
 
+import java.util.List;
 import com.morpheusdata.model.provisioning.UserConfiguration;
 
-import java.util.List;
-
 /**
- * Results of running a request to create a Host via runHost
+ * Results of running a {@link com.morpheusdata.model.Workload}
  */
-public class HostResponse {
+public class ProvisionResponse {
 
 	/**
 	 * Set to true when a Windows server was deployed and the image is syspreped or the unattend was customized
