@@ -19,7 +19,7 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	protected NetworkPool networkPool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolRange networkPoolRange;
-	protected String ipType = "assigned"; //assigned, reserved
+	protected String ipType = IPType.ASSIGNED.toString();
 	protected String gatewayAddress;
 	protected String subnetMask;
 	protected String dnsServer;
@@ -267,5 +267,26 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
 	public void setMacAddress(String macAddress) {
 		this.macAddress = macAddress;
+	}
+
+
+	/**
+	 * Represents the available IP Type Options Morpheus Understands.
+	 * If the IP is free for use, simply delete the record instead of setting an IPType
+	 */
+	public enum IPType {
+		ASSIGNED("assigned"),
+		RESERVED("reserved"),
+		TRANSIENT("transient"),
+		UNMANAGED("unmanaged");
+		private final String value;
+
+		IPType(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return this.value;
+		}
 	}
 }
