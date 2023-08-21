@@ -73,130 +73,27 @@ public interface HostProvisionProvider extends ComputeProvisionProvider {
 	ServiceResponse finalizeHost(ComputeServer server);
 
 	/**
-	 * Stop the server
-	 * @param computeServer to stop
-	 * @return Response from API
+	 * Allows the server to be resized
+	 *
+	 * @since 0.15.3
+	 * @author Alex Clement
 	 */
-	ServiceResponse stopServer(ComputeServer computeServer);
+	public interface ResizeFacet {
 
-	/**
-	 * Start the server
-	 * @param computeServer to start
-	 * @return Response from API
-	 */
-	ServiceResponse startServer(ComputeServer computeServer);
-
-	/**
-	 * Request to scale the size of the ComputeServer. It is up to implementations to create the volumes, set the memory, etc
-	 * on the underlying ComputeServer in the cloud environment. In addition, implementations of this method should
-	 * add, remove, and update the StorageVolumes, StorageControllers, ComputeServerInterface in the cloud environment with the requested attributes
-	 * and then save these attributes on the models in Morpheus. This requires adding, removing, and saving the various
-	 * models to the ComputeServer using the appropriate contexts. The ServicePlan, memory, cores, coresPerSocket, maxStorage values
-	 * defined on ResizeRequest will be set on the ComputeServer upon return of a successful ServiceResponse
-	 * @param server to resize
-	 * @param resizeRequest the resize requested parameters
-	 * @param opts additional options
-	 * @return Response from the API
-	 */
-	ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts);
-
-	/**
-	 * Builds the URL and authentication required to connect to the target server using noVNC
-	 * @since 0.13.8
-	 * @param server server to connect to
-	 * @return Url and authentication for an xvpVnc console connection to the server
-	 */
-	default ServiceResponse getXvpVNCConsoleUrl(ComputeServer server) {
-		return null;
-	}
-
-	/**
-	 * Builds the URL and authentication required to connect to the target server using noVNC
-	 * @since 0.13.8
-	 * @param server server to connect to
-	 * @return Url and authentication for a noVNC console connection to the server
-	 */
-	default ServiceResponse getNoVNCConsoleUrl(ComputeServer server){
-		return null;
-	}
-
-	/**
-	 * Builds the URL and authentication required to connect to the target server using noVNC
-	 * @since 0.13.8
-	 * @param server server to connect to
-	 * @return Url and authentication for a wmks console connection to the server
-	 */
-	default ServiceResponse getWMKSConsoleUrl(ComputeServer server){
-		return null;
-	}
-
-	/**
-	 * Method called before using the console host to ensure it is accurate
-	 * @since 0.13.8
-	 * @param server server to connect to
-	 * @return Success or failure
-	 */
-	default ServiceResponse updateServerHost(ComputeServer server){
-		return null;
-	}
-
-	/**
-	 * Method called before making a hypervisor vnc console connection to a server to ensure that the server settings are correct
-	 * @since 0.13.8
-	 * @param server server to connect to
-	 * @return Success or failure
-	 */
-	default ServiceResponse enableConsoleAccess(ComputeServer server){
-		return null;
-	}
-
-	/**
-	 * Request to create a snapshot for the given compute server
-	 * @since 0.13.8
-	 * @param server server to snapshot
-	 * @param opts additional options including the requested name and description of the snapshot
-	 * @return Success or failure
-	 */
-	default ServiceResponse createSnapshot(ComputeServer server, Map opts){
-		return null;
-	}
-
-	/**
-	 * Request to delete all snapshots for a given compute server
-	 * They only need to be deleted from the cloud, Morpheus will
-	 * handle the cleanup of snapshot database records after a successful response
-	 * @since 0.13.8
-	 * @param server server to remove snapshots from
-	 * @param opts additional options
-	 * @return Success or failure
-	 */
-	default ServiceResponse deleteSnapshots(ComputeServer server, Map opts){
-		return null;
-	}
-
-	/**
-	 * Request to delete a snapshot for a given compute server
-	 * It only needs to be deleted from the cloud, Morpheus will
-	 * handle the cleanup of snapshot database records after a successful response
-	 * @since 0.13.8
-	 * @param snapshot snapshot to delete
-	 * @param opts additional options will include serverId of the server the snapshot belongs to
-	 * @return Success or failure
-	 */
-	default ServiceResponse deleteSnapshot(Snapshot snapshot, Map opts){
-		return null;
-	}
-
-	/**
-	 * Request to restore a snapshot to a given compute server
-	 * @since 0.13.8
-	 * @param snapshot snapshot to restore
-	 * @param server server to restore to snapshot to
-	 * @param opts additional options
-	 * @return Success or failure
-	 */
-	default ServiceResponse revertSnapshot(ComputeServer server, Snapshot snapshot, Map opts){
-		return null;
+		/**
+		 * Request to scale the size of the ComputeServer. It is up to implementations to create the volumes, set the memory, etc
+		 * on the underlying ComputeServer in the cloud environment. In addition, implementations of this method should
+		 * add, remove, and update the StorageVolumes, StorageControllers, ComputeServerInterface in the cloud environment with the requested attributes
+		 * and then save these attributes on the models in Morpheus. This requires adding, removing, and saving the various
+		 * models to the ComputeServer using the appropriate contexts. The ServicePlan, memory, cores, coresPerSocket, maxStorage values
+		 * defined on ResizeRequest will be set on the ComputeServer upon return of a successful ServiceResponse
+		 *
+		 * @param server        to resize
+		 * @param resizeRequest the resize requested parameters
+		 * @param opts          additional options
+		 * @return Response from the API
+		 */
+		ServiceResponse resizeServer(ComputeServer server, ResizeRequest resizeRequest, Map opts);
 	}
 
 }
