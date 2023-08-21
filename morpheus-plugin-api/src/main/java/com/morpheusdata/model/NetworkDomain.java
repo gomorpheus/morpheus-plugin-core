@@ -22,7 +22,14 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account owner;
 
+	/**
+	 * The Display Name of the current Network Domain. This Display Name is typically not changed directly by an integration
+	 * but can be if necessary. Primarily it is a user adjustable setting performed in the UI.
+	 */
 	protected String displayName;
+	/**
+	 * The name of the current Network Domain. This is often synced in and represents the actual zone name
+	 */
 	protected String name;
 	protected String description;
 	protected Boolean publicZone = false;
@@ -83,7 +90,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	}
 
 	/**
-	 * Sets the human readable description text for a DNS Cloud. This can be useful for providing more details to the user as to
+	 * Sets the human-readable description text for a DNS Cloud. This can be useful for providing more details to the user as to
 	 * what may belong in this cloud or where it may be geographically associated to.
 	 * @param description a descriptive block of text providing the user with more information about the Domain.
 	 */
@@ -120,7 +127,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	}
 
 	/**
-	 * Set the String form of the Model class name that this Domain Record is related to. Typically via most Integrations the value
+	 * Set the String form of the Model class name that this Domain Record is related to. Typically, via most Integrations the value
 	 * of this field should be 'AccountIntegration', however some scenarios exist where this may get synced or created via an
 	 * alternative means (perhaps from a CloudProvider). The refId is also required when using this field.
 	 * @param refType type

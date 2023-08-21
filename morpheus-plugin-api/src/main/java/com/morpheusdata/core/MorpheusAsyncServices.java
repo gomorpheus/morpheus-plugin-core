@@ -283,6 +283,13 @@ public interface MorpheusAsyncServices {
 	MorpheusReferenceDataService getReferenceData();
 
 	/**
+	 * Returns the MorpheusOperationDataService providing a means to access integration specific custom data
+	 * that may have been synced in.
+	 * @return an instance of the MorpheusOperationDataService
+	 */
+	MorpheusOperationDataService getOperationData();
+
+	/**
 	 * Returns the MorpheusBackupProviderService
 	 * @return an instance of the MorpheusBackupProviderService
 	 */
