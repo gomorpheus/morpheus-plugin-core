@@ -1,6 +1,6 @@
 === UI Extensions
 
-Morpheus UI Extension Plugins provide a way to expand the capabilityies of the Morpheus UI. Render custom content as a tab on an Instance, or even on a Server. Create a global injection component to the main layout footer for support/chat services. The possibilities are growing with each release and new functionality since 0.8.0 brings a lot.  https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-tab-plugin[See a full tabs example].
+Morpheus UI Extension Plugins provide a way to expand the capabilities of the Morpheus UI. Render custom content as a tab on an Instance, or even on a Server. Create a global injection component to the main layout footer for support/chat services. The possibilities are growing with each release and new functionality since 0.8.0 brings a lot.  https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-tab-plugin[See a full tabs example].
 
 ==== Setup Instance Tabs
 Create a new class that extends `com.morpheusdata.core.AbstractInstanceTabProvider`. When the Morpheus UI builds the Instance UI it calls the `renderTemplate` method.
