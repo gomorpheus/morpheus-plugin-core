@@ -1,6 +1,6 @@
 === Reports Plugin
 
-Create custom report types for users to consume within Morpheus. Customize the behavior of how the report data is assembled and generated as well as the way it is rendered/displayed to the user. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-reports-plugin[full example].
+Create custom report types for users to consume within Morpheus. Customize the behavior of how the report data is assembled and generated as well as the way it is rendered/displayed to the user. See a https://github.com/gomorpheus/morpheus-plugin-samples/tree/main/morpheus-reports-plugin[full example].
 
 ==== Setup
 
