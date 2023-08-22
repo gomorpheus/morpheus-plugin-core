@@ -367,11 +367,11 @@ public interface NetworkProvider extends PluginProvider {
 
 
 	/**
-	 * Prepare the security group information before validate, create, and update.
+	 * Prepare the security group before validate, create, and update.
 	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
 	 * and the results may be presented to the user.
 	 * @param securityGroup SecurityGroup information
-	 * @param opts additional configuration options including any form data
+	 * @param opts additional configuration options including all form data
 	 * @return ServiceResponse
 	 */
 	default ServiceResponse<SecurityGroup> prepareSecurityGroup(SecurityGroup securityGroup, Map opts) {
@@ -401,10 +401,11 @@ public interface NetworkProvider extends PluginProvider {
 	}
 
 	/**
-	 * Creates the security group submitted
-	 * @param securityGroup SecurityGroup information
+	 * Creates a {@link SecurityGroupLocation } from the submitted {@link SecurityGroup }
+	 * @param securityGroup SecurityGroup object
 	 * @param opts additional configuration options
-	 * @return ServiceResponse
+	 * @return ServiceResponse containing the resulting {@link SecurityGroupLocation } including the information (externalId, etc.)
+	 *  which identifies the security group within the current context (usually a cloud).
 	 */
 	default ServiceResponse<SecurityGroupLocation> createSecurityGroup(SecurityGroup securityGroup, Map opts) {
 		SecurityGroupProvider provider = getSecurityGroupProvider();
@@ -416,8 +417,8 @@ public interface NetworkProvider extends PluginProvider {
 	}
 
 	/**
-	 * Updates the security group submitted
-	 * @param securityGroup SecurityGroup information
+	 * Update the security group
+	 * @param securityGroup SecurityGroup object
 	 * @param opts additional configuration options
 	 * @return ServiceResponse
 	 */
@@ -431,7 +432,7 @@ public interface NetworkProvider extends PluginProvider {
 	}
 
 	/**
-	 * Deletes the {@link SecurityGroupLocation}
+	 * Delete a {@link SecurityGroupLocation}
 	 * @param securityGroupLocation SecurityGroupLocation information
 	 * @return ServiceResponse
 	 */
@@ -439,6 +440,86 @@ public interface NetworkProvider extends PluginProvider {
 		SecurityGroupProvider provider = getSecurityGroupProvider();
 		if(provider != null) {
 			return provider.deleteSecurityGroupLocation(securityGroupLocation);
+		} else {
+			return ServiceResponse.success();
+		}
+	}
+
+
+	/**
+	 * Prepare the security group rule before validate, create, and update.
+	 * If a {@link ServiceResponse} is not marked as successful the parent process will be terminated
+	 * and the results may be presented to the user.
+	 * @param securityGroupRule SecurityGroupRule object
+	 * @param opts additional configuration options including all form data
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<SecurityGroupRule> prepareSecurityGroupRule(SecurityGroupRule securityGroupRule, Map opts) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.prepareSecurityGroupRule(securityGroupRule, opts);
+		} else {
+			return ServiceResponse.success(securityGroupRule);
+		}
+	}
+
+	/**
+	 * Validate the submitted security group rule object.
+	 * If a {@link ServiceResponse} is not marked as successful the validation results in the <i>errors</i> and <i>msg</i> properties will be
+	 * surfaced to the user interface.
+	 * @param securityGroupRule SecurityGroupRule object
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse<SecurityGroupRule> validateSecurityGroupRule(SecurityGroupRule securityGroupRule) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.validateSecurityGroupRule(securityGroupRule);
+		} else {
+			return ServiceResponse.success(securityGroupRule);
+		}
+	}
+
+	/**
+	 * Creates a {@link SecurityGroupRuleLocation } from the submitted {@link SecurityGroupRule }
+	 * @param securityGroupRule SecurityGroupRule object
+	 * @return ServiceResponse containing the resulting {@link SecurityGroupRuleLocation } including the information (externalId, etc.)
+	 *  which identifies the security group rule within the current context (usually a cloud).
+	 */
+	default ServiceResponse<SecurityGroupRuleLocation> createSecurityGroupRule(SecurityGroupLocation securityGroupLocation, SecurityGroupRule securityGroupRule) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.createSecurityGroupRule(securityGroupLocation, securityGroupRule);
+		} else {
+			return ServiceResponse.success(new SecurityGroupRuleLocation());
+		}
+	}
+
+	/**
+	 * Update the security group rule
+	 * @param securityGroupLocation the {@link SecurityGroupLocation }
+	 * @param originalRule the rule before any updates were applied.
+	 * @param updatedRule the rule with all updates applied
+	 * @return {@link ServiceResponse }
+	 */
+	default ServiceResponse<SecurityGroupRule> updateSecurityGroupRule(SecurityGroupLocation securityGroupLocation, SecurityGroupRule originalRule, SecurityGroupRule updatedRule)  {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.updateSecurityGroupRule(securityGroupLocation, originalRule, updatedRule);
+		} else {
+			return ServiceResponse.success(updatedRule);
+		}
+	}
+
+	/**
+	 * Delete a {@link SecurityGroupRule}
+	 * @param securityGroupLocation SecurityGroupLocation object
+	 * @param rule SecurityGroupRule to be deleted
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteSecurityGroupRule(SecurityGroupLocation securityGroupLocation, SecurityGroupRule rule)  {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.deleteSecurityGroupRule(securityGroupLocation, rule);
 		} else {
 			return ServiceResponse.success();
 		}
