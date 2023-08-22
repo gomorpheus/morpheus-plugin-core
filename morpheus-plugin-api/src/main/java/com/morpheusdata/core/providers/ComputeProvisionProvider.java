@@ -15,15 +15,6 @@ import java.util.Map;
 public interface ComputeProvisionProvider extends ProvisionProvider {
 
 	/**
-	 * Indicates if this provider creates a {@link ComputeServer} for each instance.
-	 * @return Boolean
-	 */
-	@Override
-	default public Boolean createServer() {
-		return true;
-	}
-
-	/**
 	 * Stop the server
 	 * @param computeServer to stop
 	 * @return Response from API

@@ -220,12 +220,6 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
-	 * Indicates if this provider creates a {@link ComputeServer} for each instance.
-	 * @return Boolean
-	 */
-	public Boolean createServer();
-
-	/**
 	 * Indicates if this provider should set a server type different from its code, e.g. "service" or "vm"
 	 * @return String
 	 */
