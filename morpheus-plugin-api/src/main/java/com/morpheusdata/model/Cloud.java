@@ -94,6 +94,7 @@ public class Cloud extends CloudIdentityProjection {
 	//external mapping
 	protected String externalId;
 	protected String internalId;
+	protected String linkedAccountId;
 	protected String iacId; //id for infrastructure as code integrations;
 	protected String uuid = UUID.randomUUID().toString();
 	protected String noProxy;
@@ -408,6 +409,14 @@ public class Cloud extends CloudIdentityProjection {
 
 	public void setNetworkServer(NetworkServer networkServer) {
 		this.networkServer = networkServer;
+	}
+
+	public String getLinkedAccountId() {
+		return linkedAccountId;
+	}
+
+	public void setLinkedAccountId(String linkedAccountId) {
+		this.linkedAccountId = linkedAccountId;
 	}
 
 	public enum Status {
