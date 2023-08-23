@@ -1,8 +1,13 @@
 package com.morpheusdata.core.cloud;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
+import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.model.AccountResource;
 import com.morpheusdata.model.AccountResourceType;
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.projection.AccountResourceIdentityProjection;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -17,13 +22,15 @@ import java.util.List;
  * @author David Estes
  * @since 0.14.0
  */
-public interface MorpheusAccountResourceService {
+public interface MorpheusAccountResourceService  extends MorpheusDataService<AccountResource>, MorpheusIdentityService<AccountResourceIdentityProjection> {
 	/**
 	 * Get a list of {@link AccountResource} projections based on Cloud id
 	 *
 	 * @param cloudId  Cloud id
 	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {@link MorpheusAccountResourceService#listIdentityProjections(DataQuery)}
 	 */
+	@Deprecated
 	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId);
 
 	/**
@@ -31,7 +38,9 @@ public interface MorpheusAccountResourceService {
 	 * @param cloudId  Cloud id
 	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
 	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {@link MorpheusAccountResourceService#listIdentityProjections(DataQuery)}
 	 */
+	@Deprecated
 	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId,String typeCode);
 
 	/**
@@ -40,7 +49,9 @@ public interface MorpheusAccountResourceService {
 	 * @param cloudId  Cloud id
 	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
 	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {@link MorpheusAccountResourceService#listIdentityProjections(DataQuery)}
 	 */
+	@Deprecated
 	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId,String typeCode, String regionCode);
 
 	/**
@@ -50,38 +61,9 @@ public interface MorpheusAccountResourceService {
 	 * @param typeCode the {@link AccountResourceType#getCode()} to query by
 	 * @param ownerId the
 	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {@link MorpheusAccountResourceService#listIdentityProjections(DataQuery)}
 	 */
+	@Deprecated
 	Observable<AccountResourceIdentityProjection> listIdentityProjections(Long cloudId, String typeCode, String regionCode, Long ownerId);
 
-	/**
-	 * Get a list of AccountResource objects from a list of projection ids
-	 *
-	 * @param ids AccountResource ids
-	 * @return Observable stream of AccountResource
-	 */
-	Observable<AccountResource> listById(Collection<Long> ids);
-
-	/**
-	 * Save updates to existing Resources (AccountResource)
-	 *
-	 * @param resources updated Resource records
-	 * @return success
-	 */
-	Single<Boolean> save(List<AccountResource> resources);
-
-	/**
-	 * Create new AccountResource in Morpheus
-	 *
-	 * @param resources new AccountResource to persist
-	 * @return success
-	 */
-	Single<Boolean> create(List<AccountResource> resources);
-
-	/**
-	 * Remove persisted AccountResource from Morpheus
-	 *
-	 * @param resources Resources to Delete
-	 * @return success
-	 */
-	Single<Boolean> remove(List<AccountResourceIdentityProjection> resources);
 }
