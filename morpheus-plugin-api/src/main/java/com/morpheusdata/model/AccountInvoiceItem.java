@@ -1,4 +1,4 @@
-package com.morpheusdata.model.provisioning;
+package com.morpheusdata.model;
 
 import com.morpheusdata.model.AccountInvoice;
 import com.morpheusdata.model.MorpheusModel;
