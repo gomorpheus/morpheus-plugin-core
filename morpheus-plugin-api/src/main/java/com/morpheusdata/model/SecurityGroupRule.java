@@ -786,4 +786,8 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 	public void setSources(List<SecurityGroupRuleSource> sources) {
 		this.sources = sources;
 	}
+
+	public boolean isCustomRule() {
+		return ruleType != null && (ruleType.equals("custom") || ruleType.equals("customRule"));
+	}
 }

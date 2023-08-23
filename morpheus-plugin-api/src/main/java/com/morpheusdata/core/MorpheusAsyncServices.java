@@ -9,6 +9,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.library.MorpheusLibraryServices;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
@@ -344,5 +345,11 @@ public interface MorpheusAsyncServices {
 	MorpheusAccountResourceTypeService getAccountResourceType();
 
 	MorpheusResourceSpecService getResourceSpec();
+
+	/**
+	 * Returns the {@link MorpheusLibraryServices } which contains all library services
+	 * @return an instance of the MorpheusLibraryServices
+	 */
+	MorpheusLibraryServices getLibrary();
 
 }

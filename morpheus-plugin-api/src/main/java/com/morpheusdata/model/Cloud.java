@@ -22,7 +22,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected String visibility = "private"; //['public', 'private']
 	protected String location;
 	protected String timezone;
-	//	public ComputeZoneType zoneType;
+	public CloudType cloudType;
 	protected Boolean hasNativeSecurityGroups;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -133,6 +133,10 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getTimezone() {
 		return timezone;
+	}
+
+	public CloudType getCloudType() {
+		return cloudType;
 	}
 
 	public Boolean getHasNativeSecurityGroups() {
@@ -455,6 +459,11 @@ public class Cloud extends CloudIdentityProjection {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 		markDirty("timezone", timezone);
+	}
+
+	public void setCloudType(CloudType cloudType) {
+		this.cloudType = cloudType;
+		markDirty("cloudType", cloudType, this.cloudType);
 	}
 
 	public void setHasNativeSecurityGroups(Boolean hasNativeSecurityGroups) {
