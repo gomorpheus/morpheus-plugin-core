@@ -1,10 +1,11 @@
 package com.morpheusdata.model.provisioning;
 
 import com.morpheusdata.model.AccountInvoice;
+import com.morpheusdata.model.MorpheusModel;
 
 import java.util.Date;
 
-public class AccountInvoiceItem {
+public class AccountInvoiceItem extends MorpheusModel {
 	protected AccountInvoice invoice;
 	//linkage
 	protected String refType;
