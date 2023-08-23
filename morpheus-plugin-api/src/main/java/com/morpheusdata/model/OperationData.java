@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Date;
 
 /**
@@ -10,6 +13,7 @@ import java.util.Date;
  * @since 0.15.3
  */
 public class OperationData extends MorpheusModel {
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String code;
 	protected String category;
