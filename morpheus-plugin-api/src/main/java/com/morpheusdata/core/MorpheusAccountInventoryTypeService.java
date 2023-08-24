@@ -8,6 +8,6 @@ import io.reactivex.Observable;
  * @author bdwheeler
  * @since 0.16.1
  */
-public interface MorpheusAccountInventoryTypeService extends MorpheusReferenceService<AccountInventoryType> {
+public interface MorpheusAccountInventoryTypeService extends MorpheusDataQueryService<AccountInventoryType> {
 
 }
