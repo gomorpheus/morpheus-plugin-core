@@ -340,11 +340,33 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAccountCertificateService getCertificate();
 
+	/**
+	 * return the {@link MorpheusAccountCertificateService} which allows access to {@link com.morpheusdata.model.AccountCertificate}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusAccountCertificateService}
+	 */
 	MorpheusWorkloadStateService getWorkloadState();
 
+	/**
+	 * return the {@link MorpheusAccountResourceTypeService} which allows access to {@link com.morpheusdata.model.AccountResourceType}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusAccountResourceTypeService}
+	 */
 	MorpheusAccountResourceTypeService getAccountResourceType();
 
+	/**
+	 * return the {@link MorpheusResourceSpecService} which allows access to {@link com.morpheusdata.model.ResourceSpec}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusResourceSpecService}
+	 */
 	MorpheusResourceSpecService getResourceSpec();
+
+	/**
+	 * return the {@link MorpheusInstanceTypeLayoutService} which allows access to {@link com.morpheusdata.model.InstanceTypeLayout}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusInstanceTypeLayoutService}
+	 */
+	MorpheusInstanceTypeLayoutService getInstanceTypeLayout();
 
 	/**
 	 * Returns the {@link MorpheusLibraryServices } which contains all library services
