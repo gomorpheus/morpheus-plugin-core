@@ -48,6 +48,13 @@ public interface  SecurityGroupProvider extends PluginProvider {
 	ServiceResponse<SecurityGroup> updateSecurityGroup(SecurityGroup securityGroup, Map opts);
 
 	/**
+	 * Delete a {@link SecurityGroup}
+	 * @param securityGroup SecurityGroup object
+	 * @return ServiceResponse
+	 */
+	ServiceResponse deleteSecurityGroup(SecurityGroup securityGroup);
+
+	/**
 	 * Delete a {@link SecurityGroupLocation}
 	 * @param securityGroupLocation SecurityGroupLocation information
 	 * @return ServiceResponse

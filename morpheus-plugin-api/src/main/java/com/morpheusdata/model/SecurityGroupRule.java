@@ -787,7 +787,49 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 		this.sources = sources;
 	}
 
+	/**
+	 * Is this rule a custom rule or a predefined rule.
+	 * @return boolean
+	 */
 	public boolean isCustomRule() {
 		return ruleType != null && (ruleType.equals("custom") || ruleType.equals("customRule"));
+	}
+
+	/**
+	 * The minimum port from the port range
+	 * @return the minimum port number
+	 */
+	public Integer getMinPort() {
+		Integer rtn = null;
+		if(portRange != null) {
+			try {
+				rtn = Integer.parseInt(portRange);
+			} catch(NumberFormatException ignored) {}
+
+			if(rtn == null) {
+				String[] ports = portRange.split("-");
+				rtn = Integer.parseInt(ports[0]);
+			}
+		}
+		return rtn;
+	}
+
+	/**
+	 * The maximum port from the port range
+	 * @return the maximum port number
+	 */
+	public Integer getMaxPort() {
+		Integer rtn = null;
+		if(portRange != null) {
+			try {
+				rtn = Integer.parseInt(portRange);
+			} catch(NumberFormatException ignored) {}
+
+			if(rtn == null) {
+				String[] ports = portRange.split("-");
+				rtn = Integer.parseInt(ports[1]);
+			}
+		}
+		return rtn;
 	}
 }

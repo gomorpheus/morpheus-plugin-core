@@ -432,6 +432,20 @@ public interface NetworkProvider extends PluginProvider {
 	}
 
 	/**
+	 * Delete a {@link SecurityGroup}
+	 * @param securityGroup SecurityGroup object
+	 * @return ServiceResponse
+	 */
+	default ServiceResponse deleteSecurityGroup(SecurityGroup securityGroup) {
+		SecurityGroupProvider provider = getSecurityGroupProvider();
+		if(provider != null) {
+			return provider.deleteSecurityGroup(securityGroup);
+		} else {
+			return ServiceResponse.success();
+		}
+	}
+
+	/**
 	 * Delete a {@link SecurityGroupLocation}
 	 * @param securityGroupLocation SecurityGroupLocation information
 	 * @return ServiceResponse
