@@ -26,7 +26,7 @@ class MyPlugin extends Plugin {
 	}
 ----
 
-Creating a BackupPlugin involves registration of 2 types of providers, a *Backup Provider* and a *Backup Type Provider*.
+Creating a BackupPlugin involves registration of 2 types of providers, a https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupProvider.html[Backup Provider] and a https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupTypeProvider.html[Backup Type Provider].
 
 === Backup Provider
 The primary entry point into the plugin is the Backup Provider. The backup provider will handle all the high level operations within morpheus including creating and syncing the integration.
@@ -120,7 +120,7 @@ See the https://github.com/gomorpheus/morpheus-rubrik-plugin[Rubrik Plugin] for 
 
 === Syncing Provider Data
 
-Like most other integrations a periodic refresh method is called to sync in any necessary data for the integration to work. It is ideal to use a `SyncTask` in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
+Like most other integrations a periodic refresh method is called to sync in any necessary data for the integration to work. It is ideal to use a https://developer.morpheusdata.com/api/com/morpheusdata/core/util/SyncTask.html[SyncTask] in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
 
 [source, groovy]
 ----
@@ -160,6 +160,6 @@ class MyBackupProvider extends MorpheusBackupProvider {
 }
 ----
 
-See the https://github.com/gomorpheus/morpheus-digital-ocean-plugin[DigitOcean Plugin] for a full example implementation of this type backup provider.
+See the https://github.com/gomorpheus/morpheus-digital-ocean-plugin[DigitalOcean Plugin] for a full example implementation of this type backup provider.
 
 	
