@@ -38,9 +38,6 @@ public abstract class AbstractBackupProvider extends BackupProvider {
 	public Boolean getCreatable() { return false; }
 
 	@Override
-	public String getViewSet() { return null; }
-
-	@Override
 	public Boolean getDownloadEnabled() { return false; };
 
 	@Override
