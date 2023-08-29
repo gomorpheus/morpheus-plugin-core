@@ -1,12 +1,8 @@
 package com.morpheusdata.core.costing;
 
 import com.morpheusdata.core.MorpheusDataService;
-import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.util.ApiParameterMap;
-import com.morpheusdata.model.Account;
-import com.morpheusdata.model.AccountInvoice;
-import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.*;
 import com.morpheusdata.response.costing.CloudCostResponse;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -14,7 +10,6 @@ import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +67,7 @@ public interface MorpheusAccountInvoiceService extends MorpheusDataService<Accou
 	Single<InvoiceLookupResults> ensureActiveAccountInvoice(Account owner,Account account, String refType, Long refId, String refUUID, Date costDate, AccountInvoice invoice);
 
 	/**
-	 * Reconciles invoice totals based on the associated {@link com.morpheusdata.model.provisioning.AccountInvoiceItem}
+	 * Reconciles invoice totals based on the associated {@link AccountInvoiceItem}
 	 * records on the invoice.
 	 * @param invoiceIds a list of invoices to reconcile
 	 * @return completable state

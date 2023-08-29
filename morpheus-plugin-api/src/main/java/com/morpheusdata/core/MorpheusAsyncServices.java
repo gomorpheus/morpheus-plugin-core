@@ -9,6 +9,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
+import com.morpheusdata.core.library.MorpheusLibraryServices;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
@@ -283,6 +284,13 @@ public interface MorpheusAsyncServices {
 	MorpheusReferenceDataService getReferenceData();
 
 	/**
+	 * Returns the MorpheusOperationDataService providing a means to access integration specific custom data
+	 * that may have been synced in.
+	 * @return an instance of the MorpheusOperationDataService
+	 */
+	MorpheusOperationDataService getOperationData();
+
+	/**
 	 * Returns the MorpheusBackupProviderService
 	 * @return an instance of the MorpheusBackupProviderService
 	 */
@@ -332,10 +340,38 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAccountCertificateService getCertificate();
 
+	/**
+	 * return the {@link MorpheusAccountCertificateService} which allows access to {@link com.morpheusdata.model.AccountCertificate}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusAccountCertificateService}
+	 */
 	MorpheusWorkloadStateService getWorkloadState();
 
+	/**
+	 * return the {@link MorpheusAccountResourceTypeService} which allows access to {@link com.morpheusdata.model.AccountResourceType}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusAccountResourceTypeService}
+	 */
 	MorpheusAccountResourceTypeService getAccountResourceType();
 
+	/**
+	 * return the {@link MorpheusResourceSpecService} which allows access to {@link com.morpheusdata.model.ResourceSpec}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusResourceSpecService}
+	 */
 	MorpheusResourceSpecService getResourceSpec();
+
+	/**
+	 * return the {@link MorpheusInstanceTypeLayoutService} which allows access to {@link com.morpheusdata.model.InstanceTypeLayout}
+	 * data operations such as create/update/query operations
+	 * @return an instance {@link MorpheusInstanceTypeLayoutService}
+	 */
+	MorpheusInstanceTypeLayoutService getInstanceTypeLayout();
+
+	/**
+	 * Returns the {@link MorpheusLibraryServices } which contains all library services
+	 * @return an instance of the MorpheusLibraryServices
+	 */
+	MorpheusLibraryServices getLibrary();
 
 }

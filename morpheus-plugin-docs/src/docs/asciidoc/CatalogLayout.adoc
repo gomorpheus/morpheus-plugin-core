@@ -6,7 +6,7 @@ This plugin exposes the ability to control everything from the HTML used to rend
 
 ==== Setup
 
-Given the advanced nature of this plugin, it may be best to start with the sample plugin provided in the main project repository called `samples/morpheus-standard-catalog-layout-plugin`. This plugin replicates the embedded layout functionality so acts as a great starting point. It even includes the javascript used for rendering the option types within it.
+Given the advanced nature of this plugin, it may be best to start with the https://github.com/gomorpheus/morpheus-plugin-samples/tree/main/morpheus-standard-catalog-layout-plugin[sample plugin] provided in the https://github.com/gomorpheus/morpheus-plugin-samples[plugin sample repository]. This plugin replicates the embedded layout functionality so acts as a great starting point. It even includes the javascript used for rendering the option types within it.
 
 [TIP]
 Reference the Sample Catalog Layout Plugin before making your own.

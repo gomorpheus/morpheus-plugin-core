@@ -1,6 +1,6 @@
 === Task Plugin
 
-Add custom Tasks types to Morpheus. See a https://github.com/gomorpheus/morpheus-plugin-core/tree/master/samples/morpheus-task-plugin[full example].
+Add custom Tasks types to Morpheus. See a https://github.com/gomorpheus/morpheus-plugin-samples/tree/main/morpheus-task-plugin[full example].
 
 ==== Setup
 

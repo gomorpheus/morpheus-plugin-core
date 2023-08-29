@@ -1,8 +1,11 @@
 package com.morpheusdata.core.cloud;
 
 import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.model.*;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
@@ -15,14 +18,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Morpheus Context as it relates to cloud operations. This context contains methods for querying things like {@link ReferenceData}
+ * Morpheus Context as it relates to cloud operations.
  * for {@link OptionType} sources managing other resources needed at Cloud initialization.
- * Typically this class is accessed via the primary {@link MorpheusContext}.
+ * Typically, this class is accessed via the primary {@link MorpheusContext}.
+ * This service used to contain methods for querying things like {@link ReferenceData} but those have since moved
+ * to the {@link com.morpheusdata.core.MorpheusReferenceDataService}
  *
  * @author Mike Truso
  * @since 0.8.0
  */
-public interface MorpheusCloudService {
+public interface MorpheusCloudService extends MorpheusDataService<Cloud>, MorpheusIdentityService<CloudIdentityProjection> {
 
 	Observable<Cloud> listByType(String cloudType);
 
@@ -48,7 +53,9 @@ public interface MorpheusCloudService {
 	 * @param status cloud state status
 	 * @param message error or info message
 	 * @param syncDate time of update operation
+	 * @deprecated replaced by {@link MorpheusCloudService#updateCloudStatus(Cloud, Cloud.Status, String, Date)}
 	 */
+	@Deprecated
 	void updateZoneStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
 
 
@@ -60,15 +67,34 @@ public interface MorpheusCloudService {
 	 * @param message error or info message
 	 * @param syncDate time of cost refresh operation
 	 * @see com.morpheusdata.core.providers.CloudCostingProvider
+	 * @deprecated replaced by {@link MorpheusCloudService#updateCloudCostStatus(Cloud, Cloud.Status, String, Date)}
 	 */
+	@Deprecated
 	void updateZoneCostStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
 
 	/**
-	 * Save the Cloud
+	 * Update the status of a Cloud during setup
 	 * @param cloud Cloud instance
-	 * @return boolean success
+	 * @param status cloud state status
+	 * @param message error or info message
+	 * @param syncDate time of update operation
 	 */
-	Single<Boolean> save(Cloud cloud);
+	void updateCloudStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
+
+
+	/**
+	 * Updates the costing status of a cloud from a costing daily refresh operation. This is typically only
+	 * ever used when implementing a custom {@link com.morpheusdata.core.providers.CloudCostingProvider}
+	 * @param cloud Cloud instance we are updating cost status on
+	 * @param status cloud costing state status
+	 * @param message error or info message
+	 * @param syncDate time of cost refresh operation
+	 * @see com.morpheusdata.core.providers.CloudCostingProvider
+	 */
+	void updateCloudCostStatus(Cloud cloud, Cloud.Status status, String message, Date syncDate);
+
+
+
 
 	/**
 	 *	Get the ssh credentials associated with an account
@@ -107,13 +133,6 @@ public interface MorpheusCloudService {
 	Single<Cloud> getCloudById(Long id);
 
 	Single<Map> buildContainerUserGroups(Account account, VirtualImage virtualImage, List<UserGroup> userGroups, User user, Map opts);
-
-	Single<Boolean> create(List<ReferenceData> referenceData, Cloud cloud, String category);
-	Single<Boolean> save(List<ReferenceData> referenceData, Cloud cloud, String category);
-	Single<Boolean> remove(List<ReferenceDataSyncProjection> removeItems);
-	Observable<ReferenceDataSyncProjection> listReferenceDataByCategory(Cloud cloud, String code);
-	Single<ReferenceData> findReferenceDataByExternalId(String externalId);
-	Observable<ReferenceData> listReferenceDataById(List<Long> ids);
 
 	/**
 	 * Update a collection of Instances to a particular status.

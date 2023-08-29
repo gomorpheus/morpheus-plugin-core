@@ -1,64 +1,165 @@
-=== Backups Plugin
+== Backups Plugin
 
-Backups are a big part of self-service workload management. Allowing a customer to backup their application and especially restore it on the fly are critical to creating a complete self-service solution. This is why Morpheus integrates with several best-in-class backup solutions like Veeam, Rubrik, Commvault, and more. Morpheus even provides its own basic backup providers for those customers still looking for a final solution.
+Backups are a big part of self-service workload management. Allowing a customer to back up their application and especially restore it on the fly are critical to creating a complete self-service solution. This is why Morpheus integrates with several best-in-class backup solutions like Veeam, Rubrik, Commvault, and more. Morpheus even provides its own basic backup providers for those customers still looking for a final solution.
 
-=== Setup
+=== Plugin Setup
 
-Creating a BackupPlugin typically involves registration of at least 2 different types of providers. This is because a Backup Provider also can have many backup types. For example some backup solutions, like Rubrik, can backup vms on many cloud types and they each have different relevant APIs. The best example plugin to look at is currently the https://github.com/gomorpheus/morpheus-rubrik-plugin["Rubrik Backup Provider"] Plugin. The beginning of the `RubrikBackupProvider` can be seen below.
-
-[source,groovy]
+First we need to register the backup provider in the plugin
+[source, groovy]
 ----
-@Slf4j
-class RubrikBackupProvider extends AbstractBackupProvider {
-
-	static String LOCK_NAME = 'backups.rubrik'
-
-	ApiService apiService
-
-	SlaDomainService SlaDomainService
-
-	BackupJobProvider backupJobProvider;
-
-	RubrikBackupProvider(Plugin plugin, MorpheusContext morpheusContext) {
-		super(plugin, morpheusContext)
-		apiService = new ApiService()
-
-		// vmware
-		RubrikVmwareBackupProvider vmwareBackupProvider = new RubrikVmwareBackupProvider(plugin, morpheus)
-		plugin.pluginProviders.put(vmwareBackupProvider.code, vmwareBackupProvider)
-		addScopedProvider(vmwareBackupProvider, "vmware", null)
-		// hyperv
-		// aws
-		// nutanix
-	}
+class MyPlugin extends Plugin {
 
 	@Override
 	String getCode() {
-		return 'rubrik'
+		return 'my-plugin'
 	}
 
 	@Override
 	String getName() {
-		return 'Rubrik'
+		return 'My Plugin'
+	}
+
+	@Override
+	void initialize() {
+		MyPluginBackupProvider backupProvider = new MyPluginBackupProvider(this, morpheus)
+		registerProvider(backupProvider)
+	}
+----
+
+Creating a BackupPlugin involves registration of 2 types of providers: https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupProvider.html[Backup Provider] and https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupTypeProvider.html[Backup Type Provider].
+
+=== Backup Provider
+The primary entry point into the plugin is the Backup Provider. The backup provider will handle all the high level operations within morpheus including creating and syncing the integration.
+
+The example below is Backup provider is a single Backup Provider with multiple Backup Type Providers.
+
+[source,groovy]
+----
+class MyPluginBackupProvider extends AbstractBackupProvider {
+
+	MyPluginBackupProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		super(plugin, morpheusContext)
+
+		MyVmwareBackupProvider vmwareBackupProvider = new MyVmwareBackupProvider(plugin, morpheus)
+		plugin.registerProvider(vmwareBackupProvider)
+		addScopedProvider(vmwareBackupProvider, "vmware", null)
+
+		MyHypervBackupProvider hypervBackupProvider = new MyHypervBackupProvider(plugin, morpheus)
+		plugin.registerProvider(hypervBackupProvider)
+		addScopedProvider(hypervBackupProvider, "hyperv", null)
+	}
+
+	@Override
+	String getCode() {
+		return 'my-backup-provider'
+	}
+
+	@Override
+	String getName() {
+		return 'My Backup Provider'
 	}
 
 	@Override
 	Icon getIcon() {
-		return new Icon(path:"rubrik.svg", darkPath: "rubrik-dark.svg")
+		return new Icon(path:"icon.svg", darkPath: "icon-dark.svg")
 	}
 
 	...
 }
 ----
 
-**NOTE:** It is helpful to use the `AbstractBackupProvider` instead of manually implementing every single method defined in the `BackupProvider` interface.
+**NOTE:** The **AbstractBackupProvider** is convenient to avoid implementing standard methods and settings defined in the **BackupProvider** interface that are not used as often.
 
-Earlier, it was mentioned that two types of providers are typically needed. This can be seen in the constructor of the `RubrikBackupProvider`. A `RubrikVmwareBackupProvider` is created and scoped by a provision type code to the main provider.
+A Backup Type Provider **MyVmwareBackupProvider** is created and scoped by a provision type code. Adding a scoped provider will associate the provider to the provision type defined by the scoped provider. In the example a backup provider is defined for provisioning VMware instances.
 
+=== Backup Type Provider
 
-Like most other integrations a periodic refresh method is called to sync in any necessary data for the integration to work. It is ideal to use a `SyncTask` in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
+All operations regarding the instance of a backup, including the creation and restoring of a backup, are handled by the **BackupTypeProvider**. A Backup Provider also can have many Backup Type Providers. For example some backup solutions can back up VMs on many cloud types and they each may have different relevant APIs.
 
-There are various service interfaces provided for implementing the backup behavior as well as the restore behavor of a backup type. These are done by implementing the `BackupExecutionProvider` and `BackupRestoreProvider` respectively. Each `BackupTypeProvider` that is implemented, allows one to define which `BackupExecutionProvider` and `BackupRestoreProvider`.
+[source, groovy]
+----
+class MyVmwareBackupProvider extends AbstractBackupTypeProvider {
 
+	MyVmwareBackupProvider(Plugin plugin, MorpheusContext context) {
+		super(plugin, context)
+	}
+
+	@Override
+	String getCode() {
+		return "my-vmware-backup-provider"
+	}
+
+	@Override
+	String getName() {
+		return "MY VMware backup provider"
+	}
+
+	@Override
+	Collection<OptionType> getOptionTypes() {
+		return new ArrayList()
+	}
+
+	@Override
+	BackupExecutionProvider getExecutionProvider() {
+		return new SnapshotExecutionProvider()
+	}
+
+	@Override
+	BackupRestoreProvider getRestoreProvider() {
+		return new SnapshotRestoreProvider()
+	}
+
+	...
+}
+----
+
+The implementation from this point is flexible. The developer can choose to implement the execute and restore functionality directly in the backup type provider or in separate providers. The execute and restore providers are simply a way to organize the provider for clarity.
+There are various service interfaces provided for implementing the backup and restore behavior: **BackupExecutionProvider**, **BackupRestoreProvider**.
+
+See the https://github.com/gomorpheus/morpheus-rubrik-plugin[Rubrik Plugin] for a full example implementation including execution and restore providers.
+
+=== Syncing Provider Data
+
+Like most other integrations, a periodic refresh method is called to sync in any necessary data the integration might need. It is recommended to use a https://developer.morpheusdata.com/api/com/morpheusdata/core/util/SyncTask.html[SyncTask] in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
+
+[source, groovy]
+----
+@Slf4j
+class MyPluginBackupProvider extends AbstractBackupProvider {
+...
+	@Override
+	ServiceResponse refresh(BackupProvider backupProvider) {
+		ServiceResponse rtn = ServiceResponse.prepare()
+		try {
+			new BackupSyncTask().execute()
+		} catch(Exception e) {
+			log.error("error refreshing backup provider {}::{}: {}", plugin.name, this.name, e)
+		}
+		return rtn
+	}
+...
+}
+----
+
+=== Morpheus Backup Provider
+
+A full backup provider implementation may not be required in many cases. The Morpheus Backup Provider can be used to handle all the high level operations. The example below would allow Morpheus to manage the backup job and delegate the backup execution and restore to back to the plugin's Backup Type Providers.
+
+[source, groovy]
+----
+class MyBackupProvider extends MorpheusBackupProvider {
+
+	MyBackupProvider(Plugin plugin, MorpheusContext context) {
+		super(plugin, context)
+
+		MySnapshotBackupProvider mySnapshotBackupProvider = new MySnapshotBackupProvider(plugin, morpheus)
+		plugin.registerProvider(mySnapshotBackupProvider)
+		addScopedProvider(mySnapshotBackupProvider, "vmware", null)
+	}
+
+}
+----
+
+See the https://github.com/gomorpheus/morpheus-digital-ocean-plugin[DigitalOcean Plugin] for a full example implementation of plugin that utilizes the Morpheus Backup Provider.
 
 	

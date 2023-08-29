@@ -421,6 +421,25 @@ public abstract class Plugin implements PluginInterface {
 		pluginProviders.put(provider.getCode(),provider);
 	}
 
+	/**
+	 * Registers an instance (typically a singleton) of many PluginProviders for registration with Morpheus
+	 * @param providers the instances of the plugin providers being registered.
+	 */
+	public void registerProviders(PluginProvider... providers) {
+		for(PluginProvider provider : providers) {
+			pluginProviders.put(provider.getCode(),provider);
+		}
+	}
+
+	/**
+	 * Registers an instance (typically a singleton) of many PluginProviders for registration with Morpheus
+	 * @param providers the instances of the plugin providers being registered.
+	 */
+	public void registerProviders(Collection<PluginProvider> providers) {
+		for(PluginProvider provider : providers) {
+			pluginProviders.put(provider.getCode(),provider);
+		}
+	}
 
 
 }

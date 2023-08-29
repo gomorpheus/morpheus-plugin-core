@@ -19,6 +19,10 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	protected NetworkPool networkPool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolRange networkPoolRange;
+	/**
+	 * Tracks the type of reservation this ip is. You can look at {@link IPType} for a list of available
+	 * types
+	 */
 	protected String ipType = IPType.ASSIGNED.toString();
 	protected String gatewayAddress;
 	protected String subnetMask;
@@ -54,6 +58,11 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 		markDirty("networkPoolRange", networkPoolRange);
 	}
 
+	/**
+	 * Grabs the current {@link IPType} String representation for determining the type of reservation.
+	 * i.e. is it a DHCP Reservation, or a Host record, or just reserved.
+	 * @return the current {@link IPType}
+	 */
 	public String getIpType() {
 		return ipType;
 	}

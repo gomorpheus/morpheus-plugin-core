@@ -112,6 +112,12 @@ public interface WorkloadProvisionProvider extends ComputeProvisionProvider {
 	 */
 	ServiceResponse createWorkloadResources(Workload workload, Map opts);
 
+	/**
+	 * Allows the workload to be resized
+	 *
+	 * @since 0.15.3
+	 * @author Alex Clement
+	 */
 	public interface ResizeFacet {
 		/**
 		 * Request to scale the size of the Workload. Most likely, the implementation will follow that of resizeServer
