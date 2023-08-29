@@ -17,7 +17,7 @@ import java.util.List;
  * @since 0.13.0
  * @author Bob Whiton
  */
-public interface MorpheusStorageVolumeService {
+public interface MorpheusStorageVolumeService extends MorpheusDataService<StorageVolume>, MorpheusIdentityService<StorageVolumeIdentityProjection> {
 
 	/**
 	 * Returns the StorageVolumeType Service
@@ -68,13 +68,6 @@ public interface MorpheusStorageVolumeService {
 	 */
 	Single<Boolean> create(List<StorageVolume> storageVolumes, ComputeServerIdentityProjection computeServer);
 
-	/**
-	 * Create persisted StorageVolumes in Morpheus.
-	 * Typically called during sync operations for the cloud.
-	 * @param storageVolumes volumes to add
-	 * @return success
-	 */
-	Single<Boolean> create(List<StorageVolume> storageVolumes);
 
 	/**
 	 * Remove persisted StorageVolumes from Morpheus and remove them from the VirtualImageLocation.
@@ -107,19 +100,4 @@ public interface MorpheusStorageVolumeService {
 	 */
 	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes, VirtualImageIdentityProjection virtualImage);
 
-	/**
-	 * Remove persisted StorageVolumes from Morpheus and remove them from the VirtualImage.
-	 * Typically called during sync operations for the cloud
-	 * to inform Morpheus that the StorageVolume no longer exists in the cloud
-	 * @param storageVolumes volumes to remove
-	 * @return success
-	 */
-	Single<Boolean> remove(List<StorageVolumeIdentityProjection> storageVolumes);
-
-	/**
-	 * Save updates to existing StorageVolumes
-	 * @param storageVolumes volumes to save
-	 * @return success
-	 */
-	Single<Boolean> save(List<StorageVolume> storageVolumes);
 }
