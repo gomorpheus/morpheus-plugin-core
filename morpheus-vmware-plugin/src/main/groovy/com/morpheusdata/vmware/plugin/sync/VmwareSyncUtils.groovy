@@ -80,7 +80,7 @@ class VmwareSyncUtils {
 				//cleanup
 				log.info("duplicate key: ${key} total: ${value.size()} remove count: ${dupeCleanup.size()}")
 				//remove the dupes
-				morpheusContext.virtualImage.remove([row], cloud).blockingGet()
+				morpheusContext.virtualImage.remove(value, cloud).blockingGet()
 			}
 		} catch(e) {
 			log.error "Error in removingDuplicates: ${e}", e

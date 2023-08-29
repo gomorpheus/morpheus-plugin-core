@@ -16,7 +16,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusVirtualImageService {
+public interface MorpheusVirtualImageService extends MorpheusDataService<VirtualImage>, MorpheusIdentityService<VirtualImageIdentityProjection> {
 
 	/**
 	 * The context for dealing with VirtualImageLocations
@@ -121,19 +121,11 @@ public interface MorpheusVirtualImageService {
 	Observable<VirtualImageIdentityProjection> listSyncProjectionsByCloudAndCategory(Long accountId, Long cloudId, String[] categories);
 
 	/**
-	 * Get a VirtualImage object by id
-	 * @param id VirtualImage id
-	 * @return the VirtualImage
-	 */
-	Single<VirtualImage> get(Long id);
-
-	/**
 	 * Get a list of VirtualImage objects from a list of projection ids
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of VirtualImages
 	 */
 	Observable<VirtualImage> listById(Collection<Long> ids);
-
 
 	/**
 	 * Save updates to existing VirtualImages
@@ -173,13 +165,5 @@ public interface MorpheusVirtualImageService {
 	 */
 	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages, Cloud cloud);
 
-	/**
-	 * Remove persisted VirtualImages from Morpheus and the underlying cloud. Use with caution.
-	 * @param virtualImages Images to delete
-	 * @return success
-	 */
-	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages);
-
 	Single<Collection<CloudFile>> getVirtualImageFiles(VirtualImage virtualImage);
-	
 }

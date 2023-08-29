@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.AccountPrice;
 import com.morpheusdata.model.AccountPriceSet;
+import com.morpheusdata.model.MorpheusModel;
 import com.morpheusdata.model.projection.AccountPriceIdentityProjection;
 import com.morpheusdata.model.projection.AccountPriceSetIdentityProjection;
 import io.reactivex.Observable;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author Dustin DeYoung
  * @since 0.14.3
  */
-public interface MorpheusAccountPriceSetService {
+public interface MorpheusAccountPriceSetService extends MorpheusDataService {
 
 	/**
 	 * Get a list of AccountPriceSet projections based on {@link com.morpheusdata.model.Account}
@@ -45,22 +46,15 @@ public interface MorpheusAccountPriceSetService {
 	 * @param codes AccountPriceSet codes
 	 * @return Observable stream of AccountPriceSets
 	 */
-	Observable<AccountPriceSet> listByCode(Collection<String > codes);
-
-
-	/**
-	 * Save updates to existing AccountPriceSets
-	 * @param accountPriceSets updated AccountPriceSets
-	 * @return status of save results
-	 */
-	Single<Boolean> save(List<AccountPriceSet> accountPriceSets);
+	Observable<AccountPriceSet> listByCode(Collection<String> codes);
 
 	/**
-	 * Create new AccountPriceSet in Morpheus
-	 * @param accountPriceSets new accountPriceSet to persist
-	 * @return status of create results
+	 * Adds a price set to parent association
+	 * @param accountPriceSet accountPriceSet to associate
+	 * @param parent target of the association
+	 * @return status of add results
 	 */
-	Single<Boolean> create(List<AccountPriceSet> accountPriceSets);
+	Single<Boolean> addPriceSetToParent(AccountPriceSet accountPriceSet, MorpheusModel parent);
 
 	/**
 	 * Adds a price to a price set and purges and expired prices
@@ -77,11 +71,4 @@ public interface MorpheusAccountPriceSetService {
 	 * @return status of add results
 	 */
 	Single<Boolean> addToPriceSet(AccountPriceSetIdentityProjection accountPriceSetIdp, AccountPriceIdentityProjection accountPriceIdp);
-
-	/**
-	 * Remove persisted AccountPriceSet from Morpheus
-	 * @param accountPriceSets account price sets to delete
-	 * @return status of delete results
-	 */
-	Single<Boolean> remove(List<AccountPriceSet> accountPriceSets);
 }

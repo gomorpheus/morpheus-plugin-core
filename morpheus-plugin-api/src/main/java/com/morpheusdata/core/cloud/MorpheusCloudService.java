@@ -24,6 +24,8 @@ import java.util.Map;
  */
 public interface MorpheusCloudService {
 
+	Observable<Cloud> listByType(String cloudType);
+
 	Observable<WorkloadIdentityProjection> listCloudWorkloadProjections(Long cloudId);
 
 	MorpheusComputeZonePoolService getPool();

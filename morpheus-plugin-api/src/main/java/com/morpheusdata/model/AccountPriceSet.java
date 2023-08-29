@@ -25,6 +25,7 @@ public class AccountPriceSet extends MorpheusModel {
 	protected Boolean active = true;
 	protected String priceUnit = "month";
 	protected String type = "component";
+
 	protected Date dateCreated;
 	protected Date lastUpdated;
 	protected Boolean systemCreated = false;
@@ -38,13 +39,37 @@ public class AccountPriceSet extends MorpheusModel {
 		return code;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public Account getAccount() { return account; }
+
+	public Boolean getActive() { return active; }
+
+	public String getPriceUnit() { return priceUnit; }
+
+	public String getType() { return type; }
+
+	public Date getDateCreated() { return dateCreated; }
+
+	public Date getLastUpdated() { return lastUpdated; }
+
+	public Boolean getSystemCreated() { return systemCreated; }
+
+	public String getCreatedBy() { return createdBy; }
+
+	public String getUpdatedBy() { return updatedBy; }
+
+	public String getRegionCode() { return regionCode; }
+
+	public Long getZoneId() { return zoneId; }
+
+	public Long getZonePoolId() { return zonePoolId; }
+
 	public void setCode(String code) {
 		this.code = code;
 		markDirty("code", code);
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public void setName(String name) {
