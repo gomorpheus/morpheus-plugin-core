@@ -26,12 +26,12 @@ class MyPlugin extends Plugin {
 	}
 ----
 
-Creating a BackupPlugin involves registration of 2 types of providers, a https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupProvider.html[Backup Provider] and a https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupTypeProvider.html[Backup Type Provider].
+Creating a BackupPlugin involves registration of 2 types of providers: https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupProvider.html[Backup Provider] and https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupTypeProvider.html[Backup Type Provider].
 
 === Backup Provider
 The primary entry point into the plugin is the Backup Provider. The backup provider will handle all the high level operations within morpheus including creating and syncing the integration.
 
-Take a look at the example Backup provider below. This is an example of a single Backup Provider with multiple Backup Type Providers.
+The example below is Backup provider is a single Backup Provider with multiple Backup Type Providers.
 
 [source,groovy]
 ----
@@ -68,13 +68,13 @@ class MyPluginBackupProvider extends AbstractBackupProvider {
 }
 ----
 
-**NOTE:** The `AbstractBackupProvider` is provided to avoid having to implement methods defined in the `BackupProvider` interface that are not used as often.
+**NOTE:** The **AbstractBackupProvider** is convenient to avoid implementing standard methods and settings defined in the **BackupProvider** interface that are not used as often.
 
-A Backup Type Provider `MyVmwareBackupProvider` is created and scoped by a provision type code to the main provider. Adding a scoped provider will associate this provider to the provision type defined by the scoped provider. In this case we're creating a backup provider for VMware instances.
+A Backup Type Provider **MyVmwareBackupProvider** is created and scoped by a provision type code. Adding a scoped provider will associate the provider to the provision type defined by the scoped provider. In the example a backup provider is defined for provisioning VMware instances.
 
 === Backup Type Provider
 
-All operations regarding the instance of a backup, including the creation and restoring of a backup, is handled by the BackupTypeProvider. A Backup Provider also can have many Backup Type Providers. For example some backup solutions can back up VMs on many cloud types and they each have different relevant APIs.
+All operations regarding the instance of a backup, including the creation and restoring of a backup, are handled by the **BackupTypeProvider**. A Backup Provider also can have many Backup Type Providers. For example some backup solutions can back up VMs on many cloud types and they each may have different relevant APIs.
 
 [source, groovy]
 ----
@@ -96,31 +96,31 @@ class MyVmwareBackupProvider extends AbstractBackupTypeProvider {
 
 	@Override
 	Collection<OptionType> getOptionTypes() {
-		return null
+		return new ArrayList()
 	}
 
 	@Override
 	BackupExecutionProvider getExecutionProvider() {
-		return new SnapshotExecutionProvider();
+		return new SnapshotExecutionProvider()
 	}
 
 	@Override
 	BackupRestoreProvider getRestoreProvider() {
-		return new SnapshotRestoreProvider();
+		return new SnapshotRestoreProvider()
 	}
 
 	...
 }
 ----
 
-The implementation from this point is flexible. The developer can choose to implement the execute and restore functionality directly in the backup provider or in separate providers. The execute and restore providers are simply a way to organize the provider for clarity.
-There are various service interfaces provided for implementing the backup and restore behavior: BackupExecutionProvider, BackupRestoreProvider.
+The implementation from this point is flexible. The developer can choose to implement the execute and restore functionality directly in the backup type provider or in separate providers. The execute and restore providers are simply a way to organize the provider for clarity.
+There are various service interfaces provided for implementing the backup and restore behavior: **BackupExecutionProvider**, **BackupRestoreProvider**.
 
 See the https://github.com/gomorpheus/morpheus-rubrik-plugin[Rubrik Plugin] for a full example implementation including execution and restore providers.
 
 === Syncing Provider Data
 
-Like most other integrations a periodic refresh method is called to sync in any necessary data for the integration to work. It is ideal to use a https://developer.morpheusdata.com/api/com/morpheusdata/core/util/SyncTask.html[SyncTask] in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
+Like most other integrations, a periodic refresh method is called to sync in any necessary data the integration might need. It is recommended to use a https://developer.morpheusdata.com/api/com/morpheusdata/core/util/SyncTask.html[SyncTask] in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
 
 [source, groovy]
 ----
@@ -143,7 +143,7 @@ class MyPluginBackupProvider extends AbstractBackupProvider {
 
 === Morpheus Backup Provider
 
-A full backup provider implementation may not be required in many cases. The Morpheus Backup Provider can be used to handle all the high level operations. The example below would allow Morpheus to manage the backup job and delegate the backup execution and restore to back to the plugin provider.
+A full backup provider implementation may not be required in many cases. The Morpheus Backup Provider can be used to handle all the high level operations. The example below would allow Morpheus to manage the backup job and delegate the backup execution and restore to back to the plugin's Backup Type Providers.
 
 [source, groovy]
 ----
@@ -160,6 +160,6 @@ class MyBackupProvider extends MorpheusBackupProvider {
 }
 ----
 
-See the https://github.com/gomorpheus/morpheus-digital-ocean-plugin[DigitalOcean Plugin] for a full example implementation of this type backup provider.
+See the https://github.com/gomorpheus/morpheus-digital-ocean-plugin[DigitalOcean Plugin] for a full example implementation of plugin that utilizes the Morpheus Backup Provider.
 
 	
