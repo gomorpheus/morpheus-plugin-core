@@ -29,8 +29,6 @@ import java.util.Map;
  */
 public interface MorpheusCloudService extends MorpheusDataService<Cloud>, MorpheusIdentityService<CloudIdentityProjection> {
 
-	Observable<Cloud> listByType(String cloudType);
-
 	Observable<WorkloadIdentityProjection> listCloudWorkloadProjections(Long cloudId);
 
 	MorpheusComputeZonePoolService getPool();
