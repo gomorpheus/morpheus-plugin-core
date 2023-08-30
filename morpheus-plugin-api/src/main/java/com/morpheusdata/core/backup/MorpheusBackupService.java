@@ -23,7 +23,7 @@ import java.util.List;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupService extends MorpheusDataService<Backup>, MorpheusIdentityService<BackupIdentityProjection> {
+public interface MorpheusBackupService extends MorpheusDataService<Backup, BackupIdentityProjection>, MorpheusIdentityService<BackupIdentityProjection> {
 
 	/**
 	 * Returns the MorpheusBackupTypeContext used for performing updates/queries on {@link BackupType} related assets

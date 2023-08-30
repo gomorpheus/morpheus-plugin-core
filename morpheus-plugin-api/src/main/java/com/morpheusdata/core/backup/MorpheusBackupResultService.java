@@ -18,7 +18,7 @@ import java.util.List;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupResultService extends MorpheusDataService<BackupResult>, MorpheusIdentityService<BackupResultIdentityProjection> {
+public interface MorpheusBackupResultService extends MorpheusDataService<BackupResult, BackupResultIdentityProjection>, MorpheusIdentityService<BackupResultIdentityProjection> {
 
 	/**
 	 * Lists all backup result projection objects for a specified backup provider id.
