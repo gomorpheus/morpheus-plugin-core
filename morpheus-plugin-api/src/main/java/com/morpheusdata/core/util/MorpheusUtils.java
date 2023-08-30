@@ -147,7 +147,7 @@ public class MorpheusUtils {
 	 *
 	 * @param a - Version comparing
 	 * @param b - Version comparing to
-	 * @return - -1 if a < b, 0 if a == b, 1 if a > b
+	 * @return - -1 if a {@literal <} b, 0 if a == b, 1 if a {@literal >} b
 	 */
 	static public Integer compareVersions(String a, String b) {
 		if ((a != null && a != "") && (b == null || b == "")) {
