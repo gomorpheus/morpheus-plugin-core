@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.backup.response.BackupExecutionResponse;
+import com.morpheusdata.core.backup.response.BackupRestoreResponse;
 import com.morpheusdata.core.providers.PluginProvider;
 import com.morpheusdata.core.backup.util.BackupStatusUtility;
 import com.morpheusdata.model.*;
@@ -196,7 +198,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	 * @return a {@link ServiceResponse} indicating the success or failure of the backup execution. A success value
 	 * of 'false' will halt the execution process.
 	 */
-	ServiceResponse executeBackup(Backup backup, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts);
+	ServiceResponse<BackupExecutionResponse> executeBackup(Backup backup, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts);
 
 	/**
 	 * Periodically call until the backup execution has successfully completed. The default refresh interval is 60 seconds.
@@ -206,7 +208,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
 	 * of 'false' will halt the further execution process.n
 	 */
-	ServiceResponse refreshBackupResult(BackupResult backupResult);
+	ServiceResponse<BackupExecutionResponse> refreshBackupResult(BackupResult backupResult);
 
 	/**
 	 * Cancel the backup execution process without waiting for a result.
@@ -296,7 +298,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
 	 * configuration and will halt the backup restore process.
 	 */
-	ServiceResponse restoreBackup(BackupRestore backupRestore, BackupResult backupResult, Backup backup, Map opts);
+	ServiceResponse<BackupRestoreResponse> restoreBackup(BackupRestore backupRestore, BackupResult backupResult, Backup backup, Map opts);
 
 	/**
 	 * Periodically check for any updates to an in-progress restore. This method will be executed every 60 seconds for
@@ -308,7 +310,7 @@ public interface BackupTypeProvider extends PluginProvider {
 	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
 	 * configuration and will halt the backup restore process.
 	 */
-	ServiceResponse refreshBackupRestoreResult(BackupRestore backupRestore, BackupResult backupResult);
+	ServiceResponse<BackupRestoreResponse> refreshBackupRestoreResult(BackupRestore backupRestore, BackupResult backupResult);
 
 
 	// Replication Groups

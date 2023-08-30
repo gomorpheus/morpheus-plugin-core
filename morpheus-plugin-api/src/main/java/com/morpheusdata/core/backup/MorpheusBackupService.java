@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupJob;
@@ -21,7 +23,7 @@ import java.util.List;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupService {
+public interface MorpheusBackupService extends MorpheusDataService<Backup>, MorpheusIdentityService<BackupIdentityProjection> {
 
 	/**
 	 * Returns the MorpheusBackupTypeContext used for performing updates/queries on {@link BackupType} related assets
@@ -59,13 +61,13 @@ public interface MorpheusBackupService {
 	 */
 	MorpheusReplicationService getReplication();
 
-	//ORM Object Methods
 	/**
 	 * Lists all backup projection objects for a specified backup provider id.
 	 * The projection is a subset of the properties on a full {@link Backup} object for sync matching.
 	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the backups to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Observable<BackupIdentityProjection> listIdentityProjections(BackupProvider backupProvider);
 
 	/**
@@ -74,6 +76,7 @@ public interface MorpheusBackupService {
 	 * @param cloud the {@link Cloud} identifier associated to the domains to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Observable<BackupIdentityProjection> listIdentityProjections(Cloud cloud);
 
 	/**
@@ -81,6 +84,7 @@ public interface MorpheusBackupService {
 	 * @param ids list of {@link Backup} ids to fetch.
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Observable<Backup> listById(Collection<Long> ids);
 
 	/**
@@ -89,6 +93,7 @@ public interface MorpheusBackupService {
 	 * @param active filter the active or inactive state of the backup results
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Observable<Backup> listByBackupJobIdAndActive(Long backupJobId, Boolean active);
 
 	/**
@@ -98,34 +103,8 @@ public interface MorpheusBackupService {
 	 * @param active filter the active or inactive state of the backup results
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Observable<Backup> listByAccountIdAndBackupJobIdAndActive(Long accountId, Long backupJobId, Boolean active);
-
-	/**
-	 * Removes Missing Backup on the Morpheus side. This accepts the Projection Object instead of the main Object.
-	 * It is important to note this is a Observer pattern and must be subscribed to in order for the action to occur
-	 * <p><strong>Example:</strong></p>
-	 * <pre>{@code
-	 * morpheusContext.getBackup().remove(removeItems).blockingGet()
-	 * }</pre>
-	 * @param removeList a list of backup projections to be removed
-	 * @return a Single {@link Observable} returning the success status of the operation.
-	 */
-	Single<Boolean> remove(List<BackupIdentityProjection> removeList);
-
-	/**
-	 * Creates new Backup Domains from cache / sync implementations
-	 * @param addList List of new {@link Backup} objects to be inserted into the database
-	 * @return notification of completion
-	 */
-	Single<Boolean> create(List<Backup> addList);
-
-	/**
-	 * Saves a list of {@link Backup} objects. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param saveList a List of Backup objects that need to be updated in the database.
-	 * @return the Single Observable stating the success state of the save attempt
-	 */
-	Single<Boolean> save(List<Backup> saveList);
 
 	/**
 	 * Saves a {@link Backup} object. Be mindful this is an RxJava implementation and must be subscribed
@@ -133,6 +112,7 @@ public interface MorpheusBackupService {
 	 * @param backup a Backup Object to be updated in the database.
 	 * @return the Single Observable containing the resulting Backup Object
 	 */
+	@Deprecated(since="0.15.3", forRemoval=true)
 	Single<Backup> save(Backup backup);
 
 	/**
