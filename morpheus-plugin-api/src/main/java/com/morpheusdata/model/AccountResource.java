@@ -12,6 +12,8 @@ public class AccountResource extends AccountResourceIdentityProjection {
 	protected AccountResourceType type;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeZoneRegion region;
+
+	protected ResourceSpec resourceSpec;
 	protected String resourceType; //generic type for unknown stuff
 	protected String resourceIcon;
 	protected String resourceSize;
@@ -948,6 +950,15 @@ public class AccountResource extends AccountResourceIdentityProjection {
 
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
+	}
+
+	public ResourceSpec getResourceSpec() {
+		return resourceSpec;
+	}
+
+	public void setResourceSpec(ResourceSpec resourceSpec) {
+		this.resourceSpec = resourceSpec;
+		markDirty("resourceSpec", resourceSpec);
 	}
 
 	public ComputeZoneRegion getRegion() {
