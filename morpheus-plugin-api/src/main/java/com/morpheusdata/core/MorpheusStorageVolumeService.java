@@ -17,7 +17,7 @@ import java.util.List;
  * @since 0.13.0
  * @author Bob Whiton
  */
-public interface MorpheusStorageVolumeService extends MorpheusDataService<StorageVolume>, MorpheusIdentityService<StorageVolumeIdentityProjection> {
+public interface MorpheusStorageVolumeService extends MorpheusDataService<StorageVolume,StorageVolumeIdentityProjection>, MorpheusIdentityService<StorageVolumeIdentityProjection> {
 
 	/**
 	 * Returns the StorageVolumeType Service

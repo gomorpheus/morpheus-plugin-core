@@ -7,6 +7,6 @@ import com.morpheusdata.model.CodeRepository;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusCodeRepositoryService extends MorpheusDataService<CodeRepository> {
+public interface MorpheusCodeRepositoryService extends MorpheusDataService<CodeRepository,CodeRepository> {
 
 }

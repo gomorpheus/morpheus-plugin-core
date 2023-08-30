@@ -10,5 +10,5 @@ import com.morpheusdata.model.OperationData;
  * information is very cloud specific and so it is stored here for custom display purposes.
  *
  */
-public interface MorpheusOperationDataService  extends MorpheusDataService<OperationData>, MorpheusIdentityService<OperationData>{
+public interface MorpheusOperationDataService  extends MorpheusDataService<OperationData,OperationData>, MorpheusIdentityService<OperationData>{
 }

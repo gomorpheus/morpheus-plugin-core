@@ -17,7 +17,7 @@ import java.util.List;
  * @author Dustin DeYoung
  * @since 0.14.3
  */
-public interface MorpheusAccountPriceSetService extends MorpheusDataService {
+public interface MorpheusAccountPriceSetService extends MorpheusDataService<AccountPriceSet,AccountPriceSetIdentityProjection>, MorpheusIdentityService<AccountPriceSetIdentityProjection> {
 
 	/**
 	 * Get a list of AccountPriceSet projections based on {@link com.morpheusdata.model.Account}

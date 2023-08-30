@@ -1,6 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.admin.MorpheusSynchronousAdminService;
+import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.cloud.MorpheusSynchronousCloudService;
 import com.morpheusdata.core.integration.MorpheusSynchronousIntegrationService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.localization.MorpheusLocalizationService;
@@ -40,5 +42,11 @@ public interface MorpheusServices {
 	 * @return an instance of the localization service
 	 */
 	MorpheusLocalizationService getLocalization();
+
+	/**
+	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
+	 * @return An Instance of the Cloud Service to be used typically by {@link com.morpheusdata.core.providers.CloudProvider} implementations.
+	 */
+	MorpheusSynchronousCloudService getCloud();
 
 }

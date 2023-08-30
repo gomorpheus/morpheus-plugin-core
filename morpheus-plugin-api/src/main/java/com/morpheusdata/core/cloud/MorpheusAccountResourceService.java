@@ -22,7 +22,7 @@ import java.util.List;
  * @author David Estes
  * @since 0.14.0
  */
-public interface MorpheusAccountResourceService  extends MorpheusDataService<AccountResource>, MorpheusIdentityService<AccountResourceIdentityProjection> {
+public interface MorpheusAccountResourceService  extends MorpheusDataService<AccountResource,AccountResourceIdentityProjection>, MorpheusIdentityService<AccountResourceIdentityProjection> {
 	/**
 	 * Get a list of {@link AccountResource} projections based on Cloud id
 	 *

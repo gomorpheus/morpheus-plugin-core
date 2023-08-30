@@ -22,7 +22,7 @@ import java.util.Map;
  * @author David Estes
  * @since 0.12.2
  */
-public interface MorpheusAccountInvoiceService extends MorpheusDataService<AccountInvoice> {
+public interface MorpheusAccountInvoiceService extends MorpheusDataService<AccountInvoice,AccountInvoice> {
 	Flowable<AccountInvoice> listByApiParams(User user, ApiParameterMap<String,Object> parameters);
 
 	Single<CloudCostResponse> loadCloudCost(Account account, Cloud cloud, Date startDate, Date endDate);

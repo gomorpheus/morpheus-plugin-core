@@ -10,5 +10,5 @@ import com.morpheusdata.model.AccountInventory;
  * @since 0.15.1
  * @author David Estes
  */
-public interface MorpheusSynchronousAccountInventoryService extends MorpheusSynchronousDataService<AccountInventory> {
+public interface MorpheusSynchronousAccountInventoryService extends MorpheusSynchronousDataService<AccountInventory,AccountInventory> {
 }

@@ -1,16 +1,12 @@
 package com.morpheusdata.maas.plugin
 
+
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.cloud.MorpheusComputeZonePoolService
+import com.morpheusdata.core.cloud.MorpheusCloudPoolService
 import com.morpheusdata.model.Cloud
-import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection
 import com.morpheusdata.response.ServiceResponse
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.annotations.NonNull
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
@@ -23,14 +19,14 @@ class MaasCloudProviderSpec extends Specification {
 
 	MorpheusContext context
 	MorpheusCloudService cloudContext
-	MorpheusComputeZonePoolService poolContext
+	MorpheusCloudPoolService poolContext
 	MaasPlugin plugin
 	@Shared MaasComputeUtility maasComputeUtility
 
 	void setup() {
 		context = Mock(MorpheusContext)
 		cloudContext = Mock(MorpheusCloudService)
-		poolContext = Mock(MorpheusComputeZonePoolService)
+		poolContext = Mock(MorpheusCloudPoolService)
 		context.getCloud() >> cloudContext
 		cloudContext.getPool() >> poolContext
 		plugin = Mock(MaasPlugin)

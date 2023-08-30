@@ -10,5 +10,5 @@ import com.morpheusdata.model.AccountInvoiceItem;
  *
  * @author David Estes
  */
-public interface MorpheusAccountInvoiceItemService extends MorpheusDataService<AccountInvoiceItem> {
+public interface MorpheusAccountInvoiceItemService extends MorpheusDataService<AccountInvoiceItem,AccountInvoiceItem> {
 }

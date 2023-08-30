@@ -7,6 +7,6 @@ import com.morpheusdata.model.TaskSet;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusTaskSetService extends MorpheusDataService<TaskSet> {
+public interface MorpheusTaskSetService extends MorpheusDataService<TaskSet,TaskSet> {
 
 }

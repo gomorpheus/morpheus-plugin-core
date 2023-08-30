@@ -7,6 +7,6 @@ import com.morpheusdata.model.AccountIntegration;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusAccountIntegrationService extends MorpheusDataService<AccountIntegration> {
+public interface MorpheusAccountIntegrationService extends MorpheusDataService<AccountIntegration,AccountIntegration> {
 
 }

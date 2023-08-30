@@ -16,7 +16,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusVirtualImageService extends MorpheusDataService<VirtualImage>, MorpheusIdentityService<VirtualImageIdentityProjection> {
+public interface MorpheusVirtualImageService extends MorpheusDataService<VirtualImage,VirtualImageIdentityProjection>, MorpheusIdentityService<VirtualImageIdentityProjection> {
 
 	/**
 	 * The context for dealing with VirtualImageLocations

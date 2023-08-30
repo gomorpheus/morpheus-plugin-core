@@ -12,6 +12,6 @@ import java.util.List;
  * Context methods for accessing {@link InstanceType} in Morpheus
  * @author ddeyoung
  */
-public interface MorpheusInstanceTypeService extends MorpheusDataService<InstanceType> {
+public interface MorpheusInstanceTypeService extends MorpheusDataService<InstanceType,InstanceType> {
 
 }

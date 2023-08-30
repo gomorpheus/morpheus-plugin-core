@@ -14,7 +14,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusServicePlanService extends MorpheusDataService<ServicePlan>, MorpheusIdentityService<ServicePlanIdentityProjection> {
+public interface MorpheusServicePlanService extends MorpheusDataService<ServicePlan,ServicePlanIdentityProjection>, MorpheusIdentityService<ServicePlanIdentityProjection> {
 
 	/**
 	 * Get a list of ServicePlan projections based on Cloud id

@@ -7,6 +7,6 @@ import io.reactivex.Observable;
 /**
  * Morpheus context methods for {@link AccountCertificate} operations
  */
-public interface MorpheusAccountCertificateService extends MorpheusDataService<AccountCertificate> {
+public interface MorpheusAccountCertificateService extends MorpheusDataService<AccountCertificate,AccountCertificateIdentityProjection> {
 	Observable<AccountCertificateIdentityProjection> listIdentityProjections(Long integrationId);
 }

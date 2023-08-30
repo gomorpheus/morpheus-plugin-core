@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.Instance;
+import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.request.DeleteInstanceRequest;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.Observable;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Context methods for dealing with {@link Instance} in Morpheus
  */
-public interface MorpheusInstanceService extends MorpheusDataService<Instance> {
+public interface MorpheusInstanceService extends MorpheusDataService<Instance, InstanceIdentityProjection> {
 
 	/**
 	 * Delete the existing Instance from Morpheus and the resources from the underlying Cloud.
