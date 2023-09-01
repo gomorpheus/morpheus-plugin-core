@@ -500,6 +500,22 @@ public interface MorpheusContext {
 	@Deprecated
 	MorpheusWorkspaceTypeService getWorkspaceType();
 
+	/**
+	 * Returns the MorpheusCodeRepositoryTraitService
+	 * @return an instance of the MorpheusCodeRepositoryTraitService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusCodeRepositoryTraitService getCodeRepositoryTrait();
+
+	/**
+	 * Returns the MorpheusCodeRepositoryTraitTypeService
+	 * @return an instance of the MorpheusCodeRepositoryTraitTypeService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusCodeRepositoryTraitTypeService getCodeRepositoryTraitType();
+
 	//Common methods used across various contexts
 
 	/**

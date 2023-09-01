@@ -1,9 +1,9 @@
 package com.morpheusdata.model;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import java.util.Date;
+import java.util.List;
 
 public class CodeRepository extends MorpheusModel {
 
@@ -38,7 +38,9 @@ public class CodeRepository extends MorpheusModel {
 	protected String uuid;
 	protected Date dateCreated;
 	protected Date lastUpdated;
+	//lists
 	//List<CodeRepositoryBranch> branches;
+	protected List<CodeRepositoryTrait> traits;
 
 	public Account getAccount() {
 		return account;
@@ -290,6 +292,15 @@ public class CodeRepository extends MorpheusModel {
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 		markDirty("lastUpdated", lastUpdated);
+	}
+
+	public List<CodeRepositoryTrait> getTraits() {
+		return traits;
+	}
+
+	public void setTraits(List<CodeRepositoryTrait> traits) {
+		this.traits = traits;
+		markDirty("traits", traits);
 	}
 
 }
