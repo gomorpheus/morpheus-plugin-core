@@ -44,7 +44,12 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Long refId;
 	protected String regionCode;
 	protected String status = "provisioned";
+<<<<<<< HEAD
 	protected String uuid = java.util.UUID.randomUUID().toString();
+=======
+	protected String sourceSnapshotId;
+
+>>>>>>> fd41c3bd (add missing field to storage volume.)
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -312,5 +317,14 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
+	}
+	
+	public String getSourceSnapshotId() {
+		return sourceSnapshotId;
+	}
+
+	public void setSourceSnapshotId(String sourceSnapshotId) {
+		this.sourceSnapshotId = sourceSnapshotId;
+		markDirty("sourceSnapshotId", sourceSnapshotId, this.sourceSnapshotId);
 	}
 }
