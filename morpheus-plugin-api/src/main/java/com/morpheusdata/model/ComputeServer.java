@@ -86,6 +86,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected List<StorageController> controllers = new ArrayList<>();
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<SnapshotIdentityProjection> snapshots = new ArrayList<>();
+
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<ComputeServerAccess> accesses = new ArrayList<>();
 	protected String osDevice = "/dev/sda";
 	protected String dataDevice = "/dev/sdb";
 	protected Boolean lvmEnabled = true;
@@ -931,6 +934,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setIacId(String iacId) {
 		this.iacId = iacId;
 		markDirty("iacId", iacId);
+	}
+
+	public List<ComputeServerAccess> getAccesses() {
+		return accesses;
+	}
+
+	public void setAccesses(List<ComputeServerAccess> accesses) {
+		this.accesses = accesses;
+		markDirty("accesses", accesses);
 	}
 
 	public enum GuestConsoleType {

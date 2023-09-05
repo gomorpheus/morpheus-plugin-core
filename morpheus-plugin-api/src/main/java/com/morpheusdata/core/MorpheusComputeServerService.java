@@ -1,9 +1,9 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.compute.MorpheusComputeServerAccessService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.core.compute.MorpheusComputeServerInterfaceService;
-import com.morpheusdata.model.projection.InstanceScaleIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -70,6 +70,12 @@ public interface MorpheusComputeServerService extends MorpheusDataService<Comput
 	 */
 	MorpheusComputePortService getComputePort();
 
+
+	/**
+	 * Returns the ComputePort context used for performing sync operations on {@link ComputeServerAccess} related assets within Morpheus.
+	 * @return An instance of the ComputeServerAccess context
+	 */
+	MorpheusComputeServerAccessService getAccess();
 
 	/**
 	 * Remove persisted ComputeServers from Morpheus and remove them the {@link com.morpheusdata.model.InstanceScale} they are associated with
