@@ -1,9 +1,10 @@
 package com.morpheusdata.maas.plugin
 
+
 import com.morpheusdata.core.cloud.MorpheusCloudService
 import com.morpheusdata.core.MorpheusComputeServerService
 import com.morpheusdata.core.MorpheusContext
-import com.morpheusdata.core.cloud.MorpheusComputeZonePoolService
+import com.morpheusdata.core.cloud.MorpheusCloudPoolService
 import com.morpheusdata.core.network.MorpheusNetworkService
 import com.morpheusdata.core.provisioning.MorpheusProvisionService
 import com.morpheusdata.model.Account
@@ -16,11 +17,7 @@ import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.model.Workload
 import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.response.ServiceResponse
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Single
-import io.reactivex.annotations.NonNull
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -33,7 +30,7 @@ class MaasProvisionProviderSpec extends Specification {
 	MorpheusNetworkService networkContext
 	MorpheusCloudService cloudContext
 	MorpheusComputeServerService computeServerContext
-	MorpheusComputeZonePoolService poolContext
+	MorpheusCloudPoolService poolContext
 	MorpheusProvisionService provisionService
 	MaasPlugin plugin
 
@@ -41,7 +38,7 @@ class MaasProvisionProviderSpec extends Specification {
 		context = Mock(MorpheusContext)
 		networkContext = Mock(MorpheusNetworkService)
 		cloudContext = Mock(MorpheusCloudService)
-		poolContext = Mock(MorpheusComputeZonePoolService)
+		poolContext = Mock(MorpheusCloudPoolService)
 		provisionService = Mock(MorpheusProvisionService)
 
 		computeServerContext = Mock(MorpheusComputeServerService)

@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.AccountCredential;
+import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
 import io.reactivex.Single;
 
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Map;
 /**
  * Context methods for AccountCredential
  */
-public interface MorpheusAccountCredentialService extends MorpheusDataService<AccountCredential> {
+public interface MorpheusAccountCredentialService extends MorpheusDataService<AccountCredential, AccountCredentialIdentityProjection> {
 
 	/**
 	 * A utility method to loads credential data config from the args of an input form.

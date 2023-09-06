@@ -43,6 +43,11 @@ public class UserConfiguration {
 	public Boolean sudoUser;
 
 	/**
+	 *  whether the user should be immediately changed during init
+	 */
+	public Boolean change;
+
+	/**
 	 *
 	 * @return hash map of UserConfiguration properties and values
 	 */
@@ -54,6 +59,7 @@ public class UserConfiguration {
 		userConfigurationMap.put("keys", this.keys);
 		userConfigurationMap.put("serverGroup", this.serverGroup);
 		userConfigurationMap.put("sudoUser", this.sudoUser);
+		userConfigurationMap.put("change", this.change);
 
 		return userConfigurationMap;
 	}

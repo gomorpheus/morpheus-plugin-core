@@ -1,5 +1,6 @@
 package com.morpheusdata.core.network.loadbalancer;
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Morpheus context as it relates to load balancer operations. Used to retrieve and query various entities related to
  * load balancers
  */
-public interface MorpheusLoadBalancerService {
+public interface MorpheusLoadBalancerService extends MorpheusDataService<NetworkLoadBalancer,NetworkLoadBalancerIdentityProjection> {
 	MorpheusLoadBalancerPartitionService getPartition();
 	MorpheusLoadBalancerMonitorService getMonitor();
 	MorpheusLoadBalancerNodeService getNode();
@@ -44,13 +45,6 @@ public interface MorpheusLoadBalancerService {
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<NetworkLoadBalancerIdentityProjection> listIdentityProjections(Long cloudId, String regionCode, String typeCode);
-
-	/**
-	 * Lists all {@link NetworkLoadBalancer} objects by a list of Identifiers. This is commonly used in sync / caching logic.
-	 * @param ids list of ids to grab {@link NetworkLoadBalancer} objects from.
-	 * @return an RxJava Observable stream of {@link NetworkLoadBalancer} to be subscribed to.
-	 */
-	Observable<NetworkLoadBalancer> listById(Collection<Long> ids);
 
 	/**
 	 * Method is used to persist a change in load balancer status to the database
@@ -160,29 +154,4 @@ public interface MorpheusLoadBalancerService {
 	 * @param loadBalancer {@link NetworkLoadBalancer}
 	 */
 	void loadLoadBalancerCredentials(NetworkLoadBalancer loadBalancer);
-
-	/**
-	 * Save updates to existing LoadBalancers
-	 *
-	 * @param loadBalancers updated ComputeZonePool
-	 * @return success
-	 */
-	Single<Boolean> save(List<NetworkLoadBalancer> loadBalancers);
-
-	/**
-	 * Create new ComputeZonePools in Morpheus
-	 *
-	 * @param loadBalancers new NetworkLoadBalancers to persist
-	 * @return success
-	 */
-	Single<Boolean> create(List<NetworkLoadBalancer> loadBalancers);
-
-	/**
-	 * Remove load balancers from morpheus. It should be noted this does an internal delete
-	 * it does not make remote calls to the load balancer to delete object associations
-	 *
-	 * @param loadBalancers Load Balancers to remove
-	 * @return success
-	 */
-	Single<Boolean> remove(List<NetworkLoadBalancerIdentityProjection> loadBalancers);
 }

@@ -1,5 +1,6 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.backup.response.BackupRestoreResponse;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupResult;
@@ -84,7 +85,7 @@ public interface BackupRestoreProvider {
 	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
 	 * configuration and will halt the backup restore process.
 	 */
-	ServiceResponse restoreBackup(BackupRestore backupRestoreModel, BackupResult backupResultModel, Backup backupModel, Map opts);
+	ServiceResponse<BackupRestoreResponse> restoreBackup(BackupRestore backupRestoreModel, BackupResult backupResultModel, Backup backupModel, Map opts);
 
 	/**
 	 * Periodically check for any updates to an in-progress restore. This method will be executed every 60 seconds for
@@ -96,6 +97,6 @@ public interface BackupRestoreProvider {
 	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
 	 * configuration and will halt the backup restore process.
 	 */
-	ServiceResponse refreshBackupRestoreResult(BackupRestore backupRestore, BackupResult backupResult);
+	ServiceResponse<BackupRestoreResponse> refreshBackupRestoreResult(BackupRestore backupRestore, BackupResult backupResult);
 
 }

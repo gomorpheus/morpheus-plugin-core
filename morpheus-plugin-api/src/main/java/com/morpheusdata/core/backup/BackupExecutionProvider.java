@@ -1,5 +1,6 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.backup.response.BackupExecutionResponse;
 import com.morpheusdata.model.BackupResult;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.ComputeServer;
@@ -103,7 +104,7 @@ public interface BackupExecutionProvider {
 	 * @return a {@link ServiceResponse} indicating the success or failure of the backup execution. A success value
 	 * of 'false' will halt the execution process.
 	 */
-	ServiceResponse executeBackup(Backup backup, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts);
+	ServiceResponse<BackupExecutionResponse> executeBackup(Backup backup, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts);
 
 	/**
 	 * Periodically call until the backup execution has successfully completed. The default refresh interval is 60 seconds.
@@ -113,7 +114,7 @@ public interface BackupExecutionProvider {
 	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
 	 * of 'false' will halt the further execution process.n
 	 */
-	ServiceResponse refreshBackupResult(BackupResult backupResult);
+	ServiceResponse<BackupExecutionResponse> refreshBackupResult(BackupResult backupResult);
 
 	/**
 	 * Cancel the backup execution process without waiting for a result.

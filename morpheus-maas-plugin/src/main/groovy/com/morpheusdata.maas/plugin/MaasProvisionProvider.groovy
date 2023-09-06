@@ -10,7 +10,7 @@ import com.morpheusdata.model.provisioning.WorkloadRequest
 import com.morpheusdata.model.provisioning.UsersConfiguration
 import com.morpheusdata.request.ResizeRequest
 import com.morpheusdata.response.ServiceResponse
-import com.morpheusdata.response.WorkloadResponse
+import com.morpheusdata.response.ProvisionResponse
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -229,9 +229,9 @@ class MaasProvisionProvider extends AbstractProvisionProvider implements Provisi
 	}
 
 	@Override
-	ServiceResponse<WorkloadResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts = [:]) {
+	ServiceResponse<ProvisionResponse> runWorkload(Workload workload, WorkloadRequest workloadRequest, Map opts = [:]) {
 		log.debug "Maas Provision Provider: runWorkload ${workload.configs} ${opts}"
-		ServiceResponse<WorkloadResponse> rtn = new ServiceResponse<>(success:false, inProgress: true)
+		ServiceResponse<ProvisionResponse> rtn = new ServiceResponse<>(success:false, inProgress: true)
 		ComputeServer server = workload.server
 		try {
 			//build config
@@ -276,7 +276,7 @@ class MaasProvisionProvider extends AbstractProvisionProvider implements Provisi
 			//TODO - port, path, service
 			if (runBareMetalResults.success) {
 				rtn.success = true
-				rtn.data = new WorkloadResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
+				rtn.data = new ProvisionResponse(externalId: runBareMetalResults.data.externalId, installAgent: opts.installAgent, createUsers: opts.createUsers)
 			} else {
 				//error - image not found
 				morpheusContext.provision.setProvisionFailed(server, workload, 'server config error', opts)

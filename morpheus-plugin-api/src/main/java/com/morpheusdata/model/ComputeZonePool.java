@@ -4,36 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
-public class ComputeZonePool extends ComputeZonePoolIdentityProjection {
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public Account owner;
-	public String visibility = "private";
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public Cloud cloud;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public ComputeServerGroup serverGroup;
-	public String code;
-	public String config;
-	public String treeName;
-	public String rawData;
-	public String type = "default";
-	public String description;
-	public String refType;
-	public Long refId;
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public ComputeZonePool parent;
-	public Boolean active = true;
-	public Boolean readOnly = false;
-	public Boolean defaultPool = false;
-	public Boolean hidden = false;
-	public String iacId; //id for infrastructure as code integrations
-	public Status status = Status.available;
-	public Boolean editable;
-	public Boolean removable;
+/**
+ * This model represents logical groupings/separations within a cloud for virtualization management
+ * for example Vmware Clusters/Resource Pools, or AWS VPCs, Azure Resource Groups, OpenStack Projects
+ * @author Eric Helgeson
+ * @since 0.8.0
+ * @deprecated replaced by {@link CloudPool} for better naming in 0.15.3
+ */
+@Deprecated(since="0.15.3",forRemoval = false)
+public class ComputeZonePool extends CloudPool {
 
-	enum Status {
-		deploying,
-		failed,
-		available
-	}
 }

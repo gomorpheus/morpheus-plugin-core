@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class MorpheusUtils {
 	 * @return the parsed Date
 	 */
 	@Deprecated
-	static Date parseDate(Object date) {
+	static public Date parseDate(Object date) {
 		Date rtn = null;
 		try {
 			//handle multiple formats - 2019-02-08T19:15:39.259
@@ -146,9 +147,9 @@ public class MorpheusUtils {
 	 *
 	 * @param a - Version comparing
 	 * @param b - Version comparing to
-	 * @return - -1 if a < b, 0 if a == b, 1 if a > b
+	 * @return - -1 if a {@literal <} b, 0 if a == b, 1 if a {@literal >} b
 	 */
-	static Integer compareVersions(String a, String b) {
+	static public Integer compareVersions(String a, String b) {
 		if ((a != null && a != "") && (b == null || b == "")) {
 			return 1;
 		}
@@ -189,7 +190,7 @@ public class MorpheusUtils {
 		return compareResult;
 	}
 
-	static Long getZoneId(Map opts) {
+	static public Long getZoneId(Map opts) {
 		Object tmpValue = null;
 		if(opts.get("zoneId") != null) {
 			tmpValue = opts.get("zoneId");
@@ -232,7 +233,7 @@ public class MorpheusUtils {
 		return parseLongConfig(tmpValue);
 	}
 
-	static Long getResourcePoolId(Map opts) {
+	static public Long getResourcePoolId(Map opts) {
 		Object rtn = null;
 		if(opts.get("resourcePoolId") != null) {
 			rtn = opts.get("resourcePoolId");
@@ -356,7 +357,7 @@ public class MorpheusUtils {
 	 * @param val
 	 * @return
 	 */
-	static Boolean parseBooleanConfig(Object val) {
+	static public Boolean parseBooleanConfig(Object val) {
 		if (val instanceof Boolean) {
 			return val == (Boolean)val;
 		}
@@ -375,7 +376,7 @@ public class MorpheusUtils {
 	 * @param val assumed long value from input
 	 * @return the value converted to a Long
 	 */
-	static Long parseLongConfig(Object val) {
+	static public Long parseLongConfig(Object val) {
 		if(val != null && isNumber(val.toString())) {
 			return Long.parseLong(val.toString());
 		}
@@ -395,4 +396,24 @@ public class MorpheusUtils {
 		}
 		return rtn;
 	}
+
+	//parse or return a map if already a map
+	static public Map getJson(Object val) {
+		Map rtn = null;
+		if(val != null) {
+			if(val instanceof Map) {
+				rtn = (Map) val;
+            } else if(val instanceof Collection) {
+				rtn = (Map) val;
+            } else if(val instanceof CharSequence) {
+				try {
+					rtn = (Map) new groovy.json.JsonSlurper().parseText((String) val);
+				} catch(Exception e) {
+
+				}
+			}
+		}
+		return rtn;
+	}
+
 }

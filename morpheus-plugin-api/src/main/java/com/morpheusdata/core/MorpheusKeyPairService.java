@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Context methods for InstanceScaleType in Morpheus
  */
-public interface MorpheusKeyPairService extends MorpheusDataService<KeyPair> {
+public interface MorpheusKeyPairService extends MorpheusDataService<KeyPair,KeyPairIdentityProjection> {
 
 	/**
 	 * Get a list of {@link KeyPairIdentityProjection} projections based on Cloud id

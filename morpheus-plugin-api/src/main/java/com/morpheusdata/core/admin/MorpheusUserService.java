@@ -39,5 +39,5 @@ import com.morpheusdata.model.projection.UserIdentityProjection;
  * @author David Estes
  * @since 0.15.2
  */
-public interface MorpheusUserService extends MorpheusDataService<User>, MorpheusIdentityService<UserIdentityProjection> {
+public interface MorpheusUserService extends MorpheusDataService<User,UserIdentityProjection>, MorpheusIdentityService<UserIdentityProjection> {
 }

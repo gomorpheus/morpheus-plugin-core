@@ -6,7 +6,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.Map;
 
-public interface MorpheusTaskService extends MorpheusDataService<Task> {
+public interface MorpheusTaskService extends MorpheusDataService<Task,Task> {
 
 	Single<Void> disableTask(String code);
 

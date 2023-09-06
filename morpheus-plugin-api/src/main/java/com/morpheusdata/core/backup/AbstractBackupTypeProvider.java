@@ -2,6 +2,8 @@ package com.morpheusdata.core.backup;
 
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.core.Plugin;
+import com.morpheusdata.core.backup.response.BackupExecutionResponse;
+import com.morpheusdata.core.backup.response.BackupRestoreResponse;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.response.ServiceResponse;
@@ -113,12 +115,12 @@ public abstract class AbstractBackupTypeProvider implements BackupTypeProvider {
 	}
 
 	@Override
-	public ServiceResponse executeBackup(Backup backupModel, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts) {
+	public ServiceResponse<BackupExecutionResponse> executeBackup(Backup backupModel, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts) {
 		return getExecutionProvider().executeBackup(backupModel, backupResult, executionConfig, cloud, computeServer, opts);
 	}
 
 	@Override
-	public 	ServiceResponse refreshBackupResult(BackupResult backupResult) {
+	public 	ServiceResponse<BackupExecutionResponse> refreshBackupResult(BackupResult backupResult) {
 		return getExecutionProvider().refreshBackupResult(backupResult);
 	}
 
@@ -154,12 +156,12 @@ public abstract class AbstractBackupTypeProvider implements BackupTypeProvider {
 	}
 
 	@Override
-	public ServiceResponse restoreBackup(BackupRestore backupRestore, BackupResult backupResultModel, Backup backupModel, Map opts) {
+	public ServiceResponse<BackupRestoreResponse> restoreBackup(BackupRestore backupRestore, BackupResult backupResultModel, Backup backupModel, Map opts) {
 		return getRestoreProvider().restoreBackup(backupRestore, backupResultModel, backupModel, opts);
 	}
 
 	@Override
-	public ServiceResponse refreshBackupRestoreResult(BackupRestore backupRestoreModel, BackupResult backupResultModel) {
+	public ServiceResponse<BackupRestoreResponse> refreshBackupRestoreResult(BackupRestore backupRestoreModel, BackupResult backupResultModel) {
 		return getRestoreProvider().refreshBackupRestoreResult(backupRestoreModel, backupResultModel);
 	}
 

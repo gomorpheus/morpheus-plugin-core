@@ -1,6 +1,11 @@
 package com.morpheusdata.core.cloud;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.Datastore;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
+import com.morpheusdata.model.projection.DatastoreIdentity;
 import com.morpheusdata.model.projection.DatastoreIdentityProjection;
 import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
 import io.reactivex.Observable;
@@ -14,7 +19,7 @@ import java.util.List;
  *
  * @author Bob Whiton
  */
-public interface MorpheusDatastoreService {
+public interface MorpheusDatastoreService extends MorpheusDataService<Datastore,DatastoreIdentity>, MorpheusIdentityService<DatastoreIdentity> {
 
 	/**
 	 * Get a list of {@link Datastore} projections based on Cloud id
@@ -22,7 +27,7 @@ public interface MorpheusDatastoreService {
 	 * @param cloudId  Cloud id
 	 * @return Observable stream of sync projection
 	 */
-	Observable<DatastoreIdentityProjection> listSyncProjections(Long cloudId);
+	Observable<DatastoreIdentity> listSyncProjections(Long cloudId);
 
 	/**
 	 * Get the default image Datastore
@@ -41,28 +46,12 @@ public interface MorpheusDatastoreService {
 	Observable<Datastore> listById(Collection<Long> ids);
 
 	/**
-	 * Save updates to existing Datastores
-	 *
-	 * @param datastores updated Datastore
-	 * @return success
-	 */
-	Single<Boolean> save(List<Datastore> datastores);
-
-	/**
-	 * Create new Datastores in Morpheus
-	 *
-	 * @param datastores new Datastores to persist
-	 * @return success
-	 */
-	Single<Boolean> create(List<Datastore> datastores);
-
-	/**
 	 * Remove persisted Datastore from Morpheus
 	 *
 	 * @param datastores Datastores to delete
 	 * @param zonePool ComputeZonePoolIdentityProjection representing the associated zonePool for the datastore
 	 * @return success
 	 */
-	Single<Boolean> remove(List<DatastoreIdentityProjection> datastores, ComputeZonePoolIdentityProjection zonePool);
+	Single<Boolean> remove(List<DatastoreIdentity> datastores, ComputeZonePoolIdentityProjection zonePool);
 
 }

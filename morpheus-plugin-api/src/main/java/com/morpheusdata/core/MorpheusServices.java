@@ -1,6 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.admin.MorpheusSynchronousAdminService;
+import com.morpheusdata.core.cloud.MorpheusCloudService;
+import com.morpheusdata.core.cloud.MorpheusSynchronousCloudService;
 import com.morpheusdata.core.integration.MorpheusSynchronousIntegrationService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.localization.MorpheusLocalizationService;
@@ -21,6 +23,13 @@ public interface MorpheusServices {
 	MorpheusSynchronousAdminService getAdmin();
 
 	/**
+	 * Returns the MorpheusSynchronousOperationDataService providing a means to access integration specific custom data
+	 * that may have been synced in.
+	 * @return an instance of the MorpheusOperationDataService
+	 */
+	MorpheusSynchronousOperationDataService getOperationData();
+
+	/**
 	 * Returns the Web Request Service. This is used by UI Providers to grab common request attributes
 	 *
 	 * @return an instance of the web request service
@@ -33,5 +42,11 @@ public interface MorpheusServices {
 	 * @return an instance of the localization service
 	 */
 	MorpheusLocalizationService getLocalization();
-	
+
+	/**
+	 * Returns the Compute Context used for performing updates or queries on compute related assets within Morpheus
+	 * @return An Instance of the Cloud Service to be used typically by {@link com.morpheusdata.core.providers.CloudProvider} implementations.
+	 */
+	MorpheusSynchronousCloudService getCloud();
+
 }

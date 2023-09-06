@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 /**
  * Proxies can be associated with networks for assignment during provisioning or for use when interacting with various
  * public cloud APIS (called provisioning proxies). They can be set on the {@link Network} or in some cases the {@link Cloud}
@@ -16,33 +19,41 @@ public class NetworkProxy extends MorpheusModel {
 	/**
 	 * The Host IP of the proxy server being utilized
 	 */
-	private String proxyHost;
+	protected String proxyHost;
 
 	/**
 	 * The configured proxy port, this is typically related to SOCKS compliant Proxies
 	 */
-	private Integer proxyPort;
+	protected Integer proxyPort;
 
 	/**
 	 * Username used to authenticate with the proxy server, if applicable
 	 */
-	private String proxyUser;
+	protected String proxyUser;
 
 	/**
 	 * Password used to authenticate with the proxy server, if applicable
 	 */
-	private String proxyPassword;
+	protected String proxyPassword;
 
 	/**
 	 * Some proxies have to be authenticated via KERBEROS and therefore need to reference the windows Domain. This field
 	 * is optional and allows that to be specified
 	 */
-	private String proxyDomain;
+	protected String proxyDomain;
 
 	/**
 	 * Used for authenticating with Windows specific Proxy servers. (optional)
 	 */
-	private String proxyWorkstation;
+	protected String proxyWorkstation;
+
+	protected String visibility = "private";
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account owner;
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
 
 	/**
 	 * Gets the displayable name given to the proxy configuration being referenced.
@@ -163,5 +174,32 @@ public class NetworkProxy extends MorpheusModel {
 	public void setProxyWorkstation(String proxyWorkstation) {
 		this.proxyWorkstation = proxyWorkstation;
 		markDirty("proxyWorkstation", proxyWorkstation);
+	}
+
+	public String getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(String visibility) {
+		this.visibility = visibility;
+		markDirty("visibility", visibility, this.visibility);
+	}
+
+	public Account getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Account owner) {
+		this.owner = owner;
+		markDirty("owner", owner, this.owner);
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+		markDirty("account", account, this.account);
 	}
 }

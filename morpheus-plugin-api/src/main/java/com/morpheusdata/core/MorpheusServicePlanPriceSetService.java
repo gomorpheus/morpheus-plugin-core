@@ -22,7 +22,7 @@ public interface MorpheusServicePlanPriceSetService {
 	 * @param accountPriceSet {@link AccountPriceSet}
 	 * @return Observable stream of sync projection
 	 */
-	Observable<ServicePlanPriceSetIdentityProjection> listSyncProjections(AccountPriceSet accountPriceSet);
+	Observable<ServicePlanPriceSetIdentityProjection> listIdentityProjections(AccountPriceSet accountPriceSet);
 
 	/**
 	 * Get a list of ServicePlanPriceSet projections based on a list of {@link com.morpheusdata.model.AccountPriceSet}
@@ -30,6 +30,26 @@ public interface MorpheusServicePlanPriceSetService {
 	 * @param accountPriceSets {@link AccountPriceSet}
 	 * @return Observable stream of sync projection
 	 */
+	Observable<ServicePlanPriceSetIdentityProjection> listIdentityProjections(List<AccountPriceSet> accountPriceSets);
+
+	/**
+	 * Get a list of ServicePlanPriceSet projections based on {@link com.morpheusdata.model.AccountPriceSet}
+	 * AccountPriceSet must, at least, have an id or code set
+	 * @param accountPriceSet {@link AccountPriceSet}
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(AccountPriceSet)}}
+	 */
+	@Deprecated
+	Observable<ServicePlanPriceSetIdentityProjection> listSyncProjections(AccountPriceSet accountPriceSet);
+
+	/**
+	 * Get a list of ServicePlanPriceSet projections based on a list of {@link com.morpheusdata.model.AccountPriceSet}
+	 * AccountPriceSet must, at least, have an id or code set
+	 * @param accountPriceSets {@link AccountPriceSet}
+	 * @return Observable stream of sync projection
+	 * @deprecated replaced by {{@link #listIdentityProjections(List)}}
+	 */
+	@Deprecated
 	Observable<ServicePlanPriceSetIdentityProjection> listSyncProjections(List<AccountPriceSet> accountPriceSets);
 
 	/**

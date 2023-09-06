@@ -226,6 +226,19 @@ public class DataQuery {
 		return this;
 	}
 
+	/**
+	 * Appends a set of filters to the existing filters list. This operation is additive and does not clear the current
+	 * filters list. For information on the available filter types please refer to the top of this classes description.
+	 * @param filters a Collection of Filter objects for building custom queries.
+	 * @return the current DataQuery object for chaining
+	 * @see DataAndFilter
+	 * @see DataOrFilter
+	 */
+	public DataQuery withFilters(DataFilter... filters) {
+		this.filters.addAll(Arrays.asList(filters));
+		return this;
+	}
+
 	public Object putAt(String key, Object value) {
 		return put(key, value);
 	}

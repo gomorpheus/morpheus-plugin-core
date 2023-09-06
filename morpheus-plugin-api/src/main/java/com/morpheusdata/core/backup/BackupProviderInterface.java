@@ -28,8 +28,8 @@ public interface BackupProviderInterface extends PluginProvider {
 	 * This is the old way and is no longer being used.
 	 * @deprecated
 	 */
-	@Deprecated
-	String getViewSet();
+	@Deprecated(since = "0.14.0", forRemoval = true)
+	default String getViewSet() { return null; };
 
 	/**
 	 * Sets the enabled state of the provider for consumer use.

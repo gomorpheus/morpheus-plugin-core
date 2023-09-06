@@ -38,7 +38,7 @@ import java.util.Map;
  * @see DataQuery
 
  */
-public interface MorpheusDataService<M extends MorpheusModel> extends MorpheusDataQueryService<M> {
+public interface MorpheusDataService<M extends MorpheusModel, I extends MorpheusModel> extends MorpheusDataQueryService<M>{
 
 	/**
 	 * Persists a new model object into the Morpheus database. It is important to note that when persisting more than
@@ -129,7 +129,7 @@ public interface MorpheusDataService<M extends MorpheusModel> extends MorpheusDa
 	 * @param item the previously existing {@link com.morpheusdata.model.MorpheusModel} object to be removed from the database.
 	 * @return a single Boolean object that will confirm the success or failure of the removal
 	 */
-	Single<Boolean> remove(M item);
+	Single<Boolean> remove(I item);
 
 	/**
 	 * Removes a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -141,7 +141,7 @@ public interface MorpheusDataService<M extends MorpheusModel> extends MorpheusDa
 	 *              database.
 	 * @return a BulkRemoveResult containing information on the items that were failed to be removed.
 	 */
-	Single<BulkRemoveResult<M>> bulkRemove(List<M> items);
+	Single<BulkRemoveResult<I>> bulkRemove(List<I> items);
 
 	/**
 	 * Removes a collection of previously created model objects in a batch to the Morpheus database. This is very useful for bulk
@@ -156,7 +156,7 @@ public interface MorpheusDataService<M extends MorpheusModel> extends MorpheusDa
 	 * @see MorpheusDataService#bulkRemove(List)
 	 */
 	@Deprecated
-	default Single<Boolean> remove(List<M> items) {
+	default Single<Boolean> remove(List<I> items) {
 		return this.bulkRemove(items).map(BulkRemoveResult::getSuccess);
 	}
 

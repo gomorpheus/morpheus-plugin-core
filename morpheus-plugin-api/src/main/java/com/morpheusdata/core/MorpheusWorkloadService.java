@@ -11,7 +11,7 @@ import io.reactivex.Observable;
  * @author Dustin Deyoung
  * @since 0.13.0
  */
-public interface MorpheusWorkloadService extends MorpheusDataService<Workload> {
+public interface MorpheusWorkloadService extends MorpheusDataService<Workload,WorkloadIdentityProjection> {
 
 	/**
 	 * Get a list of {@link Workload} projections based on Cloud id

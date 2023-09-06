@@ -39,14 +39,14 @@ import java.util.Map;
  * @see MorpheusDataService
  * @see DataQuery
  */
-public interface MorpheusSynchronousDataService<M extends MorpheusModel> {
+public interface MorpheusSynchronousDataService<M extends MorpheusModel, I extends MorpheusModel> {
 
 	/**
 	 * Reference to the asynchronous data service {@link MorpheusDataService} implementation as this interface acts
 	 * as a simple delegate blocking wrapper for it.
 	 * @return the asynchronous data service to be used by the default method implementations in this interface.
 	 */
-	MorpheusDataService<M> getDataService();
+	MorpheusDataService<M,I> getDataService();
 	//crud operations
 	/**
 	 * Persists a new model object into the Morpheus database. It is important to note that when persisting more than
@@ -131,7 +131,7 @@ public interface MorpheusSynchronousDataService<M extends MorpheusModel> {
 	 * @param item the previously existing {@link com.morpheusdata.model.MorpheusModel} object to be removed from the database.
 	 * @return a Boolean object that will confirm the success or failure of the removal
 	 */
-	default Boolean remove(M item) {
+	default Boolean remove(I item) {
 		return getDataService().remove(item).blockingGet();
 	}
 
@@ -148,7 +148,7 @@ public interface MorpheusSynchronousDataService<M extends MorpheusModel> {
 	 * @see MorpheusSynchronousDataService#bulkRemove(List)
 	 */
 	@Deprecated
-	default Boolean remove(List<M> items) {
+	default Boolean remove(List<I> items) {
 		return getDataService().remove(items).blockingGet();
 	}
 
@@ -160,7 +160,7 @@ public interface MorpheusSynchronousDataService<M extends MorpheusModel> {
 	 *              database.
 	 * @return a BulkRemoveResult containing information on the items that were failed to be removed.
 	 */
-	default BulkRemoveResult<M> bulkRemove(List<M> items) {
+	default BulkRemoveResult<I> bulkRemove(List<I> items) {
 		return getDataService().bulkRemove(items).blockingGet();
 	}
 

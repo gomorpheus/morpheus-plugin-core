@@ -6,5 +6,5 @@ import com.morpheusdata.model.User;
 import com.morpheusdata.model.projection.UserIdentity;
 import com.morpheusdata.model.projection.UserIdentityProjection;
 
-public interface MorpheusSynchronousUserService extends MorpheusSynchronousDataService<User>, MorpheusSynchronousIdentityService<UserIdentityProjection> {
+public interface MorpheusSynchronousUserService extends MorpheusSynchronousDataService<User,UserIdentityProjection>, MorpheusSynchronousIdentityService<UserIdentityProjection> {
 }

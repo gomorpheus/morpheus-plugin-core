@@ -14,6 +14,23 @@ public class DateUtility {
 	public static final TimeZone gmtTimezone = TimeZone.getTimeZone("GMT");
 	public static final TimeZone serverTimezone = TimeZone.getDefault();
 
+	public static String formatDate(Date date) {
+		return formatDate(date,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	}
+	public static String formatDate(Date date, String outputFormat) {
+		String rtn = null;
+		try {
+			if(date != null) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat(outputFormat);
+
+				rtn = dateFormat.format(date);
+			}
+		} catch(Exception ignored) {
+			log.warn("error formatting date: ${date}");
+		}
+		return rtn;
+	}
+
 	public static Date parseDate(Date date) {
 		return date;
 	}

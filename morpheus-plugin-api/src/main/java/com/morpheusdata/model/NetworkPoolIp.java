@@ -19,7 +19,11 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 	protected NetworkPool networkPool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkPoolRange networkPoolRange;
-	protected String ipType = "assigned"; //assigned, reserved
+	/**
+	 * Tracks the type of reservation this ip is. You can look at {@link IPType} for a list of available
+	 * types
+	 */
+	protected String ipType = IPType.ASSIGNED.toString();
 	protected String gatewayAddress;
 	protected String subnetMask;
 	protected String dnsServer;
@@ -54,6 +58,11 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 		markDirty("networkPoolRange", networkPoolRange);
 	}
 
+	/**
+	 * Grabs the current {@link IPType} String representation for determining the type of reservation.
+	 * i.e. is it a DHCP Reservation, or a Host record, or just reserved.
+	 * @return the current {@link IPType}
+	 */
 	public String getIpType() {
 		return ipType;
 	}
@@ -267,5 +276,26 @@ public class NetworkPoolIp extends NetworkPoolIpIdentityProjection {
 
 	public void setMacAddress(String macAddress) {
 		this.macAddress = macAddress;
+	}
+
+
+	/**
+	 * Represents the available IP Type Options Morpheus Understands.
+	 * If the IP is free for use, simply delete the record instead of setting an IPType
+	 */
+	public enum IPType {
+		ASSIGNED("assigned"),
+		RESERVED("reserved"),
+		TRANSIENT("transient"),
+		UNMANAGED("unmanaged");
+		private final String value;
+
+		IPType(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return this.value;
+		}
 	}
 }

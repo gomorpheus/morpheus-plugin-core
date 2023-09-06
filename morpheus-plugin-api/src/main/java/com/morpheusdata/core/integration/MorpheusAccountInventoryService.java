@@ -17,7 +17,7 @@ import java.util.List;
  * @author David Estes, bdwheeler
  * @since 5.3.1
  */
-public interface MorpheusAccountInventoryService extends MorpheusDataService<AccountInventory> {
+public interface MorpheusAccountInventoryService extends MorpheusDataService<AccountInventory,AccountInventoryIdentityProjection> {
 
 	/**
 	 * Lists all inventory projection objects for a specified integration id.

@@ -1,5 +1,6 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.NetworkProxy;
 import io.reactivex.Single;
 
@@ -14,13 +15,14 @@ import io.reactivex.Single;
  * @since 0.15.1
  * @author Eric Helgeson
  */
-public interface MorpheusNetworkProxyService {
+public interface MorpheusNetworkProxyService extends MorpheusDataService<NetworkProxy, NetworkProxy> {
 
 	/**
 	 * Featch a Network Proxy by id
 	 * @param id ID of the proxy
 	 * @return An instance of {@link NetworkProxy}
 	 */
+	@Deprecated(since="0.15.3")
 	Single<NetworkProxy> getById(Long id);
 }
 

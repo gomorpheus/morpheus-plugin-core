@@ -7,6 +7,6 @@ import com.morpheusdata.model.WorkloadScript;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusWorkloadScriptService extends MorpheusDataService<WorkloadScript> {
+public interface MorpheusWorkloadScriptService extends MorpheusDataService<WorkloadScript,WorkloadScript> {
 
 }

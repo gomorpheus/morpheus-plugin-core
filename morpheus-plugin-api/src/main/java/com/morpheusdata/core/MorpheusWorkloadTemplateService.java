@@ -7,6 +7,6 @@ import com.morpheusdata.model.WorkloadTemplate;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusWorkloadTemplateService extends MorpheusDataService<WorkloadTemplate> {
+public interface MorpheusWorkloadTemplateService extends MorpheusDataService<WorkloadTemplate,WorkloadTemplate> {
 
 }

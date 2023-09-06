@@ -14,7 +14,7 @@ import java.util.List;
  * @since 0.8.0
  * @author Mike Truso
  */
-public interface MorpheusServicePlanService {
+public interface MorpheusServicePlanService extends MorpheusDataService<ServicePlan,ServicePlanIdentityProjection>, MorpheusIdentityService<ServicePlanIdentityProjection> {
 
 	/**
 	 * Get a list of ServicePlan projections based on Cloud id
@@ -63,25 +63,4 @@ public interface MorpheusServicePlanService {
 	 * @return Observable stream of servicePlans
 	 */
 	Observable<ServicePlan> listByCode(Collection<String> codes);
-
-	/**
-	 * Save updates to existing ServicePlans
-	 * @param servicePlans updated servicePlans
-	 * @return resulting servicePlans
-	 */
-	Single<Boolean> save(List<ServicePlan> servicePlans);
-
-	/**
-	 * Create new ServicePlans in Morpheus
-	 * @param servicePlans new servicePlans to persist
-	 * @return resulting servicePlans
-	 */
-	Single<Boolean> create(List<ServicePlan> servicePlans);
-
-	/**
-	 * Remove persisted ServicePlan from Morpheus
-	 * @param servicePlans plans to delete
-	 * @return void
-	 */
-	Single<Boolean> remove(List<ServicePlanIdentityProjection> servicePlans);
 }
