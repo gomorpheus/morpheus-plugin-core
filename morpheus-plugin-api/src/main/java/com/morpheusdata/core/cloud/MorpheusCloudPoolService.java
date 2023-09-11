@@ -1,5 +1,6 @@
 package com.morpheusdata.core.cloud;
 
+import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.CloudPool;
@@ -12,7 +13,8 @@ import java.util.List;
 
 /**
  * Context methods for syncing {@link CloudPool} in Morpheus
- *
+ * <p><strong>This service is accessible in the {@link MorpheusContext} via the following traversal path:</strong> <br>
+ * {@code morpheusContext.getAsync().getCloud().getPool()}</p>
  * @author Mike Truso
  */
 public interface MorpheusCloudPoolService extends MorpheusDataService<CloudPool,CloudPoolIdentity>, MorpheusIdentityService<CloudPoolIdentity> {
