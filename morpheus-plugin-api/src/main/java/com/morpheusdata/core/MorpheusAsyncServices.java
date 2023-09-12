@@ -84,6 +84,13 @@ public interface MorpheusAsyncServices {
 	MorpheusServicePlanService getServicePlan();
 
 	/**
+	 * Returns the Price Plan context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link com.morpheusdata.core.providers.CloudProvider}.
+	 * @return An instance of the Price Plan Context to be used for calls by various providers
+	 */
+	MorpheusPricePlanService getPricePlan();
+
+	/**
 	 * Returns the Compute Server context used for syncing machines within Morpheus.
 	 * Typically this would be called by a {@link com.morpheusdata.core.providers.CloudProvider}.
 	 * @return An instance of the Compute Server Context to be used for calls by various providers
@@ -313,6 +320,12 @@ public interface MorpheusAsyncServices {
 	 * @return an instance of the MorpheusServicePlanPriceSetService
 	 */
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
+
+	/**
+	 * Returns the MorpheusPricePlanPriceSetService
+	 * @return an instance of the MorpheusPricePlanPriceSetService
+	 */
+	MorpheusPricePlanPriceSetService getPricePlanPriceSet();
 
 	/**
 	 * Returns the MorpheusAccountIntegrationService
