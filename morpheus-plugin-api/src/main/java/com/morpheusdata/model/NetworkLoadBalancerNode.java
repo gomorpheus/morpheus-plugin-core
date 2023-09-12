@@ -46,7 +46,7 @@ public class NetworkLoadBalancerNode extends LoadBalancerNodeIdentityProjection 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkLoadBalancer loadBalancer;
 
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<ComputeZonePool>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<CloudPool>();
 
 	public User getCreatedBy() {
 		return createdBy;
@@ -311,11 +311,11 @@ public class NetworkLoadBalancerNode extends LoadBalancerNodeIdentityProjection 
 		markDirty("loadBalancer", loadBalancer);
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 		markDirty("assignedZonePools", assignedZonePools);
 	}

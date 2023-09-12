@@ -13,18 +13,18 @@ public interface MorpheusNetworkRouteTableService {
 	/**
 	 * Lists all route table projection objects for a specified cloud.
 	 * The projection is a subset of the properties on a full {@link NetworkRouteTable} object for sync matching.
-	 * @param zonePool the {@link ComputeZonePool} identifier associated to the route tables to be listed.
+	 * @param zonePool the {@link CloudPool} identifier associated to the route tables to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(ComputeZonePool zonePool);
+	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(CloudPool zonePool);
 
 	/**
 	 * Lists all route table projection objects for a specified cloud.
 	 * The projection is a subset of the properties on a full {@link NetworkRouteTable} object for sync matching.
-	 * @param zonePoolId the id of the {@link ComputeZonePool} associated to the route tables to be listed.
+	 * @param poolId the id of the {@link CloudPool} associated to the route tables to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(Long zonePoolId);
+	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(Long poolId);
 
 	/**
 	 * Lists all {@link NetworkRouteTable} objects by a list of Identifiers. This is commonly used in sync / caching logic.

@@ -13,7 +13,7 @@ public class NetworkRouteTable extends NetworkRouteTableIdentityProjection {
 	protected String internalId;
 	protected String iacId; //id for infrastructure as code integrations
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool zonePool;
+	protected CloudPool zonePool;
 
 	public String getName() {
 		return name;
@@ -55,11 +55,11 @@ public class NetworkRouteTable extends NetworkRouteTableIdentityProjection {
 		this.iacId = iacId;
 	}
 
-	public ComputeZonePool getZonePool() {
+	public CloudPool getZonePool() {
 		return zonePool;
 	}
 
-	public void setZonePool(ComputeZonePool zonePool) {
+	public void setZonePool(CloudPool zonePool) {
 		this.zonePool = zonePool;
 	}
 }

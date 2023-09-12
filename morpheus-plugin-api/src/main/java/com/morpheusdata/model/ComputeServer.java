@@ -28,7 +28,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZoneRegion region;
+	protected CloudRegion region;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkDomain networkDomain;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -49,9 +49,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String platform;
 	protected String platformVersion;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool resourcePool;
+	protected CloudPool resourcePool;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZoneFolder folder;
+	protected CloudFolder folder;
 	protected String serverType;
 	protected String consoleHost;
 	protected PowerState powerState;
@@ -279,11 +279,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return platformVersion;
 	}
 
-	public ComputeZonePool getResourcePool() {
+	public CloudPool getResourcePool() {
 		return resourcePool;
 	}
 
-	public ComputeZoneFolder getFolder() {
+	public CloudFolder getFolder() {
 		return folder;
 	}
 
@@ -444,11 +444,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		this.singleTenant = singleTenant;
 	}
 
-	public ComputeZoneRegion getRegion() {
+	public CloudRegion getRegion() {
 		return region;
 	}
 
-	public void setRegion(ComputeZoneRegion region) {
+	public void setRegion(CloudRegion region) {
 		this.region = region;
 	}
 
@@ -514,12 +514,12 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("platformVersion", platformVersion);
 	}
 
-	public void setResourcePool(ComputeZonePool resourcePool) {
+	public void setResourcePool(CloudPool resourcePool) {
 		this.resourcePool = resourcePool;
 		markDirty("resourcePool", resourcePool);
 	}
 
-	public void setFolder(ComputeZoneFolder folder) {
+	public void setFolder(CloudFolder folder) {
 		this.folder = folder;
 		markDirty("folder", folder);
 	}

@@ -56,7 +56,7 @@ public class Instance extends InstanceIdentityProjection {
 	public String servicePassword;
 	public Long provisionZoneId;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public ComputeZonePool resourcePool;
+	public CloudPool resourcePool;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public InstanceTypeLayout layout;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)

@@ -55,7 +55,7 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 	protected NetworkLoadBalancer loadBalancer;
 
 	// the "hasMany" fields
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<ComputeZonePool>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<CloudPool>();
 	protected List<NetworkLoadBalancerNode> nodes = new ArrayList<NetworkLoadBalancerNode>();
 	protected List<NetworkLoadBalancerMonitor> monitors = new ArrayList<NetworkLoadBalancerMonitor>();
 	protected List<NetworkLoadBalancerMember> members = new ArrayList<NetworkLoadBalancerMember>();
@@ -426,11 +426,11 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 		markDirty("loadBalancer", loadBalancer);
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 		markDirty("assignedZonePools", assignedZonePools);
 	}

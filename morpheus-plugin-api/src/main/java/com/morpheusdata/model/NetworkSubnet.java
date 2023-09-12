@@ -65,7 +65,7 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 	protected NetworkSubnet.Status status = NetworkSubnet.Status.AVAILABLE;
 	protected Long networkId;
 	protected Boolean hasFloatingIps = false;
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<>();
 
 	public Boolean getHasFloatingIps() {
 		return hasFloatingIps;
@@ -424,11 +424,11 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 		markDirty("networkId", networkId);
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 	}
 }

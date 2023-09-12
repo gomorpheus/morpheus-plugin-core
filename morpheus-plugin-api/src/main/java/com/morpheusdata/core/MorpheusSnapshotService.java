@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.ComputeZoneRegion;
+import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.Snapshot;
 import com.morpheusdata.model.StorageVolume;
 import com.morpheusdata.model.projection.SnapshotIdentityProjection;
@@ -32,7 +32,7 @@ public interface MorpheusSnapshotService {
 	/**
 	 * Get a list of Snapshot projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param regionCode the {@link CloudRegion} to optionally filter by
 	 * @return Observable stream of sync projections
 	 */
 	Observable<SnapshotIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);

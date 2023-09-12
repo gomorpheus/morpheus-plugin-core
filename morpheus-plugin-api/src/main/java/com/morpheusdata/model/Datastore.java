@@ -43,7 +43,7 @@ public class Datastore extends DatastoreIdentityProjection {
 	protected Boolean isAssigned = false;
 	protected Long freeSpace;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool zonePool;
+	protected CloudPool zonePool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected StorageVolumeType volumeType;
 	protected String status = "provisioned";
@@ -53,7 +53,7 @@ public class Datastore extends DatastoreIdentityProjection {
 	protected User createdBy;
 
 	protected List<Datastore> datastores = new ArrayList<>();
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<>();
 
 	public Account getOwner() {
 		return owner;
@@ -295,11 +295,11 @@ public class Datastore extends DatastoreIdentityProjection {
 		this.freeSpace = freeSpace;
 	}
 
-	public ComputeZonePool getZonePool() {
+	public CloudPool getZonePool() {
 		return zonePool;
 	}
 
-	public void setZonePool(ComputeZonePool zonePool) {
+	public void setZonePool(CloudPool zonePool) {
 		this.zonePool = zonePool;
 	}
 
@@ -351,11 +351,11 @@ public class Datastore extends DatastoreIdentityProjection {
 		this.datastores = datastores;
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 	}
 }

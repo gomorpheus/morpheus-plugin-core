@@ -11,7 +11,7 @@ public class AccountResource extends AccountResourceIdentityProjection {
 	protected Account owner;
 	protected AccountResourceType type;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZoneRegion region;
+	protected CloudRegion region;
 
 	protected ResourceSpec resourceSpec;
 	protected String resourceType; //generic type for unknown stuff
@@ -961,11 +961,11 @@ public class AccountResource extends AccountResourceIdentityProjection {
 		markDirty("resourceSpec", resourceSpec);
 	}
 
-	public ComputeZoneRegion getRegion() {
+	public CloudRegion getRegion() {
 		return region;
 	}
 
-	public void setRegion(ComputeZoneRegion region) {
+	public void setRegion(CloudRegion region) {
 		this.region = region;
 	}
 }

@@ -21,12 +21,12 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-	protected String deviceName;
+	protected String deviceName = "/dev/sda";
 	protected String deviceDisplayName;
-	protected Long maxStorage;
-	protected Long usedStorage;
+	protected Long maxStorage = 0l;
+	protected Long usedStorage = 0l;
 	protected StorageVolumeType type;
-	protected Integer displayOrder;
+	protected Integer displayOrder = 0;
 	protected Boolean rootVolume = false;
 	protected String internalId;
 	protected String unitNumber;
@@ -44,6 +44,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Long refId;
 	protected String regionCode;
 	protected String status = "provisioned";
+	protected String uuid = java.util.UUID.randomUUID().toString();
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -303,4 +304,13 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public String getStatus() { return status; }
 
 	public void setStatus(String status) { this.status = status; }
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
+	}
 }

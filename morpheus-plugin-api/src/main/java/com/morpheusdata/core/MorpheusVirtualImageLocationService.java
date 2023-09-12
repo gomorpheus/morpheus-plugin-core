@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.ComputeZoneRegion;
+import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.VirtualImageLocation;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import io.reactivex.Observable;
@@ -25,7 +25,7 @@ public interface MorpheusVirtualImageLocationService {
 	/**
 	 * Get a list of VirtualImageLocation projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param regionCode the {@link CloudRegion} to optionally filter by
 	 * @return Observable stream of sync projection
 	 */
 	Observable<VirtualImageLocationIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);

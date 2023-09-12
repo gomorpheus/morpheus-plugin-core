@@ -31,11 +31,11 @@ public interface MorpheusNetworkSubnetService {
 	 * Lists all subnet projection objects for a specified cloud.
 	 * The projection is a subset of the properties on a full {@link NetworkSubnet} object for sync matching.
 	 * @param cloudId id of the {@link Cloud} identifier associated to the subnets to be listed.
-	 * @param computeZonePoolId (optional) id of the {@link ComputeZonePool} that the associated Network must be associated with via assignedZonePools
+	 * @param cloudPoolId (optional) id of the {@link CloudPool} that the associated Network must be associated with via assignedZonePools
 	 * @param category (optional category name that the network must have
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkSubnetIdentityProjection> listIdentityProjections(Long cloudId, Long computeZonePoolId, String category);
+	Observable<NetworkSubnetIdentityProjection> listIdentityProjections(Long cloudId, Long cloudPoolId, String category);
 
 	/**
 	 * Lists all {@link NetworkSubnet} objects by a list of Identifiers. This is commonly used in sync / caching logic.

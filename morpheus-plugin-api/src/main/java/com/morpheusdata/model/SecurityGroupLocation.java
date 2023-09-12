@@ -33,7 +33,7 @@ public class SecurityGroupLocation extends SecurityGroupLocationIdentityProjecti
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkSecurityServer securityServer;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool zonePool;
+	protected CloudPool zonePool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkServer networkServer;
 	//	protected NetworkRouter networkRouter;
@@ -144,11 +144,11 @@ public class SecurityGroupLocation extends SecurityGroupLocationIdentityProjecti
 		this.securityServer = securityServer;
 	}
 
-	public ComputeZonePool getZonePool() {
+	public CloudPool getZonePool() {
 		return zonePool;
 	}
 
-	public void setZonePool(ComputeZonePool zonePool) {
+	public void setZonePool(CloudPool zonePool) {
 		this.zonePool = zonePool;
 	}
 

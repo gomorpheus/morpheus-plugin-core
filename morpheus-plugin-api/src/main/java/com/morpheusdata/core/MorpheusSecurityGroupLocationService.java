@@ -1,8 +1,7 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeZonePool;
+import com.morpheusdata.model.CloudPool;
 import com.morpheusdata.model.SecurityGroupLocation;
-import com.morpheusdata.model.SecurityGroupRule;
 import com.morpheusdata.model.SecurityGroupRuleLocation;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.SecurityGroupLocationIdentityProjection;
@@ -19,12 +18,12 @@ public interface MorpheusSecurityGroupLocationService {
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the Cloud associated with the SecurityGroupLocation
 	 * @param cloudId the id of the Cloud
-	 * @param computeZonePoolId (optional) id of the {@link ComputeZonePool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
+	 * @param cloudPoolId (optional) id of the {@link CloudPool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
 	 * @param category (optional) category name that the SecurityGroupLocation must have
 	 *
 	 * @return Observable stream of sync projection
 	 */
-	Observable<SecurityGroupLocationIdentityProjection> listIdentityProjections(Long cloudId, Long computeZonePoolId, String category);
+	Observable<SecurityGroupLocationIdentityProjection> listIdentityProjections(Long cloudId, Long cloudPoolId, String category);
 
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the refId and refType associated with the SecurityGroupLocation
@@ -37,14 +36,14 @@ public interface MorpheusSecurityGroupLocationService {
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the Cloud associated with the SecurityGroupLocation
 	 * @param cloudId the id of the Cloud
-	 * @param computeZonePoolId (optional) id of the {@link ComputeZonePool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
+	 * @param cloudPoolId (optional) id of the {@link CloudPool} that the associated SecurityGroupLocation must be associated with via matching the 'category' with the ComputeZonePool's externalId
 	 * @param category (optional) category name that the SecurityGroupLocation must have
 	 *
 	 * @return Observable stream of sync projection
 	 * @deprecated replaced by {{@link #listIdentityProjections(Long, Long, String)}}
 	 */
 	@Deprecated
-	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId, Long computeZonePoolId, String category);
+	Observable<SecurityGroupLocationIdentityProjection> listSyncProjections(Long cloudId, Long cloudPoolId, String category);
 
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the refId and refType associated with the SecurityGroupLocation

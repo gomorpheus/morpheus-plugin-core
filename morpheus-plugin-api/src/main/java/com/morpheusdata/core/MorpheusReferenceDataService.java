@@ -1,6 +1,5 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.ReferenceData;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
 import io.reactivex.Observable;

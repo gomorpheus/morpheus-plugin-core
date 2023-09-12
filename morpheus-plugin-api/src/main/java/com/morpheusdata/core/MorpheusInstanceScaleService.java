@@ -1,6 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeZoneRegion;
+import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.InstanceScale;
 import com.morpheusdata.model.projection.InstanceScaleIdentityProjection;
 import io.reactivex.Observable;
@@ -31,7 +31,7 @@ public interface MorpheusInstanceScaleService {
 	/**
 	 * Get a list of {@link InstanceScale} projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param regionCode the {@link CloudRegion} to optionally filter by
 	 * @return Observable stream of identity projection
 	 */
 	Observable<InstanceScaleIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
