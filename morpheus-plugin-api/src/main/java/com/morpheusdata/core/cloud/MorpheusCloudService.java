@@ -8,6 +8,7 @@ import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.CloudIdentityProjection;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -45,6 +46,13 @@ public interface MorpheusCloudService extends MorpheusDataService<Cloud,CloudIde
 	MorpheusCloudTypeService getType();
 
 	Single<Collection<ComputeServerType>> getComputeServerTypes(Long cloudId);
+
+	/**
+	 * This will retrieve a compute server type by specific code
+	 * @param code String representing the code of the compute server type
+	 * @return {@link Maybe} a {@link ComputeServerType}
+	 */
+	Maybe<ComputeServerType> findComputeServerTypeByCode(String code);
 
 	/**
 	 * Update the status of a Cloud during setup

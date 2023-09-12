@@ -5,19 +5,16 @@ import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.model.AccountResource;
 import com.morpheusdata.model.AccountResourceType;
-import com.morpheusdata.model.Cloud;
+import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.projection.AccountResourceIdentityProjection;
-import com.morpheusdata.model.projection.CloudIdentityProjection;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Provides service/context methods for querying {@link com.morpheusdata.model.AccountResource} objects for use with syncing generic cloud resources.
  * These resources are useful for syncing non compute / vm related objects. For example, cloud native services often can be categorized as a resource
  * with a given {@link com.morpheusdata.model.AccountResourceType}. These even can be linked to deployed terraform resource artefacts or cloudformation
+ *
+ * <p><strong>This service is accessible in the {@link MorpheusContext} via the following traversal path:</strong> <br>{@code morpheusContext.getAsync().getCloud().getAccountResource()}</p>
  *
  * @author David Estes
  * @since 0.14.0

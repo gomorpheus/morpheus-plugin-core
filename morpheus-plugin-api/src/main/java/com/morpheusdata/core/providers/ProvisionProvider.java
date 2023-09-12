@@ -228,6 +228,52 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * Used to retrieve if the provision provider uses a NON standard set of views to render part of the provisioning
+	 * wizard
+	 * @return
+	 */
+	default public String getViewSet() {
+		return null;
+	}
+
+	/**
+	 * For most provision types, a default instance type is created upon plugin registration.  Override this method if
+	 * you do NOT want to create a default instance type for your provision provider
+	 * @return defaults to true
+	 */
+	default public Boolean createDefaultInstanceType() {
+		return true;
+	}
+
+	/**
+	 * Does this provision type allow more than one instance on a box
+	 * @return
+	 */
+	default public Boolean multiTenant() {
+		return true;
+	}
+
+	/**
+	 * Can control firewall rules on the instance
+	 * @return
+	 */
+	default public Boolean aclEnabled() {
+		return true;
+	}
+
+	default public String getHostDiskMode() {
+		return null;
+	}
+
+	/**
+	 * Can control security groups for instances using this provision provider
+	 * @return
+	 */
+	default public Boolean hasSecurityGroups() {
+		return false;
+	}
+
+	/**
 	 * Indicates if data volumes may be customized during provisioning. For example, the size changed
 	 * @return Boolean
 	 */

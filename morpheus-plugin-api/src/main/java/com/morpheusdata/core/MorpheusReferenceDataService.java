@@ -7,7 +7,7 @@ import io.reactivex.Single;
 
 import java.util.List;
 
-public interface MorpheusReferenceDataService {
+public interface MorpheusReferenceDataService extends MorpheusDataService<ReferenceData,ReferenceDataSyncProjection> {
 
 	Single<Boolean> create(List<ReferenceData> referenceData);
 
@@ -45,10 +45,9 @@ public interface MorpheusReferenceDataService {
 
 	Observable<ReferenceDataSyncProjection> listByRefTypeAndRefId(String refType, String refId);
 
+	Observable<ReferenceData> listByCategoryAndKeyValue(String category, String value);
+
 	Single<ReferenceData> findByExternalId(String externalId);
 
 	Observable<ReferenceData> listById(List<Long> ids);
-
-	Single<ReferenceData> get(Long id);
-
 }
