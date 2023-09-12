@@ -2,15 +2,10 @@ package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.*;
-import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
-import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
 import com.morpheusdata.model.projection.NetworkLoadBalancerIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +27,8 @@ public interface MorpheusLoadBalancerService extends MorpheusDataService<Network
 	MorpheusLoadBalancerScriptService getScript();
 
 	MorpheusLoadBalancerInstanceService getInstance();
+
+	MorpheusLoadBalancerTypeService getType();
 
 	Single<NetworkLoadBalancer> getLoadBalancerById(Long id);
 
