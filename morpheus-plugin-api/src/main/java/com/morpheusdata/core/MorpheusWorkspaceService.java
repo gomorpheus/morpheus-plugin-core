@@ -7,6 +7,6 @@ import com.morpheusdata.model.Workspace;
  * @author bdwheeler
  * @since 0.16.1
  */
-public interface MorpheusWorkspaceService extends MorpheusDataService<Workspace> {
+public interface MorpheusWorkspaceService extends MorpheusDataService<Workspace, Workspace> {
 
 }
