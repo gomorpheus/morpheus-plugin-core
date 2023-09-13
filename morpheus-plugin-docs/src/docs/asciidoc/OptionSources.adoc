@@ -1,5 +1,8 @@
 == Option Sources
 
+**NOTE** These have been replaced by `DataSet Providers` as of 0.15.x.
+
+**DEPRECATED:**
 An Option source is a server side call to load a dynamic dataset for custom form inputs. These normally feed dropdown lists, multiselect components, and typeahead components. These can be very useful when designing task types that have custom options or even custom catalog item layouts.
 
 === Getting Started
