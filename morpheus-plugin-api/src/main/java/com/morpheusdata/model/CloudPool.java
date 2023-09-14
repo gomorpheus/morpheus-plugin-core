@@ -18,6 +18,7 @@ public class CloudPool extends ComputeZonePoolIdentityProjection {
 	public Cloud cloud;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public ComputeServerGroup serverGroup;
+	public String displayName;
 	public String code;
 	public String config;
 	public String treeName;
