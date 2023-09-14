@@ -15,7 +15,7 @@ public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected ImageType imageType;
-	protected Boolean linkedClone;
+	protected Boolean linkedClone = false;
 	protected String snapshotId;
 	protected Long ownerId;
 	protected Boolean systemImage;
