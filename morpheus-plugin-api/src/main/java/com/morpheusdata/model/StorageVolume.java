@@ -45,6 +45,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String regionCode;
 	protected String status = "provisioned";
 	protected String uuid = java.util.UUID.randomUUID().toString();
+	protected String sourceSnapshotId;
+
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -312,5 +314,14 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
+	}
+
+	public String getSourceSnapshotId() {
+		return sourceSnapshotId;
+	}
+
+	public void setSourceSnapshotId(String sourceSnapshotId) {
+		this.sourceSnapshotId = sourceSnapshotId;
+		markDirty("sourceSnapshotId", sourceSnapshotId, this.sourceSnapshotId);
 	}
 }
