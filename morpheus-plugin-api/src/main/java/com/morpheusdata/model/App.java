@@ -22,7 +22,7 @@ public class App extends AppIdentityProjection {
 	@JsonSerialize(using=ModelIdUuidCodeNameSerializer.class)
 	protected AppTemplate template;
 	@JsonSerialize(using=ModelIdCodeNameSerializer.class)
-	protected AppTemplate templateType;
+	protected AppTemplateType templateType;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeSite site;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
@@ -94,11 +94,11 @@ public class App extends AppIdentityProjection {
 		markDirty("template", template);
 	}
 
-	public AppTemplate getTemplateType() {
+	public AppTemplateType getTemplateType() {
 		return templateType;
 	}
 
-	public void setTemplateType(AppTemplate templateType) {
+	public void setTemplateType(AppTemplateType templateType) {
 		this.templateType = templateType;
 		markDirty("templateType", templateType);
 	}
