@@ -387,4 +387,11 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusLibraryServices getLibrary();
 
+	/**
+	 * Returns the {@link MorpheusCodeRepositoryService } which contains all code repository services
+	 * @return an instance of the MorpheusCodeRepositoryService
+	 */
+	MorpheusCodeRepositoryService getCodeRepository();
+
+
 }
