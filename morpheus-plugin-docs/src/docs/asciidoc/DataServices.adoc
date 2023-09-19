@@ -1,0 +1,59 @@
+[#dataservice]
+== Data Services
+
+As the Morpheus Plugin API has progressed a new concept was created in 0.15.x. It was determined a consistent means for querying Morpheus data objects needed to be made across the board in all of the `MorpheusContext` accessible services. Previously, there were only a fixed set of options per Model that one might have wanted to query. But with the development of the `DataService` model and the new `DataQuery` object, a lot more power is available to the developer.
+
+These services are now commonly used in various sync related activities with `SyncTask` as well as can be used with custom reporting or the new `DataSetProvider` concepts.
+
+
+.MorpheusDataService.java
+[source,java]
+----
+public interface MorpheusDataService<M extends MorpheusModel, I extends MorpheusModel> {
+	Observable<M> listById(List<Long> ids);
+
+	Observable<M> list(DataQuery query);
+
+	Observable<Map> listOptions(DataQuery query);
+
+	Maybe<M> find(DataQuery query);
+
+
+	Single<DataQueryResult> search(DataQuery query);
+}
+----
+
+Above you will see a common set of methods for querying data. The important part of these methods is to note that they all take a `DataQuery` object. This object allows you to scope a query to a `User` or an `Account` within morpheus as well as pass in complex query operators.
+
+For Example:
+
+[source,groovy]
+----
+def usageClouds = morpheusContext.async.cloud.list(
+	new DataQuery().withFilters(
+		new DataOrFilter(
+			new DataFilter("externalId","in",usageAccountIds),
+			new DataFilter("linkedAccountId","in",usageAccountIds)
+		)
+	)
+).toList().blockingGet()
+
+----
+
+The above query looks for all clouds that contain a set of usage account ids via either the `externalId` property or the `linkedAccountId` property.
+
+As can be seen above, queries can be nested with `DataOrFilter` or `DataAndFilter` combinations to build complex queries. More details of this also exist on the `DataQuery` java doc.
+
+*NOTE*: The DataService also provides `save`, `create`,`remove` methods of a consistent nature. Please refer to the APIDoc / javadoc for descriptions on how to use these methods.
+
+In the past, when making custom reports, it was common to use the direct database connection and query the morpheus data set directly. This carried with it some risks as these tables are not strictly documented and some data is in an encrypted state. By utilizing data services ( where possible ), however, the object models are marshalled into a properly documented format and fields that may have been previously inaccessible, due to encryption, are now available for use.
+
+=== Synchronous Data Services
+
+In an effort to make plugin development easier, it was decided that a counterpart service would be made for non rxjava / reactive calls. We call this the `SynchronousDataService`. This service provides the exact same methods as the `MorpheusDataService`, however, it does not require an Observable subscription or `blockingGet()`.
+
+These services can be accessed via the contexts `morpheusContext.getServices()` directive as opposed to `morpheusContext.getAsync()`. They are useful for things that you know are going to block anyway, such as perhaps a UI Page render.
+
+It is still recommended, when performing sync operations of a cloud, or generating a custom report to utilize the asynchronous counterparts for best performance.
+
+**NOTE**: As of 0.15.3: Not All Async services have been converted yet and several may still be missing.

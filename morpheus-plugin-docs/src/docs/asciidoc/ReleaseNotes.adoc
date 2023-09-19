@@ -2,10 +2,21 @@
 
 **Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum. 6.0.x Morpheus versions use 0.14.x plugin-api and 6.2.x Morpheus versions use 0.15.x plugin-api. Efforts are being made to preserve some backwards compatibility as we get closer to 1.0 versions.
 
+* **0.15.3**
+** Converting More Context Services to `MorpheusDataService` versions and deprecating old methods.
+** Deprecated direct service accessors on `MorpheusContext` in favor of `morpheusContext.getAsync()` for all the existing reactive services and `morpheusContext.getServices()` for all the synchronous counterparts.
+** Rename ComputeZonePool to CloudPool
+** Rename ComputeZoneRegion to CloudRegion
+** Rename ComputeZoneFolder to CloudFolder
+** Adding javadoc details to existing and new classes
+** Introducing `Facet` interfaces for adding additional functionality to `ProvisionProvider` implementations.
+** Starting to rename `IdentityProjection` objects to `Identity` for shorter naming convention.
+** New Base interfaces for ProvisionProvider based on if provisioning Compute or Cloud native resources or Apps.
+** *NOTE*: There are breaking changes in this plugin release for cloud plugins and likely more to come as we polish for 1.0 GA
 * **0.15.2**
 ** MorpheusDataService enhancements with added query methods.
 ** Deprecated Service access directly on `MorpheusContext` in favor of accessing thru sub classes i.e. `morpheusContext.getAsync().getService()`.
-** Began adding non reactive synchronous service access via `morpheusContext.getServices().getService()`
+** Began adding non-reactive synchronous service access via `morpheusContext.getServices().getService()`
 ** Improved javadoc for `DataQuery` and `DataService` methods.
 * **0.15.1**
 ** Moved most Providers new packages folder `com.morpheusdata.core.providers`
