@@ -1,24 +1,21 @@
 package com.morpheusdata.response;
 
-import com.morpheusdata.model.Instance;
-import com.morpheusdata.model.VirtualImageLocation;
-import com.morpheusdata.model.Workload;
+import com.morpheusdata.model.App;
 
 import java.util.List;
 import java.util.Map;
 
-public class PrepareInstanceResponse {
-
-	protected Instance instance;
+public class PrepareAppResponse {
+	protected App app;
 	protected Map<String,Object> options;
 	protected List<Map> resources;
 
-	public Instance getInstance() {
-		return instance;
+	public App getApp() {
+		return app;
 	}
 
-	public void setInstance(Instance instance) {
-		this.instance = instance;
+	public void setApp(App app) {
+		this.app = app;
 	}
 
 	public Map<String, Object> getOptions() {
