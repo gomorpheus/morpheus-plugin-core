@@ -28,6 +28,8 @@ include::Models.adoc[]
 
 include::DataServices.adoc[]
 
+include::SyncTasks.adoc[]
+
 include::HTTPRouting.adoc[]
 
 include::HttpApiClient.adoc[]
