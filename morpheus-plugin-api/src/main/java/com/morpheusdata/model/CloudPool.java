@@ -28,7 +28,7 @@ public class CloudPool extends ComputeZonePoolIdentityProjection {
 	public String refType;
 	public Long refId;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	public ComputeZonePool parent;
+	public CloudPool parent;
 	public Boolean active = true;
 	public Boolean readOnly = false;
 	public Boolean defaultPool = false;
