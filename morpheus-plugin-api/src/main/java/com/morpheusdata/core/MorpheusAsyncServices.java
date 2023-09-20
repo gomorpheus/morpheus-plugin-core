@@ -179,6 +179,20 @@ public interface MorpheusAsyncServices {
 	MorpheusStorageControllerService getStorageController();
 
 	/**
+	 * Returns the StorageServer Service
+	 *
+	 * @return An instance of the StorageServer Service
+	 */
+	MorpheusStorageServerService getStorageServer();
+
+	/**
+	 * Returns the StorageBucket Service
+	 *
+	 * @return An instance of the StorageBucket Service
+	 */
+	MorpheusStorageBucketService getStorageBucket();
+
+	/**
 	 * Returns the Usage Service
 	 *
 	 * @return An instance of the Usage Service

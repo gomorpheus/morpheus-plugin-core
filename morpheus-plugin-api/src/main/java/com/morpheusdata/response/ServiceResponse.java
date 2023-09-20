@@ -69,7 +69,7 @@ public class ServiceResponse<T> {
 	 */
 	public static ServiceResponse create(Map<String, Object> config) {
 		Boolean configSuccess = config.get("success") == null ? false : (Boolean)config.get("success");
-		String configMsg = config.get("msg") != null ? (String)config.get("message") : null;
+		String configMsg = config.get("msg") != null ? (String)config.get("msg") : null;
 		Map<String, String> configErrors = (LinkedHashMap<String, String>)config.getOrDefault("errors", new LinkedHashMap<String, String>());
 		Object configData = config.getOrDefault("data", new LinkedHashMap<String, Object>());
 		ServiceResponse rtn = new ServiceResponse(configSuccess, configMsg, configErrors, configData);

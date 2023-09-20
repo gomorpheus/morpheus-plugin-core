@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.math.*;
 import java.util.*;
 import javax.json.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all Morpheus Model classes. This provides dirty checking capabilities for most base object representations
@@ -16,6 +18,8 @@ import javax.json.*;
  * @author David Estes
  */
 public class MorpheusModel {
+
+	static Logger log = LoggerFactory.getLogger(MorpheusModel.class);
 
 	/**
 	 * Database reference Id of the Object. Typically not directly set.
@@ -145,12 +149,15 @@ public class MorpheusModel {
 	public Map getConfigMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			JsonReader jsonReader = Json.createReader(new StringReader(this.config));
-			JsonObject object = jsonReader.readObject();
-			jsonReader.close();
-			map = toMap(object);
+			if(this.config != null && this.config != "") {
+				JsonReader jsonReader = Json.createReader(new StringReader(this.config));
+				JsonObject object = jsonReader.readObject();
+				jsonReader.close();
+				map = toMap(object);
+			}
 		} catch(Exception e) {
 			//fail silently
+			log.error("Error parsing config as JSON: {}",e.getMessage(),e);
 		}
 		return map;
 	}
