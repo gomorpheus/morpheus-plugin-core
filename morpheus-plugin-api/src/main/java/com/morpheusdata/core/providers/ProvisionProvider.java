@@ -230,11 +230,25 @@ public interface ProvisionProvider extends PluginProvider {
 	/**
 	 * Used to retrieve if the provision provider uses a NON standard set of views to render part of the provisioning
 	 * wizard
-	 * @return
+	 * @return String
 	 */
 	default public String getViewSet() {
 		return null;
 	}
+
+	/**
+	 * By default, provision providers require a virtual image (ami, ovf/vmdk, etc) in order to provision an instance.
+	 * However, some service based instance types do not require a virtual image (Amazon RDS for example)
+	 * @return Boolean
+	 */
+	default public Boolean requiresVirtualImage() { return true; }
+
+	/**
+	 * Override this method to return false if its a provision type that does not support the morpheus agent install.  This
+	 * will be the case for provision types of non standard operating systems or service based provision types (Amazon RDS for example)
+	 * @return
+	 */
+	default public Boolean supportsAgent() { return true; }
 
 	/**
 	 * For most provision types, a default instance type is created upon plugin registration.  Override this method if
