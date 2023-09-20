@@ -69,7 +69,12 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 	 */
 	ServiceResponse destroyInstance(Instance instance, Map opts);
 
-
+	/**
+	 * Provides methods for provisioning Apps
+	 *
+	 * @since 0.15.4
+	 * @author Alex Clement
+	 */
 	public interface AppFacet {
 
 		/**
@@ -82,6 +87,8 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 		ServiceResponse validateApp(App app, Map opts);
 
 		ServiceResponse<ProvisionResponse> runApp(App app, AppRequest appRequest, Map opts);
+
+		ServiceResponse<PrepareAppResponse> prepareApp(App app, AppRequest appRequest, Map opts);
 
 		ServiceResponse destroyApp(App app, Map opts);
 
