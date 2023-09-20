@@ -10,7 +10,6 @@ import com.morpheusdata.model.StorageServer;
  */
 public class StorageServerIdentityProjection extends MorpheusIdentityModel {
 
-	protected String code;
 	protected String name;
 	protected String externalId;
 	protected String uuid;
@@ -19,28 +18,9 @@ public class StorageServerIdentityProjection extends MorpheusIdentityModel {
 		//default
 	}
 
-	public StorageServerIdentityProjection(Long id, String name, String code, String externalId) {
+	public StorageServerIdentityProjection(Long id, String name) {
 		this.id = id;
-		this.code = code;
 		this.name = name;
-		this.externalId = externalId;
-	}
-
-	/**
-	 * Gets the code of the storage server. This is on the identity projection in case a fallback match needs to happen by name
-	 * @return the current name of the storage server
-	 */
-	public String getCode() {
-		return code;
-	}
-
-	/**
-	 * Sets the code of the storage server. Typically this isnt called directly.
-	 * @param code the code of the storage server to be assigned.
-	 */
-	public void setCode(String code) {
-		this.code = code;
-		markDirty("code", code);
 	}
 
 	/**

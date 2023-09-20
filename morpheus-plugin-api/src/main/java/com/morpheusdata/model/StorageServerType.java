@@ -1,31 +1,41 @@
 package com.morpheusdata.model;
 
+import java.util.Collection;
+
 public class StorageServerType extends MorpheusModel {
 
 	protected String code;
 	protected String name;
 	protected String description;
 	protected String storageService;
-	protected Boolean enabled;
-	protected Boolean creatable;
-	protected Boolean hasNamespaces;
-	protected Boolean hasGroups;
-	protected Boolean hasBlock;
-	protected Boolean hasObject;
-	protected Boolean hasFile;
-	protected Boolean hasDatastore;
-	protected Boolean hasDisks;
-	protected Boolean hasHosts;
-	protected Boolean createNamespaces;
-	protected Boolean createGroup;
-	protected Boolean createBlock;
-	protected Boolean createObject;
-	protected Boolean createFile;
-	protected Boolean createDatastore;
-	protected Boolean createDisk;
-	protected Boolean createHost;
+	protected Boolean enabled = true;
+	protected Boolean creatable = true;
+	protected Boolean hasNamespaces = false;
+	protected Boolean hasGroups = false;
+	protected Boolean hasBlock = false;
+	protected Boolean hasObject = false;
+	protected Boolean hasFile = false;
+	protected Boolean hasDatastore = false;
+	protected Boolean hasDisks = false;
+	protected Boolean hasHosts = false;
+	protected Boolean createNamespaces = false;
+	protected Boolean createGroup = false;
+	protected Boolean createBlock = false;
+	protected Boolean createObject = false;
+	protected Boolean createFile = false;
+	protected Boolean createDatastore = false;
+	protected Boolean createDisk = false;
+	protected Boolean createHost = false;
 	protected String iconCode;
-	protected Boolean hasFileBrowser;
+	protected Boolean hasFileBrowser = false;
+
+	// associations
+	Collection<OptionType> optionTypes;
+	// Collection<OptionType> groupOptionTypes;
+	Collection<StorageVolumeType> volumeTypes;
+	Collection<OptionType> bucketOptionTypes;
+	// Collection<OptionType> shareOptionTypes;
+	// Collection<OptionType> shareAccessOptionTypes;
 
 	public String getCode() {
 		return code;
@@ -243,4 +253,30 @@ public class StorageServerType extends MorpheusModel {
 		markDirty("hasFileBrowser", hasFileBrowser);
 	}
 
+	public Collection<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(Collection<OptionType> optionTypes) {
+		markDirty("optionTypes", this.optionTypes);
+		this.optionTypes = optionTypes;
+	}
+
+	public Collection<StorageVolumeType> getVolumeTypes() {
+		return volumeTypes;
+	}
+
+	public void setVolumeTypes(Collection<StorageVolumeType> volumeTypes) {
+		markDirty("volumeTypes", this.volumeTypes);
+		this.volumeTypes = volumeTypes;
+	}
+
+	public Collection<OptionType> getBucketOptionTypes() {
+		return bucketOptionTypes;
+	}
+
+	public void setBucketOptionTypes(Collection<OptionType> bucketOptionTypes) {
+		markDirty("bucketOptionTypes", this.bucketOptionTypes);
+		this.bucketOptionTypes = bucketOptionTypes;
+	}
 }

@@ -15,6 +15,8 @@ import java.util.Map;
  * @see StorageProvider
  */
 public interface StorageProviderBuckets {
+	ServiceResponse validateBucket(StorageBucket storageBucket, Map opts);
+	
 	ServiceResponse createBucket(StorageBucket storageBucket, Map opts);
 
 	ServiceResponse updateBucket(StorageBucket storageBucket, Map opts);
