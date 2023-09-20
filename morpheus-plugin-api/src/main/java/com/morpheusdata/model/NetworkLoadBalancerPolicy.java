@@ -19,7 +19,6 @@ public class NetworkLoadBalancerPolicy extends LoadBalancerPolicyIdentityProject
 	protected String description;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected Boolean enabled = true;
 	protected Boolean draft = false;
 	protected String controls;
@@ -111,17 +110,6 @@ public class NetworkLoadBalancerPolicy extends LoadBalancerPolicyIdentityProject
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public Boolean getEnabled() {

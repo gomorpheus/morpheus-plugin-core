@@ -20,7 +20,6 @@ public class NetworkLoadBalancerNode extends LoadBalancerNodeIdentityProjection 
 	protected Integer weight;
 	protected String nodeState = "enabled"; //disabled,offline
 	protected String internalId;
-	protected String config;
 	protected String rawData;
 	protected Boolean enabled = true;
 	protected String status = "ok"; //ok, error, warning, offline
@@ -136,17 +135,6 @@ public class NetworkLoadBalancerNode extends LoadBalancerNodeIdentityProjection 
 	public void setInternalId(String internalId) {
 		this.internalId = internalId;
 		markDirty("internalId", internalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getRawData() {

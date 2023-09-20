@@ -18,7 +18,6 @@ public class BackupJob extends MorpheusModel {
 	protected BackupProvider backupProvider;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String refType;
 	protected Long refId;
 	protected String backupServerId;

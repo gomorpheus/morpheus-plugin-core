@@ -15,7 +15,6 @@ public class NetworkLoadBalancerMember extends MorpheusModel {
 	protected String description;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected Boolean enabled = true;
 	protected String status = "ok"; //ok, error, warning, offline
 	protected String statusMessage;
@@ -97,15 +96,6 @@ public class NetworkLoadBalancerMember extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public Boolean getEnabled() {

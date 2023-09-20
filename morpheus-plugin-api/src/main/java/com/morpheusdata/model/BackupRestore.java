@@ -64,11 +64,6 @@ public class BackupRestore extends MorpheusModel {
 	protected String externalStatusRef;
 
 	/**
-	 * Additional configuration
-	 */
-	protected String config;
-
-	/**
 	 * Error message of a failed restore
 	 */
 	protected String errorMessage;
@@ -171,15 +166,6 @@ public class BackupRestore extends MorpheusModel {
 	public void setExternalStatusRef(String externalStatusRef) {
 		markDirty("externalStatusRef", externalStatusRef, this.externalStatusRef);
 		this.externalStatusRef = externalStatusRef;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getErrorMessage() {

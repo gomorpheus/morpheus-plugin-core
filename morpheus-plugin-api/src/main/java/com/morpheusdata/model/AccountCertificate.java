@@ -51,7 +51,6 @@ public class AccountCertificate extends MorpheusModel {
 	protected Boolean certLoaded = true;
 	protected Boolean certAvailable = true;
 	protected Boolean hasPassphrase = false;
-	protected String config;
 	protected String rawData;
 	protected AccountCertificateType type;
 	protected String organization;
@@ -394,16 +393,6 @@ public class AccountCertificate extends MorpheusModel {
 
 	public void setHasPassphrase(Boolean hasPassphrase) {
 		this.hasPassphrase = hasPassphrase;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getRawData() {

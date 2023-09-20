@@ -36,7 +36,6 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 	protected String hostname;
 	protected String fqdn;
 	protected String domainName;
-	protected String config;
 	//integration
 	protected String internalIp;
 	protected String externalIp;
@@ -277,16 +276,6 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 
 	public void setDomainName(String domainName) {
 		this.domainName = domainName;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getInternalIp() {

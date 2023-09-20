@@ -14,7 +14,6 @@ public class ComputeSite extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String location;
-	protected String config;
 	protected Double latitude;
 	protected Double longitude;
 	protected String address;
@@ -55,10 +54,6 @@ public class ComputeSite extends MorpheusModel {
 
 	public String getLocation() {
 		return location;
-	}
-
-	public String getConfig() {
-		return config;
 	}
 
 	public Double getLatitude() {
@@ -156,11 +151,6 @@ public class ComputeSite extends MorpheusModel {
 	public void setLocation(String location) {
 		this.location = location;
 		markDirty("location", location);
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public void setLatitude(Double latitude) {

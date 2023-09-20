@@ -13,7 +13,6 @@ public class InstanceAction extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String description;
-	protected String config;
 	protected String actionService;
 	protected String actionOperation;
 	protected String actionScript;
@@ -64,17 +63,6 @@ public class InstanceAction extends MorpheusModel {
 	public void setDescription(String description) {
 		this.description = description;
 		markDirty("description", description);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getActionService() {

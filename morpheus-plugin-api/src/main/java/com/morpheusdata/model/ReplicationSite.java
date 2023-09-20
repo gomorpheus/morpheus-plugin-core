@@ -21,7 +21,6 @@ public class ReplicationSite extends MorpheusModel {
 	protected String platform = "all"; //linux,windows,etc;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String refType;
 	protected Long refId;
 	//capacity
@@ -128,15 +127,6 @@ public class ReplicationSite extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		markDirty("externalId", externalId, this.externalId);
 		this.externalId = externalId;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getRefType() {
