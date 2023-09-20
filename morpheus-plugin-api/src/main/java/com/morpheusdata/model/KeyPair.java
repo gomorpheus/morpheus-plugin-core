@@ -21,7 +21,7 @@ public class KeyPair extends KeyPairIdentityProjection {
 	protected String refType;
 	protected String refId;
 	protected String refName;
-	protected String uuid;
+	protected String uuid = String.valueOf(java.util.UUID.randomUUID());
 
 	public Long getAccountId() {
 		return accountId;
