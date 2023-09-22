@@ -17,7 +17,6 @@ public class NetworkLoadBalancerScript extends LoadBalancerScriptIdentityProject
 	protected String description;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String script;
 	protected Boolean enabled = true;
 	protected Date dateCreated;
@@ -98,17 +97,6 @@ public class NetworkLoadBalancerScript extends LoadBalancerScriptIdentityProject
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getScript() {

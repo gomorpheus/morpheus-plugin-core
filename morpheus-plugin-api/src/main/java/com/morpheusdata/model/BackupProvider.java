@@ -15,7 +15,6 @@ public class BackupProvider extends MorpheusModel {
 	protected String port;
 	protected String username;
 	protected String password;
-	protected String config;
 	protected String code;
 	protected String visibility = "private";
 	protected String status = "ok"; //ok, error, warning, offline
@@ -99,15 +98,6 @@ public class BackupProvider extends MorpheusModel {
 	public void setPassword(String password) {
 		markDirty("password", password, this.password);
 		this.password = password;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getCode() {

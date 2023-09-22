@@ -12,7 +12,6 @@ public class AccountDiscovery extends MorpheusModel {
 	protected String refType;
 	protected Long refId;
 	protected String refName;
-	protected String config;
 	protected Date refDate;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -106,16 +105,6 @@ public class AccountDiscovery extends MorpheusModel {
 
 	public void setRefName(String refName) {
 		this.refName = refName;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public Date getRefDate() {

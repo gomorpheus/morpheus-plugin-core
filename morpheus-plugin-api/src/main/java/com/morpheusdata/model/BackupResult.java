@@ -620,4 +620,15 @@ public class BackupResult extends MorpheusModel {
 		markDirty("lastUpdated", lastUpdated, this.lastUpdated);
 		this.lastUpdated = lastUpdated;
 	}
+
+	public enum Status {
+		START_REQUESTED,
+		INITIALIZING,
+		IN_PROGRESS,
+		CANCEL_REQUESTED,
+		CANCELLED,
+		SUCCEEDED,
+		SUCCEEDED_WARNING,
+		FAILED
+	}
 }

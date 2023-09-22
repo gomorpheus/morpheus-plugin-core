@@ -1,5 +1,9 @@
 package com.morpheusdata.core.backup.util;
 
+/**
+ * @deprecated replace by enums in {@link com.morpheusdata.model.BackupResult} and {@link com.morpheusdata.model.BackupRestore}
+ */
+@Deprecated(since = "0.14.6")
 public class BackupStatusUtility {
 	public static String START_REQUESTED = "START_REQUESTED";
 	public static String INITIALIZING = "INITIALIZING";

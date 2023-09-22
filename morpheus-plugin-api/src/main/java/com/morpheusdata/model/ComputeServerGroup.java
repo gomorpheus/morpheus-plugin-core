@@ -54,8 +54,6 @@ public class ComputeServerGroup extends MorpheusModel {
 	protected String status;
 	protected Date statusDate;
 	protected String statusMessage;
-	//json map
-	protected String config;
 	//sync
 	protected String inventoryLevel;
 	protected Date lastSync;
@@ -360,16 +358,6 @@ public class ComputeServerGroup extends MorpheusModel {
 
 	public void setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getInventoryLevel() {

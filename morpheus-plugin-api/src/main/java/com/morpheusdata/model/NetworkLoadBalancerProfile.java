@@ -17,7 +17,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	protected String visibility = "public"; //['public', 'private']
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String proxyType;
 	protected String redirectRewrite;
 	protected String persistenceType;
@@ -112,17 +111,6 @@ public class NetworkLoadBalancerProfile extends LoadBalancerProfileIdentityProje
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getProxyType() {

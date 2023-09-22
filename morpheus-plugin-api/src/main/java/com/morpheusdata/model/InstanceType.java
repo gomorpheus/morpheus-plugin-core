@@ -31,7 +31,6 @@ public class InstanceType extends MorpheusModel implements IModelUuidCodeName {
 	protected String deploymentService;
 	protected String provisionService;
 	protected String backupType;
-	protected String config;
 	protected Integer stackTier;
 	protected String viewSet;
 	protected Boolean enabled;

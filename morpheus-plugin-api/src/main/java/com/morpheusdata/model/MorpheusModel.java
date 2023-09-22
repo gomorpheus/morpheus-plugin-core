@@ -139,10 +139,11 @@ public class MorpheusModel {
 	}
 
 	public String getConfig() {
-		return config;
+		return this.config;
 	}
 
 	public void setConfig(String config) {
+		markDirty("config", config, this.config);
 		this.config = config;
 	}
 
@@ -164,7 +165,7 @@ public class MorpheusModel {
 
 	public void setConfigMap(Map<String, Object> map) {
 		JsonObject object = mapToJson(map);
-		this.config = object.toString();
+		setConfig(object.toString());
 	}
 
 	private JsonObject mapToJson(Map<String, Object> map) {
