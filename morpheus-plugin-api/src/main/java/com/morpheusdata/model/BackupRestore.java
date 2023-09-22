@@ -203,4 +203,15 @@ public class BackupRestore extends MorpheusModel {
 		this.restoreToNew = restoreToNew;
 		markDirty("restoreToNew", restoreToNew, this.restoreToNew);
 	}
+
+	public enum Status {
+		START_REQUESTED,
+		INITIALIZING,
+		IN_PROGRESS,
+		CANCEL_REQUESTED,
+		CANCELLED,
+		SUCCEEDED,
+		SUCCEEDED_WARNING,
+		FAILED
+	}
 }
