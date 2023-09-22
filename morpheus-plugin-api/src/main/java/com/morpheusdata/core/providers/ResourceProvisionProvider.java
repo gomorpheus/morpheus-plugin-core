@@ -94,8 +94,6 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 
 		ServiceResponse<ProvisionResponse> updateApp(App app, AppRequest appRequest, Map opts);
 
-
-
 	}
 
 

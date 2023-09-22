@@ -27,6 +27,7 @@ public class App extends AppIdentityProjection {
 	protected ComputeSite site;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<Instance> instances;
+	protected User createdBy;
 
 	public Account getAccount() { return account; }
 
@@ -119,5 +120,14 @@ public class App extends AppIdentityProjection {
 	public void setInstances(List<Instance> instances) {
 		this.instances = instances;
 		markDirty("instances", instances);
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy", createdBy);
 	}
 }

@@ -54,6 +54,7 @@ public class Instance extends InstanceIdentityProjection {
 	//	public String ports;
 	public String serviceUsername;
 	public String servicePassword;
+	public String iacId;
 	public Long provisionZoneId;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public CloudPool resourcePool;
@@ -401,6 +402,15 @@ public class Instance extends InstanceIdentityProjection {
 	public void setResources(Collection<AccountResource> resources) {
 		this.resources = resources;
 		markDirty("resources", resources);
+	}
+
+	public String getIacId() {
+		return iacId;
+	}
+
+	public void setIacId(String iacId) {
+		this.iacId = iacId;
+		markDirty("iacId", iacId);
 	}
 
 	public enum Status {
