@@ -6,6 +6,6 @@ import io.reactivex.Single;
 /**
  * Context methods for syncing {@link ContainerType} in Morpheus
  */
-public interface MorpheusContainerTypeService {
+public interface MorpheusContainerTypeService extends MorpheusDataService<ContainerType, ContainerType> {
 
 }

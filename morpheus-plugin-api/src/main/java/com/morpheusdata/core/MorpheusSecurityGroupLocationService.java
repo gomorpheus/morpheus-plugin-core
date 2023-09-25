@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Context methods for syncing SecurityGroupLocations in Morpheus
  */
-public interface MorpheusSecurityGroupLocationService {
+public interface MorpheusSecurityGroupLocationService extends MorpheusDataService<SecurityGroupLocation, SecurityGroupLocationIdentityProjection>, MorpheusIdentityService<SecurityGroupLocationIdentityProjection> {
 
 	/**
 	 * Get a list of SecurityGroupLocation projections based on the Cloud associated with the SecurityGroupLocation
@@ -66,18 +66,10 @@ public interface MorpheusSecurityGroupLocationService {
 	 * Save updates to existing SecurityGroupLocations
 	 * @param securityGroupLocations SecurityGroupLocations to update
 	 * @return whether the save was successful
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<SecurityGroupLocation> securityGroupLocations);
-
-	/**
-	 * Create and return a new SecurityGroupLocation in Morpheus.
-	 * If securityGroup is not specified, then the hash is used to locate an existing SecurityGroup in Morpheus and
-	 * it will then be associated with this SecurityGroupLocation. If the parent SecurityGroup is still not found, a new
-	 * one will be created
-	 * @param securityGroupLocation new SecurityGroupLocation to persist
-	 * @return the SecurityGroupLocation
-	 */
-	Single<SecurityGroupLocation> create(SecurityGroupLocation securityGroupLocation);
 
 	/**
 	 * Create new SecurityGroupLocations in Morpheus.
@@ -86,7 +78,9 @@ public interface MorpheusSecurityGroupLocationService {
 	 * one will be created
 	 * @param securityGroupLocations new SecurityGroupLocations to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<SecurityGroupLocation> securityGroupLocations);
 
 	/**
@@ -110,6 +104,8 @@ public interface MorpheusSecurityGroupLocationService {
 	 * Remove SecurityGroupLocations from Morpheus
 	 * @param securityGroupLocations SecurityGroupLocations to remove
 	 * @return whether the removal was successful
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> removeSecurityGroupLocations(List<SecurityGroupLocationIdentityProjection> securityGroupLocations);
 }

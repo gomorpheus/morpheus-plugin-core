@@ -6,6 +6,6 @@ import io.reactivex.Single;
 /**
  * Context methods for syncing {@link ComputeTypeSet} in Morpheus
  */
-public interface MorpheusComputeTypeSetService {
+public interface MorpheusComputeTypeSetService extends MorpheusDataService<ComputeTypeSet, ComputeTypeSet> {
 
 }

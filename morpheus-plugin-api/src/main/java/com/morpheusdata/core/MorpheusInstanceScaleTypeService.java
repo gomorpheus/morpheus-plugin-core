@@ -7,7 +7,7 @@ import io.reactivex.Single;
 /**
  * Context methods for InstanceScaleType in Morpheus
  */
-public interface MorpheusInstanceScaleTypeService {
+public interface MorpheusInstanceScaleTypeService extends MorpheusDataService<InstanceScaleType, InstanceScaleType> {
 
 	/**
 	 * List all InstanceScaleTypes

@@ -10,7 +10,7 @@ import io.reactivex.Single;
  * performed during the execution of the process is not controlled via this service. Rather, it is purely a way to
  * notify Morpheus that various actions are currently being performed.
  */
-public interface MorpheusProcessService {
+public interface MorpheusProcessService extends MorpheusDataService<Process, Process> {
 
 	/**
 	 * Start a new Process for the Workload

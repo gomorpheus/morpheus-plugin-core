@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Context methods for dealing with {@link InstanceScale} in Morpheus
  */
-public interface MorpheusInstanceScaleService {
+public interface MorpheusInstanceScaleService extends MorpheusDataService<InstanceScale, InstanceScaleIdentityProjection> {
 
 	/**
 	 * Get a list of InstanceScale objects from a list of ids
@@ -34,6 +34,7 @@ public interface MorpheusInstanceScaleService {
 	 * @param instanceScales new InstanceScales to persist
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<InstanceScale> instanceScales);
 
 	/**
@@ -41,6 +42,7 @@ public interface MorpheusInstanceScaleService {
 	 * @param instanceScales updated InstanceScales
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<InstanceScale> instanceScales);
 
 	/**
@@ -48,6 +50,7 @@ public interface MorpheusInstanceScaleService {
 	 * @param instanceScales InstanceScales to delete
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<InstanceScaleIdentityProjection> instanceScales);
 
 	/**

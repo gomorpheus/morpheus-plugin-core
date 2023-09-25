@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Context methods for syncing OperationNotifications in Morpheus
  */
-public interface MorpheusOperationNotificationService {
+public interface MorpheusOperationNotificationService extends MorpheusDataService<OperationNotification, OperationNotificationIdentityProjection>, MorpheusIdentityService<OperationNotificationIdentityProjection> {
 
 	/**
 	 * Get a list of OperationNotification projections based on a category name
@@ -35,6 +35,7 @@ public interface MorpheusOperationNotificationService {
 	 * @param ids OperationNotification ids
 	 * @return Observable stream of OperationNotification
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<OperationNotification> listById(Collection<Long> ids);
 
 	/**
@@ -42,6 +43,7 @@ public interface MorpheusOperationNotificationService {
 	 * @param operationNotifications updated OperationNotifications
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<OperationNotification> operationNotifications);
 
 	/**
@@ -49,6 +51,7 @@ public interface MorpheusOperationNotificationService {
 	 * @param operationNotifications new OperationNotification to persist
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<OperationNotification> operationNotifications);
 	
 	/**
@@ -56,5 +59,6 @@ public interface MorpheusOperationNotificationService {
 	 * @param operationNotifications OperationNotifications to delete
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<OperationNotificationIdentityProjection> operationNotifications);
 }

@@ -7,12 +7,15 @@ import io.reactivex.Single;
 
 import java.util.List;
 
-public interface MorpheusReferenceDataService extends MorpheusDataService<ReferenceData,ReferenceDataSyncProjection> {
+public interface MorpheusReferenceDataService extends MorpheusDataService<ReferenceData,ReferenceDataSyncProjection>, MorpheusIdentityService<ReferenceDataSyncProjection> {
 
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<ReferenceData> referenceData);
 
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<ReferenceData> referenceData);
 
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<ReferenceDataSyncProjection> removeItems);
 
 	/**
@@ -21,6 +24,7 @@ public interface MorpheusReferenceDataService extends MorpheusDataService<Refere
 	 * @param category a category
 	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategory(Long accountId, String category);
 
 	/**
@@ -29,6 +33,7 @@ public interface MorpheusReferenceDataService extends MorpheusDataService<Refere
 	 * @param categorySubString a list of categories
 	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategoryMatch(Long accountId, String categorySubString);
 
 	/**
@@ -37,17 +42,24 @@ public interface MorpheusReferenceDataService extends MorpheusDataService<Refere
 	 * @param categories a partial category to match on.
 	 * @return the matched ReferenceData as a {@link ReferenceDataSyncProjection}
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByAccountIdAndCategories(Long accountId, List<String> categories);
 
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByCategory(String category);
 
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByAccountIdAndRefTypeAndRefId(Long AccountId, String refType, String refId);
 
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceDataSyncProjection> listByRefTypeAndRefId(String refType, String refId);
 
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceData> listByCategoryAndKeyValue(String category, String value);
 
+	@Deprecated(since="0.15.4")
 	Single<ReferenceData> findByExternalId(String externalId);
 
+	@Deprecated(since="0.15.4")
 	Observable<ReferenceData> listById(List<Long> ids);
 }
