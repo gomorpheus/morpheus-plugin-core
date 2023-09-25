@@ -15,10 +15,4 @@ public interface MorpheusInstanceScaleTypeService {
 	 */
 	Observable<InstanceScaleType> listAll();
 
-	/**
-	 * Get a InstanceScaleType by id
-	 * @param id of the InstanceScaleType
-	 * @return InstanceScaleType
-	 */
-	Single<InstanceScaleType> get(Long id);
 }

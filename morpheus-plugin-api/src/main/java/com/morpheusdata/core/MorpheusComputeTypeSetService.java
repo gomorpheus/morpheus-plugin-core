@@ -8,10 +8,4 @@ import io.reactivex.Single;
  */
 public interface MorpheusComputeTypeSetService {
 
-	/**
-	 * Get a {@link ComputeTypeSet} by id.
-	 * @param id ComputeTypeSet id
-	 * @return Single ComputeTypeSet
-	 */
-	Single<ComputeTypeSet> get(Long id);
 }

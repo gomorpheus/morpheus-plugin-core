@@ -15,13 +15,6 @@ import java.util.List;
 public interface MorpheusInstanceScaleService {
 
 	/**
-	 * Get a {@link InstanceScale} by id.
-	 * @param id InstanceScale id
-	 * @return Observable stream of sync projection
-	 */
-	Single<InstanceScale> get(Long id);
-
-	/**
 	 * Get a list of InstanceScale objects from a list of ids
 	 * @param ids InstanceScale ids
 	 * @return Observable stream of InstanceScale

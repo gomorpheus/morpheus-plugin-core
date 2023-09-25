@@ -8,10 +8,4 @@ import io.reactivex.Single;
  */
 public interface MorpheusContainerTypeService {
 
-	/**
-	 * Get a {@link ContainerType} by id.
-	 * @param id ContainerType id
-	 * @return Single ContainerType
-	 */
-	Single<ContainerType> get(Long id);
 }

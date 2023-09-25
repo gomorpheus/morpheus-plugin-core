@@ -74,14 +74,6 @@ public interface MorpheusMetadataTagService {
 
 
 	/**
-	 * Create and return a new MetadataTag in Morpheus
-	 * @param metadataTag new MetadataTag to persist
-	 * @return the tag
-	 */
-	Single<Boolean> create(MetadataTag metadataTag);
-
-
-	/**
 	 * Remove persisted MetadataTags from Morpheus
 	 * @param metadataTags MetadataTags to delete
 	 * @return success
