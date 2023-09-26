@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" sizes="64x64" href="/morpheus_fav_64.png" type="image/png">
+	<link rel="shortcut icon" sizes="32x32" href="/morpheus_fav_32.png" type="image/png">
+	<link rel="shortcut icon" sizes="24x24" href="/morpheus_fav_24.png" type="image/png">
+	<link rel="shortcut icon" sizes="16x16" href="/morpheus_fav_16.png" type="image/png">
+	<title>Morpheus Developer Zone</title>
+	<link rel="stylesheet" href="/fonts/fonts.css">
+	<link rel="stylesheet" href="/application.css">
+</head>
+<body>
+<header>
+	<nav class="content">
+		<a href="http://www.morpheusdata.com" target="_blank" rel="noopener"><img class="logo" src="/morpheus-logo-v2.svg"></a>
+		<ul>
+			<li><a href="https://github.com/gomorpheus/" target="_blank" rel="noopener">Github</a></li>
+			<li><a href="/docs">Plugin Docs</a></li>
+			<li><a href="/api/index.html?overview-summary.html" target="_blank" rel="noopener">Plugin API</a></li>
+			<li><a href="https://share.morpheusdata.com" target="_blank" rel="noopener" title="Browse Official Morpheus Plugins">Exchange</a></li>
+		</ul>
+	</nav>
+</header>
+<main>
+
+	<section class="plugin-grid">
+		<div class="content">
+			<h2>
+				<span>Get Started</span>
+			</h2>
+			<form action="/generate" method="POST">
+				<div>
+					<label for="pluginName">Name</label>
+					<input type="text" name="pluginName" id="pluginName"></input>
+				</div>
+				<div>
+					<label for="pluginCode">Code</label>
+					<input type="text" name="pluginCode" id="pluginCode"></input>
+					<div class="help-block">The Code is used to uniquely identify a plugin for publication</div>
+				</div>
+				<div>
+					<label for="morpheusVersion">Morpheus Version</label>
+					<select name="morpheusVersion" id="morpheusVersion">
+						<option value="6.3.x">6.3.x</option>
+					</select>
+				</div>
+				<div>
+					<label for="language">Language</label>
+					<select name="language" id="language">
+						<option value="groovy">Groovy</option>
+						<option value="java">Java</option>
+					</select>
+				</div>
+				<div>
+					<label for="basePackage">Base Package</label>
+					<input type="text" name="basePackage" id="basePackage" value="com.example"></input>
+				</div>
+				<fieldset>
+					<legend>Providers</legend>
+					<ul class="provider-list">
+						
+						<li>
+							<input type="checkbox" name="providers" id="providers-cloud" value="cloud"></input>&nbsp;<label for="providerscloud">Cloud</label>
+						</li>
+						<li>
+							<input type="checkbox" name="providers" id="providers-dns" value="dns"></input>&nbsp;<label for="providers-dns">DNS</label>
+						</li>
+						<li>
+							<input type="checkbox" name="providers" id="providers-instance-tab" value="instanceTab"></input>&nbsp;<label for="providers-instance-tab">Instance Tab</label>
+						</li>
+						<li>
+							<input type="checkbox" name="providers" id="providers-ipam" value="ipam"></input>&nbsp;<label for="providers-ipam">IPAM</label>
+						</li>
+
+						<li>
+							<input type="checkbox" name="providers" id="providers-report" value="report"></input>&nbsp;<label for="providers-report">Report</label>
+						</li>
+						<li>
+							<input type="checkbox" name="providers" id="providers-server-tab" value="serverTab"></input>&nbsp;<label for="providers-server-tab">Server Tab</label>
+						</li>
+					</ul>
+				</fieldset>
+				<div>
+					<input type="submit" value="Generate"/>
+				</div>
+			</form>
+		</div>
+	</section>
+</main>
+<footer>
+	<div class="content">
+		<div class="resources">
+			<h4>Other Resources</h4>
+			<ul>
+				<li><a href="https://docs.morpheusdata.com/" target="_blank" rel="noopener">Morpheus Docs</a></li>
+				<li><a href="https://support.morpheusdata.com/" target="_blank" rel="noopener">Morpheus Support</a></li>
+				<li><a href="https://apidocs.morpheusdata.com/" target="_blank" rel="noopener">API Docs</a></li>
+				<li><a href="https://morpheus-morpheus-cli-docs.readthedocs-hosted.com/" target="_blank" rel="noopener">CLI Docs</a></li>
+			</ul>
+		</div>
+		<div class="copyright">&#169; 2021 MORPHEUS DATA, LLC. ALL RIGHTS RESERVED</div>
+	</div>
+</footer>
+</body>
+</html>

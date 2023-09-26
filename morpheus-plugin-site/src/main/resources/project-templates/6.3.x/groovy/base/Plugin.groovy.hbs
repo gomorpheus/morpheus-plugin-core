@@ -28,32 +28,11 @@ class {{pluginNameCamel}}Plugin extends Plugin {
     @Override
     void initialize() {
         this.setName("{{pluginName}}")
-
-        {{#if ipam}}
-            {{pluginNameCamel}}IPAMProvider {{pluginNameInstance}}IPAMProvider = new {{pluginNameCamel}}IPAMProvider(this,morpheus)
-            this.pluginProviders.put("{{{{pluginNameCamel}}IPAM",{{pluginNameInstance}}IPAMProvider)
-        {{/if}}
         {{#if dns}}
+		this.registerProvider(new {{pluginNameCamel}}DNSProvider(this,this.morpheus))
         {{/if}}
-        {{#if cloud}}
-        {{/if}}
-        {{#if network}}
-        {{/if}}
-        {{#if backup}}
-        {{/if}}
-        {{#if cypher}}
-        {{/if}}
-        {{#if task}}
-        {{/if}}         
-        {{#if approvals}}
-        {{/if}}
-        {{#if reports}}
-        {{/if}}
-        {{#if instanceTab}}
-        {{/if}}
-        {{#if serverTab}}
-        {{/if}}
-        {{#if catalogLayout}}
+        {{#if ipam}}
+        this.registerProvider(new {{pluginNameCamel}}IPAMProvider(this,this.morpheus))
         {{/if}}
     }
 

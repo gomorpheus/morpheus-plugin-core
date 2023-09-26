@@ -136,7 +136,7 @@ publishing {
 javadoc {
     title = 'Morpheus Plugin API'
     options.addBooleanOption('html5', true)
-    options.addBooleanOption "-no-module-directories", true
+    // options.addBooleanOption "-no-module-directories", true
 }
 
 

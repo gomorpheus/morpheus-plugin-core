@@ -1,0 +1,18 @@
+syntax: groovy
+base:
+    - name: build.gradle
+      template: base/build.gradle.hbs
+    - name: gradle.properties
+      template: base/gradle.properties.hbs
+    - name: "{{basePackagePath}}/{{pluginNameCamel}}Plugin.groovy"
+      template: base/Plugin.groovy.hbs
+providers:
+    ipam:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.groovy"
+          template: ipam/IPAMProvider.groovy.hbs
+    dns:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}DNSProvider.groovy"
+          template: dns/DNSProvider.groovy.hbs
+    report:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.groovy"
+            template: report/ReportProvider.groovy.hbs
