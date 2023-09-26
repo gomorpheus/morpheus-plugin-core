@@ -13,13 +13,14 @@ import java.util.List;
 /**
  * Context methods for syncing Snapshots in Morpheus
  */
-public interface MorpheusSnapshotService {
+public interface MorpheusSnapshotService extends MorpheusDataService<Snapshot, SnapshotIdentityProjection>, MorpheusIdentityService<SnapshotIdentityProjection> {
 
 	/**
 	 * Fetch the Snapshots given a list of ids
 	 * @param ids list of ids
 	 * @return Observable list of Snapshots
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<Snapshot> listById(List<Long> ids);
 
 	/**
@@ -27,6 +28,7 @@ public interface MorpheusSnapshotService {
 	 * @param ids list of ids
 	 * @return Observable list of Snapshots
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<Snapshot> listByIds(List<Long> ids);
 
 	/**
@@ -46,25 +48,23 @@ public interface MorpheusSnapshotService {
 	@Deprecated
 	Observable<SnapshotIdentityProjection> listSyncProjections(Long cloudId);
 
-	/**
-	 * Create and return a new Snapshot in Morpheus
-	 * @param snapshot new Snapshot to persist
-	 * @return the snapshot
-	 */
-	Single<Snapshot> create(Snapshot snapshot);
 
 	/**
 	 * Create and return new Snapshots in Morpheus
 	 * @param snapshots List of new Snapshot to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<Snapshot> snapshots);
 
 	/**
 	 * Save updates to existing Snapshots in Morpheus
 	 * @param snapshots Snapshots to update
 	 * @return whether the save was successful
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<Snapshot> snapshots);
 
 	/**
@@ -72,7 +72,9 @@ public interface MorpheusSnapshotService {
 	 * StorageVolume, etc) and then delete the Snapshot from Morpheus
 	 * @param snapshots existing Snapshots to remove
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<SnapshotIdentityProjection> snapshots);
 
 	/**
@@ -96,6 +98,8 @@ public interface MorpheusSnapshotService {
 	 * StorageVolume, etc) and then delete the Snapshot from Morpheus
 	 * @param snapshots existing Snapshots to remove
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> removeSnapshots(List<SnapshotIdentityProjection> snapshots);
 }

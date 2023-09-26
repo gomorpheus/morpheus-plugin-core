@@ -31,6 +31,7 @@ public interface MorpheusStorageVolumeService extends MorpheusDataService<Storag
 	 * @param ids StorageVolume ids
 	 * @return Observable stream of StorageVolumes
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageVolume> listById(Collection<Long> ids);
 
 	/**

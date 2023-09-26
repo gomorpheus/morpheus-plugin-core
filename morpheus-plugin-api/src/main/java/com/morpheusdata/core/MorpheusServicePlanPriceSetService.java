@@ -14,7 +14,7 @@ import java.util.List;
  * @author Dustin DeYoung
  * @since 0.14.3
  */
-public interface MorpheusServicePlanPriceSetService {
+public interface MorpheusServicePlanPriceSetService extends MorpheusDataService<ServicePlanPriceSet, ServicePlanPriceSetIdentityProjection>, MorpheusIdentityService<ServicePlanPriceSetIdentityProjection> {
 
 	/**
 	 * Get a list of ServicePlanPriceSet projections based on {@link com.morpheusdata.model.AccountPriceSet}
@@ -37,7 +37,7 @@ public interface MorpheusServicePlanPriceSetService {
 	 * AccountPriceSet must, at least, have an id or code set
 	 * @param accountPriceSet {@link AccountPriceSet}
 	 * @return Observable stream of sync projection
-	 * @deprecated replaced by {{@link #listIdentityProjections(AccountPriceSet)}}
+	 * @deprecated replaced by {@link #listIdentityProjections(AccountPriceSet)}
 	 */
 	@Deprecated
 	Observable<ServicePlanPriceSetIdentityProjection> listSyncProjections(AccountPriceSet accountPriceSet);
@@ -47,7 +47,7 @@ public interface MorpheusServicePlanPriceSetService {
 	 * AccountPriceSet must, at least, have an id or code set
 	 * @param accountPriceSets {@link AccountPriceSet}
 	 * @return Observable stream of sync projection
-	 * @deprecated replaced by {{@link #listIdentityProjections(List)}}
+	 * @deprecated replaced by {@link #listIdentityProjections(List)}
 	 */
 	@Deprecated
 	Observable<ServicePlanPriceSetIdentityProjection> listSyncProjections(List<AccountPriceSet> accountPriceSets);
@@ -57,6 +57,7 @@ public interface MorpheusServicePlanPriceSetService {
 	 * @param ids ServicePlanPriceSet ids
 	 * @return Observable stream of ServicePlanPriceSets
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ServicePlanPriceSet> listById(Collection<Long> ids);
 
 	/**
@@ -64,6 +65,7 @@ public interface MorpheusServicePlanPriceSetService {
 	 * @param servicePlanIds ServicePlanPriceSet service plan ids
 	 * @return Observable stream of ServicePlanPriceSets
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ServicePlanPriceSet> listByServicePlanIds(Collection<Long> servicePlanIds);
 
 	/**
@@ -71,26 +73,25 @@ public interface MorpheusServicePlanPriceSetService {
 	 * @param accountPriceSetIds ServicePlanPriceSet account price set ids
 	 * @return Observable stream of ServicePlanPriceSets
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ServicePlanPriceSet> listByAccountPriceSetIds(Collection<Long> accountPriceSetIds);
 
 	/**
 	 * Save updates to existing ServicePlanPriceSets
 	 * @param servicePlanPriceSets updated ServicePlanPriceSets
 	 * @return status of save results
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<ServicePlanPriceSet> servicePlanPriceSets);
 
 	/**
 	 * Create new ServicePlanPriceSet in Morpheus
 	 * @param servicePlanPriceSets new servicePlanPriceSet to persist
 	 * @return status of create results
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<ServicePlanPriceSet> servicePlanPriceSets);
 
-	/**
-	 * Remove persisted ServicePlanPriceSet from Morpheus
-	 * @param servicePlanPriceSets service plan price sets to delete
-	 * @return status of delete results
-	 */
-	Single<Boolean> remove(List<ServicePlanPriceSet> servicePlanPriceSets);
 }

@@ -11,20 +11,14 @@ import java.util.List;
 /**
  * Context methods for dealing with {@link StorageBucket} in Morpheus
  */
-public interface MorpheusStorageBucketService extends MorpheusDataService<StorageBucket,StorageBucketIdentityProjection> {
-
-	/**
-	 * Get a {@link StorageBucket} by id.
-	 * @param id StorageBucket id
-	 * @return Observable stream of sync projection
-	 */
-	Maybe<StorageBucket> get(Long id);
+public interface MorpheusStorageBucketService extends MorpheusDataService<StorageBucket,StorageBucketIdentityProjection>, MorpheusIdentityService<StorageBucketIdentityProjection> {
 
 	/**
 	 * Get a list of StorageBucket objects from a list of ids
 	 * @param ids StorageBucket ids
 	 * @return Observable stream of StorageBucket
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageBucket> listById(List<Long> ids);
 
 	/**
