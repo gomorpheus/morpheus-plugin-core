@@ -7,6 +7,7 @@ import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 import com.morpheusdata.model.serializers.ModelIdCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
+import java.util.Collection;
 import java.util.List;
 
 public class App extends AppIdentityProjection {
@@ -26,7 +27,9 @@ public class App extends AppIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeSite site;
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
-	protected List<Instance> instances;
+	protected List<AppInstance> instances;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	public Collection<AccountResource> resources;
 	protected User createdBy;
 
 	public Account getAccount() { return account; }
@@ -113,11 +116,11 @@ public class App extends AppIdentityProjection {
 		markDirty("site", site);
 	}
 
-	public List<Instance> getInstances() {
+	public List<AppInstance> getInstances() {
 		return instances;
 	}
 
-	public void setInstances(List<Instance> instances) {
+	public void setInstances(List<AppInstance> instances) {
 		this.instances = instances;
 		markDirty("instances", instances);
 	}

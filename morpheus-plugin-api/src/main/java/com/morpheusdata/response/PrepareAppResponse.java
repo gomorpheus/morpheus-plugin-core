@@ -9,6 +9,7 @@ public class PrepareAppResponse {
 	protected App app;
 	protected Map<String,Object> options;
 	protected List<Map> resources;
+	protected String resourceMapping;
 
 	public App getApp() {
 		return app;
@@ -32,5 +33,13 @@ public class PrepareAppResponse {
 
 	public void setResources(List<Map> resources) {
 		this.resources = resources;
+	}
+
+	public String getResourceMapping() {
+		return resourceMapping;
+	}
+
+	public void setResourceMapping(String resourceMapping) {
+		this.resourceMapping = resourceMapping;
 	}
 }
