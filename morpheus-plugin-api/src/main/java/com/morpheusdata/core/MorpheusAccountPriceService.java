@@ -43,6 +43,7 @@ public interface MorpheusAccountPriceService extends MorpheusDataService<Account
 	 * @param ids AccountPrice ids
 	 * @return Observable stream of AccountPrices
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<AccountPrice> listById(Collection<Long> ids);
 
 	/**
@@ -50,5 +51,6 @@ public interface MorpheusAccountPriceService extends MorpheusDataService<Account
 	 * @param codes AccountPrice codes
 	 * @return Observable stream of AccountPrices
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<AccountPrice> listByCode(Collection<String> codes);
 }
