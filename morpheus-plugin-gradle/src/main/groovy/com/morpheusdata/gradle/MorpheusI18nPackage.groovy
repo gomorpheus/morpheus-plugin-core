@@ -5,6 +5,9 @@ import groovy.transform.CompileDynamic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -14,7 +17,8 @@ class MorpheusI18nPackage extends DefaultTask {
 
 	@Delegate MorpheusPluginExtension pluginExtension = new MorpheusPluginExtension()
 
-	@Input
+	@InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
 	File getI18nDir() {
 		def path = pluginExtension.i18nSource
 		return path ? new File(path) : null

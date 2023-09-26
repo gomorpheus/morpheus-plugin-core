@@ -5,6 +5,9 @@ import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -20,7 +23,8 @@ class MorpheusScribePackage extends DefaultTask {
 
 	@Delegate MorpheusPluginExtension scribeExtension = new MorpheusPluginExtension()
 
-	@Input
+	@InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
 	File getPackageDir() {
 		def path = scribeExtension.packageSource
 		return path ? new File(path) : null
