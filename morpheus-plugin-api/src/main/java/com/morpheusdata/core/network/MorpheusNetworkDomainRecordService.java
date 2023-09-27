@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkDomain;
 import com.morpheusdata.model.NetworkDomainRecord;
 import com.morpheusdata.model.projection.NetworkDomainIdentityProjection;
@@ -26,7 +28,7 @@ import java.util.List;
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkDomainRecordService {
+public interface MorpheusNetworkDomainRecordService extends MorpheusDataService<NetworkDomainRecord, NetworkDomainRecordIdentityProjection>, MorpheusIdentityService<NetworkDomainRecordIdentityProjection> {
 	/**
 	 * Lists all network domain record projection objects for a specified integration id.
 	 * The projection is a subset of the properties on a full {@link NetworkDomainRecord} object for sync matching.
@@ -41,6 +43,7 @@ public interface MorpheusNetworkDomainRecordService {
 	 * @param ids list of ids to grab {@link NetworkDomainRecord} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkDomainRecord} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkDomainRecord> listById(Collection<Long> ids);
 
 
@@ -50,6 +53,7 @@ public interface MorpheusNetworkDomainRecordService {
 	 * @param workloadId the id of the container/workload element associated to the record
 	 * @return the DNS Zone record associated with the workload
 	 */
+	@Deprecated(since="0.15.4")
 	Single<NetworkDomainRecord> findByNetworkDomainAndWorkloadId(NetworkDomainIdentityProjection domainMatch, Long workloadId);
 
 	/**
@@ -58,6 +62,7 @@ public interface MorpheusNetworkDomainRecordService {
 	 * @param serverId the id of the server element associated to the record
 	 * @return the DNS Zone record associated with the server
 	 */
+	@Deprecated(since="0.15.4")
 	Single<NetworkDomainRecord> findByNetworkDomainAndServerId(NetworkDomainIdentityProjection domainMatch, Long serverId);
 
 	/**
@@ -78,13 +83,6 @@ public interface MorpheusNetworkDomainRecordService {
 	Single<Boolean>  remove(NetworkDomainIdentityProjection domain, NetworkDomainRecordIdentityProjection removeRecord);
 
 	/**
-	 * Creates a single {@link NetworkDomain} object returning the final result object if any changes occurred during save.
-	 * @param domainRecord the Domain Zone Record we wish to persist changes to
-	 * @return the resultant Domain Object containing any additional metadata that may have been applied
-	 */
-	Single<NetworkDomainRecord> create(NetworkDomainRecord domainRecord);
-
-	/**
 	 * Creates new Network Domain Records from cache / sync implementations
 	 * This ensures the owner of the zone record is correct upon creation.
 	 * @param domain The {NetworkDomain} we are bulk creating zone records into.
@@ -93,18 +91,13 @@ public interface MorpheusNetworkDomainRecordService {
 	 */
 	Single<Boolean> create(NetworkDomainIdentityProjection domain, List<NetworkDomainRecord> addList);
 
-	/**1
-	 * Saves a single {@link NetworkDomainRecord} object returning the final result object if any changes occurred during save.
-	 * @param domainRecord the Domain Zone Record we wish to persist changes to
-	 * @return the resultant Domain Object containing any additional metadata that may have been applied
-	 */
-	Single<NetworkDomainRecord> save(NetworkDomainRecord domainRecord);
-
 	/**
 	 * Saves a list of {@link NetworkDomain} objects returning the final result save status.
 	 * @param domainRecords the Domain Zone Records we wish to persist changes to
 	 * @return the success state of the bulk save request
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkDomainRecord> domainRecords);
 
 

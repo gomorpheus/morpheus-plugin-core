@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous.network.loadbalancer;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.NetworkLoadBalancerInstance;
+import com.morpheusdata.model.projection.LoadBalancerInstanceIdentityProjection;
+
+public interface MorpheusSynchronousLoadBalancerInstanceService extends MorpheusSynchronousDataService<NetworkLoadBalancerInstance, LoadBalancerInstanceIdentityProjection>, MorpheusSynchronousIdentityService<LoadBalancerInstanceIdentityProjection> {
+}

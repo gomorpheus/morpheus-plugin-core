@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupRestore;
@@ -17,7 +19,7 @@ import java.util.Collection;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupTypeService {
+public interface MorpheusBackupTypeService extends MorpheusDataService<BackupType, BackupTypeIdentityProjection>, MorpheusIdentityService<BackupTypeIdentityProjection> {
 
 	//ORM Object Methods
 	/**
@@ -25,6 +27,7 @@ public interface MorpheusBackupTypeService {
 	 * @param ids list of {@link BackupType} ids to fetch.
 	 * @return an RxJava Observable stream of {@link BackupType} objects for subscription.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<BackupType> listById(Collection<Long> ids);
 
 	/**
@@ -32,5 +35,6 @@ public interface MorpheusBackupTypeService {
 	 * @param codes list of {@link BackupType} codes to fetch.
 	 * @return an RxJava Observable stream of {@link BackupType} objects for subscription.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<BackupType> listByCodes(Collection<String> codes);
 }

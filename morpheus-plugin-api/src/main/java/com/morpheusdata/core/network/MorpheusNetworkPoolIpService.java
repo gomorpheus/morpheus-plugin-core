@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkPoolIdentityProjection;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
@@ -25,7 +27,7 @@ import java.util.List;
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkPoolIpService {
+public interface MorpheusNetworkPoolIpService extends MorpheusDataService<NetworkPoolIp, NetworkPoolIpIdentityProjection>, MorpheusIdentityService<NetworkPoolIpIdentityProjection> {
 
 	/**
 	 * Lists all network pool ip projection objects for a specified network pool within a pool server integration.
@@ -42,6 +44,7 @@ public interface MorpheusNetworkPoolIpService {
 	 * @param ids list of ids to grab {@link NetworkPoolIp} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkPoolIp} to be subscribed to.
 	 */
+	@Deprecated
 	Observable<NetworkPoolIp> listById(Collection<Long> ids);
 
 	/**
@@ -58,13 +61,6 @@ public interface MorpheusNetworkPoolIpService {
 	Single<Boolean> remove(Long poolId, List<NetworkPoolIpIdentityProjection> removeList);
 
 	/**
-	 * Creates a single {@link NetworkPoolIp} object returning the final result object if any changes occurred during save.
-	 * @param poolIpRecord the Pool Host Record we wish to persist changes to
-	 * @return the resultant Host Record Object containing any additional metadata that may have been applied
-	 */
-	Single<NetworkPoolIp> create(NetworkPoolIp poolIpRecord);
-
-	/**
 	 * Creates new Network Pool Host Records from cache / sync implementations
 	 * This ensures the owner of the host/ip record is correct upon creation.
 	 * @param pool The {NetworkPool} we are bulk creating host records into.
@@ -74,16 +70,11 @@ public interface MorpheusNetworkPoolIpService {
 	Single<Boolean> create(NetworkPoolIdentityProjection pool, List<NetworkPoolIp> addList);
 
 	/**
-	 * Saves a single {@link NetworkPoolIp} object returning the final result object if any changes occurred during save.
-	 * @param poolIpRecord the Pool Host Record we wish to persist changes to
-	 * @return the resultant Host Record Object containing any additional metadata that may have been applied
-	 */
-	Single<NetworkPoolIp> save(NetworkPoolIp poolIpRecord);
-
-	/**
 	 * Saves a list of {@link NetworkPoolIp} objects returning the final result save status.
 	 * @param poolIpRecords the Pool Host Records we wish to persist changes to
 	 * @return the success state of the bulk save request
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkPoolIp> poolIpRecords);
 }

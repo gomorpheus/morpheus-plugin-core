@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkLoadBalancerMonitor;
 import com.morpheusdata.model.projection.LoadBalancerMonitorIdentityProjection;
 import io.reactivex.Observable;
@@ -13,7 +15,7 @@ import java.util.Optional;
 /**
  * Interface for interacting with the morpheus backend database in regards to load balancer health monitor domain objects
  */
-public interface MorpheusLoadBalancerMonitorService {
+public interface MorpheusLoadBalancerMonitorService extends MorpheusDataService<NetworkLoadBalancerMonitor, LoadBalancerMonitorIdentityProjection>, MorpheusIdentityService<LoadBalancerMonitorIdentityProjection> {
 	/**
 	 * Get a list of {@link NetworkLoadBalancerMonitor} projections based on NetworkLoadBalancer id
 	 *
@@ -28,6 +30,7 @@ public interface MorpheusLoadBalancerMonitorService {
 	 * @param ids ids of load balancer monitors
 	 * @return Observable stream of NetworkLoadBalancerMonitor objects
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerMonitor> listById(Collection<Long> ids);
 
 	/**
@@ -35,7 +38,9 @@ public interface MorpheusLoadBalancerMonitorService {
 	 *
 	 * @param monitors updated {@link NetworkLoadBalancerMonitor} objects
 	 * @return success
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkLoadBalancerMonitor> monitors);
 
 	/**
@@ -43,7 +48,9 @@ public interface MorpheusLoadBalancerMonitorService {
 	 *
 	 * @param monitors new {@link NetworkLoadBalancerMonitor} objects to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkLoadBalancerMonitor> monitors);
 
 	/**
@@ -51,7 +58,9 @@ public interface MorpheusLoadBalancerMonitorService {
 	 *
 	 * @param monitors {@link LoadBalancerMonitorIdentityProjection} objects to delete from database
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<LoadBalancerMonitorIdentityProjection> monitors);
 
 	/**

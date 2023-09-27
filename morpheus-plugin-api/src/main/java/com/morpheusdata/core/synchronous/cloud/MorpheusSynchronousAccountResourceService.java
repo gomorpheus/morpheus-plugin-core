@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous.cloud;
+
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.model.AccountResource;
+import com.morpheusdata.model.projection.AccountResourceIdentityProjection;
+
+public interface MorpheusSynchronousAccountResourceService   extends MorpheusSynchronousDataService<AccountResource,AccountResourceIdentityProjection>, MorpheusSynchronousIdentityService<AccountResourceIdentityProjection> {
+}
