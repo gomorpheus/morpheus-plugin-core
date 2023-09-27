@@ -18,10 +18,10 @@ import com.morpheusdata.core.synchronous.network.MorpheusSynchronousNetworkSubne
 import com.morpheusdata.core.synchronous.network.MorpheusSynchronousVirtualImageService;
 import com.morpheusdata.core.synchronous.network.loadbalancer.MorpheusSynchronousLoadBalancerPartitionService;
 import com.morpheusdata.core.synchronous.policy.MorpheusSynchronousPolicyService;
-import com.morpheusdata.core.synchronous.providers.CloudProvider;
-import com.morpheusdata.core.synchronous.providers.DNSProvider;
-import com.morpheusdata.core.synchronous.providers.IPAMProvider;
-import com.morpheusdata.core.synchronous.providers.TaskProvider;
+import com.morpheusdata.core.providers.CloudProvider;
+import com.morpheusdata.core.providers.DNSProvider;
+import com.morpheusdata.core.providers.IPAMProvider;
+import com.morpheusdata.core.providers.TaskProvider;
 import com.morpheusdata.core.synchronous.provisioning.MorpheusSynchronousProvisionService;
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.localization.MorpheusLocalizationService;
