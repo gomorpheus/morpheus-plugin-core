@@ -5,8 +5,8 @@ import com.morpheusdata.model.SecurityGroupLocation;
 import com.morpheusdata.model.SecurityGroupRuleLocation;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.SecurityGroupLocationIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.List;
 

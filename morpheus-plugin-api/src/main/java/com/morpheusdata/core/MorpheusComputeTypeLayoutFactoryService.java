@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.ComputeTypeLayout;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 public interface MorpheusComputeTypeLayoutFactoryService {
 

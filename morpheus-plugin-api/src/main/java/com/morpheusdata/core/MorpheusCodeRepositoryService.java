@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.CodeRepository;
 import com.morpheusdata.response.CodeRepositoryResponse;
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 
 /**
  * Context methods for managing code repositories

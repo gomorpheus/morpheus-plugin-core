@@ -3,8 +3,8 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.OperationNotification;
 import com.morpheusdata.model.projection.OperationNotificationIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

@@ -5,8 +5,8 @@ import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.ImageType;
 import com.morpheusdata.model.VirtualImage;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

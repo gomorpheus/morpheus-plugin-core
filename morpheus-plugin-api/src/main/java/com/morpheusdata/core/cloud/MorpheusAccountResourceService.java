@@ -7,7 +7,7 @@ import com.morpheusdata.model.AccountResource;
 import com.morpheusdata.model.AccountResourceType;
 import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.model.projection.AccountResourceIdentityProjection;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * Provides service/context methods for querying {@link com.morpheusdata.model.AccountResource} objects for use with syncing generic cloud resources.

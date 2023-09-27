@@ -5,8 +5,8 @@ import com.morpheusdata.model.BackupJob;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.BackupProviderType;
 import com.morpheusdata.model.projection.BackupJobIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import java.util.Collection;
 import java.util.List;
 

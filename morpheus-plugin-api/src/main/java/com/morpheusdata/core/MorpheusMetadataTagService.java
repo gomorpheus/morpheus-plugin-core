@@ -5,8 +5,8 @@ import com.morpheusdata.model.MetadataTagType;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.model.projection.MetadataTagIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

@@ -3,8 +3,8 @@ package com.morpheusdata.core.backup;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.projection.BackupRestoreIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import java.util.Collection;
 import java.util.List;
 

@@ -5,8 +5,8 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.projection.CloudRegionIdentity;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.Optional;

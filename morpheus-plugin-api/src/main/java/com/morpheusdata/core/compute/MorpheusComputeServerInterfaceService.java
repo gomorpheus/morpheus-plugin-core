@@ -2,7 +2,7 @@ package com.morpheusdata.core.compute;
 
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerInterface;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import java.util.List;
 
 /**

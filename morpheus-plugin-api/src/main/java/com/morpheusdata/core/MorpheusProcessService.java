@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.Process;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 /**
  * The service to inform Morpheus of long-running processes. This service is typically used during provisioning of

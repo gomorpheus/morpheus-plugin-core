@@ -2,7 +2,7 @@ package com.morpheusdata.core.network;
 
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkPoolIpIdentityProjection;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 public interface MorpheusNetworkPoolRangeService {
 

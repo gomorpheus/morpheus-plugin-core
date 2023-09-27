@@ -4,8 +4,8 @@ import com.morpheusdata.model.Dashboard;
 import com.morpheusdata.model.DashboardItem;
 import com.morpheusdata.model.DashboardItemType;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import java.util.Collection;
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.morpheusdata.core.policy;
 
 
 import com.morpheusdata.model.PolicyType;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 /**
  * This Context deals with interactions related to {@link com.morpheusdata.model.PolicyType} objects. It can normally

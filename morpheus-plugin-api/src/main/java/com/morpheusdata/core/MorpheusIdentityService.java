@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.model.MorpheusModel;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 import java.util.Collection;
 
 /**

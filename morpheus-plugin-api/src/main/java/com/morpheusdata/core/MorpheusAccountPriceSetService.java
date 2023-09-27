@@ -6,8 +6,8 @@ import com.morpheusdata.model.AccountPriceSet;
 import com.morpheusdata.model.MorpheusModel;
 import com.morpheusdata.model.projection.AccountPriceIdentityProjection;
 import com.morpheusdata.model.projection.AccountPriceSetIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

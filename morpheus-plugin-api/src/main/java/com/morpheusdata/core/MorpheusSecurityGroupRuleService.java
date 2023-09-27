@@ -2,8 +2,8 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.SecurityGroupRule;
 import com.morpheusdata.model.projection.SecurityGroupRuleIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.List;
 

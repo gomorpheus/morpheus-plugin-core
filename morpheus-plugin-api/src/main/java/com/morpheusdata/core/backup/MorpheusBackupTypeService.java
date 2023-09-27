@@ -6,9 +6,9 @@ import com.morpheusdata.model.BackupRestore;
 import com.morpheusdata.model.BackupType;
 import com.morpheusdata.model.projection.BackupIdentityProjection;
 import com.morpheusdata.model.projection.BackupTypeIdentityProjection;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 

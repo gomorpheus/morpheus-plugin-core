@@ -4,8 +4,8 @@ package com.morpheusdata.core.integration;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.CloudIdentityProjection;
 import com.morpheusdata.response.ServiceResponse;
-import io.reactivex.Completable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 
 /**
  * Holds context methods for interacting with common integration type operations. This could be used for updating

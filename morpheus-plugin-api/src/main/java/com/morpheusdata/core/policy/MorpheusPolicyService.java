@@ -3,7 +3,7 @@ package com.morpheusdata.core.policy;
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.Policy;
 import com.morpheusdata.model.PolicyType;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * This service deals with interactions as it relates to Policies. Methods are provided for managing/listing policy information.

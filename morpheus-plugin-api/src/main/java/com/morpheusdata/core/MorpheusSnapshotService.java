@@ -5,8 +5,8 @@ import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.Snapshot;
 import com.morpheusdata.model.StorageVolume;
 import com.morpheusdata.model.projection.SnapshotIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.List;
 

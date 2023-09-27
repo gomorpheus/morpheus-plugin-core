@@ -2,8 +2,8 @@ package com.morpheusdata.core.providers;
 
 import com.morpheusdata.core.data.DatasetInfo;
 import com.morpheusdata.core.data.DatasetQuery;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.util.Map;
 

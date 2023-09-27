@@ -2,8 +2,8 @@ package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.model.ReferenceData;
 import com.morpheusdata.model.projection.ReferenceDataSyncProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

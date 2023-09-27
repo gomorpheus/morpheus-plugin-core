@@ -4,7 +4,7 @@ import com.morpheusdata.model.Account;
 import com.morpheusdata.model.AccountPrice;
 import com.morpheusdata.model.AccountPriceSet;
 import com.morpheusdata.model.projection.AccountPriceIdentityProjection;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.util.Collection;
 import java.util.List;

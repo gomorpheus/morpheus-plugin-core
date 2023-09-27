@@ -2,9 +2,9 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.KeyPair;
 import com.morpheusdata.model.projection.KeyPairIdentityProjection;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

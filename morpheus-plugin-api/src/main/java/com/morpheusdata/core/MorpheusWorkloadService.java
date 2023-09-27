@@ -4,7 +4,7 @@ import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.Workload;
 
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * Context methods for syncing {@link Workload} in Morpheus

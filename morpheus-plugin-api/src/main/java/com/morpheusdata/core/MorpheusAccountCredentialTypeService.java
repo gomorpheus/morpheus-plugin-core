@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.AccountCredentialType;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * Context methods for AccountCredentialType

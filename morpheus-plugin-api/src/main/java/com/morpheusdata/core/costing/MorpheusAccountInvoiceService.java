@@ -4,9 +4,9 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.costing.CloudCostResponse;
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.Date;

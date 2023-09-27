@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.OsType;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * @since 0.10.0

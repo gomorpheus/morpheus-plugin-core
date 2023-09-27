@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.AccountCredential;
 import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Map;
 

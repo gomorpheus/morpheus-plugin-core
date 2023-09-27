@@ -2,7 +2,7 @@ package com.morpheusdata.core.network;
 
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.NetworkProxy;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 /**
  * This Context contains interactions related to {@link NetworkProxy} objects. It can

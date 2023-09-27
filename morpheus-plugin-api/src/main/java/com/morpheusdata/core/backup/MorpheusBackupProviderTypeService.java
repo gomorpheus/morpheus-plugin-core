@@ -2,8 +2,8 @@ package com.morpheusdata.core.backup;
 
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupProviderType;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 

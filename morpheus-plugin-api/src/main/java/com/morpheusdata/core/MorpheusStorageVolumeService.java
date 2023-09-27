@@ -6,8 +6,8 @@ import com.morpheusdata.model.StorageVolume;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

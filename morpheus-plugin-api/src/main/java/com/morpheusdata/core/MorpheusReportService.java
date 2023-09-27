@@ -3,8 +3,8 @@ package com.morpheusdata.core;
 import com.morpheusdata.core.providers.ReportProvider;
 import com.morpheusdata.model.ReportResult;
 import com.morpheusdata.model.ReportResultRow;
-import io.reactivex.Completable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import java.sql.Connection;
 import java.util.Collection;
 

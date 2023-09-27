@@ -5,8 +5,8 @@ import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.projection.InstanceIdentityProjection;
 import com.morpheusdata.request.DeleteInstanceRequest;
 import com.morpheusdata.response.ServiceResponse;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;

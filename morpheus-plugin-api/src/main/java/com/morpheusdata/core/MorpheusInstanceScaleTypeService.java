@@ -1,8 +1,8 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.InstanceScaleType;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 /**
  * Context methods for InstanceScaleType in Morpheus

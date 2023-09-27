@@ -1,10 +1,10 @@
 package com.morpheusdata.core.util
 
 import groovy.util.logging.Slf4j
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.annotations.NonNull
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableEmitter
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
+import io.reactivex.rxjava3.annotations.NonNull
 import spock.lang.Specification
 
 @Slf4j
