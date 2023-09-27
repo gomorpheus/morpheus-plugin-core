@@ -3,7 +3,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:${assetPipelineVersion}"
     }
 }
 
@@ -31,8 +31,8 @@ configurations {
 }
 
 dependencies {
-    implementation 'com.bertramlabs.plugins:asset-pipeline-micronaut:4.3.1'
-    assets 'com.bertramlabs.plugins:less-asset-pipeline:4.3.1'
+    implementation "com.bertramlabs.plugins:asset-pipeline-micronaut:${assetPipelineVersion}"
+    assets "com.bertramlabs.plugins:less-asset-pipeline:${assetPipelineVersion}"
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     compileOnly("io.micronaut.serde:micronaut-serde-processor")
     implementation("io.micronaut.groovy:micronaut-runtime-groovy")
@@ -103,12 +103,12 @@ micronaut {
 }
 
 
-task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
+task copyManual(type: Copy, dependsOn: [':morpheus-plugin-docs:asciidoctor', ':morpheus-plugin-site:inspectRuntimeClasspath']) {
     from new File(project(':morpheus-plugin-docs').buildDir,'/docs')
     into 'src/main/resources/'
 }
 
-task copyApiDoc(type: Copy, dependsOn: ':morpheus-plugin-api:javadoc') {
+task copyApiDoc(type: Copy, dependsOn: [':morpheus-plugin-api:javadoc', ':morpheus-plugin-site:inspectRuntimeClasspath']) {
     from new File(project(':morpheus-plugin-api').buildDir,'/docs')
     into 'src/main/resources/'
 }
