@@ -426,6 +426,7 @@ public class Cloud extends CloudIdentityProjection {
 	public enum Status {
 		ok,
 		syncing,
+		initializing,
 		warning,
 		error,
 		offline
