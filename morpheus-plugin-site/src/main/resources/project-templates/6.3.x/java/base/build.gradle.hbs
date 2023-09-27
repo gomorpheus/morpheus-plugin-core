@@ -13,7 +13,6 @@ buildscript {
 
 
 apply plugin: 'java'
-apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'asset-pipeline'
@@ -39,7 +38,6 @@ configurations {
 
 dependencies {
 	provided "com.morpheusdata:morpheus-plugin-api:$morpheusApiVersion"
-	provided "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation 'commons-beanutils:commons-beanutils:1.9.3'
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"
 	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
@@ -91,10 +89,6 @@ assets {
 }
 
 
-task(console, dependsOn: 'classes', type: JavaExec) {
-	main = 'groovy.ui.Console'
-	classpath = sourceSets.main.compileClasspath + sourceSets.main.runtimeClasspath
-}
 
 test {
 	testLogging {

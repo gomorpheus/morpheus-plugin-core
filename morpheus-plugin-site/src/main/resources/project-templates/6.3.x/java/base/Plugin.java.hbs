@@ -13,29 +13,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package {{basePackage}}
+package {{basePackage}};
 
-import com.morpheusdata.core.Plugin
+import com.morpheusdata.core.Plugin;
 
 
-class {{pluginNameCamel}}Plugin extends Plugin {
+public class {{pluginNameCamel}}Plugin extends Plugin {
 
     @Override
-    String getCode() {
-        return '{{pluginCode}}'
+    public String getCode() {
+        return "{{pluginCode}}";
     }
 
     @Override
-    void initialize() {
-        this.setName("{{pluginName}}")
+    public void initialize() {
+        this.setName("{{pluginName}}");
         {{#if dns}}
-		this.registerProvider(new {{pluginNameCamel}}DNSProvider(this,this.morpheus))
+		this.registerProvider(new {{pluginNameCamel}}DNSProvider(this,this.morpheus));
         {{/if}}
         {{#if ipam}}
-        this.registerProvider(new {{pluginNameCamel}}IPAMProvider(this,this.morpheus))
+        this.registerProvider(new {{pluginNameCamel}}IPAMProvider(this,this.morpheus));
         {{/if}}
         {{#if instanceTab}}
-        this.registerProvider(new {{pluginNameCamel}}InstanceTabProvider(this,this.morpheus))
+        this.registerProvider(new {{pluginNameCamel}}InstanceTabProvider(this,this.morpheus));
         {{/if}}
     }
 
@@ -43,7 +43,7 @@ class {{pluginNameCamel}}Plugin extends Plugin {
      * Called when a plugin is being removed from the plugin manager (aka Uninstalled)
      */
     @Override
-    void onDestroy() {
+    public void onDestroy() {
         //nothing to do for now
     }
 }

@@ -6,6 +6,8 @@ base:
       template: base/gradle.properties.hbs
     - name: "{{basePackagePath}}/{{pluginNameCamel}}Plugin.groovy"
       template: base/Plugin.groovy.hbs
+    - name: "src/assets/images/morpheus.svg"
+      template: base/assets/images/morpheus.svg  
 providers:
     ipam:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.groovy"
@@ -14,5 +16,10 @@ providers:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}DNSProvider.groovy"
           template: dns/DNSProvider.groovy.hbs
     report:
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.groovy"
-            template: report/ReportProvider.groovy.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.groovy"
+          template: report/ReportProvider.groovy.hbs
+    instanceTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.groovy"
+          template: instanceTab/InstanceTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/instanceTab.hbs"
+          template: instanceTab/instanceTab.hbs.hbs

@@ -50,18 +50,22 @@ public class ProjectGeneratorService {
 
 	protected writeTemplateToZip(Map<String,Object> fileInfo, String language, String version, ZipOutputStream zipOutputStream,Map<String,Object> bindings) {
 		String fileName = generateTemplateFromString(fileInfo.name as String, bindings)
-		String content = generateTemplate(fileInfo.template as String, language, version, bindings)
+		byte[] content = generateTemplate(fileInfo.template as String, language, version, bindings)
 		ZipEntry entry = new ZipEntry(fileName)
 		zipOutputStream.putNextEntry(entry)
-		zipOutputStream.write(content.getBytes("UTF-8"))
+		zipOutputStream.write(content)
 		zipOutputStream.flush()
 	}
 
-	protected generateTemplate(String resourcePath, String language, String version, Map<String,Object> bindings) {
+	protected byte[] generateTemplate(String resourcePath, String language, String version, Map<String,Object> bindings) {
 		URL resource = classLoader.getResource("project-templates/${version}/${language}/${resourcePath}" .toString())
-		Handlebars handlebars = new Handlebars();
-		Template template = handlebars.compileInline(resource.text)
-		return template.apply(bindings)
+		if(resourcePath.endsWith(".hbs") || resourcePath.endsWith(".handlebars")) {
+			Handlebars handlebars = new Handlebars();
+			Template template = handlebars.compileInline(resource.text)
+			return template.apply(bindings).getBytes("UTF-8")
+		}
+		return resource.getBytes()
+		
 	}
 
 
