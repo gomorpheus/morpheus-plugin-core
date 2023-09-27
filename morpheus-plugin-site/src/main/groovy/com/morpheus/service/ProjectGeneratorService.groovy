@@ -62,16 +62,24 @@ public class ProjectGeneratorService {
 	protected byte[] generateTemplate(String resourcePath, String language, String version, Map<String,Object> bindings) {
 		URL resource = classLoader.getResource("project-templates/${version}/${language}/${resourcePath}".toString())
 		if(resourcePath.endsWith(".hbs") || resourcePath.endsWith(".handlebars")) {
-			Handlebars handlebars = new Handlebars();
-			Template template = handlebars.compileInline(resource.text)
-			return template.apply(bindings).getBytes("UTF-8")
-		}
-		try {
+			
+			try {
+				Handlebars handlebars = new Handlebars();
+				Template template = handlebars.compileInline(resource.text)
+				return template.apply(bindings).getBytes("UTF-8")
+			} catch(ex) {
+				log.error("Error Fetching Template File: {} - {}","project-templates/${version}/${language}/${resourcePath}",ex.message,ex)
+				return null
+			}
+		} else {
+			try {
 			return resource.getBytes()
-		} catch(ex) {
-			log.error("Error Fetching Template File: {} - {}","project-templates/${version}/${language}/${resourcePath}",ex.message,ex)
-			return null
+			} catch(ex) {
+				log.error("Error Fetching Template File: {} - {}","project-templates/${version}/${language}/${resourcePath}",ex.message,ex)
+				return null
+			}	
 		}
+		
 
 		
 	}
