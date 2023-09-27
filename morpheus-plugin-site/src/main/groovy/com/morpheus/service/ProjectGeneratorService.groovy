@@ -2,6 +2,7 @@ package com.morpheus.service
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Template
+import groovy.util.logging.Slf4j
 import jakarta.inject.Singleton
 import org.yaml.snakeyaml.Yaml
 
@@ -9,6 +10,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 @Singleton
+@Slf4j
 public class ProjectGeneratorService {
 
 	def generateProject(ZipOutputStream zipOutputStream, String language, String version, String pluginName, String pluginCode, String basePackage, List<String> providers) {
@@ -58,13 +60,19 @@ public class ProjectGeneratorService {
 	}
 
 	protected byte[] generateTemplate(String resourcePath, String language, String version, Map<String,Object> bindings) {
-		URL resource = classLoader.getResource("project-templates/${version}/${language}/${resourcePath}" .toString())
+		URL resource = classLoader.getResource("project-templates/${version}/${language}/${resourcePath}".toString())
 		if(resourcePath.endsWith(".hbs") || resourcePath.endsWith(".handlebars")) {
 			Handlebars handlebars = new Handlebars();
 			Template template = handlebars.compileInline(resource.text)
 			return template.apply(bindings).getBytes("UTF-8")
 		}
-		return resource.getBytes()
+		try {
+			return resource.getBytes()
+		} catch(ex) {
+			log.error("Error Fetching Template File: {} - {}","project-templates/${version}/${language}/${resourcePath}",ex.message,ex)
+			return null
+		}
+
 		
 	}
 

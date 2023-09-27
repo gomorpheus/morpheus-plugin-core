@@ -4,6 +4,14 @@ base:
       template: base/build.gradle.hbs
     - name: gradle.properties
       template: base/gradle.properties.hbs
+    - name: gradlew
+      template: base/gradlew
+    - name: gradlew.bat
+      template: base/gradlew.bat
+    - name: gradle/wrapper/gradle-wrapper.jar
+      template: base/gradle/wrapper/gradle-wrapper.jart
+    - name: gradle/wrapper/gradle-wrapper.properties
+      template: base/gradle/wrapper/gradle-wrapper.properties  
     - name: "{{basePackagePath}}/{{pluginNameCamel}}Plugin.java"
       template: base/Plugin.java.hbs
     - name: "src/assets/images/morpheus.svg"
