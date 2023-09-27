@@ -40,6 +40,9 @@ public class {{pluginNameCamel}}Plugin extends Plugin {
         {{#if serverTab}}
         this.registerProvider(new {{pluginNameCamel}}ServerTabProvider(this,this.morpheus));
         {{/if}}
+        {{#if report}}
+        this.registerProvider(new {{pluginNameCamel}}ReportProvider(this,this.morpheus));
+        {{/if}}
     }
 
     /**
