@@ -25,8 +25,8 @@ class StartController {
 		HttpResponse.redirect(URI.create('/start/index.html'))
 	}
 
-	@Post(uri = "/generate", consumes = MediaType.APPLICATION_FORM_URLENCODED)
-	public StreamedFile generate(HttpRequest<?> request, @Parameter String pluginName, @Parameter String pluginCode, @Parameter String language, @Parameter String morpheusVersion, @Parameter String basePackage, @Parameter("providers") Optional<List<String>> providersOption) {
+	@Get(uri = "/generate", consumes = MediaType.APPLICATION_FORM_URLENCODED)
+	public StreamedFile generate(HttpRequest<?> request, @QueryValue String pluginName, @QueryValue String pluginCode, @QueryValue String language, @QueryValue String morpheusVersion, @QueryValue String basePackage, @QueryValue("providers") Optional<List<String>> providersOption) {
 		log.info("Generating")
 
 		List<String> providers = providersOption.get()

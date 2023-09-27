@@ -26,8 +26,15 @@ providers:
     report:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.groovy"
           template: report/ReportProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Report.hbs"
+          template: report/report.hbsr
     instanceTab:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.groovy"
           template: instanceTab/InstanceTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/instanceTab.hbs"
           template: instanceTab/instanceTab.hbs.hbs
+    serverTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ServerTabProvider.groovy"
+          template: serverTab/ServerTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/serverTab.hbs"
+          template: serverTab/serverTab.hbs.hbs      
