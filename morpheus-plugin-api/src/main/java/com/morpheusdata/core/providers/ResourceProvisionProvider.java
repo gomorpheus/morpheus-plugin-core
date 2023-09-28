@@ -86,7 +86,7 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 		 */
 		ServiceResponse validateApp(App app, Map opts);
 
-		ServiceResponse<ProvisionResponse> runApp(App app, AppRequest appRequest, Map opts);
+		ServiceResponse<AppProvisionResponse> runApp(App app, AppRequest appRequest, Map opts);
 
 		ServiceResponse<PrepareAppResponse> prepareApp(App app, AppRequest appRequest, Map opts);
 
