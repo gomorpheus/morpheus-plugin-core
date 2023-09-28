@@ -76,9 +76,11 @@ shadowJar {
 
 
 assets {
-  // developmentRuntime = false
-  from "${project.projectDir}/src/assets"
-  // from 'morpheus-plugin-site/src/assets'
+	// developmentRuntime = false
+	from "${project.projectDir}/src/assets"
+	// from 'morpheus-plugin-site/src/assets'
+	excludes = ["**/*.less"]
+	includes = ['application.less']
 }
 
 
