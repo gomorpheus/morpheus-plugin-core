@@ -1,6 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
 import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkLoadBalancerIdentityProjection;
 import io.reactivex.Observable;
@@ -12,7 +13,7 @@ import java.util.Map;
  * Morpheus context as it relates to load balancer operations. Used to retrieve and query various entities related to
  * load balancers
  */
-public interface MorpheusLoadBalancerService extends MorpheusDataService<NetworkLoadBalancer,NetworkLoadBalancerIdentityProjection> {
+public interface MorpheusLoadBalancerService extends MorpheusDataService<NetworkLoadBalancer, NetworkLoadBalancerIdentityProjection>, MorpheusIdentityService<NetworkLoadBalancerIdentityProjection> {
 	MorpheusLoadBalancerPartitionService getPartition();
 	MorpheusLoadBalancerMonitorService getMonitor();
 	MorpheusLoadBalancerNodeService getNode();
@@ -82,6 +83,7 @@ public interface MorpheusLoadBalancerService extends MorpheusDataService<Network
 	 * @param id morpheus id of the account
 	 * @return {@link Account}
 	 */
+	@Deprecated(since="0.15.4", forRemoval = true)
 	Single<Account> getAccountById(Long id);
 
 	/**
@@ -136,6 +138,7 @@ public interface MorpheusLoadBalancerService extends MorpheusDataService<Network
 	 * for load balancers to install ssl certificates
 	 * @return a url of the morpheus appliance
 	 */
+	@Deprecated(since="0.15.4", forRemoval = true)
 	String getApplianceUrl();
 
 	/**

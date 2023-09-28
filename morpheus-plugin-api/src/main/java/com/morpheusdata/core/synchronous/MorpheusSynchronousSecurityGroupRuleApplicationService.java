@@ -1,0 +1,8 @@
+package com.morpheusdata.core.synchronous;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.SecurityGroupRuleApplication;
+
+public interface MorpheusSynchronousSecurityGroupRuleApplicationService extends MorpheusSynchronousDataService<SecurityGroupRuleApplication, SecurityGroupRuleApplication> {
+}

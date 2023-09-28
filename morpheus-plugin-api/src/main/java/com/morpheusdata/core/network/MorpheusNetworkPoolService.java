@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkPool;
 import com.morpheusdata.model.NetworkPoolIp;
 import com.morpheusdata.model.NetworkPoolRange;
@@ -22,7 +24,7 @@ import java.util.List;
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkPoolService {
+public interface MorpheusNetworkPoolService extends MorpheusDataService<NetworkPool, NetworkPoolIdentityProjection>, MorpheusIdentityService<NetworkPoolIdentityProjection> {
 
 	/**
 	 * Returns the Pool IP Context for dealing with managing IP Allocations regarding Host Records within a {@link NetworkPool}
@@ -56,6 +58,7 @@ public interface MorpheusNetworkPoolService {
 	 * @param ids list of ids to grab {@link NetworkPool} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkPool} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkPool> listById(Collection<Long> ids);
 
 	/**
@@ -80,7 +83,9 @@ public interface MorpheusNetworkPoolService {
 	 * }</pre>
 	 * @param removeList a list of {@link NetworkPool} projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<NetworkPoolIdentityProjection> removeList);
 
 	/**
@@ -97,7 +102,9 @@ public interface MorpheusNetworkPoolService {
 	 * This ensures proper ownership and pool server association. It also creates the poolRanges attached to the model.
 	 * @param addList List of new {@link NetworkPool} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkPool> addList);
 
 	/**
@@ -105,7 +112,9 @@ public interface MorpheusNetworkPoolService {
 	 * to for any action to actually take place.
 	 * @param poolsToSave a list oof {@link NetworkPool} objects to be updated in bulk
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkPool> poolsToSave);
 }
 

@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
 import com.morpheusdata.core.MorpheusContext;
@@ -22,7 +24,7 @@ import java.util.List;
  *
  * @author David Estes, Eric Helgeson
  */
-public interface MorpheusNetworkService {
+public interface MorpheusNetworkService extends MorpheusDataService<Network, NetworkIdentityProjection>, MorpheusIdentityService<NetworkIdentityProjection> {
 
 
 	/**
@@ -159,6 +161,7 @@ public interface MorpheusNetworkService {
 	 * @param ids list of ids to grab {@link Network} objects from.
 	 * @return an RxJava Observable stream of {@link Network} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<Network> listById(Collection<Long> ids);
 
 	/**
@@ -167,6 +170,7 @@ public interface MorpheusNetworkService {
 	 * @param externalIds a Collection of external Ids to filter the list of networks by
 	 * @return an RxJava Observable stream of {@link Network} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<Network> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
 
 	/**
@@ -178,7 +182,9 @@ public interface MorpheusNetworkService {
 	 * }</pre>
 	 * @param removeList a list of network projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<NetworkIdentityProjection> removeList);
 
 	/**
@@ -186,7 +192,9 @@ public interface MorpheusNetworkService {
 	 * This ensures the refType and refId match the poolServer as well as the owner default
 	 * @param addList List of new {@link Network} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<Network> addList);
 
 	/**
@@ -194,16 +202,10 @@ public interface MorpheusNetworkService {
 	 * to for any action to actually take place.
 	 * @param networksToSave a List of Network objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<Network> networksToSave);
-
-	/**
-	 * Saves a {@link Network} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param networkToSave a Network Object that need to be updated in the database.
-	 * @return the Single Observable stating the resultant Network Object
-	 */
-	Single<Network> save(Network networkToSave);
 
 	//General Network Methods
 	Single<Void> removePoolIp(NetworkPool networkPool, NetworkPoolIp ipAddress);

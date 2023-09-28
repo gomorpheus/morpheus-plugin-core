@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkLoadBalancerInstance;
 import com.morpheusdata.model.projection.LoadBalancerInstanceIdentityProjection;
 import io.reactivex.Observable;
@@ -8,7 +10,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
-public interface MorpheusLoadBalancerInstanceService {
+public interface MorpheusLoadBalancerInstanceService extends MorpheusDataService<NetworkLoadBalancerInstance, LoadBalancerInstanceIdentityProjection>, MorpheusIdentityService<LoadBalancerInstanceIdentityProjection> {
 	/**
 	 * Get a list of {@link NetworkLoadBalancerInstance} projections based on NetworkLoadBalancer id
 	 *
@@ -23,6 +25,7 @@ public interface MorpheusLoadBalancerInstanceService {
 	 * @param ids instance ids
 	 * @return Observable stream of load balancer virtual servers
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerInstance> listById(Collection<Long> ids);
 
 	/**
@@ -30,7 +33,9 @@ public interface MorpheusLoadBalancerInstanceService {
 	 *
 	 * @param instances updated instance
 	 * @return success
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkLoadBalancerInstance> instances);
 
 	/**
@@ -38,7 +43,9 @@ public interface MorpheusLoadBalancerInstanceService {
 	 *
 	 * @param instances new load balancer instances to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkLoadBalancerInstance> instances);
 
 	/**
@@ -46,6 +53,8 @@ public interface MorpheusLoadBalancerInstanceService {
 	 *
 	 * @param instances Images to delete
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<LoadBalancerInstanceIdentityProjection> instances);
 }

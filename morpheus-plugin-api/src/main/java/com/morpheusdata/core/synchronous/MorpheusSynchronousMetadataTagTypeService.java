@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.MetadataTagType;
+import com.morpheusdata.model.projection.MetadataTagTypeIdentityProjection;
+
+public interface MorpheusSynchronousMetadataTagTypeService extends MorpheusSynchronousDataService<MetadataTagType, MetadataTagTypeIdentityProjection>, MorpheusSynchronousIdentityService<MetadataTagTypeIdentityProjection> {
+}

@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkLoadBalancer;
 import com.morpheusdata.model.NetworkLoadBalancerProfile;
 import com.morpheusdata.model.projection.LoadBalancerProfileIdentityProjection;
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface MorpheusLoadBalancerProfileService {
+public interface MorpheusLoadBalancerProfileService extends MorpheusDataService<NetworkLoadBalancerProfile, LoadBalancerProfileIdentityProjection>, MorpheusIdentityService<LoadBalancerProfileIdentityProjection> {
 	/**
 	 * Get a list of {@link NetworkLoadBalancerProfile} projections based on NetworkLoadBalancer id
 	 *
@@ -26,6 +28,7 @@ public interface MorpheusLoadBalancerProfileService {
 	 * @param ids ids of load balancer nodes
 	 * @return Observable stream of {@link NetworkLoadBalancerProfile} objects
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerProfile> listById(Collection<Long> ids);
 
 	/**
@@ -33,7 +36,9 @@ public interface MorpheusLoadBalancerProfileService {
 	 *
 	 * @param profiles updated {@link NetworkLoadBalancerProfile} objects
 	 * @return success
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkLoadBalancerProfile> profiles);
 
 	/**
@@ -41,7 +46,9 @@ public interface MorpheusLoadBalancerProfileService {
 	 *
 	 * @param profiles new {@link NetworkLoadBalancerProfile} objects to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkLoadBalancerProfile> profiles);
 
 	/**
@@ -49,7 +56,9 @@ public interface MorpheusLoadBalancerProfileService {
 	 *
 	 * @param profiles {@link LoadBalancerProfileIdentityProjection} objects to delete from database
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<LoadBalancerProfileIdentityProjection> profiles);
 
 	/**
@@ -58,6 +67,7 @@ public interface MorpheusLoadBalancerProfileService {
 	 * @param loadBalancer {@link NetworkLoadBalancer}
 	 * @return 1 or 0 {@link NetworkLoadBalancerProfile}
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Optional<NetworkLoadBalancerProfile>> findByExternalIdAndLoadBalancer(String externalId, NetworkLoadBalancer loadBalancer);
 
 	/**
@@ -65,5 +75,6 @@ public interface MorpheusLoadBalancerProfileService {
 	 * @param args a map of properties used to query the profiles
 	 * @return Observable stream of {@link NetworkLoadBalancerProfile}
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerProfile> queryProfiles(Map args);
 }
