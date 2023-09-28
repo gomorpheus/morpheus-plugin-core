@@ -70,7 +70,10 @@ public class {{pluginNameCamel}}DNSProvider implements DNSProvider {
 	 */
 	@Override
 	public Icon getIcon() {
-		return new Icon(path:"morpheus.svg", darkPath: "morpheus.svg");
+		Icon icon = new Icon();
+		icon.setPath("morpheus.svg");
+		icon.setDarkPath("morpheus.svg");
+		return icon;
 	}
 
 	/**
@@ -141,6 +144,6 @@ public class {{pluginNameCamel}}DNSProvider implements DNSProvider {
 	 */
 	@Override
 	public String getName() {
-		return ""{{pluginName}}";
+		return "{{pluginName}}";
 	}
 }

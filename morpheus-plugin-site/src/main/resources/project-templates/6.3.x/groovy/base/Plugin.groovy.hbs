@@ -43,10 +43,13 @@ class {{pluginNameCamel}}Plugin extends Plugin {
         {{#if report}}
         this.registerProvider(new {{pluginNameCamel}}ReportProvider(this,this.morpheus))
         {{/if}}
-    }
+		{{#if loadBalancer}}
+		this.registerProvider(new {{pluginNameCamel}}LoadBalancerProvider(this,this.morpheus))
+		{{/if}}
+}
 
-    /**
-     * Called when a plugin is being removed from the plugin manager (aka Uninstalled)
+/**
+* Called when a plugin is being removed from the plugin manager (aka Uninstalled)
      */
     @Override
     void onDestroy() {
