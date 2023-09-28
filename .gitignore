@@ -14,3 +14,4 @@ out/
 .assetcache
 disabled/
 *.hprof
+.sdkmanrc
