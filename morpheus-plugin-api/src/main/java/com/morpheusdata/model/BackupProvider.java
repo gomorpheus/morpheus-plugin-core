@@ -7,7 +7,8 @@ import java.util.Map;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class BackupProvider extends MorpheusModel {
-	
+
+	protected String uuid;
 	protected Boolean enabled = true;
 	protected String serviceUrl;
 	protected String serviceToken;
@@ -206,5 +207,13 @@ public class BackupProvider extends MorpheusModel {
 	public void setCredentialData(Map credentialData) {
 		this.credentialData = credentialData;
 		markDirty("credentialData", credentialData, this.credentialData);
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }
