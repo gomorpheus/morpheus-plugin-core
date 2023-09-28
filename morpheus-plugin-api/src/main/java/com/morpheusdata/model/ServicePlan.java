@@ -28,6 +28,7 @@ public class ServicePlan extends ServicePlanIdentityProjection {
 	public String configs;
 	public String serverType;
 	public String serverClass; //hardware classes on clouds;
+	public String architecture;
 	public Integer sortOrder = 0;
 	public String provisionTypeCode;
 	public Boolean editable = true;

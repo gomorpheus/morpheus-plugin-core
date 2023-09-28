@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Context methods for syncing SecurityGroupRuleApplications in Morpheus
  */
-public interface MorpheusSecurityGroupRuleApplicationService {
+public interface MorpheusSecurityGroupRuleApplicationService extends MorpheusDataService<SecurityGroupRuleApplication, SecurityGroupRuleApplication> {
 
 	/**
 	 * Fetch the SecurityGroupRuleLocations given a list of ids
@@ -22,20 +22,17 @@ public interface MorpheusSecurityGroupRuleApplicationService {
 	 * Save updates to existing SecurityGroupRuleApplications
 	 * @param securityGroupRuleApplications SecurityGroupRuleApplications to update
 	 * @return whether the save was successful
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<SecurityGroupRuleApplication> securityGroupRuleApplications);
-
-	/**
-	 * Create and return a new SecurityGroupRuleApplication in Morpheus
-	 * @param securityGroupRuleApplication new SecurityGroupRuleApplication to persist
-	 * @return the SecurityGroupRuleApplication
-	 */
-	Single<SecurityGroupRuleApplication> create(SecurityGroupRuleApplication securityGroupRuleApplication);
 
 	/**
 	 * Remove SecurityGroupRuleApplications from Morpheus
 	 * @param securityGroupRuleApplications SecurityGroupRuleApplications to remove
 	 * @return whether the removal was successful
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<SecurityGroupRuleApplication> securityGroupRuleApplications);
 }

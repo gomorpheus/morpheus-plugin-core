@@ -1,9 +1,21 @@
+@import 'colors.less';
+@import 'form.less';
+@import 'button.less';
+
+* {
+	box-sizing: border-box;
+}
+
 body {
 	margin:0;
 	font-family: 'Proxima Nova';
 	min-height: 100vh;
 	display:flex;
 	flex-direction: column;
+	color:@text-black;
+}
+main {
+	flex-grow: 1;
 }
 .content {
 	width:1070px;
@@ -14,7 +26,7 @@ header {
 	background-color: #253746;
 	color: #fefefe;
 	img.logo{
-		height:40px;
+		height:70px;
 		padding:15px 0 15px;
 		margin-right:45px;
 	}
@@ -43,6 +55,18 @@ main {
 		height:511px;
 		background-image: linear-gradient(to top, #253746, #131e29);
 		padding:55px;
+		&.small {
+			height: 250px;
+
+			img {
+				max-height: 218px;
+			}
+			h1 {
+				font-size: 40px;
+				align-self: flex-start;
+				margin-top: 40px;
+			}
+		}
 		.content {
 			display:grid;
 			grid-template-areas: 'text image';
@@ -61,12 +85,18 @@ main {
 			align-self:center;
 		}
 	}
+	h2.page-title {
+		border-bottom: 1px solid @page-title-divider-color;
+		margin-bottom: 40px;
+	}
 }
 section.plugin-grid {
-	margin-top: 125px;
+	margin-top: 75px;
 	margin-bottom:125px;
 	h2 {
-		padding-left: 20px;
+		&.current-header {
+			padding-left: 20px;
+		}
 		span{
 			margin-left:10px;
 			line-height: 50px;
@@ -75,6 +105,22 @@ section.plugin-grid {
 		}
 		img{
 			height: 50px;
+		}
+	}
+	.blurb {
+		margin-bottom: 40px;
+		background-color:@call-out-bg;
+		border-radius:14px;
+		padding: 10px 20px;
+		border:1px solid @border-color;
+		h2 {
+			margin: 14px 0;
+		}
+		p {
+			margin:0;
+			&.action {
+				margin: 14px 0;
+			}
 		}
 	}
 	ul.plugin-grid {
@@ -123,9 +169,8 @@ section.plugin-grid {
 footer {
 	background-color: #e9eff4;
     border-top: 1px solid #a8a8aa;
-    padding-top: 50px;
+    padding-top: 25px;
     padding-bottom: 18px;
-    flex-grow:1;
     display:flex;
     flex-direction: column;
     .content {
@@ -136,6 +181,7 @@ footer {
     }
     .resources {
     	flex-grow: 1;
+    	padding-bottom: 25px;
     }
     h4 {
     	color:#185a7d;

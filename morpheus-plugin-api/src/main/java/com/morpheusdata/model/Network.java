@@ -79,7 +79,7 @@ public class Network extends NetworkIdentityProjection {
 	protected Integer cidrMask;
 	protected NetworkIdentityProjection parentNetwork;
 
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<>();
 
 	public void setCloudId(Long id) {
 		this.cloud = new Cloud();
@@ -472,11 +472,11 @@ public class Network extends NetworkIdentityProjection {
 		markDirty("assignPublicIp", assignPublicIp);
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 	}
 

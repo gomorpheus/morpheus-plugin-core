@@ -26,6 +26,10 @@ include::Contexts.adoc[]
 
 include::Models.adoc[]
 
+include::DataServices.adoc[]
+
+include::SyncTasks.adoc[]
+
 include::HTTPRouting.adoc[]
 
 include::HttpApiClient.adoc[]
@@ -34,6 +38,7 @@ include::Views.adoc[]
 
 include::Localization.adoc[]
 
+include::DataSetProviders.adoc[]
 include::OptionSources.adoc[]
 
 include::Credentials.adoc[]

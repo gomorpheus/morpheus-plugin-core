@@ -8,11 +8,12 @@ import io.reactivex.Observable;
  * @author Bob Whiton
  *
  */
-public interface MorpheusOsTypeService {
+public interface MorpheusOsTypeService extends MorpheusDataService<OsType, OsType> {
 
 	/**
 	 * Get a list of all the OsType objects
 	 * @return Observable stream of OsType
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<OsType> listAll();
 }

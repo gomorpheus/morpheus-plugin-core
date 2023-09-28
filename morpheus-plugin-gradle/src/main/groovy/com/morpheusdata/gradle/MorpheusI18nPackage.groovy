@@ -5,32 +5,39 @@ import groovy.transform.CompileDynamic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 class MorpheusI18nPackage extends DefaultTask {
 	private String destinationDirectoryPath
 
-	@Delegate MorpheusPluginExtension pluginExtension = new MorpheusPluginExtension()
+	@Internal
+	MorpheusPluginExtension pluginExtension = new MorpheusPluginExtension()
 
-	@Input
+	@InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
 	File getI18nDir() {
-		def path = pluginExtension.i18nSource
+		def path = pluginExtension.i18nDir
 		return path ? new File(path) : null
 	}
 
 	void setI18nDir(File i18nDir) {
-		pluginExtension.i18nSource = i18nDir.absolutePath
+		pluginExtension.i18nDir = i18nDir.absolutePath
 	}
 
 	@OutputDirectory
-	File getDestinationDir() {
+	File getI18nTarget() {
 		def path = pluginExtension.i18nTarget
 		return path ? new File(path) : null
 	}
 
-	void setDestinationDir(File dir) {
+	void setI18nTarget(File dir) {
 		pluginExtension.i18nTarget = dir.absolutePath
 	}
 
@@ -40,13 +47,14 @@ class MorpheusI18nPackage extends DefaultTask {
 		return src
 	}
 
-	File getManifestFile() {
-		def outputDir = getDestinationDir()
+	@OutputFile
+	File getI18nManifest() {
+		def outputDir = getI18nTarget()
 		def outputFile = pluginExtension.i18nManifest
 		return outputFile ? new File(outputDir, outputFile) : null
 	}
 
-	void setManifestFile(File manifestFile) {
+	void setI18nManifest(File manifestFile) {
 		pluginExtension.packageManifest = manifestFile.name
 	}
 
@@ -60,9 +68,9 @@ class MorpheusI18nPackage extends DefaultTask {
 		//if we have a package dir
 		if(packageSource.exists()) {
 			//output directory
-			def packageTarget = getDestinationDir()
+			def packageTarget = getI18nTarget()
 			//manifest
-			def packageManifest = getManifestFile()
+			def packageManifest = getI18nManifest()
 			//ensure it exists
 			if(!packageTarget.exists())
 				packageTarget.mkdirs()

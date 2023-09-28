@@ -17,7 +17,6 @@ public class CloudPoolIdentity extends MorpheusIdentityModel {
 	protected String name;
 	protected String externalId;
 	protected String category;
-	protected Long ownerId;
 	protected Boolean inventory = true;
 	protected String regionCode;
 
@@ -73,15 +72,6 @@ public class CloudPoolIdentity extends MorpheusIdentityModel {
 	public void setCategory(String category) {
 		this.category = category;
 		markDirty("category", category);
-	}
-
-	public Long getOwnerId() {
-		return ownerId;
-	}
-
-	public void setOwnerId(Long ownerId) {
-		this.ownerId = ownerId;
-		markDirty("ownerId", ownerId);
 	}
 
 	public Boolean getInventory() {

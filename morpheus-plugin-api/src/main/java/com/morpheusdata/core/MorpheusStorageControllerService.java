@@ -17,7 +17,7 @@ import java.util.List;
  * @since 0.13.0
  * @author Alex Clement
  */
-public interface MorpheusStorageControllerService {
+public interface MorpheusStorageControllerService extends MorpheusDataService<StorageController, StorageControllerIdentityProjection>, MorpheusIdentityService<StorageControllerIdentityProjection> {
 
 	/**
 	 * Returns the MorpheusStorageControllerTypeService context used for performing updates or queries on {@link StorageControllerType} related assets within Morpheus.
@@ -30,6 +30,7 @@ public interface MorpheusStorageControllerService {
 	 * @param ids StorageController ids
 	 * @return Observable stream of StorageControllers
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageController> listById(Collection<Long> ids);
 
 	/**
@@ -94,6 +95,8 @@ public interface MorpheusStorageControllerService {
 	 * Save updates to existing StorageControllers
 	 * @param storageControllers controllers to save
 	 * @return success
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<StorageController> storageControllers);
 }

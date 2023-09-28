@@ -1,9 +1,5 @@
 package com.morpheusdata.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.model.projection.ComputeZonePoolIdentityProjection;
-import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-
 /**
  * This model represents logical groupings/separations within a cloud for virtualization management
  * for example Vmware Clusters/Resource Pools, or AWS VPCs, Azure Resource Groups, OpenStack Projects

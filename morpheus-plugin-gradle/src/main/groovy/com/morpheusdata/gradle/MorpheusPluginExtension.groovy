@@ -29,8 +29,8 @@ class MorpheusPluginExtension {
 	String packageSource = 'src/main/resources/packages'
 	String packageTarget = 'packages'
 	String packageManifest = 'packages.manifest'
-
-	String i18nSource = 'src/main/resources/i18n'
+	
+	String i18nDir = 'src/main/resources/i18n'
 	String i18nTarget = 'i18n'
 	String i18nManifest = 'i18n.manifest'
 
@@ -43,7 +43,7 @@ class MorpheusPluginExtension {
 			packageSource: packageSource,
 			packageTarget: packageTarget,
 			packageManifest: packageManifest,
-			i18nSource: i18nSource,
+			i18nDir: i18nDir,
 			i18nTarget: i18nTarget,
 			i18nManifest: i18nManifest
 		]

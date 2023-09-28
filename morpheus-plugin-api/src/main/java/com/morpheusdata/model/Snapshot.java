@@ -16,7 +16,7 @@ public class Snapshot extends SnapshotIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud cloud;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZoneRegion region;
+	protected CloudRegion region;
 	protected String description;
 	protected Date snapshotCreated;
 	protected Boolean currentlyActive;
@@ -80,9 +80,9 @@ public class Snapshot extends SnapshotIdentityProjection {
 		this.parentSnapshot = parentSnapshot;
 	}
 
-	public ComputeZoneRegion getRegion() { return region; }
+	public CloudRegion getRegion() { return region; }
 
-	public void setRegion(ComputeZoneRegion region) {
+	public void setRegion(CloudRegion region) {
 		this.region = region;
 	}
 

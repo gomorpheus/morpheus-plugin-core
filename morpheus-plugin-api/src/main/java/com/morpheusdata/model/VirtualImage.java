@@ -49,6 +49,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String refType;
 	protected String imageRegion;
 	protected Boolean isForceCustomization;
+	protected Boolean uefi=false;
 	protected Boolean isCloudInit = true;
 	protected Boolean virtioSupported = true;
 	protected Boolean deleted = false;
@@ -337,6 +338,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setForceCustomization(Boolean forceCustomization) {
 		isForceCustomization = forceCustomization;
+	}
+
+	public Boolean getUefi() {
+		return uefi;
+	}
+
+	public void setUefi(Boolean uefi) {
+		this.uefi = uefi;
+		markDirty("uefi", uefi);
 	}
 
 	public Boolean getVirtioSupported() {

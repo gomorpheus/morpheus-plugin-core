@@ -1,7 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.ComputeZoneRegion;
+import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.VirtualImageLocation;
 import com.morpheusdata.model.projection.VirtualImageLocationIdentityProjection;
 import io.reactivex.Observable;
@@ -21,11 +21,11 @@ import java.util.Optional;
  * @see MorpheusVirtualImageService
  * @author Bob Whiton
  */
-public interface MorpheusVirtualImageLocationService {
+public interface MorpheusVirtualImageLocationService extends MorpheusDataService<VirtualImageLocation, VirtualImageLocationIdentityProjection>, MorpheusIdentityService<VirtualImageLocationIdentityProjection> {
 	/**
 	 * Get a list of VirtualImageLocation projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param regionCode the {@link CloudRegion} to optionally filter by
 	 * @return Observable stream of sync projection
 	 */
 	Observable<VirtualImageLocationIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
@@ -48,6 +48,7 @@ public interface MorpheusVirtualImageLocationService {
 	 * @param sharedStorage Whether to search for VirtualImageLocations with sharedStorage (optional) Defaults to false.
 	 * @return Observable VirtualImageLocation matching the parameters
 	 */
+	@Deprecated(since="0.15.4")
 	Single<VirtualImageLocation> findVirtualImageLocation(Long virtualImageId, Long cloudId, String regionCode, String imageFolder, Boolean sharedStorage);
 
 	/**
@@ -60,6 +61,7 @@ public interface MorpheusVirtualImageLocationService {
 	 * @param accountId optional accountId to scope it based on user access permissions on the lookup
 	 * @return an optional VirtualImageLocation with parent VirtualImage (if it exists)
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Optional<VirtualImageLocation>> findVirtualImageLocationByExternalIdForCloudAndType(String externalId, Long cloudId, String regionCode, String imageType, Long accountId);
 
 	/**
@@ -71,6 +73,7 @@ public interface MorpheusVirtualImageLocationService {
 	 * @param imageType image type to scope to
 	 * @return an optional VirtualImageLocation with parent VirtualImage (if it exists)
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Optional<VirtualImageLocation>> findVirtualImageLocationByExternalIdForCloudAndType(String externalId, Long cloudId, String regionCode, String imageType);
 
 
@@ -79,6 +82,7 @@ public interface MorpheusVirtualImageLocationService {
 	 * @param ids VirtualImageLocation ids
 	 * @return Observable stream of VirtualImageLocations
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<VirtualImageLocation> listById(Collection<Long> ids);
 
 	/**
@@ -109,6 +113,8 @@ public interface MorpheusVirtualImageLocationService {
 	 * Remove persisted VirtualImageLocations from Morpheus
 	 * @param virtualImageLocations to delete
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<VirtualImageLocationIdentityProjection> virtualImageLocations);
 }

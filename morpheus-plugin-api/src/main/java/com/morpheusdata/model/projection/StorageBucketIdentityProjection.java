@@ -21,7 +21,6 @@ public class StorageBucketIdentityProjection extends MorpheusIdentityModel {
 
 	public StorageBucketIdentityProjection(Long id, String name, String code, String externalId) {
 		this.id = id;
-		this.code = code;
 		this.name = name;
 		this.externalId = externalId;
 	}

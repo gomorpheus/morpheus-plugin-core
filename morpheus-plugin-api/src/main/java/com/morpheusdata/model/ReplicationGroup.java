@@ -17,7 +17,6 @@ public class ReplicationGroup extends MorpheusModel {
 	protected BackupProvider backupProvider;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String refType;
 	protected Long refId;
 	protected String replicationServerId;
@@ -123,15 +122,6 @@ public class ReplicationGroup extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		markDirty("externalId", externalId, this.externalId);
 		this.externalId = externalId;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getRefType() {

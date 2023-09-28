@@ -7,7 +7,8 @@ import java.util.Map;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class BackupProvider extends MorpheusModel {
-	
+
+	protected String uuid;
 	protected Boolean enabled = true;
 	protected String serviceUrl;
 	protected String serviceToken;
@@ -15,7 +16,6 @@ public class BackupProvider extends MorpheusModel {
 	protected String port;
 	protected String username;
 	protected String password;
-	protected String config;
 	protected String code;
 	protected String visibility = "private";
 	protected String status = "ok"; //ok, error, warning, offline
@@ -99,15 +99,6 @@ public class BackupProvider extends MorpheusModel {
 	public void setPassword(String password) {
 		markDirty("password", password, this.password);
 		this.password = password;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public String getCode() {
@@ -216,5 +207,13 @@ public class BackupProvider extends MorpheusModel {
 	public void setCredentialData(Map credentialData) {
 		this.credentialData = credentialData;
 		markDirty("credentialData", credentialData, this.credentialData);
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }

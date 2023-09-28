@@ -22,4 +22,10 @@ public interface MorpheusKeyPairService extends MorpheusDataService<KeyPair,KeyP
 	 */
 	Observable<KeyPairIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);
 
+	Maybe<KeyPair> findOrGenerateByAccount(Long accountId);
+
+	Single<Boolean> addZoneKeyPairLocation(Long cloudId, String locationId, String keyId);
+
+	Single<Boolean> addKeyPairLocation(Long keyPairId, String locationId, String keyId);
+
 }

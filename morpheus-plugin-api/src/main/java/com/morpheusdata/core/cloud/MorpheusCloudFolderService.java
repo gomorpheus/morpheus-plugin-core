@@ -1,5 +1,5 @@
 package com.morpheusdata.core.cloud;
-
+import com.morpheusdata.core.MorpheusContext;
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.core.data.DataQuery;
@@ -13,11 +13,9 @@ import java.util.List;
 
 /**
  * Context methods for syncing {@link CloudFolder} in Morpheus. It can normally
- * be accessed via the {@link com.morpheusdata.core.MorpheusComputeServerService}
- * <p><strong>Examples:</strong></p>
- * <pre>{@code
- * morpheusContext.getCloud().getFolder()
- * }</pre>
+ * be accessed via the {@link com.morpheusdata.core.cloud.MorpheusCloudService}.
+ * <p><strong>This service is accessible in the {@link MorpheusContext} via the following traversal path:</strong> <br>
+ * {@code morpheusContext.getAsync().getCloud().getFolder()}</p>
  *
  * @author Bob Whiton
  */

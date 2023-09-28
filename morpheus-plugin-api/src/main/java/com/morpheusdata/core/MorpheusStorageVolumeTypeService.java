@@ -7,18 +7,13 @@ import io.reactivex.Single;
 /**
  * Context methods for StorageVolumeTypes in Morpheus
  */
-public interface MorpheusStorageVolumeTypeService {
+public interface MorpheusStorageVolumeTypeService extends MorpheusDataService<StorageVolumeType, StorageVolumeType> {
 
 	/**
 	 * List all StorageVolumeTypes
 	 * @return Observable stream of StorageVolumeType
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageVolumeType> listAll();
 
-	/**
-	 * Get a StorageVolumeType by id
-	 * @param id of the StorageVolumeType
-	 * @return StorageVolumeType
-	 */
-	Single<StorageVolumeType> get(Long id);
 }

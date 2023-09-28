@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.Replication;
@@ -14,7 +16,7 @@ import io.reactivex.Single;
 import java.util.Collection;
 import java.util.List;
 
-public interface MorpheusReplicationService {
+public interface MorpheusReplicationService extends MorpheusDataService<Replication, ReplicationIdentityProjection>, MorpheusIdentityService<ReplicationIdentityProjection> {
 
 	/**
 	 * Returns the MorpheusReplicationGroupContext used for performing updates/queries on {@link ReplicationGroup} related assets
@@ -59,6 +61,7 @@ public interface MorpheusReplicationService {
 	 * @param ids list of {@link Replication} ids to fetch.
 	 * @return an RxJava Observable stream of {@link Replication} objects for subscription.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<ReplicationIdentityProjection> listById(Collection<Long> ids);
 
 	/**
@@ -70,14 +73,18 @@ public interface MorpheusReplicationService {
 	 * }</pre>
 	 * @param removeList a list of backup projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<ReplicationIdentityProjection> removeList);
 
 	/**
 	 * Creates new Backup Domains from cache / sync implementations
 	 * @param addList List of new {@link Replication} objects to be inserted into the database
 	 * @return notification of completion
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<Replication> addList);
 
 	/**
@@ -85,15 +92,8 @@ public interface MorpheusReplicationService {
 	 * to for any action to actually take place.
 	 * @param saveList a List of Backup objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<Replication> saveList);
-
-	/**
-	 * Saves a {@link Replication} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param replication a Replication Object to be updated in the database.
-	 * @return the Single Observable containing the resulting Backup Object
-	 */
-	Single<Replication> save(Replication replication);
-
 }

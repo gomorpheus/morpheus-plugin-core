@@ -11,7 +11,7 @@ import io.reactivex.Observable;
  * @author Dustin Deyoung
  * @since 0.13.0
  */
-public interface MorpheusWorkloadService extends MorpheusDataService<Workload,WorkloadIdentityProjection> {
+public interface MorpheusWorkloadService extends MorpheusDataService<Workload,WorkloadIdentityProjection>, MorpheusIdentityService<WorkloadIdentityProjection> {
 
 	/**
 	 * Get a list of {@link Workload} projections based on Cloud id
@@ -25,6 +25,7 @@ public interface MorpheusWorkloadService extends MorpheusDataService<Workload,Wo
 	 * @param accountId Account id
 	 * @return Observable stream of sync projection
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<WorkloadIdentityProjection> listSyncProjections(Long accountId);
 
 	/**

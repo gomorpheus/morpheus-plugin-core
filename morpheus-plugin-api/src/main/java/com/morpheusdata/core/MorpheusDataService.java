@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.core.data.DataQueryResult;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.MorpheusModel;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;

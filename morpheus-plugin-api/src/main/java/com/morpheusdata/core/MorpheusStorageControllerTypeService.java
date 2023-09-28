@@ -7,18 +7,13 @@ import io.reactivex.Single;
 /**
  * Context methods for StorageControllerTypes in Morpheus
  */
-public interface MorpheusStorageControllerTypeService {
+public interface MorpheusStorageControllerTypeService extends MorpheusDataService<StorageControllerType, StorageControllerType> {
 
 	/**
 	 * List all StorageControllerTypes
 	 * @return Observable stream of StorageControllerType
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageControllerType> listAll();
 
-	/**
-	 * Get a StorageControllerType by id
-	 * @param id of the StorageControllerType
-	 * @return StorageControllerType
-	 */
-	Single<StorageControllerType> get(Long id);
 }

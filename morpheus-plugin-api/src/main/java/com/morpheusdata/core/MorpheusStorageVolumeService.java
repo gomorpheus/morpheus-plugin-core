@@ -1,6 +1,6 @@
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.ComputeZoneRegion;
+import com.morpheusdata.model.CloudRegion;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.StorageVolume;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
@@ -31,12 +31,13 @@ public interface MorpheusStorageVolumeService extends MorpheusDataService<Storag
 	 * @param ids StorageVolume ids
 	 * @return Observable stream of StorageVolumes
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<StorageVolume> listById(Collection<Long> ids);
 
 	/**
 	 * Get a list of {@link StorageVolume} projections based on Cloud id
 	 * @param cloudId Cloud id
-	 * @param regionCode the {@link ComputeZoneRegion} to optionally filter by
+	 * @param regionCode the {@link CloudRegion} to optionally filter by
 	 * @return Observable stream of sync projection
 	 */
 	Observable<StorageVolumeIdentityProjection> listIdentityProjections(Long cloudId, String regionCode);

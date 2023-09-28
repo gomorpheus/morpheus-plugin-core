@@ -1,0 +1,13 @@
+<table>
+	<thead>
+	<th>Header</th>
+	
+	</thead>
+	<tbody>
+		{{#each main}}
+			<tr>
+				<td>{{dataMap.column}}</td>
+			</tr>
+		{{/each}}
+	</tbody>
+</table>

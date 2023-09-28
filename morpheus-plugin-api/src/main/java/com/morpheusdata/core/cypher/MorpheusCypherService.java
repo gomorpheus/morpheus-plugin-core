@@ -7,7 +7,8 @@ import io.reactivex.Single;
  * be accessed via the {@link com.morpheusdata.core.MorpheusContext}
  * <p><strong>Examples:</strong></p>
  * <pre>{@code
- * morpheusContext.getCypher().getRead(cypherAccess, "somekey", true);
+ * morpheusContext.getCypher().read(cypherAccess, "somekey").blockingGet();
+ * this.morpheus.getCypher().read(cypherAccess, "secret/company/accessKey")?.blockingGet()
  * }</pre>
  * @since 0.10.0
  * @author Bob Whiton

@@ -13,8 +13,8 @@ public class StorageBucket extends StorageBucketIdentityProjection {
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected	Account account;
-	protected	String visibility;
-	protected	Boolean active;
+	protected	String visibility = "private";
+	protected	Boolean active = true;
 	//details
 	protected	String category;
 	protected	String bucketName;
@@ -37,14 +37,14 @@ public class StorageBucket extends StorageBucketIdentityProjection {
 	//size and availability
 	protected	Long maxStorage;
 	protected	Long usedStorage;
-	protected	Boolean resizeable;
-	protected	Boolean removable;
-	protected	Boolean enabled;
-	protected	Boolean readOnly;
+	protected	Boolean resizeable = false;
+	protected	Boolean removable = false;
+	protected	Boolean enabled = true;
+	protected	Boolean readOnly = false;
 	//usage
-	protected	Boolean defaultBackupTarget;
-	protected	Boolean defaultDeploymentTarget;
-	protected	Boolean defaultVirtualImageTarget;
+	protected	Boolean defaultBackupTarget = false;
+	protected	Boolean defaultDeploymentTarget = false;
+	protected	Boolean defaultVirtualImageTarget = false;
 	//retention
 	protected	String retentionPolicyType;
 	protected	Integer retentionPolicyDays;
@@ -58,7 +58,7 @@ public class StorageBucket extends StorageBucketIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected	AccountNamespace namespace;
 	//status
-	protected	String status;
+	protected	String status = "ok";
 	protected	String statusMessage;
 	//timestamps
 	protected	Date dateCreated;
@@ -66,6 +66,7 @@ public class StorageBucket extends StorageBucketIdentityProjection {
 	protected	Long createdById;		
 	protected String createdByName;
 	protected	String rawData;
+	protected	String regionCode;
 	
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	public Collection<StorageBucketPermission> permissions;
@@ -446,6 +447,15 @@ public class StorageBucket extends StorageBucketIdentityProjection {
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
 		markDirty("rawData", rawData);
+	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
+		markDirty("regionCode", regionCode);
 	}
 
 	public Collection<StorageBucketPermission> getPermissions() {

@@ -84,6 +84,13 @@ public interface MorpheusAsyncServices {
 	MorpheusServicePlanService getServicePlan();
 
 	/**
+	 * Returns the Price Plan context used for syncing Cloud images within Morpheus.
+	 * Typically this would be called by a {@link com.morpheusdata.core.providers.CloudProvider}.
+	 * @return An instance of the Price Plan Context to be used for calls by various providers
+	 */
+	MorpheusPricePlanService getPricePlan();
+
+	/**
 	 * Returns the Compute Server context used for syncing machines within Morpheus.
 	 * Typically this would be called by a {@link com.morpheusdata.core.providers.CloudProvider}.
 	 * @return An instance of the Compute Server Context to be used for calls by various providers
@@ -177,6 +184,20 @@ public interface MorpheusAsyncServices {
 	 * @return An instance of the StorageController Service
 	 */
 	MorpheusStorageControllerService getStorageController();
+
+	/**
+	 * Returns the StorageServer Service
+	 *
+	 * @return An instance of the StorageServer Service
+	 */
+	MorpheusStorageServerService getStorageServer();
+
+	/**
+	 * Returns the StorageBucket Service
+	 *
+	 * @return An instance of the StorageBucket Service
+	 */
+	MorpheusStorageBucketService getStorageBucket();
 
 	/**
 	 * Returns the Usage Service
@@ -315,6 +336,12 @@ public interface MorpheusAsyncServices {
 	MorpheusServicePlanPriceSetService getServicePlanPriceSet();
 
 	/**
+	 * Returns the MorpheusPricePlanPriceSetService
+	 * @return an instance of the MorpheusPricePlanPriceSetService
+	 */
+	MorpheusPricePlanPriceSetService getPricePlanPriceSet();
+
+	/**
 	 * Returns the MorpheusAccountIntegrationService
 	 * @return an instance of the MorpheusAccountIntegrationService
 	 */
@@ -373,5 +400,12 @@ public interface MorpheusAsyncServices {
 	 * @return an instance of the MorpheusLibraryServices
 	 */
 	MorpheusLibraryServices getLibrary();
+
+	/**
+	 * Returns the {@link MorpheusCodeRepositoryService } which contains all code repository services
+	 * @return an instance of the MorpheusCodeRepositoryService
+	 */
+	MorpheusCodeRepositoryService getCodeRepository();
+
 
 }

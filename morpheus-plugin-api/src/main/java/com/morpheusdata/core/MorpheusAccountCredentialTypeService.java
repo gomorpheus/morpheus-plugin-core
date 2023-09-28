@@ -6,7 +6,7 @@ import io.reactivex.Observable;
 /**
  * Context methods for AccountCredentialType
  */
-public interface MorpheusAccountCredentialTypeService {
+public interface MorpheusAccountCredentialTypeService extends MorpheusDataService<AccountCredentialType, AccountCredentialType> {
 
 	/**
 	 * Get a list of AccountCredentialTypes

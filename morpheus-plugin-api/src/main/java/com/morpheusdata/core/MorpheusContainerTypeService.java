@@ -6,12 +6,6 @@ import io.reactivex.Single;
 /**
  * Context methods for syncing {@link ContainerType} in Morpheus
  */
-public interface MorpheusContainerTypeService {
+public interface MorpheusContainerTypeService extends MorpheusDataService<ContainerType, ContainerType> {
 
-	/**
-	 * Get a {@link ContainerType} by id.
-	 * @param id ContainerType id
-	 * @return Single ContainerType
-	 */
-	Single<ContainerType> get(Long id);
 }

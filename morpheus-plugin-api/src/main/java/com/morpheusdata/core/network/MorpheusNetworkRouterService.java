@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkRouterIdentityProjection;
 import io.reactivex.Observable;
@@ -14,7 +16,7 @@ import java.util.List;
  * @author David Estes
  * @since 0.14.0
  */
-public interface MorpheusNetworkRouterService {
+public interface MorpheusNetworkRouterService extends MorpheusDataService<NetworkRouter, NetworkRouterIdentityProjection>, MorpheusIdentityService<NetworkRouterIdentityProjection> {
 
 	/**
 	 * Returns the {@link MorpheusNetworkRouteService} used for performing updates/queries on {@link NetworkRoute} related assets
@@ -35,10 +37,10 @@ public interface MorpheusNetworkRouterService {
 	/**
 	 * Lists all network router projection objects for a specified zone pool.
 	 * The projection is a subset of the properties on a full {@link NetworkRouter} object for sync matching.
-	 * @param computeZonePool the {@link ComputeZonePool} identifier associated to the routers to be listed.
+	 * @param cloudPool the {@link CloudPool} identifier associated to the routers to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkRouterIdentityProjection> listIdentityProjections(ComputeZonePool computeZonePool);
+	Observable<NetworkRouterIdentityProjection> listIdentityProjections(CloudPool cloudPool);
 
 	/**
 	 * Lists all router projection objects for a specified cloud.
@@ -70,6 +72,7 @@ public interface MorpheusNetworkRouterService {
 	 * @param ids list of ids to grab {@link NetworkRouter} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkRouter} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkRouter> listById(Collection<Long> ids);
 
 	/**
@@ -78,6 +81,7 @@ public interface MorpheusNetworkRouterService {
 	 * @param externalIds a Collection of external Ids to filter the list of networks by
 	 * @return an RxJava Observable stream of {@link NetworkRouter} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkRouter> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
 
 	/**
@@ -89,7 +93,9 @@ public interface MorpheusNetworkRouterService {
 	 * }</pre>
 	 * @param removeList a list of router projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<NetworkRouterIdentityProjection> removeList);
 
 	/**
@@ -98,7 +104,9 @@ public interface MorpheusNetworkRouterService {
 	 * Any NetworkRoutes will not be added. They must be added/removed via MorpheusNetworkRouteService
 	 * @param addList List of new {@link NetworkRouter} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkRouter> addList);
 
 	/**
@@ -107,6 +115,8 @@ public interface MorpheusNetworkRouterService {
 	 * Any NetworkRoutes will not be added/removed. They must be added/removed via MorpheusNetworkRouteService
 	 * @param routersToSave a List of Router objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkRouter> routersToSave);
 }

@@ -30,7 +30,6 @@ public class StorageServer extends StorageServerIdentityProjection {
 	protected String externalIp;
 	protected Integer apiPort;
 	protected Integer adminPort;
-	protected String config;
 	protected String refType;
 	protected Long refId;
 	protected String category;
@@ -212,14 +211,6 @@ public class StorageServer extends StorageServerIdentityProjection {
 
 	public void setAdminPort(Integer adminPort) {
 		this.adminPort = adminPort;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getRefType() {

@@ -96,7 +96,7 @@ public class Workload extends WorkloadIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ServicePlan plan;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZonePool computeZonePool;
+	protected CloudPool computeZonePool;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Instance instance;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -134,12 +134,12 @@ public class Workload extends WorkloadIdentityProjection {
 		this.plan = plan;
 	}
 
-	public ComputeZonePool getComputeZonePool() {
+	public CloudPool getCloudPool() {
 		return computeZonePool;
 	}
 
-	public void setComputeZonePool(ComputeZonePool computeZonePool) {
-		this.computeZonePool = computeZonePool;
+	public void setCloudPool(CloudPool cloudPool) {
+		this.computeZonePool = cloudPool;
 	}
 
 	public Boolean getPrivateNetworking() {

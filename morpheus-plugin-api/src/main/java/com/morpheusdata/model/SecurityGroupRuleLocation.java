@@ -51,8 +51,6 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
     protected String providerId;
     protected String externalType;
     protected String iacId; //id for infrastructure as code integrations
-    //config
-    protected String config;
     protected String rawData;
     protected Boolean enabled;
     protected Boolean visible;
@@ -346,16 +344,6 @@ public class SecurityGroupRuleLocation extends MorpheusModel {
 
     public void setIacId(String iacId) {
         this.iacId = iacId;
-    }
-
-    @Override
-    public String getConfig() {
-        return config;
-    }
-
-    @Override
-    public void setConfig(String config) {
-        this.config = config;
     }
 
     public String getRawData() {

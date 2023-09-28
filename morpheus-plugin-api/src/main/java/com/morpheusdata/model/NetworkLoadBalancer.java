@@ -14,7 +14,7 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected NetworkLoadBalancerType type;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected ComputeZoneRegion region;
+	protected CloudRegion region;
 
 	protected String name;
 	protected String description;
@@ -388,11 +388,11 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 		this.type = type;
 	}
 
-	public ComputeZoneRegion getRegion() {
+	public CloudRegion getRegion() {
 		return region;
 	}
 
-	public void setRegion(ComputeZoneRegion region) {
+	public void setRegion(CloudRegion region) {
 		this.region = region;
 		markDirty("region", region);
 	}

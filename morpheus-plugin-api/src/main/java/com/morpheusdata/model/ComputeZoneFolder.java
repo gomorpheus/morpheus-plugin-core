@@ -1,11 +1,5 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.model.projection.ComputeZoneFolderIdentityProjection;
-import java.util.ArrayList;
-import java.util.List;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-
 /**
  * Represents folders like in Vmware Folders
  * @author David Estes

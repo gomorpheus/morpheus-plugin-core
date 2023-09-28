@@ -3,15 +3,17 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.3.1'
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:${assetPipelineVersion}"
     }
 }
+
+
 plugins {
     id "org.asciidoctor.jvm.convert" version "3.3.2"
-    id "groovy"
-    id "com.github.johnrengelman.shadow"
-    id "application"
-    // id "com.bertramlabs.asset-pipeline" version "3.3.1"
+    id("groovy") 
+    id("com.github.johnrengelman.shadow")
+    id("io.micronaut.application") version "4.0.3"
+    id("io.micronaut.aot") version "4.0.3"
 }
 
 apply plugin: "asset-pipeline"
@@ -29,18 +31,19 @@ configurations {
 }
 
 dependencies {
-    compile 'com.bertramlabs.plugins:asset-pipeline-micronaut:3.3.1'
-    assets 'com.bertramlabs.plugins:less-asset-pipeline:3.3.1'
-    compileOnly(platform("io.micronaut:micronaut-bom:$micronautVersion"))
-    compileOnly("io.micronaut:micronaut-inject-groovy")
-    implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
-    implementation("io.micronaut:micronaut-inject")
-    implementation("io.micronaut:micronaut-validation")
+    implementation "com.bertramlabs.plugins:asset-pipeline-micronaut:${assetPipelineVersion}"
+    assets "com.bertramlabs.plugins:less-asset-pipeline:${assetPipelineVersion}"
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut.serde:micronaut-serde-processor")
     implementation("io.micronaut.groovy:micronaut-runtime-groovy")
     implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-http-client")
-    runtimeOnly("ch.qos.logback:logback-classic")
-    testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
+	implementation 'org.yaml:snakeyaml:1.33'
+	implementation 'com.github.jknack:handlebars:4.3.0'
+
+
+	runtimeOnly("ch.qos.logback:logback-classic")
+    
     testImplementation("io.micronaut:micronaut-inject-groovy")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
@@ -58,8 +61,8 @@ test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion('1.8')
-    targetCompatibility = JavaVersion.toVersion('1.8')
+    sourceCompatibility = JavaVersion.toVersion('1.17')
+    targetCompatibility = JavaVersion.toVersion('1.17')
 }
 
 tasks.withType(GroovyCompile) {
@@ -70,32 +73,44 @@ shadowJar {
     mergeServiceFiles()
 }
 
-tasks.withType(JavaExec) {
-    classpath += configurations.developmentOnly
-    jvmArgs('-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
-    if (gradle.startParameter.continuous) {
-        systemProperties(
-            'micronaut.io.watch.restart':'true',
-            'micronaut.io.watch.enabled':'true',
-            "micronaut.io.watch.paths":"src/main"
-        )
+
+
+assets {
+	// developmentRuntime = false
+	from "${project.projectDir}/src/assets"
+	// from 'morpheus-plugin-site/src/assets'
+	excludes = ["**/*.less"]
+	includes = ['application.less']
+}
+
+
+micronaut {
+    runtime("netty")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("test.mn.*")
+    }
+    aot {
+    // Please review carefully the optimizations enabled below
+    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
     }
 }
 
-assets {
-  // developmentRuntime = false
-  from "${project.projectDir}/src/assets"
-  // from 'morpheus-plugin-site/src/assets'
-}
 
-// project(':common:shared')
-
-task copyManual(type: Copy, dependsOn: ':morpheus-plugin-docs:asciidoctor') {
+task copyManual(type: Copy, dependsOn: [':morpheus-plugin-docs:asciidoctor', ':morpheus-plugin-site:inspectRuntimeClasspath']) {
     from new File(project(':morpheus-plugin-docs').buildDir,'/docs')
     into 'src/main/resources/'
 }
 
-task copyApiDoc(type: Copy, dependsOn: ':morpheus-plugin-api:javadoc') {
+task copyApiDoc(type: Copy, dependsOn: [':morpheus-plugin-api:javadoc', ':morpheus-plugin-site:inspectRuntimeClasspath']) {
     from new File(project(':morpheus-plugin-api').buildDir,'/docs')
     into 'src/main/resources/'
 }

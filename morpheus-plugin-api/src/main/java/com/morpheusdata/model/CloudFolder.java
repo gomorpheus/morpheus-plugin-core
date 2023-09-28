@@ -17,8 +17,8 @@ public class CloudFolder extends ComputeZoneFolderIdentityProjection {
 	protected String refType;
 	protected Long refId;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected ComputeZoneFolder parent;
-	protected List<ComputeZoneFolder> folders = new ArrayList<>();
+	protected CloudFolder parent;
+	protected List<CloudFolder> folders = new ArrayList<>();
 	protected Boolean readOnly = false;
 	protected Boolean active = true;
 	protected Boolean defaultFolder = false;
@@ -78,11 +78,11 @@ public class CloudFolder extends ComputeZoneFolderIdentityProjection {
 		markDirty("refId", refId);
 	}
 
-	public com.morpheusdata.model.ComputeZoneFolder getParent() {
+	public com.morpheusdata.model.CloudFolder getParent() {
 		return parent;
 	}
 
-	public void setParent(com.morpheusdata.model.ComputeZoneFolder parent) {
+	public void setParent(com.morpheusdata.model.CloudFolder parent) {
 		this.parent = parent;
 		markDirty("parent", parent);
 	}
@@ -123,11 +123,11 @@ public class CloudFolder extends ComputeZoneFolderIdentityProjection {
 		markDirty("defaultStore", defaultStore);
 	}
 
-	public List<ComputeZoneFolder> getFolders() {
+	public List<CloudFolder> getFolders() {
 		return folders;
 	}
 
-	public void setFolders(List<ComputeZoneFolder> folders) {
+	public void setFolders(List<CloudFolder> folders) {
 		this.folders = folders;
 		markDirty("folders", folders);
 	}

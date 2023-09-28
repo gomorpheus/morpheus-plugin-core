@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Context methods for syncing MetadataTags in Morpheus
  */
-public interface MorpheusMetadataTagService {
+public interface MorpheusMetadataTagService extends MorpheusDataService<MetadataTag, MetadataTagIdentityProjection>, MorpheusIdentityService<MetadataTagIdentityProjection> {
 
 	/**
 	 * Returns the MetadataTypeType context used for performing updates or queries on {@link MetadataTagType} related assets within Morpheus.
@@ -49,6 +49,7 @@ public interface MorpheusMetadataTagService {
 	 * @param metadataTags updated MetadataTags
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<MetadataTag> metadataTags);
 
 	/**
@@ -56,6 +57,7 @@ public interface MorpheusMetadataTagService {
 	 * @param metadataTags new MetadataTags to persist
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<MetadataTag> metadataTags);
 
 	/**
@@ -63,6 +65,7 @@ public interface MorpheusMetadataTagService {
 	 * @param addList new MetadataTags to persist
 	 * @return success
 	 */
+
 	Single<Boolean> create(List<MetadataTag> addList, ComputeServerIdentityProjection computeServerProj);
 
 	/**
@@ -74,18 +77,11 @@ public interface MorpheusMetadataTagService {
 
 
 	/**
-	 * Create and return a new MetadataTag in Morpheus
-	 * @param metadataTag new MetadataTag to persist
-	 * @return the tag
-	 */
-	Single<Boolean> create(MetadataTag metadataTag);
-
-
-	/**
 	 * Remove persisted MetadataTags from Morpheus
 	 * @param metadataTags MetadataTags to delete
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<MetadataTagIdentityProjection> metadataTags);
 
 	/**

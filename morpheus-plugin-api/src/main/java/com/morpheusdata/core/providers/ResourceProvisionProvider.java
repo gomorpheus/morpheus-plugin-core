@@ -1,5 +1,6 @@
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.model.provisioning.AppRequest;
 import com.morpheusdata.model.provisioning.InstanceRequest;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.*;
@@ -67,6 +68,33 @@ public interface ResourceProvisionProvider extends ProvisionProvider {
 	 * @return Response from API
 	 */
 	ServiceResponse destroyInstance(Instance instance, Map opts);
+
+	/**
+	 * Provides methods for provisioning Apps
+	 *
+	 * @since 0.15.4
+	 * @author Alex Clement
+	 */
+	public interface AppFacet {
+
+		/**
+		 * Validate the provided provisioning options for an App. A return of success = false will halt the
+		 * creation and display errors
+		 * @param app the App to validate
+		 * @param opts options
+		 * @return Response from API
+		 */
+		ServiceResponse validateApp(App app, Map opts);
+
+		ServiceResponse<AppProvisionResponse> runApp(App app, AppRequest appRequest, Map opts);
+
+		ServiceResponse<PrepareAppResponse> prepareApp(App app, AppRequest appRequest, Map opts);
+
+		ServiceResponse destroyApp(App app, Map opts);
+
+		ServiceResponse<ProvisionResponse> updateApp(App app, AppRequest appRequest, Map opts);
+
+	}
 
 
 }

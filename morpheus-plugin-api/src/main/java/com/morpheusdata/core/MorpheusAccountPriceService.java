@@ -2,9 +2,9 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.AccountPrice;
+import com.morpheusdata.model.AccountPriceSet;
 import com.morpheusdata.model.projection.AccountPriceIdentityProjection;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  * @author Dustin DeYoung
  * @since 0.14.3
  */
-public interface MorpheusAccountPriceService {
+public interface MorpheusAccountPriceService extends MorpheusDataService<AccountPrice, AccountPriceIdentityProjection>, MorpheusIdentityService<AccountPriceIdentityProjection> {
 
 	/**
 	 * Get a list of AccountPrice projections based on {@link com.morpheusdata.model.Account}
@@ -32,10 +32,18 @@ public interface MorpheusAccountPriceService {
 	Observable<AccountPriceIdentityProjection> listSyncProjectionsByCode(List<String> codeList);
 
 	/**
+	 * Get a list of AccountPrice projections associated with AccountPriceSet
+	 * @param accountPriceSet {@link AccountPriceSet}
+	 * @return Observable stream of id projection
+	 */
+	Observable<AccountPriceIdentityProjection> listIdentityProjections(AccountPriceSet accountPriceSet);
+
+	/**
 	 * Get a list of AccountPrice objects from a list of projection ids
 	 * @param ids AccountPrice ids
 	 * @return Observable stream of AccountPrices
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<AccountPrice> listById(Collection<Long> ids);
 
 	/**
@@ -43,27 +51,6 @@ public interface MorpheusAccountPriceService {
 	 * @param codes AccountPrice codes
 	 * @return Observable stream of AccountPrices
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<AccountPrice> listByCode(Collection<String> codes);
-
-
-	/**
-	 * Save updates to existing AccountPrices
-	 * @param accountPrices updated AccountPrices
-	 * @return status of save results
-	 */
-	Single<Boolean> save(List<AccountPrice> accountPrices);
-
-	/**
-	 * Create new AccountPrice in Morpheus
-	 * @param accountPrices new accountPrice to persist
-	 * @return status of create results
-	 */
-	Single<Boolean> create(List<AccountPrice> accountPrices);
-
-	/**
-	 * Remove persisted AccountPrice from Morpheus
-	 * @param accountPrices account price sets to delete
-	 * @return status of delete results
-	 */
-	Single<Boolean> remove(List<AccountPrice> accountPrices);
 }

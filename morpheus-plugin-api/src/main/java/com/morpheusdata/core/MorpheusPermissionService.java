@@ -4,20 +4,14 @@ import com.morpheusdata.model.*;
 import io.reactivex.Single;
 import io.reactivex.Observable;
 
-public interface MorpheusPermissionService {
-
-	/**
-	 * Get a {@link Permission} by id.
-	 * @param id Permission id
-	 * @return a permission
-	 */
-	Single<Permission> get(Long id);
+public interface MorpheusPermissionService extends MorpheusDataService<Permission, Permission> {
 
 	/**
 	 * Get a {@link Permission} by id.
 	 * @param code Permission code
 	 * @return a permission
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Permission> getByCode(String code);
 
 	/**

@@ -24,7 +24,6 @@ public class Dashboard extends MorpheusModel {
 	protected String sourceType = "system";
 	protected String scriptPath;
 	protected String templatePath;
-	protected String config;
 	protected Date dateCreated;
 	protected Date lastUpdated;
 
@@ -156,15 +155,6 @@ public class Dashboard extends MorpheusModel {
 	public void setTemplatePath(String templatePath) {
 		markDirty("templatePath", templatePath);
 		this.templatePath = templatePath;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
 	}
 
 	public Date getDateCreated() {

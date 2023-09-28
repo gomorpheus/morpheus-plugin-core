@@ -1,0 +1,28 @@
+== DataSet Providers
+
+A DataSetProvider is a server side call to load a dynamic dataset for custom form inputs, as well as data references with scribe templates. These normally feed dropdown lists, multiselect components, and typeahead components. These can be very useful when designing task types that have custom options or even custom catalog item layouts. In the past, this was accomplished with an `OptionSourceProvider` which allowed for multiple definitions in one class. The key difference is a `DataSetProvider` only has one dataset per class but also provides associative information so that it can b used for export/import scribe functionality and more easily provide documentation per dataset.
+
+=== Getting Started
+
+To get started, simply create an implementation of a `DataSetProvider` or with some convenience methods `AbstractDataSetProvider`.
+
+Now, when defining your `OptionType` simply set your `optionSource` property to the `getKey()` defined in your provider. It is important not to conflict names with other plugins so please try to use a unique method name. Additionally, datasets can be isolated using the `getNamespace()` method. This should be set in the `optionoSourceType` of your `OptionSource` definition.
+
+[TIP]
+Use a unique namespace for your DataSetProvider to isolate from other plugins.
+
+[source,groovy]
+----
+OptionType ot4 = new OptionType(
+				name: 'Region',
+				code: 'google-plugin-region',
+				fieldName: 'googleRegionId',
+				optionSource: 'googlePluginRegions', //Note the Option Source Defined here.
+				displayOrder: 3,
+				fieldLabel: 'Region',
+				required: true,
+				inputType: OptionType.InputType.SELECT,
+				dependsOn: 'google-plugin-project-id',
+				fieldContext: 'config'
+		)
+----

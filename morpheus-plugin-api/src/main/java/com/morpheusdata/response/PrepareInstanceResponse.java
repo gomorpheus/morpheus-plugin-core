@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 public class PrepareInstanceResponse {
+
 	protected Instance instance;
 	protected Map<String,Object> options;
-	protected List<Workload> workloadsToSave;
 	protected List<Map> resources;
 
 	public Instance getInstance() {
@@ -27,14 +27,6 @@ public class PrepareInstanceResponse {
 
 	public void setOptions(Map<String, Object> options) {
 		this.options = options;
-	}
-
-	public List<Workload> getWorkloadsToSave() {
-		return workloadsToSave;
-	}
-
-	public void setWorkloadsToSave(List<Workload> workloadsToSave) {
-		this.workloadsToSave = workloadsToSave;
 	}
 
 	public List<Map> getResources() {

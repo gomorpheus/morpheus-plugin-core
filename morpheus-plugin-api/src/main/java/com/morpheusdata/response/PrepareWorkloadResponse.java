@@ -11,6 +11,18 @@ public class PrepareWorkloadResponse {
 
 	protected Map<String,Object> options;
 
+	/**
+	 * Disables cloud init on the guest OS.
+	 */
+	public Boolean disableCloudInit = true;
+
+	/**
+	 * Disables guest OS Auto Updates. Auto updates can produce inconsistent results during provision or a backup and restore operation.
+	 * NOTE: Only supported on OS's using APT package manager.
+	 */
+	public Boolean disableAutoUpdates = false;
+
+
 	public Workload getWorkload() {
 		return workload;
 	}
@@ -33,5 +45,21 @@ public class PrepareWorkloadResponse {
 
 	public void setOptions(Map<String, Object> options) {
 		this.options = options;
+	}
+
+	public Boolean getDisableCloudInit() {
+		return disableCloudInit;
+	}
+
+	public void setDisableCloudInit(Boolean disableCloudInit) {
+		this.disableCloudInit = disableCloudInit;
+	}
+
+	public Boolean getDisableAutoUpdates() {
+		return disableAutoUpdates;
+	}
+
+	public void setDisableAutoUpdates(Boolean disableAutoUpdates) {
+		this.disableAutoUpdates = disableAutoUpdates;
 	}
 }

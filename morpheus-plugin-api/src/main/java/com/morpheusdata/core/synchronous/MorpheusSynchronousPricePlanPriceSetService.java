@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.PricePlanPriceSet;
+import com.morpheusdata.model.projection.PricePlanPriceSetIdentityProjection;
+
+public interface MorpheusSynchronousPricePlanPriceSetService extends MorpheusSynchronousDataService<PricePlanPriceSet, PricePlanPriceSetIdentityProjection>, MorpheusSynchronousIdentityService<PricePlanPriceSetIdentityProjection> {
+}

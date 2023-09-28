@@ -1,0 +1,39 @@
+[#syncing]
+== Syncing Data
+
+Many of the Morpheus Provider types have a method to periodically refresh and sync data into Morpheus. This can be useful for representing core concepts or doing brownfield discovery for things like `ComputeServer` or `NetworkPool` objects. Also, it may be useful for syncing in user presented options in a dropdown or typeahead during a particular operation (Generic Data for this we can store n `ReferenceData`).
+
+Over the course of several years, Morpheus has developed an optimal way to efficiently sync data from a remote endpoint into the appliance. This has to take into account network bandwidth, memory , cpu, and load on the target api. Morpheus also created a helper class for making sync operations simple and consistent called the `SyncTask` (javadoc available).
+
+Below is an example that syncs available amazon regions in the AWS Cloud to the CloudRegion table.
+
+[source,groovy]
+----
+Observable<CloudRegionIdentity> domainRecords = morpheusContext.async.cloud.region.listIdentityProjections(cloud.id)
+SyncTask<CloudRegionIdentity, Region, CloudRegion> syncTask = new SyncTask<>(domainRecords, regionResults.regionList as Collection<Region>)
+syncTask.addMatchFunction { CloudRegionIdentity domainObject, Region data ->
+	domainObject.externalId == data.getRegionName()
+}.onDelete { removeItems ->
+	removeMissingRegions(removeItems)
+}.onUpdate { List<SyncTask.UpdateItem<CloudRegion, Region>> updateItems ->
+	updateRegions(updateItems)
+}.onAdd { itemsToAdd ->
+	addMissingRegions(itemsToAdd, this.@cloud.account)
+}.withLoadObjectDetailsFromFinder { List<SyncTask.UpdateItemDto<CloudRegionIdentity, Region>> updateItems ->
+	morpheusContext.async.cloud.region.listById(updateItems.collect { it.existingItem.id } as List<Long>)
+}.start()
+----
+
+**NOTE**: The above example does not show that the api query to get all regions was performed above.
+
+A `SyncTask` is capable of taking the `Identity` objects of a class (small form of a `Model` that contains just the important identification fields used for matching) and comparing them against the api results list. This is done via the `addMatchFunction` as seen above.
+
+**NOTE**: It is possible to have a chain of match functions as secondary fallbacks by simply adding another to the chain.
+
+Objects that do not have a match from the api are sent in batches to the `onAdd` for creation of Morpheus `Model` objects and consequently the inverse is true for models that are not found within the api results as these are sent to `onDelete`.
+
+Objects that do match are a bit different. Firstly, in order, to check the object for changes it must first be fully loaded from its `Identity`. This can be seen in the `withLoadObjectDetailsFromFinder` call. This translates those Identity classes into their fully loaded objects in batches of 50 at a time (not seen as this is magically done by the SyncTask). Once these objects are fully loaded they are passed down into the `onUpdate` where they can be compared.
+
+Although not seen above, it is best to bulk create or bulk save morpheus changes in these chunked add and update methods. This is done using the `MorpheusDataService.bulkCreate` or `MorpheusDataService.bulkSave` implementations on the context.
+
+Sync methods such as this exist in several provider types beyond just clouds. IPAM Providers, DNS Providers, backups and others all contain endpoints where these sync operations can be performed.

@@ -43,6 +43,8 @@ public interface MorpheusCloudService extends MorpheusDataService<Cloud,CloudIde
 
 	MorpheusAccountResourceService getResource();
 
+	MorpheusCloudTypeService getType();
+
 	Single<Collection<ComputeServerType>> getComputeServerTypes(Long cloudId);
 
 	/**

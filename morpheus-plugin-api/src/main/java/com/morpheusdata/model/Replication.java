@@ -83,7 +83,6 @@ public class Replication extends MorpheusModel {
 	protected Long sourceGroupId;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String replicationConfig;
 	protected Date dateCreated;
 	protected Date lastUpdated;

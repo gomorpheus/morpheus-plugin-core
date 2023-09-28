@@ -12,7 +12,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 	protected Long refId;
 	protected String refName;
 	protected String refCategory; //discovered / instance / host
-	protected String config;
 	protected String rawData;
 	protected String externalId;
 	protected String resourceExternalId;
@@ -106,14 +105,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRefCategory(String refCategory) {
 		this.refCategory = refCategory;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getRawData() {

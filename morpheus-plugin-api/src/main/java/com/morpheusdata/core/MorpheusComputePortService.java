@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Context methods for syncing ComputePorts in Morpheus
  */
-public interface MorpheusComputePortService {
+public interface MorpheusComputePortService extends MorpheusDataService<ComputePort, ComputePort> {
 
 	/**
 	 * Get a list of ComputePort objects by reference and portType

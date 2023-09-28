@@ -11,7 +11,6 @@ public class ComputeServerGroupType extends MorpheusModel {
 	protected String viewSet;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected String hostService;
 	protected String providerType; //kubernetes, docker, kvm, etc
 	protected String deployTargetService;
@@ -95,16 +94,6 @@ public class ComputeServerGroupType extends MorpheusModel {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getHostService() {

@@ -55,7 +55,6 @@ public class AccountInvoice extends MorpheusModel {
 	protected String refUUID;
 	protected String refName;
 	protected String refCategory; //discovered / instance / host / vm / container
-	protected String config;
 	protected String rawData;
 	//date range
 	protected String interval = "month"; //hour, month, year etc
@@ -435,16 +434,6 @@ public class AccountInvoice extends MorpheusModel {
 
 	public void setRefCategory(String refCategory) {
 		this.refCategory = refCategory;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getRawData() {

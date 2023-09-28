@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous.backup;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.ReplicationGroup;
+import com.morpheusdata.model.projection.ReplicationGroupIdentityProjection;
+
+public interface MorpheusSynchronousReplicationGroupService extends MorpheusSynchronousDataService<ReplicationGroup, ReplicationGroupIdentityProjection>, MorpheusSynchronousIdentityService<ReplicationGroupIdentityProjection> {
+}

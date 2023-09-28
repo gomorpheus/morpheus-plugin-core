@@ -32,8 +32,6 @@ public class NetworkServer extends MorpheusModel {
 	protected Date lastSync;
 	protected Date nextRunDate;
 	protected Long lastSyncDuration;
-	//config
-	protected String config;
 	protected String networkFilter;
 	protected String tenantMatch;
 	protected Long zoneId; //for network servers that need to be pinned to a zone - like nsx
@@ -137,10 +135,6 @@ public class NetworkServer extends MorpheusModel {
 
 	public Long getLastSyncDuration() {
 		return lastSyncDuration;
-	}
-
-	public String getConfig() {
-		return config;
 	}
 
 	public String getNetworkFilter() {
@@ -289,11 +283,6 @@ public class NetworkServer extends MorpheusModel {
 	public void setLastSyncDuration(Long lastSyncDuration) {
 		this.lastSyncDuration = lastSyncDuration;
 		markDirty("lastSyncDuration", lastSyncDuration);
-	}
-
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public void setNetworkFilter(String networkFilter) {

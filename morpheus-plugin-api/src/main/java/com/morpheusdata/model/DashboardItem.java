@@ -8,8 +8,7 @@ public class DashboardItem extends MorpheusModel {
 	protected Integer itemColumn;
 	protected String itemGroup;
 	protected Integer groupRow;
-	protected String config;
-	
+
 	//filters
 	//ui types
 	//endpoints
@@ -58,15 +57,6 @@ public class DashboardItem extends MorpheusModel {
 	public void setGroupRow(Integer groupRow) {
 		markDirty("groupRow", groupRow);
 		this.groupRow = groupRow;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config);
-		this.config = config;
 	}
 
 }

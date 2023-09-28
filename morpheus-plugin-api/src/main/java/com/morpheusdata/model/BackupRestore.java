@@ -6,22 +6,76 @@ import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 public class BackupRestore extends MorpheusModel {
 
+	/**
+	 * Account scope
+	 */
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected Account account;
-	protected String backupResultId;
-	protected Date dateCreated;
-	protected Date lastUpdated;
-	protected Date startDate;
-	protected Date endDate;
-	protected Long duration;
-	protected String status;
-	protected String externalId;
-	protected String externalStatusRef;
-	protected String config;
-	protected String errorMessage;
+
+	/**
+	 * ID of the backup associated to the backup result
+	 */
 	protected Long backupId;
+
+	/**
+	 * ID of the Backup result used for restore
+	 */
+	protected String backupResultId;
+
+	/**
+	 * Date of creation
+	 */
+	protected Date dateCreated;
+
+	/**
+	 * Date of last update
+	 */
+	protected Date lastUpdated;
+
+	/**
+	 * Date restore was started
+	 */
+	protected Date startDate;
+
+	/**
+	 * Date restore ended
+	 */
+	protected Date endDate;
+
+	/**
+	 * Duration of the restore process in milliseconds
+	 */
+	protected Long duration;
+
+	/**
+	 * Current status of the restore {@link com.morpheusdata.core.backup.util.BackupStatusUtility}
+	 */
+	protected String status;
+
+	/**
+	 * External ID of the restore process. Usually a task ID on the external system.
+	 */
+	protected String externalId;
+
+	/**
+	 * Reference to the external status. Useful in systems where the restore process does not contain details
+	 * about the restored workload.
+	 */
+	protected String externalStatusRef;
+
+	/**
+	 * Error message of a failed restore
+	 */
+	protected String errorMessage;
+
+	/**
+	 * Restore target container (workload) ID
+	 */
 	protected Long containerId;
 
+	/**
+	 * Restore to a new workload
+	 */
 	protected  Boolean restoreToNew;
 
 	public Account getAccount() {
@@ -114,15 +168,6 @@ public class BackupRestore extends MorpheusModel {
 		this.externalStatusRef = externalStatusRef;
 	}
 
-	public String getConfig() {
-		return config;
-	}
-
-	public void setConfig(String config) {
-		markDirty("config", config, this.config);
-		this.config = config;
-	}
-
 	public String getErrorMessage() {
 		return errorMessage;
 	}
@@ -157,5 +202,16 @@ public class BackupRestore extends MorpheusModel {
 	public void setRestoreToNew(Boolean restoreToNew) {
 		this.restoreToNew = restoreToNew;
 		markDirty("restoreToNew", restoreToNew, this.restoreToNew);
+	}
+
+	public enum Status {
+		START_REQUESTED,
+		INITIALIZING,
+		IN_PROGRESS,
+		CANCEL_REQUESTED,
+		CANCELLED,
+		SUCCEEDED,
+		SUCCEEDED_WARNING,
+		FAILED
 	}
 }

@@ -55,6 +55,7 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	 * @param categories Array of categories
 	 * @return Observable stream of sync projections
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<VirtualImageIdentityProjection> listIdentityProjectionsByCategory(Long accountId, String[] categories);
 
 	/**
@@ -65,6 +66,7 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	 * @param categories Array of categories
 	 * @return Observable stream of sync projections
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<VirtualImageIdentityProjection> listIdentityProjectionsByCloudAndCategory(Long accountId, Long cloudId, String[] categories);
 
 	/**
@@ -125,6 +127,7 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	 * @param ids VirtualImage ids
 	 * @return Observable stream of VirtualImages
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<VirtualImage> listById(Collection<Long> ids);
 
 	/**
@@ -162,7 +165,9 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	 * to inform Morpheus that the VirtualImage no longer exists in the cloud
 	 * @param virtualImages Images to remove
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages, Cloud cloud);
 
 	Single<Collection<CloudFile>> getVirtualImageFiles(VirtualImage virtualImage);

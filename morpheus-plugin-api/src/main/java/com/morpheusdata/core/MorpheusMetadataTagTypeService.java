@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Context methods for syncing MetadataTagTypes in Morpheus
  */
-public interface MorpheusMetadataTagTypeService {
+public interface MorpheusMetadataTagTypeService extends MorpheusDataService<MetadataTagType, MetadataTagTypeIdentityProjection>, MorpheusIdentityService<MetadataTagType> {
 
 	/**
 	 * Get a list of MetadataTagType projections based on the refId and refType associated with the MetadataTagType
@@ -27,6 +27,7 @@ public interface MorpheusMetadataTagTypeService {
 	 * @param ids MetadataTagType ids
 	 * @return Observable stream of MetadataTagType
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<MetadataTagType> listById(Collection<Long> ids);
 
 	/**
@@ -34,6 +35,7 @@ public interface MorpheusMetadataTagTypeService {
 	 * @param metadataTagTypes updated MetadataTagTypes
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<MetadataTagType> metadataTagTypes);
 
 	/**
@@ -41,6 +43,7 @@ public interface MorpheusMetadataTagTypeService {
 	 * @param metadataTagTypes new MetadataTagType to persist
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<MetadataTagType> metadataTagTypes);
 	
 	/**
@@ -48,5 +51,6 @@ public interface MorpheusMetadataTagTypeService {
 	 * @param metadataTagTypes MetadataTagTypes to delete
 	 * @return success
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<MetadataTagTypeIdentityProjection> metadataTagTypes);
 }

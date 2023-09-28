@@ -17,7 +17,6 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 	protected String description;
 	protected String internalId;
 	protected String externalId;
-	protected String config;
 	protected Boolean enabled = true;
 	protected String vipSticky; //mode of the sticky session persistence
 	protected String vipBalance; //balancing mode
@@ -55,7 +54,7 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 	protected NetworkLoadBalancer loadBalancer;
 
 	// the "hasMany" fields
-	protected List<ComputeZonePool> assignedZonePools = new ArrayList<ComputeZonePool>();
+	protected List<CloudPool> assignedZonePools = new ArrayList<CloudPool>();
 	protected List<NetworkLoadBalancerNode> nodes = new ArrayList<NetworkLoadBalancerNode>();
 	protected List<NetworkLoadBalancerMonitor> monitors = new ArrayList<NetworkLoadBalancerMonitor>();
 	protected List<NetworkLoadBalancerMember> members = new ArrayList<NetworkLoadBalancerMember>();
@@ -125,17 +124,6 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public Boolean getEnabled() {
@@ -426,11 +414,11 @@ public class NetworkLoadBalancerPool extends LoadBalancerPoolIdentityProjection 
 		markDirty("loadBalancer", loadBalancer);
 	}
 
-	public List<ComputeZonePool> getAssignedZonePools() {
+	public List<CloudPool> getAssignedZonePools() {
 		return assignedZonePools;
 	}
 
-	public void setAssignedZonePools(List<ComputeZonePool> assignedZonePools) {
+	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
 		markDirty("assignedZonePools", assignedZonePools);
 	}

@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Key pairs are commonly used by Morpheus for accessing instances via SSH. Morpheus stores key pairs to simplify administration and access across both private and public clouds.
  */
 public class KeyPair extends KeyPairIdentityProjection {
-	protected Account account;
+	protected Long accountId;
 	protected String code;
 	protected String publicKey;
 	protected String privateKey;
@@ -21,14 +21,15 @@ public class KeyPair extends KeyPairIdentityProjection {
 	protected String refType;
 	protected String refId;
 	protected String refName;
+	protected String uuid = String.valueOf(java.util.UUID.randomUUID());
 
-	public Account getAccount() {
-		return account;
+	public Long getAccountId() {
+		return accountId;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
-		markDirty("account", account);
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
+		markDirty("accountId", accountId);
 	}
 
 	public String getCode() {
@@ -131,6 +132,15 @@ public class KeyPair extends KeyPairIdentityProjection {
 		markDirty("refName", refName);
 	}
 
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
+	}
+
 	/**
 	 *
 	 * @return hash map of the KeyPair properties and values
@@ -138,9 +148,7 @@ public class KeyPair extends KeyPairIdentityProjection {
 	public Map toMap() {
 		Map<String, Object> keyPairMap = new HashMap<>();
 
-		if(this.account != null) {
-			keyPairMap.put("accountId", this.account.id);
-		}
+		keyPairMap.put("accountId", this.accountId);
 		keyPairMap.put("name", this.name);
 		keyPairMap.put("code", this.code);
 		keyPairMap.put("publicKey", this.publicKey);
@@ -152,6 +160,7 @@ public class KeyPair extends KeyPairIdentityProjection {
 		keyPairMap.put("refId", this.refId);
 		keyPairMap.put("refType", this.refType);
 		keyPairMap.put("refName", this.refName);
+		keyPairMap.put("uuid", this.uuid);
 		return keyPairMap;
 	}
 

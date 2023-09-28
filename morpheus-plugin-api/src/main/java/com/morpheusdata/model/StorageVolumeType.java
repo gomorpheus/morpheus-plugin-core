@@ -1,5 +1,7 @@
 package com.morpheusdata.model;
 
+import java.util.Collection;
+
 /**
  * There are several different types of volume types across various cloud providers.
  *
@@ -10,6 +12,7 @@ public class StorageVolumeType extends MorpheusModel {
 	private String name;
 	private String code;
 	private String externalId;
+	protected Boolean enabled = true;
 	protected String description;
 	protected String displayName;
 	protected String volumeType = "disk";
@@ -24,9 +27,13 @@ public class StorageVolumeType extends MorpheusModel {
 	protected Boolean resizable = false;
 	protected Boolean planResizable = false; // used to override resizable if the user can't resize the volume but plan changes will resize the volume;
 	protected Long minStorage = null;
+	protected Long maxStorage = null;
 	protected Boolean configurableIOPS = false;
 	protected Long minIOPS = null;
 	protected Long maxIOPS = null;
+
+	// associations
+	Collection<OptionType> optionTypes;
 
 	public String getName() {
 		return name;
@@ -53,6 +60,14 @@ public class StorageVolumeType extends MorpheusModel {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 		markDirty("externalId", externalId);
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public String getDescription() {
@@ -167,6 +182,14 @@ public class StorageVolumeType extends MorpheusModel {
 		this.minStorage = minStorage;
 	}
 
+	public Long getMaxStorage() {
+		return maxStorage;
+	}
+
+	public void setMaxStorage(Long maxStorage) {
+		this.maxStorage = maxStorage;
+	}
+
 	public Boolean getConfigurableIOPS() {
 		return configurableIOPS;
 	}
@@ -189,5 +212,14 @@ public class StorageVolumeType extends MorpheusModel {
 
 	public void setMaxIOPS(Long minIOPS) {
 		this.maxIOPS = maxIOPS;
+	}
+
+	public Collection<OptionType> getOptionTypes() {
+		return optionTypes;
+	}
+
+	public void setOptionTypes(Collection<OptionType> optionTypes) {
+		markDirty("optionTypes", this.optionTypes);
+		this.optionTypes = optionTypes;
 	}
 }
