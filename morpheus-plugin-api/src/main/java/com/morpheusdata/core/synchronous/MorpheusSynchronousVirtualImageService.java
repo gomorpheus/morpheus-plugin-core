@@ -1,4 +1,4 @@
-package com.morpheusdata.core.synchronous.network;
+package com.morpheusdata.core.synchronous;
 
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;

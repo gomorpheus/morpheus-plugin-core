@@ -15,7 +15,7 @@ public interface MorpheusSynchronousLoadBalancerPartitionService {
 	 * @param objCategory an additional category to use for sync comparison
 	 * @return Observable stream of sync projection
 	 */
-	ReferenceDataSyncProjection listSyncProjections(Long loadBalancerId, String objCategory);
+	List<ReferenceDataSyncProjection> listSyncProjections(Long loadBalancerId, String objCategory);
 
 	/**
 	 * Get a list of ReferenceData (partitions) objects from a list of projection ids
@@ -24,7 +24,7 @@ public interface MorpheusSynchronousLoadBalancerPartitionService {
 	 * @return Observable stream of partition
 	 */
 
-	ReferenceData listById(Collection<Long> ids);
+	List<ReferenceData> listById(Collection<Long> ids);
 
 	/**
 	 * Save updates to existing partition
