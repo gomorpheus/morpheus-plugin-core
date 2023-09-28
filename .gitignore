@@ -12,5 +12,6 @@ testplugins/
 .DS_Store
 out/
 .assetcache
+.sdkmanrc
 disabled/
 *.hprof
