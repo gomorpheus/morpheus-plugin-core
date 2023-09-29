@@ -10,7 +10,7 @@ public abstract class AbstractProvisionProvider implements ProvisionProvider {
 
 	public ComputeServerType findVmNodeServerTypeForCloud(Long cloudId, String platform, String provisionTypeCode) {
 		ComputeServerType rtn = null;
-		Collection<ComputeServerType> serverTypes = getMorpheus().getCloud().getComputeServerTypes(cloudId).blockingGet();
+		Collection<ComputeServerType> serverTypes = getMorpheus().getAsync().getCloud().getComputeServerTypes(cloudId).blockingGet();
 		String nodeType = null;
 		if(provisionTypeCode != null) {
 			nodeType = (platform == "windows") ? "morpheus-windows-vm-node" : "morpheus-vm-node";
@@ -55,7 +55,7 @@ public abstract class AbstractProvisionProvider implements ProvisionProvider {
 
     public StorageVolume getRootDisk(Workload workload) {
         StorageVolume rtn = null;
-        if(workload.getServer() != null && workload.getServer().getVolumes() != null && workload.getServer().getVolumes().size() > 0) {
+        if(workload.getServer() != null && workload.getServer().getVolumes() != null && !workload.getServer().getVolumes().isEmpty()) {
             for(StorageVolume sv: workload.getServer().getVolumes()) {
                 if(rtn == null && sv.getRootVolume() == true) {
                     rtn = sv;
