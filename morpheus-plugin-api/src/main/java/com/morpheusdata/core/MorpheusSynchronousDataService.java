@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.data.DataQuery;
 import com.morpheusdata.core.data.DataQueryResult;
+import com.morpheusdata.core.synchronous.admin.MorpheusSynchronousUserService;
 import com.morpheusdata.model.MorpheusModel;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
  * the ability to create dynamic queries using the {@link DataQuery} object. There are methods that can be implemented
  * to provide both {@link com.morpheusdata.model.MorpheusModel} related objects as well as Map objects for use in
  * {@link com.morpheusdata.core.providers.DatasetProvider} use cases (dropdown and type-ahead components in UI option types).
- * An example interface that leverages this one is the {@link com.morpheusdata.core.admin.MorpheusSynchronousUserService}
+ * An example interface that leverages this one is the {@link MorpheusSynchronousUserService}
  *
  * <p><strong>Example:</strong></p>
  * <pre>{@code

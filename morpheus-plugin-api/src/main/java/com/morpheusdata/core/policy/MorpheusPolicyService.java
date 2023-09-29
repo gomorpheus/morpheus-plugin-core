@@ -1,5 +1,6 @@
 package com.morpheusdata.core.policy;
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.Account;
 import com.morpheusdata.model.Policy;
 import com.morpheusdata.model.PolicyType;
@@ -13,15 +14,17 @@ import io.reactivex.rxjava3.core.Observable;
  * @since 0.12.1
  * @see com.morpheusdata.model.Policy
  */
-public interface MorpheusPolicyService {
+public interface MorpheusPolicyService extends MorpheusDataService<Policy, Policy> {
 	/**
 	 * Returns the {@link PolicyType} related service for fetching type related information.
 	 * @return an instance of the PolicyType Service for fetching related type information.
 	 */
 	MorpheusPolicyTypeService getType();
 
+	@Deprecated(since="0.15.4")
 	Observable<Policy> listAllByAccount(Account account);
 
+	@Deprecated(since="0.15.4")
 	Observable<Policy> listAllByAccountAndEnabled(Account account,Boolean enabled);
 
 

@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.projection.BackupRestoreIdentityProjection;
@@ -13,7 +15,7 @@ import java.util.List;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupRestoreService {
+public interface MorpheusBackupRestoreService extends MorpheusDataService<BackupRestore, BackupRestoreIdentityProjection>, MorpheusIdentityService<BackupRestoreIdentityProjection> {
 
 	//ORM Object Methods
 	/**
@@ -45,6 +47,7 @@ public interface MorpheusBackupRestoreService {
 	 * @param ids list of {@link com.morpheusdata.model.BackupRestore} ids to fetch.
 	 * @return an RxJava Observable stream of {@link com.morpheusdata.model.Backup} objects for subscription.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<BackupRestoreIdentityProjection> listById(Collection<Long> ids);
 
 	/**
@@ -56,14 +59,18 @@ public interface MorpheusBackupRestoreService {
 	 * }</pre>
 	 * @param removeList a list of backup restore projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<BackupRestoreIdentityProjection> removeList);
 
 	/**
 	 * Creates new Backup Restore Domains from cache / sync implementations
 	 * @param addList List of new {@link BackupRestore} objects to be inserted into the database
 	 * @return notification of completion
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<BackupRestore> addList);
 
 	/**
@@ -71,14 +78,8 @@ public interface MorpheusBackupRestoreService {
 	 * to for any action to actually take place.
 	 * @param saveList a List of Backup Restore objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<BackupRestore> saveList);
-
-	/**
-	 * Saves a {@link BackupRestore} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param backupRestore a Backup Object to be updated in the database.
-	 * @return the Single Observable containing the resulting Backup Object
-	 */
-	Single<Backup> save(BackupRestore backupRestore);
 }

@@ -407,5 +407,11 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusCodeRepositoryService getCodeRepository();
 
+	/**
+	 * Returns the {@link MorpheusSeedService } which allows access to seed data operations
+	 * @return an instance of {@link MorpheusSeedService }
+	 */
+	MorpheusSeedService getSeed();
+
 
 }

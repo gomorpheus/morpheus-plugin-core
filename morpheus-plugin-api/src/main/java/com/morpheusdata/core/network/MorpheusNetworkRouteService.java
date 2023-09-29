@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkRoute;
 import com.morpheusdata.model.NetworkRouter;
 import com.morpheusdata.model.projection.NetworkRouteIdentityProjection;
@@ -22,7 +24,7 @@ import java.util.List;
  * }</pre>
  *
  */
-public interface MorpheusNetworkRouteService {
+public interface MorpheusNetworkRouteService extends MorpheusDataService<NetworkRoute, NetworkRouteIdentityProjection>, MorpheusIdentityService<NetworkRouteIdentityProjection> {
 
 	/**
 	 * Lists NetworkRouteIdentityProjections for a specified network route table.
@@ -37,6 +39,7 @@ public interface MorpheusNetworkRouteService {
 	 * @param ids list of ids to grab {@link NetworkRoute} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkRoute} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkRoute> listById(Collection<Long> ids);
 
 	/**

@@ -107,15 +107,6 @@ public interface MorpheusBackupService extends MorpheusDataService<Backup, Backu
 	Observable<Backup> listByAccountIdAndBackupJobIdAndActive(Long accountId, Long backupJobId, Boolean active);
 
 	/**
-	 * Saves a {@link Backup} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param backup a Backup Object to be updated in the database.
-	 * @return the Single Observable containing the resulting Backup Object
-	 */
-	@Deprecated(since="0.15.3", forRemoval=true)
-	Single<Backup> save(Backup backup);
-
-	/**
 	 * Initiates the execution of a backup {@link Backup}. Be mindful this is an RxJava implementation and must be subscribed
 	 * to for any action to actually take place.
 	 * @param backupId the ID of the {@link Backup} to begin execution.

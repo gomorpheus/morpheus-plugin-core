@@ -1,8 +1,12 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.model.AccountCredential;
+import com.morpheusdata.model.AccountIntegration;
+import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.Maybe;
 
 import java.util.Map;
 
@@ -19,5 +23,11 @@ public interface MorpheusAccountCredentialService extends MorpheusDataService<Ac
 	 * @return Observable
 	 */
 	Single<Map> loadCredentialConfig(Map credentialConfig, Map refConfig);
+
+	Maybe<AccountCredential> loadCredentials(Cloud cloud);
+
+	Maybe<AccountCredential> loadCredentials(AccountIntegration accountIntegration);
+
+	Maybe<AccountCredential> loadCredentials(BackupProvider backupProvider);
 
 }

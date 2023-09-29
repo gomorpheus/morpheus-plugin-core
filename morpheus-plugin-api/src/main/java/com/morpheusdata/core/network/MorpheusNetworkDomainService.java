@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.NetworkDomain;
 import com.morpheusdata.model.NetworkDomainRecord;
@@ -25,7 +27,7 @@ import java.util.List;
  * @since 0.8.0
  * @author David Estes
  */
-public interface MorpheusNetworkDomainService {
+public interface MorpheusNetworkDomainService extends MorpheusDataService<NetworkDomain, NetworkDomainIdentityProjection>, MorpheusIdentityService<NetworkDomainIdentityProjection> {
 
 	/**
 	 * Returns the context for interacting with {@link NetworkDomainRecord} objects
@@ -46,7 +48,7 @@ public interface MorpheusNetworkDomainService {
 	 * This is for amazon where each region has to be loaded separately .
 	 * The projection is a subset of the properties on a full {@link NetworkDomain} object for sync matching.
 	 * @param accountIntegrationId the {@link AccountIntegration} identifier associated to the domains to be listed.
-	 * @param region the The regionCode identifier to filter on
+	 * @param region The regionCode identifier to filter on
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
 	Observable<NetworkDomainIdentityProjection> listIdentityProjections(Long accountIntegrationId, String region);
@@ -56,14 +58,8 @@ public interface MorpheusNetworkDomainService {
 	 * @param ids list of ids to grab {@link NetworkDomain} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkDomain} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkDomain> listById(Collection<Long> ids);
-
-	/**
-	 * Gets a Network Domain by the id
-	 * @param id the Identifier of the {@link NetworkDomain} that is being requested.
-	 * @return an instance of the NetworkDomain with all metadata pertaining to it.
-	 */
-	Single<NetworkDomain> get(Long id);
 
 	/**
 	 * Gets the network domain assigned to a server. This is relevant when doing IPAM/DNS operations.
@@ -112,15 +108,9 @@ public interface MorpheusNetworkDomainService {
 	 * to for any action to actually take place.
 	 * @param domainsToSave a List of Domain objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkDomain> domainsToSave);
-
-	/**
-	 * Saves a {@link NetworkDomain} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param domainToSave a Domain Object that need to be updated in the database.
-	 * @return the Single Observable stating the success state of the save attempt
-	 */
-	Single<Boolean> save(NetworkDomain domainToSave);
 
 }

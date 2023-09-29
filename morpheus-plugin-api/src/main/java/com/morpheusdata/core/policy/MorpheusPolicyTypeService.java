@@ -1,6 +1,7 @@
 package com.morpheusdata.core.policy;
 
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.PolicyType;
 import io.reactivex.rxjava3.core.Single;
 
@@ -15,11 +16,14 @@ import io.reactivex.rxjava3.core.Single;
  * @since 0.12.2
  * @author David Estes
  */
-public interface MorpheusPolicyTypeService {
+public interface MorpheusPolicyTypeService extends MorpheusDataService<PolicyType, PolicyType> {
+
 	/**
 	 * Find a Policy Type by code
 	 * @param code Name of the type
 	 * @return An instance of PolicyType
 	 */
+	@Deprecated(since="0.15.4")
 	Single<PolicyType> findByCode(String code);
+
 }

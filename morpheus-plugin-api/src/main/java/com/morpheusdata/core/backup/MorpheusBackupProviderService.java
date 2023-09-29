@@ -1,5 +1,6 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.BackupProviderType;
@@ -14,7 +15,7 @@ import java.util.Collection;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupProviderService {
+public interface MorpheusBackupProviderService extends MorpheusDataService<BackupProvider, BackupProvider> {
 
 	/**
 	 * Returns the MorpheusBackupProviderTypeContext used for performing updates/queries on {@link BackupProviderType} related assets
@@ -28,6 +29,7 @@ public interface MorpheusBackupProviderService {
 	 * @param ids list of {@link BackupProvider} ids to fetch.
 	 * @return an RxJava Observable stream of {@link BackupProvider} objects for subscription.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<BackupProvider> listById(Collection<Long> ids);
 
 	/**

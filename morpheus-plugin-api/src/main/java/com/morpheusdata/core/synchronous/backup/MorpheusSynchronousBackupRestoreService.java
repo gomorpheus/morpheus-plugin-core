@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous.backup;
+
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.BackupRestore;
+import com.morpheusdata.model.projection.BackupRestoreIdentityProjection;
+
+public interface MorpheusSynchronousBackupRestoreService extends MorpheusSynchronousDataService<BackupRestore, BackupRestoreIdentityProjection>, MorpheusSynchronousIdentityService<BackupRestoreIdentityProjection> {
+}

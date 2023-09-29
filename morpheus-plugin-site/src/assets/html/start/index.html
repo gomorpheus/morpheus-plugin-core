@@ -22,71 +22,85 @@
 	</nav>
 </header>
 <main>
-
+	<section class="hero small">
+	<div class="content">
+			<h1>Generate Plugin</h1>
+			<img src="/cloudprovisioning.svg">
+		</div>
+	</section>
 	<section class="plugin-grid">
 		<div class="content">
-			<h2>
-				<span>Get Started</span>
-			</h2>
 			<form action="/generate" method="GET">
 				<div>
 					<label for="pluginName">Name</label>
-					<input type="text" name="pluginName" id="pluginName"></input>
+					<div>
+						<input type="text" name="pluginName" id="pluginName"></input>
+					</div>
 				</div>
 				<div>
 					<label for="pluginCode">Code</label>
-					<input type="text" name="pluginCode" id="pluginCode"></input>
-					<div class="help-block">The Code is used to uniquely identify a plugin for publication</div>
+					<div>
+						<input type="text" name="pluginCode" id="pluginCode"></input>
+						<div class="help-block">The Code is used to uniquely identify a plugin for publication</div>
+					</div>
 				</div>
 				<div>
 					<label for="morpheusVersion">Morpheus Version</label>
-					<select name="morpheusVersion" id="morpheusVersion">
-						<option value="6.3.x">6.3.x</option>
-					</select>
+					<div>
+						<select name="morpheusVersion" id="morpheusVersion">
+							<option value="6.3.x">6.3.x</option>
+						</select>
+					</div>
 				</div>
 				<div>
 					<label for="language">Language</label>
-					<select name="language" id="language">
-						<option value="groovy">Groovy</option>
-						<option value="java">Java</option>
-					</select>
+					<div>
+						<select name="language" id="language">
+							<option value="groovy">Groovy</option>
+							<option value="java">Java</option>
+						</select>
+					</div>
 				</div>
 				<div>
 					<label for="basePackage">Base Package</label>
-					<input type="text" name="basePackage" id="basePackage" value="com.example"></input>
+					<div>
+						<input type="text" name="basePackage" id="basePackage" value="com.example"></input>
+					</div>
 				</div>
-				<fieldset>
-					<legend>Providers</legend>
-					<ul class="provider-list">
-						
-						<li>
-							<input type="checkbox" name="providers" id="providers-cloud" value="cloud"></input>&nbsp;<label for="providerscloud">Cloud</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-dns" value="dns"></input>&nbsp;<label for="providers-dns">DNS</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-instance-tab" value="instanceTab"></input>&nbsp;<label for="providers-instance-tab">Instance Tab</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-ipam" value="ipam"></input>&nbsp;<label for="providers-ipam">IPAM</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-loadbalancer" value="loadBalancer"></input>&nbsp;<label for="providers-loadbalancer">Load Balancer</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-report" value="report"></input>&nbsp;<label for="providers-report">Report</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-task" value="task"></input>&nbsp;<label for="providers-task">Task</label>
-						</li>
-						<li>
-							<input type="checkbox" name="providers" id="providers-server-tab" value="serverTab"></input>&nbsp;<label for="providers-server-tab">Server Tab</label>
-						</li>
-					</ul>
-				</fieldset>
 				<div>
-					<input type="submit" value="Generate"/>
+					<label>Providers</label>
+					<div>
+						<ul class="provider-list">
+							
+							<li>
+								<label for="providers-cloud"><input type="checkbox" name="providers" id="providers-cloud" value="cloud"></input>&nbsp;<span>Cloud</span></label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-dns" value="dns"></input>&nbsp;<label for="providers-dns">DNS</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-instance-tab" value="instanceTab"></input>&nbsp;<label for="providers-instance-tab">Instance Tab</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-ipam" value="ipam"></input>&nbsp;<label for="providers-ipam">IPAM</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-loadbalancer" value="loadBalancer"></input>&nbsp;<label for="providers-loadbalancer">Load Balancer</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-report" value="report"></input>&nbsp;<label for="providers-report">Report</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-task" value="task"></input>&nbsp;<label for="providers-task">Task</label>
+							</li>
+							<li>
+								<input type="checkbox" name="providers" id="providers-server-tab" value="serverTab"></input>&nbsp;<label for="providers-server-tab">Server Tab</label>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="actions">
+					<input type="submit" value="Generate" class="button" />
 				</div>
 			</form>
 		</div>
@@ -103,7 +117,7 @@
 				<li><a href="https://morpheus-morpheus-cli-docs.readthedocs-hosted.com/" target="_blank" rel="noopener">CLI Docs</a></li>
 			</ul>
 		</div>
-		<div class="copyright">&#169; 2021 MORPHEUS DATA, LLC. ALL RIGHTS RESERVED</div>
+		<div class="copyright">&#169; 2023 MORPHEUS DATA, LLC. ALL RIGHTS RESERVED</div>
 	</div>
 </footer>
 </body>

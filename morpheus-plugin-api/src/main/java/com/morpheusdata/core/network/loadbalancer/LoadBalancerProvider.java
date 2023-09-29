@@ -54,7 +54,10 @@ public interface LoadBalancerProvider extends PluginProvider {
 	default ServiceResponse updateLoadBalancer(NetworkLoadBalancer loadBalancer) { return ServiceResponse.success(); }
 	default ServiceResponse setAdditionalConfiguration(NetworkLoadBalancer loadBalancer, Map opts) { return ServiceResponse.success(); }
 
-	ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts);
+	default ServiceResponse initializeLoadBalancer(NetworkLoadBalancer loadBalancer, Map opts) {
+		return ServiceResponse.success();
+	}
+
 	default ServiceResponse refresh(NetworkLoadBalancer loadBalancer) {
 		// default implementation for this is to just return success as not all load balancer syncing is done from the
 		// load balancer provider.  In the case of amazon, the load balancer sync is down in the cloud provider.
@@ -69,23 +72,29 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param profile {@link NetworkLoadBalancerProfile}
 	 * @return {@link ServiceResponse}
 	 */
+	default ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return ServiceResponse.success();
+	}
 
-	ServiceResponse createLoadBalancerProfile(NetworkLoadBalancerProfile profile);
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a profile
 	 * within the provider using the {@link NetworkLoadBalancerProfile} model.
 	 * @param profile {@link NetworkLoadBalancerProfile}
 	 * @return {@link ServiceResponse}
 	 */
+	default ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return ServiceResponse.success();
+	}
 
-	ServiceResponse deleteLoadBalancerProfile(NetworkLoadBalancerProfile profile);
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a profile
 	 * within the provider using the {@link NetworkLoadBalancerProfile} model.
 	 * @param profile {@link NetworkLoadBalancerProfile}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse updateLoadBalancerProfile(NetworkLoadBalancerProfile profile);
+	default ServiceResponse updateLoadBalancerProfile(NetworkLoadBalancerProfile profile) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a health monitor
@@ -93,7 +102,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param monitor {@link NetworkLoadBalancerMonitor}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	default ServiceResponse createLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a health monitor
@@ -101,7 +112,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param monitor {@link NetworkLoadBalancerMonitor}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	default ServiceResponse deleteLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a health monitor
@@ -109,16 +122,76 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param monitor {@link NetworkLoadBalancerMonitor}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
-	ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor);
+	default ServiceResponse updateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		return ServiceResponse.success();
+	}
 
-	ServiceResponse createLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy);
-	ServiceResponse deleteLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy);
-	ServiceResponse validateLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy);
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer health monitor
+	 * @param monitor {@link NetworkLoadBalancerMonitor}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerHealthMonitor(NetworkLoadBalancerMonitor monitor) {
+		return ServiceResponse.success();
+	}
 
-	ServiceResponse validateLoadBalancerRule(NetworkLoadBalancerRule rule);
-	ServiceResponse createLoadBalancerRule(NetworkLoadBalancerRule rule);
-	ServiceResponse deleteLoadBalancerRule(NetworkLoadBalancerRule rule);
+	/**
+	 * Create operation for load balancer providers.  Implement this method to create a policy
+	 * within the provider using the {@link NetworkLoadBalancerPolicy} model
+	 * @param loadBalancerPolicy {@link NetworkLoadBalancerPolicy}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse createLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Delete operation for load balancer providers.  Implement this method to delete a policy
+	 * within the provider using the {@link NetworkLoadBalancerPolicy} model
+	 * @param loadBalancerPolicy {@link NetworkLoadBalancerPolicy}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse deleteLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer policy
+	 * @param loadBalancerPolicy {@link NetworkLoadBalancerPolicy}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerPolicy(NetworkLoadBalancerPolicy loadBalancerPolicy) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer policy rule
+	 * @param rule {@link NetworkLoadBalancerRule}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Create operation for load balancer providers.  Implement this method to create a policy rule
+	 * within the provider using the {@link NetworkLoadBalancerRule} model
+	 * @param rule {@link NetworkLoadBalancerRule}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse createLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Delete operation for load balancer providers.  Implement this method to delete a policy rule
+	 * within the provider using the {@link NetworkLoadBalancerRule} model
+	 * @param rule {@link NetworkLoadBalancerRule}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse deleteLoadBalancerRule(NetworkLoadBalancerRule rule) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a node
@@ -126,7 +199,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param node {@link NetworkLoadBalancerNode}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse createLoadBalancerNode(NetworkLoadBalancerNode node);
+	default ServiceResponse createLoadBalancerNode(NetworkLoadBalancerNode node) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a node
@@ -134,7 +209,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param node {@link NetworkLoadBalancerNode}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode node);
+	default ServiceResponse deleteLoadBalancerNode(NetworkLoadBalancerNode node) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a node
@@ -142,8 +219,18 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param node {@link NetworkLoadBalancerNode}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node);
-	ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node);
+	default ServiceResponse updateLoadBalancerNode(NetworkLoadBalancerNode node) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer node
+	 * @param node {@link NetworkLoadBalancerNode}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerNode(NetworkLoadBalancerNode node) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a pool
@@ -151,7 +238,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param pool {@link NetworkLoadBalancerPool}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse createLoadBalancerPool(NetworkLoadBalancerPool pool);
+	default ServiceResponse createLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a pool
@@ -159,7 +248,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param pool {@link NetworkLoadBalancerPool}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse deleteLoadBalancerPool(NetworkLoadBalancerPool pool);
+	default ServiceResponse deleteLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a pool
@@ -167,8 +258,18 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param pool {@link NetworkLoadBalancerPool}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool);
-	ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool);
+	default ServiceResponse updateLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer pool
+	 * @param pool {@link NetworkLoadBalancerPool}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerPool(NetworkLoadBalancerPool pool) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Create operation for load balancer providers.  Implement this method to create a virtual server
@@ -176,7 +277,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param instance {@link NetworkLoadBalancerInstance}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	default ServiceResponse createLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Delete operation for load balancer providers.  Implement this method to delete a virtual server
@@ -184,7 +287,9 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param instance {@link NetworkLoadBalancerInstance}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	default ServiceResponse deleteLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return ServiceResponse.success();
+	}
 
 	/**
 	 * Update operation for load balancer providers.  Implement this method to update a virtual server
@@ -192,8 +297,18 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 * @param instance {@link NetworkLoadBalancerInstance}
 	 * @return {@link ServiceResponse}
 	 */
-	ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
-	ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance);
+	default ServiceResponse updateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform validation for the create/save of a load balancer virtual server (vip)
+	 * @param instance {@link NetworkLoadBalancerInstance}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse validateLoadBalancerVirtualServer(NetworkLoadBalancerInstance instance) {
+		return ServiceResponse.success();
+	}
 
 	default ServiceResponse validateLoadBalancerInstance(NetworkLoadBalancerInstance loadBalancerInstance) { return ServiceResponse.success(); }
 	default ServiceResponse validateLoadBalancerInstanceConfiguration(NetworkLoadBalancer loadBalancer, Instance instance) { return ServiceResponse.success(); }

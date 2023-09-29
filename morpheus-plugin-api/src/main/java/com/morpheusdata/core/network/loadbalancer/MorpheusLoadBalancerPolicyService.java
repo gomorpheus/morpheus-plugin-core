@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network.loadbalancer;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.NetworkLoadBalancer;
 import com.morpheusdata.model.NetworkLoadBalancerPolicy;
 import com.morpheusdata.model.projection.LoadBalancerPolicyIdentityProjection;
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface MorpheusLoadBalancerPolicyService {
+public interface MorpheusLoadBalancerPolicyService extends MorpheusDataService<NetworkLoadBalancerPolicy, LoadBalancerPolicyIdentityProjection>, MorpheusIdentityService<LoadBalancerPolicyIdentityProjection> {
 	/**
 	 * Get a list of {@link LoadBalancerPolicyIdentityProjection} projections based on NetworkLoadBalancer id
 	 *
@@ -27,6 +29,7 @@ public interface MorpheusLoadBalancerPolicyService {
 	 * @param ids list of policy ids
 	 * @return Observable stream of policies
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerPolicy> listById(Collection<Long> ids);
 
 	/**
@@ -34,7 +37,9 @@ public interface MorpheusLoadBalancerPolicyService {
 	 *
 	 * @param policies updated policy
 	 * @return success
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkLoadBalancerPolicy> policies);
 
 	/**
@@ -42,7 +47,9 @@ public interface MorpheusLoadBalancerPolicyService {
 	 *
 	 * @param policies new NetworkLoadBalancerPolicy to persist
 	 * @return success
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkLoadBalancerPolicy> policies);
 
 	/**
@@ -50,7 +57,9 @@ public interface MorpheusLoadBalancerPolicyService {
 	 *
 	 * @param policies Images to delete
 	 * @return success
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<LoadBalancerPolicyIdentityProjection> policies);
 
 	/**
@@ -66,6 +75,7 @@ public interface MorpheusLoadBalancerPolicyService {
 	 * @param id - morpheus primary key for policy
 	 * @return a {@link NetworkLoadBalancerPolicy} if found in the morpheus db
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Optional<NetworkLoadBalancerPolicy>> findById(Long id);
 
 	/**
@@ -73,5 +83,6 @@ public interface MorpheusLoadBalancerPolicyService {
 	 * @param args a map of properties used to query the policy
 	 * @return Observable stream of {@link NetworkLoadBalancerPolicy}
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkLoadBalancerPolicy> queryPolicies(Map args);
 }

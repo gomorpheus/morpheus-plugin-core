@@ -1,6 +1,8 @@
 package com.morpheusdata.core.network;
 
 import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkSubnetIdentityProjection;
 import io.reactivex.rxjava3.core.Completable;
@@ -17,7 +19,7 @@ import java.util.List;
  * @since 0.11.0
  * @author Bob Whiton
  */
-public interface MorpheusNetworkSubnetService {
+public interface MorpheusNetworkSubnetService extends MorpheusDataService<NetworkSubnet, NetworkSubnetIdentityProjection>, MorpheusIdentityService<NetworkSubnetIdentityProjection> {
 
 	/**
 	 * Lists all subnet projection objects for a specified network.
@@ -42,6 +44,7 @@ public interface MorpheusNetworkSubnetService {
 	 * @param ids list of ids to grab {@link NetworkSubnet} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkSubnet} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkSubnet> listById(Collection<Long> ids);
 
 	/**
@@ -53,7 +56,9 @@ public interface MorpheusNetworkSubnetService {
 	 * }</pre>
 	 * @param removeList list of NetworkSubnets to remove
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<NetworkSubnetIdentityProjection> removeList);
 
 	/**
@@ -61,7 +66,9 @@ public interface MorpheusNetworkSubnetService {
 	 * @param addList List of new {@link NetworkSubnet} objects to be inserted into the database
 	 * @param network Network to add the NetworkSubnet to
 	 * @return notification of completion if someone really cares about it
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkSubnet> addList, Network network);
 
 	/**
@@ -69,14 +76,8 @@ public interface MorpheusNetworkSubnetService {
 	 * to for any action to actually take place.
 	 * @param networkSubnetsToSave a List of NetworkSubnet objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkSubnet> networkSubnetsToSave);
-
-	/**
-	 * Saves a {@link NetworkSubnet} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param networkSubnetToSave a NetworkSubnet Object that need to be updated in the database.
-	 * @return the Single Observable stating the resultant NetworkSubnet Object
-	 */
-	Single<NetworkSubnet> save(NetworkSubnet networkSubnetToSave);
 }

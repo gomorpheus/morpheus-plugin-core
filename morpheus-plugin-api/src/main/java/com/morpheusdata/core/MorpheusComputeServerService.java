@@ -15,7 +15,7 @@ import java.util.List;
  * @author Mike Truso
  * @since 0.8.0
  */
-public interface MorpheusComputeServerService extends MorpheusDataService<ComputeServer,ComputeServerIdentityProjection> {
+public interface MorpheusComputeServerService extends MorpheusDataService<ComputeServer,ComputeServerIdentityProjection>, MorpheusIdentityService<ComputeServerIdentityProjection> {
 
 	/**
 	 * Get a list of {@link ComputeServer} projections based on Cloud id

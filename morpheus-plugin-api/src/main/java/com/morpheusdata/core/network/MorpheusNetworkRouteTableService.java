@@ -1,5 +1,7 @@
 package com.morpheusdata.core.network;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.NetworkRouteTableIdentityProjection;
 import io.reactivex.rxjava3.core.Observable;
@@ -8,7 +10,7 @@ import io.reactivex.rxjava3.core.Single;
 import java.util.Collection;
 import java.util.List;
 
-public interface MorpheusNetworkRouteTableService {
+public interface MorpheusNetworkRouteTableService extends MorpheusDataService<NetworkRouteTable, NetworkRouteTableIdentityProjection>, MorpheusIdentityService<NetworkRouteTableIdentityProjection> {
 
 	/**
 	 * Lists all route table projection objects for a specified cloud.
@@ -31,6 +33,7 @@ public interface MorpheusNetworkRouteTableService {
 	 * @param ids list of ids to grab {@link NetworkRouteTable} objects from.
 	 * @return an RxJava Observable stream of {@link NetworkRouteTable} to be subscribed to.
 	 */
+	@Deprecated(since="0.15.4")
 	Observable<NetworkRouteTable> listById(Collection<Long> ids);
 
 	/**
@@ -42,14 +45,18 @@ public interface MorpheusNetworkRouteTableService {
 	 * }</pre>
 	 * @param removeList a list of router projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
+	 * @deprecated use {@link #bulkRemove } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<NetworkRouteTableIdentityProjection> removeList);
 
 	/**
 	 * Creates new Network Route Tables from cache / sync implementations
 	 * @param addList List of new {@link NetworkRouteTable} objects to be inserted into the database
 	 * @return notification of completion if someone really cares about it
+	 * @deprecated use {@link #bulkCreate } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> create(List<NetworkRouteTable> addList);
 
 	/**
@@ -57,6 +64,8 @@ public interface MorpheusNetworkRouteTableService {
 	 * to for any action to actually take place.
 	 * @param routerTablesToSave a List of Network Route Table objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
+	 * @deprecated use {@link #bulkSave } instead
 	 */
+	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<NetworkRouteTable> routerTablesToSave);
 }

@@ -1,5 +1,7 @@
 package com.morpheusdata.core.backup;
 
+import com.morpheusdata.core.MorpheusDataService;
+import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.Backup;
 import com.morpheusdata.model.BackupJob;
 import com.morpheusdata.model.BackupProvider;
@@ -16,7 +18,8 @@ import java.util.List;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public interface MorpheusBackupJobService {
+public interface MorpheusBackupJobService extends MorpheusDataService<BackupJob, BackupJobIdentityProjection>, MorpheusIdentityService<BackupJobIdentityProjection> {
+
 	/**
 	 * Returns the BackupContext used for performing updates or queries on {@link Backup} related assets within Morpheus.
 	 * Typically this would be called by a {@link BackupProvider}

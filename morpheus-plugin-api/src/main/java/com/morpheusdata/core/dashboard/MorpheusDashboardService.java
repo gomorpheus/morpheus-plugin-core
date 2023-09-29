@@ -1,5 +1,6 @@
 package com.morpheusdata.core.dashboard;
 
+import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.Dashboard;
 import com.morpheusdata.model.DashboardItem;
 import com.morpheusdata.model.DashboardItemType;
@@ -9,7 +10,7 @@ import io.reactivex.rxjava3.core.Single;
 import java.util.Collection;
 import java.util.List;
 
-public interface MorpheusDashboardService {
+public interface MorpheusDashboardService extends MorpheusDataService<Dashboard, Dashboard> {
 
 	/**
 	 * Load the Dashboard requested by id

@@ -6,6 +6,7 @@ import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -429,6 +430,72 @@ public interface ProvisionProvider extends PluginProvider {
 			return null;
 		}
 
+	}
+
+
+	/**
+	 * Provides a method to allow a provision provider to override the array list of disk device names.
+	 * By default, the vd* names are used such as ['vda','vdb'] etc. But some clouds use different block
+	 * device names and they need overridden
+	 * @author David Estes
+	 * @since 0.15.4
+	 */
+	public interface BlockDeviceNameFacet {
+
+		/**
+		 * Returns a String array of block device names i.e. (['vda','vdb','vdc']) in the order
+		 * of the disk index.
+		 * @return the String array
+		 */
+		String[] getDiskNameList();
+
+		/**
+		 * Returns the device name of the storage volume based on its position assuming a default
+		 * platform of linux
+		 * @param index the position (starting at 0 for root disk)
+		 * @return the device name
+		 */
+		default String getDiskName(int index) {
+			return getDiskName(index,"linux");
+		}
+
+		/**
+		 * Returns the device name of the storage volume based on its position and OS Platform
+		 *
+		 * @param index the position (starting at 0 for root disk)
+		 * @param platform the platform string (i.e. windows,linux)
+		 * @return the device name
+		 */
+		default String getDiskName(int index, String platform) {
+			if(platform.equals("windows"))
+				return "disk " + (index+1);
+				// return windowsDiskNames[index]
+			else
+				return "/dev/" + getDiskNameList()[index];
+		}
+
+		/**
+		 * Returns the display name of the storage volume based on its position assuming a default
+		 * platform of linux
+		 * @param index the position (starting at 0 for root disk)
+		 * @return the friendly device name
+		 */
+		default String getDiskDisplayName(int index) {
+			return getDiskDisplayName(index,"linux");
+		}
+
+		/**
+		 * Returns the display name of the storage volume based on its position and the OS Platform
+		 * @param index the position (starting at 0 for root disk)
+		 * @param platform the platform string (i.e. windows,linux)
+		 * @return the friendly device name
+		 */
+		default String getDiskDisplayName(int index, String platform) {
+			if(platform.equals("windows"))
+				return "disk " + (index + 1);
+			else
+				return getDiskNameList()[index];
+		}
 	}
 
 	/**
