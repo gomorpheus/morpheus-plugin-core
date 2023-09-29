@@ -400,6 +400,11 @@ public interface MorpheusServices {
 	 */
 	MorpheusLocalizationService getLocalization();
 
+	/**
+	 * Returns the {@link MorpheusSeedService } which allows access to seed data operations
+	 * @return an instance of {@link MorpheusSeedService }
+	 */
+	MorpheusSynchronousSeedService getSeed();
 
 
 }
