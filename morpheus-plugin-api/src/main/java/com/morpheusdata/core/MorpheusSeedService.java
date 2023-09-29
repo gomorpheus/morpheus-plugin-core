@@ -1,9 +1,11 @@
 package com.morpheusdata.core;
 
+import io.reactivex.Single;
+
 import java.util.List;
 
 public interface MorpheusSeedService {
 
-	void reinstallSeedData(List<String> seedNames);
+	Single<Boolean> reinstallSeedData(List<String> seedNames);
 
 }
