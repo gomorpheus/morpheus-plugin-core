@@ -11,7 +11,7 @@ import  com.morpheusdata.model.AccountDiscoveryType;
  * @since 0.13.2
  * @author David Estes
  */
-public interface GuidanceRecommendationProvider  extends PluginProvider {
+public interface GuidanceRecommendationProvider  extends PluginProvider, UIExtensionProvider {
 
 
 	/**
