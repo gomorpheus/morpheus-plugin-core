@@ -5,7 +5,7 @@ import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.CloudPool;
 import com.morpheusdata.model.NetworkRouteTable;
 import com.morpheusdata.model.projection.NetworkRouteTableIdentityProjection;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 public interface MorpheusSynchronousNetworkRouteTableService extends MorpheusSynchronousDataService<NetworkRouteTable, NetworkRouteTableIdentityProjection>, MorpheusSynchronousIdentityService<NetworkRouteTableIdentityProjection> {
 
