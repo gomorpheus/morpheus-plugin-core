@@ -233,6 +233,28 @@ public class DataQuery {
 		return this;
 	}
 
+	/**
+	 * Sets the sort of the DataQuery
+	 * @param sort property to sort by
+	 * @return the current DataQuery object for chaining
+	 */
+	public DataQuery withSort(String sort) {
+		this.sort = sort;
+		return this;
+	}
+
+	/**
+	 * Sets the sort of the DataQuery
+	 * @param sort property to sort by
+	 * @param order direction of the sort
+	 * @return the current DataQuery object for chaining
+	 */
+	public DataQuery withSort(String sort, SortOrder order) {
+		this.sort = sort;
+		this.order = order;
+		return this;
+	}
+
 	public Object putAt(String key, Object value) {
 		return put(key, value);
 	}
