@@ -7,6 +7,7 @@ import com.morpheusdata.core.cloud.MorpheusCloudService;
 import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
+import com.morpheusdata.core.guidance.MorpheusAccountDiscoveryService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.library.MorpheusLibraryServices;
@@ -412,6 +413,14 @@ public interface MorpheusAsyncServices {
 	 * @return an instance of {@link MorpheusSeedService }
 	 */
 	MorpheusSeedService getSeed();
+
+
+	/**
+	 * Returns the {@link MorpheusAccountDiscoveryService} which allows access to creating guidance
+	 * recommendations
+	 * @return an instance of {@link MorpheusAccountDiscoveryService}
+	 */
+	MorpheusAccountDiscoveryService getDiscovery();
 
 
 }

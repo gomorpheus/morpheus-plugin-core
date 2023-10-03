@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.guidance.MorpheusSynchronousAccountDiscoveryService;
 import com.morpheusdata.core.synchronous.*;
 import com.morpheusdata.core.synchronous.admin.MorpheusSynchronousAdminService;
 import com.morpheusdata.core.synchronous.backup.MorpheusSynchronousBackupJobService;
@@ -405,6 +406,13 @@ public interface MorpheusServices {
 	 * @return an instance of {@link MorpheusSeedService }
 	 */
 	MorpheusSynchronousSeedService getSeed();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousAccountDiscoveryService} which allows access to create guidance
+	 * recommendations
+	 * @return an instance of {@link MorpheusSynchronousAccountDiscoveryService}
+	 */
+	MorpheusSynchronousAccountDiscoveryService getDiscovery();
 
 
 }
