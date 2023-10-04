@@ -265,7 +265,8 @@ public class ComputeServerType  extends MorpheusModel {
 	public enum AgentType {
 		guest, //vm-node for guest OS agents for vms or workloads
 		host, //node for docker and kube and kvm
-		none
+		none,
+		node
 	}
 
 
