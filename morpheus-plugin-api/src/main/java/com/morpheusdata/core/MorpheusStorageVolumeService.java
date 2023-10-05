@@ -27,14 +27,6 @@ public interface MorpheusStorageVolumeService extends MorpheusDataService<Storag
 	MorpheusStorageVolumeTypeService getStorageVolumeType();
 
 	/**
-	 * Get a list of StorageVolume objects from a list of projection ids
-	 * @param ids StorageVolume ids
-	 * @return Observable stream of StorageVolumes
-	 */
-	@Deprecated(since="0.15.4")
-	Observable<StorageVolume> listById(Collection<Long> ids);
-
-	/**
 	 * Get a list of {@link StorageVolume} projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @param regionCode the {@link CloudRegion} to optionally filter by
