@@ -3,6 +3,7 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.CloudTypeIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class CloudType extends CloudTypeIdentityProjection {
 	protected Integer displayOrder = 0;
 	protected String cloud = "public";
 	//flag for allowed provision types;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List provisionTypes;
 	protected Long zoneInstanceTypeLayoutId;
 	protected Boolean hasNativeSecurityGroups = false;

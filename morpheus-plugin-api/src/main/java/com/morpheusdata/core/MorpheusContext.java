@@ -20,6 +20,7 @@ import com.morpheusdata.core.policy.MorpheusPolicyService;
 import com.morpheusdata.core.backup.MorpheusBackupService;
 import com.morpheusdata.core.backup.MorpheusBackupJobService;
 import com.morpheusdata.model.*;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import java.util.Collection;
 import java.util.Map;
@@ -609,4 +610,12 @@ public interface MorpheusContext {
 	 */
 	Single<Boolean> releaseLock(String name, Map<String,Object> opts);
 
+	/**
+	 * Returns the unique lock key id for the specified lock key name if exists else null.
+	 * It takes an optional set of opts that can be used to scope the lock release to a key hash for concurrency safety
+	 * @param name
+	 * @param opts
+	 * @return the unique lock key id to control concurrent release attempts. send this to releaseLocks opts.lock key
+	 */
+	Maybe<String> checkLock(String name, Map<String,Object> opts);
 }
