@@ -22,6 +22,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected String visibility = "private"; //['public', 'private']
 	protected String location;
 	protected String timezone;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public CloudType cloudType;
 	protected Boolean hasNativeSecurityGroups;
 	protected Date dateCreated;
@@ -66,6 +67,8 @@ public class Cloud extends CloudIdentityProjection {
 	protected Boolean deleted = false;
 	protected String guidanceMode;
 	protected String costingMode;
+	protected String costStatus;
+	protected String costStatusMessage;
 	protected String inventoryLevel = "off";
 	protected Date lastSync;
 	protected Date nextRunDate;
@@ -293,6 +296,14 @@ public class Cloud extends CloudIdentityProjection {
 
 	public String getCostingMode() {
 		return costingMode;
+	}
+
+	public String getCostStatus() {
+		return costStatus;
+	}
+
+	public String getCostStatusMessage() {
+		return costStatusMessage;
 	}
 
 	public String getInventoryLevel() {
@@ -660,6 +671,16 @@ public class Cloud extends CloudIdentityProjection {
 	public void setCostingMode(String costingMode) {
 		this.costingMode = costingMode;
 		markDirty("costingMode", costingMode);
+	}
+
+	public void setCostStatus(String costStatus) {
+		this.costStatus = costStatus;
+		markDirty("costStatus", costStatus);
+	}
+
+	public void setCostStatusMessage(String costStatusMessage) {
+		this.costStatusMessage = costStatusMessage;
+		markDirty("costStatusMessage", costStatusMessage);
 	}
 
 	public void setInventoryLevel(String inventoryLevel) {

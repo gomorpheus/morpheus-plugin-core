@@ -21,14 +21,6 @@ public interface MorpheusSnapshotService extends MorpheusDataService<Snapshot, S
 	 * @return Observable list of Snapshots
 	 */
 	@Deprecated(since="0.15.4")
-	Observable<Snapshot> listById(List<Long> ids);
-
-	/**
-	 * Fetch the Snapshots given a list of ids
-	 * @param ids list of ids
-	 * @return Observable list of Snapshots
-	 */
-	@Deprecated(since="0.15.4")
 	Observable<Snapshot> listByIds(List<Long> ids);
 
 	/**

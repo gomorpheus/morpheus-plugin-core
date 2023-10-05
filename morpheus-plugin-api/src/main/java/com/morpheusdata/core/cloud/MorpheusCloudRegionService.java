@@ -28,5 +28,9 @@ public interface MorpheusCloudRegionService extends MorpheusDataService<CloudReg
 	Observable<CloudRegionIdentity> listIdentityProjections(Long cloudId);
 
 
+	Observable<CloudRegionIdentity> listIdentityProjectionsForRegionsWithVolumes(Long cloudId);
+	Observable<CloudRegionIdentity> listIdentityProjectionsForRegionsWithCloudPools(Long cloudId);
+
+
 	Single<Optional<CloudRegion>> findByCloudAndRegionCode(Long cloudId, String regionCode);
 }
