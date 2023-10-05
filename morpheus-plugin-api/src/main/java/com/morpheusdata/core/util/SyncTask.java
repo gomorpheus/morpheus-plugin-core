@@ -273,7 +273,7 @@ public class SyncTask<Projection, ApiItem, Model> {
 			.map(this::buildUpdateItemDto)
 			.buffer(bufferSize)
 			.observeOn(Schedulers.io())
-			.flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
+			.concatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
 				return onLoadObjectDetailsFunction.method(mapItems).buffer(bufferSize);
 			})
 			.doOnNext( (updateItems) -> {

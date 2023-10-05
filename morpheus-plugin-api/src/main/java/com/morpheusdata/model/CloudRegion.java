@@ -22,7 +22,7 @@ public class CloudRegion extends ComputeZoneRegionIdentityProjection {
 	protected String code;
 	protected String name;
 	protected String regionCode;
-	protected String zoneCode;
+	protected String cloudCode;
 	protected String internalId;
 
 	public String getRegionCode() {
@@ -65,12 +65,12 @@ public class CloudRegion extends ComputeZoneRegionIdentityProjection {
 		this.name = name;
 	}
 
-	public String getZoneCode() {
-		return zoneCode;
+	public String getCloudCode() {
+		return cloudCode;
 	}
 
-	public void setZoneCode(String zoneCode) {
-		this.zoneCode = zoneCode;
+	public void setCloudCode(String cloudCode) {
+		this.cloudCode = cloudCode;
 	}
 
 	public String getInternalId() {

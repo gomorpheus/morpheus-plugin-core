@@ -250,6 +250,22 @@ public interface CloudProvider extends PluginProvider {
 	 */
 	Boolean supportsDistributedWorker();
 
+	/**
+	 * Specifies whether the current cloud allows the user to create custom pools such as VPCs in AWS or Clusters in Vmware
+	 * @return Boolean
+	 */
+	default Boolean canCreateCloudPools() {
+		return false;
+	}
+
+	/**
+	 * Specifies whether the current cloud allows the user to delete custom pools such as VPCs in AWS or Clusters in Vmware
+	 * @return Boolean
+	 */
+	default Boolean canDeleteCloudPools() {
+		return false;
+	}
+
 
 	/**
 	 * Returns the default provision code for fetching a {@link ProvisionProvider} for this cloud.
@@ -266,10 +282,26 @@ public interface CloudProvider extends PluginProvider {
 	default String getDefaultNetworkServerTypeCode() { return null; };
 
 
+	default ServiceResponse<CloudPool> createCloudPool(Cloud cloud, CloudPool cloudPool) {
+		return ServiceResponse.success(cloudPool);
+	}
+
+	default ServiceResponse<CloudPool> updateCloudPool(Cloud cloud, CloudPool cloudPool) {
+		return ServiceResponse.success(cloudPool);
+	}
+
+
+	default ServiceResponse<CloudPool> removeCloudPool(Cloud cloud, CloudPool cloudPool) {
+		return ServiceResponse.success(cloudPool);
+	}
+
+
 	/**
 	 * Returns the Costing Provider to be used for costing services. If this is not specified a StandardCostingService
 	 * is utilized based on pricing and Morpheus metering data. This is often used for public clouds such as Amazon or Azure.
 	 * @return an instance of a cloud specific CostingProvider.
 	 */
 	default CloudCostingProvider getCloudCostingProvider() { return null; };
+
+
 }
