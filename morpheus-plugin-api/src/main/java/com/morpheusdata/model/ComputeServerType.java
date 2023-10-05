@@ -43,6 +43,8 @@ public class ComputeServerType  extends MorpheusModel {
 
 	protected PlatformType platform;
 
+	protected ContainerEngine containerEngine;
+
 	public String getName() {
 		return name;
 	}
@@ -261,6 +263,14 @@ public class ComputeServerType  extends MorpheusModel {
 		this.controlEjectCd = controlEjectCd;
 	}
 
+	public ContainerEngine getContainerEngine() {
+		return containerEngine;
+	}
+
+	public void setContainerEngine(ContainerEngine containerEngine) {
+		this.containerEngine = containerEngine;
+		markDirty("containerEngine", containerEngine, this.containerEngine);
+	}
 
 	public enum AgentType {
 		guest, //vm-node for guest OS agents for vms or workloads
@@ -269,12 +279,14 @@ public class ComputeServerType  extends MorpheusModel {
 		node
 	}
 
-
-
 	public enum ClusterType {
 		kubernetes, //affects cluster details for the object
 		docker, //affects cluster view
 		kvm,
 		none
+	}
+
+	public enum ContainerEngine {
+		docker
 	}
 }
