@@ -75,15 +75,7 @@ public interface MorpheusVirtualImageLocationService extends MorpheusDataService
 	 */
 	@Deprecated(since="0.15.4")
 	Single<Optional<VirtualImageLocation>> findVirtualImageLocationByExternalIdForCloudAndType(String externalId, Long cloudId, String regionCode, String imageType);
-
-
-	/**
-	 * Get a list of VirtualImageLocation objects from a list of projection ids
-	 * @param ids VirtualImageLocation ids
-	 * @return Observable stream of VirtualImageLocations
-	 */
-	@Deprecated(since="0.15.4")
-	Observable<VirtualImageLocation> listById(Collection<Long> ids);
+	
 
 	/**
 	 * Save updates to existing VirtualImageLocations
