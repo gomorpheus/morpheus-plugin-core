@@ -254,13 +254,17 @@ public interface CloudProvider extends PluginProvider {
 	 * Specifies whether the current cloud allows the user to create custom pools such as VPCs in AWS or Clusters in Vmware
 	 * @return Boolean
 	 */
-	Boolean canCreateCloudPools();
+	default Boolean canCreateCloudPools() {
+		return false;
+	}
 
 	/**
 	 * Specifies whether the current cloud allows the user to delete custom pools such as VPCs in AWS or Clusters in Vmware
 	 * @return Boolean
 	 */
-	Boolean canDeleteCloudPools();
+	default Boolean canDeleteCloudPools() {
+		return false;
+	}
 
 
 	/**
