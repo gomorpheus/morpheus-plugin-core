@@ -39,15 +39,6 @@ public interface MorpheusNetworkDomainRecordService extends MorpheusDataService<
 	Observable<NetworkDomainRecordIdentityProjection> listIdentityProjections(NetworkDomainIdentityProjection networkDomain, String recordType);
 
 	/**
-	 * Lists all {@link NetworkDomainRecord} objects by a list of Identifiers. This is commonly used in sync / caching logic.
-	 * @param ids list of ids to grab {@link NetworkDomainRecord} objects from.
-	 * @return an RxJava Observable stream of {@link NetworkDomainRecord} to be subscribed to.
-	 */
-	@Deprecated(since="0.15.4")
-	Observable<NetworkDomainRecord> listById(Collection<Long> ids);
-
-
-	/**
 	 * Finds the DNS Record associated with the specified workloadId (aka containerId) within the specified {@link NetworkDomain}
 	 * @param domainMatch the current domain we are querying against
 	 * @param workloadId the id of the container/workload element associated to the record
