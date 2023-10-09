@@ -69,14 +69,6 @@ public interface MorpheusNetworkRouterService extends MorpheusDataService<Networ
 
 	/**
 	 * Lists all {@link NetworkRouter} objects by a list of Identifiers. This is commonly used in sync / caching logic.
-	 * @param ids list of ids to grab {@link NetworkRouter} objects from.
-	 * @return an RxJava Observable stream of {@link NetworkRouter} to be subscribed to.
-	 */
-	@Deprecated(since="0.15.4")
-	Observable<NetworkRouter> listById(Collection<Long> ids);
-
-	/**
-	 * Lists all {@link NetworkRouter} objects by a list of Identifiers. This is commonly used in sync / caching logic.
 	 * @param cloudId the cloud to filter the list of networks by.
 	 * @param externalIds a Collection of external Ids to filter the list of networks by
 	 * @return an RxJava Observable stream of {@link NetworkRouter} to be subscribed to.
