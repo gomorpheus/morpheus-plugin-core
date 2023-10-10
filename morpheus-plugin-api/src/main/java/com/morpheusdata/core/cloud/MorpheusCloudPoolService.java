@@ -5,6 +5,7 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.CloudPool;
 import com.morpheusdata.model.projection.CloudPoolIdentity;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -48,5 +49,17 @@ public interface MorpheusCloudPoolService extends MorpheusDataService<CloudPool,
 	 * @return Observable stream of CloudPools filtered by cloud and a collection of externalIds
 	 */
 	Observable<CloudPool> listByCloudAndExternalIdIn(Long cloudId, Collection<String> externalIds);
+
+
+	/**
+	 * Returns a pool from a pool ID string (usually starts with pool- or poolGroup-) obtained from user inputs. In the case of a pool group ID a
+	 * pool will be selected based on the group's selection mode
+	 * @param poolId
+	 * @param accountId
+	 * @param siteId
+	 * @param zoneId
+	 * @return a cloud pool or null
+	 */
+	Maybe<CloudPool> get(String poolId, Long accountId, Long siteId, Long zoneId);
 
 }

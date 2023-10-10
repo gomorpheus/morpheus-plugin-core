@@ -4,7 +4,10 @@ public class ComputeTypeSet extends MorpheusModel {
 
 	protected String code;
 	protected String name;
+
+	@Deprecated(since = "0.15.4")
 	protected ContainerType containerType;
+	protected  WorkloadType workloadType;
 	protected ComputeServerType computeServerType;
 	protected String category;
 	protected Integer priorityOrder;
@@ -31,12 +34,31 @@ public class ComputeTypeSet extends MorpheusModel {
 		this.name = name;
 	}
 
+	/**
+	 *
+	 * @deprecated use {@link #getWorkloadType() } instead
+	 */
+	@Deprecated(since = "0.15.4")
 	public ContainerType getContainerType() {
 		return containerType;
 	}
 
+	/**
+	 *
+	 * @deprecated use {@link #setWorkloadType(WorkloadType) } instead
+	 */
+	@Deprecated(since = "0.15.4")
 	public void setContainerType(ContainerType containerType) {
 		this.containerType = containerType;
+	}
+
+	public WorkloadType getWorkloadType() {
+		return workloadType;
+	}
+
+	public void setWorkloadType(WorkloadType workloadType) {
+		this.workloadType = workloadType;
+		markDirty("workloadType", workloadType, this.workloadType);
 	}
 
 	public ComputeServerType getComputeServerType() {

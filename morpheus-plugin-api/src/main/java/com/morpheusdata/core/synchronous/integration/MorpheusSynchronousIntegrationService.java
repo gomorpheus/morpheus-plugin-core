@@ -59,4 +59,20 @@ public interface MorpheusSynchronousIntegrationService {
 	default ServiceResponse<NetworkLoadBalancer> registerCloudIntegration(Long cloudId, NetworkLoadBalancer networkLoadBalancer) {
 		return getIntegrationService().registerCloudIntegration(cloudId,networkLoadBalancer).blockingGet();
 	}
+
+	default ServiceResponse deleteCloudIntegration(Long cloudId, AccountIntegration integration) {
+		return getIntegrationService().deleteCloudIntegration(cloudId,integration).blockingGet();
+	}
+
+	default ServiceResponse deleteCloudIntegration(Long cloudId, NetworkServer networkServer) {
+		return getIntegrationService().deleteCloudIntegration(cloudId,networkServer).blockingGet();
+	}
+
+	default ServiceResponse deleteCloudIntegration(Long cloudId, StorageServer storageServer) {
+		return getIntegrationService().deleteCloudIntegration(cloudId,storageServer).blockingGet();
+	}
+
+	// default ServiceResponse deleteCloudIntegration(Long cloudId, NetworkLoadBalancer networkLoadBalancer) {
+	// 	return getIntegrationService().deleteCloudIntegration(cloudId,networkLoadBalancer).blockingGet();
+	// }
 }

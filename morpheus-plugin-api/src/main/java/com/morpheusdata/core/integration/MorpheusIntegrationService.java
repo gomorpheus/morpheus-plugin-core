@@ -41,12 +41,56 @@ public interface MorpheusIntegrationService {
 	 */
 	Completable updateAccountIntegrationStatus(AccountIntegration integration, AccountIntegration.Status status);
 
+	/**
+	 * Creates a new {@link AccountIntegration} and associates it to a {@link Cloud } that is being initialized
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param integration {@link AccountIntegration } that needs to be created and associated with the cloud.
+	 * @return ServiceResponse
+	 */
 	Single<ServiceResponse<AccountIntegration>> registerCloudIntegration(Long cloudId, AccountIntegration integration);
 
+	/**
+	 * Creates a new {@link NetworkServer} and associates it to a {@link Cloud } that is being initialized
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param networkServer {@link NetworkServer } that needs to be created and associated with the cloud.
+	 * @return ServiceResponse
+	 */
 	Single<ServiceResponse<NetworkServer>> registerCloudIntegration(Long cloudId, NetworkServer networkServer);
 
+	/**
+	 * Creates a new {@link StorageServer} and associates it to a {@link Cloud } that is being initialized
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param storageServer {@link StorageServer } that needs to be created and associated with the cloud.
+	 * @return ServiceResponse
+	 */
 	Single<ServiceResponse<StorageServer>> registerCloudIntegration(Long cloudId, StorageServer storageServer);
 
 	Single<ServiceResponse<NetworkLoadBalancer>> registerCloudIntegration(Long cloudId, NetworkLoadBalancer networkLoadBalancer);
+
+	/**
+	 * Cleanup an {@link AccountIntegration} associated with a {@link Cloud } that is being deleted
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param integration {@link AccountIntegration } that needs to be deleted. A mock object with just the type instead of the actual id can be passed here to have the actual record looked up by cloud and type alone.
+	 * @return ServiceResponse
+	 */
+	Single<ServiceResponse> deleteCloudIntegration(Long cloudId, AccountIntegration integration);
+
+	/**
+	 * Cleanup the {@link NetworkServer } associated with a {@link Cloud } that is being deleted
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param networkServer {@link NetworkServer } that needs to be deleted. A mock object with just the type instead of the actual id can be passed here to have the actual record looked up by cloud and type alone.
+	 * @return ServiceResponse
+	 */
+	Single<ServiceResponse> deleteCloudIntegration(Long cloudId, NetworkServer networkServer);
+
+	/**
+	 * Cleanup the {@link StorageServer } associated with a {@link Cloud } that is being deleted
+	 * @param cloudId ID of the {@link Cloud }
+	 * @param storageServer {@link StorageServer } that needs to be deleted. A mock object with just the type instead of the actual id can be passed here to have the actual record looked up by cloud and type alone.
+	 * @return ServiceResponse
+	 */
+	Single<ServiceResponse> deleteCloudIntegration(Long cloudId, StorageServer storageServer);
+
+	// Single<ServiceResponse> deleteCloudIntegration(Long cloudId, NetworkLoadBalancer networkLoadBalancer);
 
 }

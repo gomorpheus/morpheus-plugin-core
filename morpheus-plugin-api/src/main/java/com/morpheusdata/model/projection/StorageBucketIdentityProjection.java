@@ -13,7 +13,7 @@ public class StorageBucketIdentityProjection extends MorpheusIdentityModel {
 	protected String code;
 	protected String name;
 	protected String externalId;
-	protected String uuid;
+	protected String uuid = java.util.UUID.randomUUID().toString();
 
 	public StorageBucketIdentityProjection() {
 		//default

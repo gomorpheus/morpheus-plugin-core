@@ -11,6 +11,7 @@ import com.morpheusdata.core.guidance.MorpheusAccountDiscoveryService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.library.MorpheusLibraryServices;
+import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
@@ -115,7 +116,14 @@ public interface MorpheusAsyncServices {
 	 * Returns the ContainerType context
 	 * @return
 	 */
+	@Deprecated
 	MorpheusContainerTypeService getContainerType();
+
+	/**
+	 * Returns the WorkloadType context
+	 * @return an instance of the Workload Type context
+	 */
+	MorpheusWorkloadTypeService getWorkloadType();
 
 	/**
 	 * Returns the Custom Report Types Context used for generating custom reports.

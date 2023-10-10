@@ -7,6 +7,7 @@ import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
+import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.loadbalancer.MorpheusLoadBalancerService;
 import com.morpheusdata.core.providers.CloudProvider;

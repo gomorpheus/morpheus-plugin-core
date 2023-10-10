@@ -14,14 +14,6 @@ import java.util.List;
 public interface MorpheusStorageBucketService extends MorpheusDataService<StorageBucket,StorageBucketIdentityProjection>, MorpheusIdentityService<StorageBucketIdentityProjection> {
 
 	/**
-	 * Get a list of StorageBucket objects from a list of ids
-	 * @param ids StorageBucket ids
-	 * @return Observable stream of StorageBucket
-	 */
-	@Deprecated(since="0.15.4")
-	Observable<StorageBucket> listById(List<Long> ids);
-
-	/**
 	 * Get a list of StorageBucket projections scoped to a {@link StorageServer}
 	 * @param storageServer {@link StorageServer}
 	 * @return Observable stream of sync projection
