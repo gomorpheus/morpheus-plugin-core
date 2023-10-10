@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.guidance.MorpheusSynchronousAccountDiscoveryService;
+import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.synchronous.*;
 import com.morpheusdata.core.synchronous.admin.MorpheusSynchronousAdminService;
 import com.morpheusdata.core.synchronous.backup.MorpheusSynchronousBackupJobService;
@@ -15,6 +16,7 @@ import com.morpheusdata.core.synchronous.integration.MorpheusSynchronousAccountI
 import com.morpheusdata.core.synchronous.integration.MorpheusSynchronousIntegrationService;
 import com.morpheusdata.core.synchronous.library.MorpheusSynchronousLibraryService;
 import com.morpheusdata.core.synchronous.MorpheusSynchronousComputeTypeSetService;
+import com.morpheusdata.core.synchronous.library.MorpheusSynchronousWorkloadTypeService;
 import com.morpheusdata.core.synchronous.network.MorpheusSynchronousNetworkService;
 import com.morpheusdata.core.synchronous.network.MorpheusSynchronousNetworkSubnetService;
 import com.morpheusdata.core.synchronous.MorpheusSynchronousVirtualImageService;
@@ -115,7 +117,14 @@ public interface MorpheusServices {
 	 * Returns the ContainerType context
 	 * @return
 	 */
+	@Deprecated
 	MorpheusSynchronousContainerTypeService getContainerType();
+
+	/**
+	 * Returns the WorkloadType context
+	 * @return an instance of the Workload Type context
+	 */
+	MorpheusSynchronousWorkloadTypeService getWorkloadType();
 
 	/**
 	 * Returns the Os Type Service
