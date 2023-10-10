@@ -11,4 +11,11 @@ public interface CloudInitializationProvider {
 	 * @return ServiceResponse
 	 */
 	ServiceResponse initializeProvider(Cloud cloud);
+
+	/**
+	 * Cleanup provider when a cloud is deleted
+	 * @param cloud {@link Cloud } to cleanup this provider for
+	 * @return ServiceResponse
+	 */
+	ServiceResponse deleteProvider(Cloud cloud);
 }
