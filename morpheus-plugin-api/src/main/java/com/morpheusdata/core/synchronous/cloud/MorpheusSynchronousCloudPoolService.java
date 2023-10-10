@@ -4,7 +4,7 @@ import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.model.CloudPool;
 import com.morpheusdata.model.projection.CloudPoolIdentity;
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 
 public interface MorpheusSynchronousCloudPoolService extends MorpheusSynchronousDataService<CloudPool,CloudPoolIdentity>, MorpheusSynchronousIdentityService<CloudPoolIdentity> {
 
