@@ -5,6 +5,7 @@ import com.morpheusdata.core.util.ApiParameterMap;
 import com.morpheusdata.model.projection.UserIdentity;
 import com.morpheusdata.model.projection.AccountIdentity;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 
 /**
@@ -101,6 +102,13 @@ public class DataQuery {
 	//list of input filters for more flexibility - list of [name, value, operator] ie [[name:'type', value:'typeValue', operator:'='], ...]
 	public Collection<DataFilter> filters = new ArrayList<>();
 	//list of property names to load instead of the full object - (called propertyList since groovy doesn't like properties as a name)
+
+	/**
+	 * A list of joins for marshalling during path traversal and during query
+	 * (i.e. 'interfaces.network') on a ComputeServer would ensure network is marshalled
+	 * regardless of max depth of traversal
+	 */
+	public Collection<String> joins = new ArrayList<>();
 	/**
 	 * A list of property names to load instead of the full object.
 	 * <p></p>
@@ -230,6 +238,40 @@ public class DataQuery {
 	 */
 	public DataQuery withFilters(DataFilter... filters) {
 		this.filters.addAll(Arrays.asList(filters));
+		return this;
+	}
+
+	/**
+	 * Appends a join key for data query optimization as well as marshalling from the database.
+	 * These keys can use periods between property names in models to traverse more deeply
+	 * @param join the join string (i.e. 'interfaces.network')
+	 * @return the current DataQuery object for chaining
+	 */
+	public DataQuery withJoin(String join) {
+		this.joins.add(join);
+		return this;
+	}
+
+
+	/**
+	 * Appends join keys for data query optimization as well as marshalling from the database.
+	 * These keys can use periods between property names in models to traverse more deeply
+	 * @param joins a collection join strings (i.e. 'interfaces.network')
+	 * @return the current DataQuery object for chaining
+	 */
+	public DataQuery withJoins(Collection<String> joins) {
+		this.joins.addAll(joins);
+		return this;
+	}
+
+	/**
+	 * Appends join keys for data query optimization as well as marshalling from the database.
+	 * These keys can use periods between property names in models to traverse more deeply
+	 * @param joins a collection join strings (i.e. 'interfaces.network')
+	 * @return the current DataQuery object for chaining
+	 */
+	public DataQuery withJoins(String... joins) {
+		this.joins.addAll(Arrays.asList(joins));
 		return this;
 	}
 
