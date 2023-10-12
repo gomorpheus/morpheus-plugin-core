@@ -20,7 +20,7 @@ repositories {
 configurations {
     provided
 }
-
+ 
 dependencies {
 	api 'io.reactivex.rxjava3:rxjava:3.1.7'
 	api 'org.apache.httpcomponents:httpclient:4.5.14'
