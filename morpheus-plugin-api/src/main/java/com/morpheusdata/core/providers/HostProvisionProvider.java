@@ -1,5 +1,6 @@
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.PrepareHostResponse;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.provisioning.HostRequest;
 import com.morpheusdata.request.ResizeRequest;
@@ -23,7 +24,7 @@ public interface HostProvisionProvider extends ComputeProvisionProvider {
 	 * @param opts options
 	 * @return Response from API
 	 */
-	ServiceResponse validateDockerHost(ComputeServer server, Map opts);
+	ServiceResponse validateHost(ComputeServer server, Map opts);
 
 	/**
 	 * This method is called before runHost and provides an opportunity to perform action or obtain configuration
@@ -36,7 +37,7 @@ public interface HostProvisionProvider extends ComputeProvisionProvider {
 	 * @param opts additional configuration options that may have been passed during provisioning
 	 * @return Response from API
 	 */
-	ServiceResponse prepareHost(ComputeServer server, HostRequest hostRequest, Map opts);
+	ServiceResponse<PrepareHostResponse> prepareHost(ComputeServer server, HostRequest hostRequest, Map opts);
 
 	/**
 	 * This method is called to provision a Host (i.e. Docker host).
