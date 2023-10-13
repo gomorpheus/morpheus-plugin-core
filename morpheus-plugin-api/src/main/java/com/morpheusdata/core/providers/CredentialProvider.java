@@ -19,6 +19,31 @@ import java.util.Map;
 public interface CredentialProvider extends PluginProvider {
 
 	/**
+	 * Returns the Credential Integration logo for display when a user needs to view or add this integration
+	 * @since 0.12.3
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	Icon getIcon();
+
+	/**
+	 * Provide custom configuration options when creating a new {@link AccountIntegration}
+	 * @return a List of OptionType
+	 */
+	List<OptionType> getIntegrationOptionTypes();
+
+	/**
+	 * Validation Method used to validate all inputs applied to the integration of an Credential Provider upon save.
+	 * If an input fails validation or authentication information cannot be verified, Error messages should be returned
+	 * via a {@link ServiceResponse} object where the key on the error is the field name and the value is the error message.
+	 * If the error is a generic authentication error or unknown error, a standard message can also be sent back in the response.
+	 *
+	 * @param integration The Integration Object contains all the saved information regarding configuration of the Credential Provider.
+	 * @param opts any custom payload submission options may exist here
+	 * @return A response is returned depending on if the inputs are valid or not.
+	 */
+	ServiceResponse<Map> verify(AccountIntegration integration, Map opts);
+
+	/**
 	 * Periodically called to test the status of the credential provider.
 	 * @param integration the referenced integration object to be loaded
 	 */
@@ -60,30 +85,5 @@ public interface CredentialProvider extends PluginProvider {
 	 */
 	ServiceResponse<AccountCredential> updateCredential(AccountIntegration integration, AccountCredential credential, Map opts);
 
-	/**
-	 * Validation Method used to validate all inputs applied to the integration of an Credential Provider upon save.
-	 * If an input fails validation or authentication information cannot be verified, Error messages should be returned
-	 * via a {@link ServiceResponse} object where the key on the error is the field name and the value is the error message.
-	 * If the error is a generic authentication error or unknown error, a standard message can also be sent back in the response.
-	 *
-	 * @param integration The Integration Object contains all the saved information regarding configuration of the Credential Provider.
-	 * @param opts any custom payload submission options may exist here
-	 * @return A response is returned depending on if the inputs are valid or not.
-	 */
-	ServiceResponse<Map> verify(AccountIntegration integration, Map opts);
-
-
-	/**
-	 * Provide custom configuration options when creating a new {@link AccountIntegration}
-	 * @return a List of OptionType
-	 */
-	List<OptionType> getIntegrationOptionTypes();
-
-	/**
-	 * Returns the Credential Integration logo for display when a user needs to view or add this integration
-	 * @since 0.12.3
-	 * @return Icon representation of assets stored in the src/assets of the project.
-	 */
-	Icon getIcon();
 
 }

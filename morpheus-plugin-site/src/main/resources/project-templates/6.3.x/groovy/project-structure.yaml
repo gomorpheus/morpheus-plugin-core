@@ -41,3 +41,14 @@ providers:
     loadBalancer:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.groovy"
           template: loadBalancer/LoadBalancerProvider.groovy.hbs
+    storageBucket:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}StorageBucketProvider.groovy"
+          template: storage/StorageBucketProvider.groovy.hbs
+    credential:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CredentialProvider.groovy"
+          template: credential/CredentialProvider.groovy.hbs
+    cypher:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherProvider.groovy"
+          template: cypher/CypherProvider.groovy.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.groovy"
+          template: cypher/CypherModule.groovy.hbs

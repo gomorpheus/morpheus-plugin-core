@@ -39,6 +39,9 @@ configurations {
 
 dependencies {
 	provided "com.morpheusdata:morpheus-plugin-api:$morpheusApiVersion"
+	{{#if cypher}}
+	provided("com.morpheusdata:cypher-core:0.5.1")
+	{{/if}}
 	provided "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation 'commons-beanutils:commons-beanutils:1.9.3'
 	implementation "org.slf4j:slf4j-api:$slf4jVersion"

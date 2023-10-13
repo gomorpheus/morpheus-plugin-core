@@ -41,3 +41,14 @@ providers:
     loadBalancer:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.java"
           template: loadBalancer/LoadBalancerProvider.java.hbs
+    storageBucket:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}StorageBucketProvider.java"
+          template: storage/StorageBucketProvider.java.hbs
+    credential:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CredentialProvider.java"
+          template: credential/CredentialProvider.java.hbs
+    cypher:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherProvider.java"
+          template: cypher/CypherProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.java"
+          template: cypher/CypherModule.java.hbs
