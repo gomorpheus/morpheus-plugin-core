@@ -1,0 +1,86 @@
+package {{basePackage}};
+
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
+import com.morpheusdata.cypher.CypherModule;
+import com.morpheusdata.core.providers.CypherModuleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * {{pluginNameCamel}}CypherProvider is a cypher provider for Morpheus.
+ * It provides a new cypher module backend for generating secrets.
+ * 
+ * @see CypherModuleProvider
+ */
+class {{pluginNameCamel}}CypherProvider implements CypherModuleProvider {
+
+	public static Logger log = LoggerFactory.getLogger({{pluginNameCamel}}CypherProvider.class);
+
+	protected MorpheusContext morpheusContext;
+	protected Plugin plugin;
+
+	{{pluginNameCamel}}CypherProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		this.morpheusContext = morpheusContext;
+		this.plugin = plugin;
+	}
+
+    /**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 *
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	@Override
+	public MorpheusContext getMorpheus() {
+		return morpheusContext;
+	}
+
+	/**
+	 * Returns the instance of the Plugin class that this provider is loaded from
+	 * @return Plugin class contains references to other providers
+	 */
+	@Override
+	public Plugin getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
+	 * that is seeded or generated related to this provider will reference it by this code.
+	 * @return short code string that should be unique across all other plugin implementations.
+	 */
+	@Override
+	public String getCode() {
+		return "{{pluginCode}}-cypher";
+	}
+
+	/**
+	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+	public String getName() {
+		return "{{pluginName}} Cypher Module";
+	}
+
+    /**
+	 * An implementation of a CypherModule for reading and writing data patterns
+	 * @return a cypher module
+	 */
+	@Override
+	public CypherModule getCypherModule() {
+		return new {{pluginNameCamel}}CypherModule();
+	}
+
+	/**
+	* The mount prefix point for which this module should be registered to cypher's backend.
+	* @return a String path prefix
+	*/
+	@Override
+	public String getCypherMountPoint() {
+		return "{{pluginCode}}";
+	}
+
+}

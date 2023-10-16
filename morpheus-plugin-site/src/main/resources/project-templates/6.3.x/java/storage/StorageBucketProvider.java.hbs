@@ -1,0 +1,267 @@
+package {{basePackage}};
+
+import com.morpheusdata.model.StorageServer;
+import com.morpheusdata.model.StorageServerType;
+import com.morpheusdata.model.StorageBucket;
+import com.morpheusdata.model.StorageVolumeType;
+import com.morpheusdata.model.OptionType;
+import com.morpheusdata.model.Icon;
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
+import com.morpheusdata.core.providers.StorageProvider;
+import com.morpheusdata.core.providers.StorageProviderBuckets;
+import com.morpheusdata.response.ServiceResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Date;
+
+/**
+ * {{pluginNameCamel}}StorageBucketProvider is a storage bucket provider for Morpheus.
+ * It adds a new {@link {StorageServerType}} named '{{pluginName}}' which can be created
+ * to allow its storage buckets to be synced and used as a storage source or destination.
+ * This also provides the ability to create and delete buckets and their objects.
+ * 
+ * @see StorageProvider
+ * @see StorageProviderBuckets
+ */
+class {{pluginNameCamel}}StorageBucketProvider implements StorageProvider, StorageProviderBuckets {
+	
+	static Logger log = LoggerFactory.getLogger({{pluginNameCamel}}StorageBucketProvider.class);
+
+	protected MorpheusContext morpheusContext;
+	protected Plugin plugin;
+
+	{{pluginNameCamel}}StorageBucketProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		this.morpheusContext = morpheusContext;
+		this.plugin = plugin;
+	}
+
+    /**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 *
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	@Override
+	public MorpheusContext getMorpheus() {
+		return morpheusContext;
+	}
+
+	/**
+	 * Returns the instance of the Plugin class that this provider is loaded from
+	 * @return Plugin class contains references to other providers
+	 */
+	@Override
+	public Plugin getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
+	 * that is seeded or generated related to this provider will reference it by this code.
+	 * @return short code string that should be unique across all other plugin implementations.
+	 */
+	@Override
+	public String getCode() {
+		return "{{pluginCode}}-storage-buckets";
+	}
+
+	/**
+	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+	public String getName() {
+		return "{{pluginName}}";
+	}
+
+	/**
+	 * Provides the provider description
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+    public String getDescription() {
+        return "{{pluginName}} Storage Bucket Provider";
+    }
+
+    /**
+	 * Returns the Storage Bucket Integration logo for display when a user needs to view or add this integration
+	 * @since 0.12.3
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	@Override
+	public Icon getIcon() {
+		Icon icon = new Icon();
+		icon.setPath("morpheus.svg");
+		icon.setDarkPath("morpheus.svg");
+		return icon;
+	}
+
+	/**
+	 * Validation Method used to validate all inputs applied to the storage server integration upon save.
+	 * If an input fails validation or authentication information cannot be verified, Error messages should be returned
+	 * via a {@link ServiceResponse} object where the key on the error is the field name and the value is the error message.
+	 * If the error is a generic authentication error or unknown error, a standard message can also be sent back in the response.
+	 *
+	 * @param storageServer The Storage Server object contains all the saved information regarding configuration of the Storage Provider
+	 * @param opts an optional map of parameters that could be sent. This may not currently be used and can be assumed blank
+	 * @return A response is returned depending on if the inputs are valid or not.
+	 */
+	@Override
+	public ServiceResponse verifyStorageServer(StorageServer storageServer, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Called on the first save / update of a storage server integration. Used to do any initialization of a new integration
+	 * Often times this calls the periodic refresh method directly.
+	 * @param storageServer The Storage Server object contains all the saved information regarding configuration of the Storage Provider.
+	 * @param opts an optional map of parameters that could be sent. This may not currently be used and can be assumed blank
+	 * @return a ServiceResponse containing the success state of the initialization phase
+	 */
+	@Override
+	public ServiceResponse initializeStorageServer(StorageServer storageServer, Map opts) {
+		return refreshStorageServer(storageServer, opts);
+	}
+
+	/**
+	 * Refresh the provider with the associated data in the external system.
+	 * This is where the buckets are synced.
+	 * @param storageServer The Storage Server object contains all the saved information regarding configuration of the Storage Provider.
+	 * @param opts an optional map of parameters that could be sent. This may not currently be used and can be assumed blank
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
+	 * refresh process has failed and will change the storage server status to 'error'
+	 */
+	@Override
+	public ServiceResponse refreshStorageServer(StorageServer storageServer, Map opts) {
+		ServiceResponse rtn = ServiceResponse.prepare();
+		Date syncDate = new Date();
+		Boolean hostOnline = true;
+		if(hostOnline) {
+		    // cacheBuckets(storageServer, opts);
+		    rtn.setSuccess(true);
+		} else {
+		    rtn.setMsg("Storage server appears to be offline");
+		}
+		return rtn;
+	}
+
+	/**
+     * Provides a {@link StorageServerType} record that needs to be configured in the morpheus environment.
+     * This record dicates configuration settings and other facets and behaviors for the storage type.
+     * @return a {@link StorageServerType}
+     */
+    @Override
+    public StorageServerType getStorageServerType() {
+        StorageServerType storageServerType = new StorageServerType();
+        storageServerType.setCode(getCode());
+        storageServerType.setName(getName());
+        storageServerType.setDescription(getDescription());
+        storageServerType.setHasObject(true);
+        storageServerType.setHasDisks(true);
+        storageServerType.setCreateObject(true);
+        storageServerType.setHasFileBrowser(true);
+        storageServerType.setOptionTypes(getStorageServerOptionTypes());
+        storageServerType.setVolumeTypes(getVolumeTypes());
+        storageServerType.setBucketOptionTypes(getStorageBucketOptionTypes());
+        return storageServerType;
+    }
+    
+    /**
+     * Provide custom configuration options when creating a new {@link StorageServer}
+     * @return a List of OptionType
+     */
+    public Collection<OptionType> getStorageServerOptionTypes() {
+    	Collection<OptionType> optionTypes = new ArrayList<OptionType>();
+    	// todo: add OptionType records
+        return optionTypes;
+    }
+
+    /**
+     * Provides a collection of {@link VolumeType} records that needs to be configured in the morpheus environment
+     * @return Collection of StorageVolumeType
+     */
+    public Collection<StorageVolumeType> getVolumeTypes() {
+    	Collection<StorageVolumeType> volumeTypes = new ArrayList<StorageVolumeType>();
+        // todo: add VolumeTypes  records
+        return volumeTypes;
+    }
+
+    /**
+     * Provide custom configuration options when creating a new {@link StorageBucket}
+     * @return a List of OptionType
+     */
+    public Collection<OptionType> getStorageBucketOptionTypes() {
+    	Collection<OptionType> optionTypes = new ArrayList<OptionType>();
+    	// todo: add OptionType records
+        return optionTypes;
+    }
+
+    /**
+	 * Validates the submitted bucket information.
+	 * This is invoked before both {@link #createBucket} and {@link #updateBucket}.
+	 * @param storageBucket Storage Bucket information
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} object. The errors field of the ServiceResponse is used to send validation
+	 * results back to the interface in the format of {@code errors['fieldName'] = 'validation message' }. The msg
+	 * property can be used to send generic validation text that is not related to a specific field on the model.
+	 * A ServiceResponse with any items in the errors list or a success value of 'false' will halt the backup creation
+	 * process.
+	 */
+	public ServiceResponse validateBucket(StorageBucket storageBucket, Map opts) {
+		return ServiceResponse.success();
+	}
+	
+	/**
+	 * Create the {@link StorageBucket} resources on the external provider system.
+	 * @param storageBucket the fully configured and validated bucket to be created
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
+	 * creation on the external system failed and prevent the bucket creation in morpheus.
+	 */
+	public ServiceResponse createBucket(StorageBucket storageBucket, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Called during update of an existing {@link StorageBucket}. This allows for any custom operations that need
+	 * to be performed outside of the standard operations.
+	 * @param storageBucket the storage bucket to be updated
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
+	 * update on the external system failed and will halt the bucket update process and leave the bucket unmodified.
+	 */
+	public ServiceResponse updateBucket(StorageBucket storageBucket, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Delete the {@link StorageBucket} resources on the external provider system.
+	 * @param storageBucket the storage bucket details
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} indicating the results of the deletion on the external provider system.
+	 * A ServiceResponse object with a success value of 'false' will halt the deletion process and the local reference
+	 * will be retained.
+	 */
+	public ServiceResponse deleteBucket(StorageBucket storageBucket, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Provides a list of supported storage provider types.
+	 * The available codes are: ['alibaba','azure','cifs','google',local','nfs','openstack','s3']
+	 * @return Collection of provide type codes
+	 */
+	public Collection<String> getStorageBucketProviderTypes() {
+		Collection<String> types = new ArrayList();
+		types.add("s3");
+        return types;
+    }
+
+}

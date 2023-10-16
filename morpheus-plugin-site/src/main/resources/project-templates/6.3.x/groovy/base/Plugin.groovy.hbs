@@ -46,6 +46,15 @@ class {{pluginNameCamel}}Plugin extends Plugin {
 		{{#if loadBalancer}}
 		this.registerProvider(new {{pluginNameCamel}}LoadBalancerProvider(this,this.morpheus))
 		{{/if}}
+        {{#if storageBucket}}
+        this.registerProvider(new {{pluginNameCamel}}StorageBucketProvider(this,this.morpheus))
+        {{/if}}
+        {{#if cypher}}
+        this.registerProvider(new {{pluginNameCamel}}CypherProvider(this,this.morpheus))
+        {{/if}}
+        {{#if credential}}
+        this.registerProvider(new {{pluginNameCamel}}CredentialProvider(this,this.morpheus))
+        {{/if}}
 }
 
 /**
