@@ -1,13 +1,20 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BackupResult extends MorpheusModel {
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
+
 	protected Backup backup;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected String backupName;
 	protected String backupSetId; //to tie together backups that go together
 	protected String backupFormat; //data,file,snapshot
