@@ -67,6 +67,17 @@ public interface TaskProvider extends com.morpheusdata.core.providers.TaskProvid
 		return null;
 	}
 
+
+	/**
+	 * Task execution on a provisioned {@link Workload}
+	 *
+	 * @param workload {@link Workload} details
+	 * @param task Morpheus task to be executed
+	 * @param opts contains the values of any {@link OptionType} that were defined for this task
+	 * @return the result of the task
+	 */
+	default TaskResult executeContainerTask(Workload workload, Task task, Map opts) { return null; }
+
 	/**
 	 * Task execution on a provisioned {@link Workload}
 	 *
