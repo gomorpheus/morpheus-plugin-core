@@ -13,13 +13,16 @@ public class BackupResult extends MorpheusModel {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 
-	protected Backup backup;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Backup backup;
+
 	protected String backupName;
 	protected String backupSetId; //to tie together backups that go together
 	protected String backupFormat; //data,file,snapshot
 	protected String backupType;
 	protected String containerFormat; //container,vm,all
+
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected User createdBy;
 	// protected StorageBucket storageProvider;
 	//executor
