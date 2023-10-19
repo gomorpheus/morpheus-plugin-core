@@ -38,6 +38,11 @@ providers:
           template: serverTab/ServerTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/serverTab.hbs"
           template: serverTab/serverTab.hbs.hbs
+    clusterTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ClusterTabProvider.groovy.hbs"
+          template: clusterTab/ClusterTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/clusterTab.hbs"
+          template: clusterTab/clusterTab.hbs.hbs
     loadBalancer:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.groovy"
           template: loadBalancer/LoadBalancerProvider.groovy.hbs

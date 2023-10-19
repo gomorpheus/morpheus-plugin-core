@@ -38,6 +38,11 @@ providers:
           template: serverTab/ServerTabProvider.java.hbs
         - name: "src/main/resources/renderer/hbs/serverTab.hbs"
           template: serverTab/serverTab.hbs.hbs
+    clusterTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ClusterTabProvider.java"
+          template: clusterTab/ClusterTabProvider.java.hbs
+        - name: "src/main/resources/renderer/hbs/clusterTab.hbs"
+          template: clusterTab/clusterTab.hbs.hbs
     loadBalancer:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.java"
           template: loadBalancer/LoadBalancerProvider.java.hbs
