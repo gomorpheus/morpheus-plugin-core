@@ -48,6 +48,11 @@ providers:
           template: networkTab/NetworkTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/networkTab.hbs"
           template: networkTab/networkTab.hbs.hbs
+    appTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}AppTabProvider.groovy.hbs"
+          template: appTab/AppTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/appTab.hbs"
+          template: appTab/appTab.hbs.hbs
     loadBalancer:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.groovy"
           template: loadBalancer/LoadBalancerProvider.groovy.hbs
