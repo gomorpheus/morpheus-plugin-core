@@ -1,45 +1,46 @@
 package {{basePackage}}
 
-import com.morpheusdata.core.AbstractClusterTabProvider
+import com.morpheusdata.core.AbstractNetworkTabProvider
 import com.morpheusdata.core.MorpheusContext
 import com.morpheusdata.core.Plugin
 import com.morpheusdata.model.Account
-import com.morpheusdata.model.ComputeServerGroup
+import com.morpheusdata.model.Network
 import com.morpheusdata.model.User
 import com.morpheusdata.views.HTMLResponse
 import com.morpheusdata.views.ViewModel
 
-class {{pluginNameCamel}}ClusterTabProvider extends AbstractClusterTabProvider {
+class {{pluginNameCamel}}NetworkTabProvider extends AbstractNetworkTabProvider {
 	protected MorpheusContext morpheusContext
 	protected Plugin plugin
 
-    {{pluginNameCamel}}ClusterTabProvider(Plugin plugin, MorpheusContext morpheusContext) {
-        this.@morpheusContext = morpheusContext
-        this.@plugin = plugin
-    }
+	public {{pluginNameCamel}}NetworkTabProvider(Plugin plugin, MorpheusContext morpheus) {
+		super()
+		this.@plugin = plugin
+		this.@morpheusContext = morpheus
+	}
 
 	/**
-	 * Cluster details provided to your rendering engine
-	 * @param cluster details
+	 * Network details provided to your rendering engine
+	 * @param network details
 	 * @return result of rendering a template
 	 */
 	@Override
-	HTMLResponse renderTemplate(ComputeServerGroup cluster) {
-		ViewModel<ComputeServerGroup> model = new ViewModel()
-		model.object = cluster
-		return getRenderer().renderTemplate("hbs/clusterTab", model)
+	HTMLResponse renderTemplate(Network network) {
+		ViewModel<Network> model = new ViewModel()
+		model.object = network
+		return getRenderer().renderTemplate("hbs/networkTab", model)
 	}
 
 	/**
 	 * Provide logic when tab should be displayed. This logic is checked after permissions are validated.
 	 *
-	 * @param cluster Cluster details
+	 * @param network Network details
 	 * @param user current User details
 	 * @param account Account details
 	 * @return whether the tab should be displayed
 	 */
 	@Override
-	Boolean show(ComputeServerGroup cluster, User user, Account account) {
+	Boolean show(Network network, User user, Account account) {
 		return true
 	}
 
