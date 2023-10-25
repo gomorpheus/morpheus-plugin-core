@@ -579,7 +579,6 @@ public interface MorpheusContext {
 
 	Single<TaskConfig> buildInstanceConfig(Instance instance, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildContainerConfig(Container container, Map baseConfig, Task task, Collection excludes, Map opts);
-	Single<TaskConfig> buildWorkloadConfig(Workload workload, Map baseConfig, Task task, Collection excludes, Map opts);
 	Single<TaskConfig> buildComputeServerConfig(ComputeServer container, Map baseConfig, Task task, Collection excludes, Map opts);
 
 	/**
