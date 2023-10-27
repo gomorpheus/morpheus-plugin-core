@@ -1,7 +1,22 @@
 === Release Notes
 
-**Note:** The `morpheus-plugin-api` is still pre 1.0 and therefore core interfaces could change between releases. The minimum morpheus version needed to leverage some plugins starts with the 5.4.x series, however anything using plugin core 0.12.0 and above needs to use Morpheus 5.4.1 minimum. 6.0.x Morpheus versions use 0.14.x plugin-api and 6.2.x Morpheus versions use 0.15.x plugin-api. Efforts are being made to preserve some backwards compatibility as we get closer to 1.0 versions.
+**Note:** Morphues Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
+
+* **1.0.2**
+** 1.0 Release with proper deprecation support!
+** Moved all rxjava calls to rxjava3 from rxjava2 (NOTE: This requires all plugins to be updated for 6.3.0 of morpheus)
+** Includes all improvements from 0.15.6
+* **0.15.6**
+** All Context Services now implement `MorpheusDataService`
+** Created SynchronousDataService equivalents for all asynchronous ones
+** Started HostProvider work for custom cluster types
+** New Task Provider format for simplification of making task plugins
+** Additional `Facets` for injecting functionality into various `ProvisionProviders`
+** ProvisionProvider classes split up based on type of provisioner. `WorkloadProvisionProvider`, `AppProvisionProvider`, `HostProvisionProvider, and `CloudNativeProvisionProvider`.
+* **0.15.5**
+* **0.15.4**
+** Not released due to last minute issues
 * **0.15.3**
 ** Converting More Context Services to `MorpheusDataService` versions and deprecating old methods.
 ** Deprecated direct service accessors on `MorpheusContext` in favor of `morpheusContext.getAsync()` for all the existing reactive services and `morpheusContext.getServices()` for all the synchronous counterparts.
