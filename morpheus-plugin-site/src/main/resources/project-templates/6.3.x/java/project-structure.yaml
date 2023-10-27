@@ -17,6 +17,11 @@ base:
     - name: "src/assets/images/morpheus.svg"
       template: base/assets/images/morpheus.svg  
 providers:
+    cloud:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CloudProvider.java"
+          template: cloud/CloudProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ProvisionProvider.java"
+          template: cloud/ProvisionProvider.java.hbs
     ipam:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.java"
           template: ipam/IPAMProvider.java.hbs

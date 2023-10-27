@@ -28,6 +28,10 @@ public class {{pluginNameCamel}}Plugin extends Plugin {
     @Override
     public void initialize() {
         this.setName("{{pluginName}}");
+		{{#if cloud}}
+		this.registerProvider(new {{pluginNameCamel}}CloudProvider(this,this.morpheus));
+		this.registerProvider(new {{pluginNameCamel}}ProvisionProvider(this,this.morpheus));
+		{{/if}}
         {{#if dns}}
 		this.registerProvider(new {{pluginNameCamel}}DNSProvider(this,this.morpheus));
         {{/if}}
@@ -40,7 +44,16 @@ public class {{pluginNameCamel}}Plugin extends Plugin {
         {{#if serverTab}}
         this.registerProvider(new {{pluginNameCamel}}ServerTabProvider(this,this.morpheus));
         {{/if}}
-        {{#if report}}
+		{{#if clusterTab}}
+		this.registerProvider(new {{pluginNameCamel}}ClusterTabProvider(this,this.morpheus));
+		{{/if}}
+		{{#if appTab}}
+		this.registerProvider(new {{pluginNameCamel}}AppTabProvider(this,this.morpheus));
+		{{/if}}
+		{{#if networkTab}}
+		this.registerProvider(new {{pluginNameCamel}}NetworkTabProvider(this,this.morpheus));
+		{{/if}}
+		{{#if report}}
         this.registerProvider(new {{pluginNameCamel}}ReportProvider(this,this.morpheus));
         {{/if}}
 		{{#if loadBalancer}}

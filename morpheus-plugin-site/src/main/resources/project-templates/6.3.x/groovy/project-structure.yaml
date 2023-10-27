@@ -17,6 +17,11 @@ base:
     - name: "src/assets/images/morpheus.svg"
       template: base/assets/images/morpheus.svg  
 providers:
+    cloud:
+      - name: "{{basePackagePath}}/{{pluginNameCamel}}CloudProvider.groovy"
+        template: cloud/CloudProvider.groovy.hbs
+      - name: "{{basePackagePath}}/{{pluginNameCamel}}ProvisionProvider.groovy"
+        template: cloud/ProvisionProvider.groovy.hbs
     ipam:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.groovy"
           template: ipam/IPAMProvider.groovy.hbs
@@ -39,17 +44,17 @@ providers:
         - name: "src/main/resources/renderer/hbs/serverTab.hbs"
           template: serverTab/serverTab.hbs.hbs
     clusterTab:
-        - name: "{{basePackagePath}}/{{pluginNameCamel}}ClusterTabProvider.groovy.hbs"
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ClusterTabProvider.groovy"
           template: clusterTab/ClusterTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/clusterTab.hbs"
           template: clusterTab/clusterTab.hbs.hbs
     networkTab:
-        - name: "{{basePackagePath}}/{{pluginNameCamel}}NetworkTabProvider.groovy.hbs"
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}NetworkTabProvider.groovy"
           template: networkTab/NetworkTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/networkTab.hbs"
           template: networkTab/networkTab.hbs.hbs
     appTab:
-        - name: "{{basePackagePath}}/{{pluginNameCamel}}AppTabProvider.groovy.hbs"
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}AppTabProvider.groovy"
           template: appTab/AppTabProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/appTab.hbs"
           template: appTab/appTab.hbs.hbs
