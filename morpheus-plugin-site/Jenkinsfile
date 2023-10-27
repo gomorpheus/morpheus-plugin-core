@@ -1,0 +1,45 @@
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+  agent {
+    label "slave-15"
+  }
+
+  stages {
+    stage ('morpheus-plugin-site - Checkout') {
+      steps {
+        checkout([$class: 'GitSCM', 
+                  branches: [[name: '*/v1.0.x']], 
+                  doGenerateSubmoduleConfigurations: false, 
+                  extensions: [], 
+                  submoduleCfg: [], 
+                  userRemoteConfigs: [[credentialsId: 'morpheus-plugin-core-deploy-key', 
+                  url: 'git@github.com:gomorpheus/morpheus-plugin-core.git']]])
+      }
+    }
+    stage ('morpheus-plugin-site - Build') {
+      tools {
+        jdk "OpenJDK 17"
+      }
+      steps {
+sh """ 
+./gradlew clean 
+"""
+sh """ 
+./gradlew -PprojVersion=${env.BUILD_NUMBER} shadowJar 
+"""
+      }
+    }
+    stage ('Build and Push Docker image') {
+      steps {
+        script {
+          docker.withRegistry('https://registry.prod.den.bertramlabs.com/v2/','06fec06b-b08a-4509-a6c8-96661d3354c3') {
+            def image = docker.build("registry.prod.den.bertramlabs.com/library/morpheus-plgin-site:${findFiles(glob:'build/libs/*.jar').first().name.find(/\d+\.\d+\.\d+/)}")
+            image.push()
+            image.push('latest')
+          }
+        }
+      }
+    }
+  }
+}
