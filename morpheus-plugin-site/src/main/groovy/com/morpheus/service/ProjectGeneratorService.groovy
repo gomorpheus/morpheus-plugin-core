@@ -15,35 +15,40 @@ public class ProjectGeneratorService {
 
 	def generateProject(ZipOutputStream zipOutputStream, String language, String version, String pluginName, String pluginCode, String basePackage, List<String> providers) {
 		URL resource = classLoader.getResource("project-templates/${version}/${language}/project-structure.yaml".toString())
-		def is = resource.newInputStream()
-		try {
-			def yaml = new Yaml()
-			Map<String, Object> projectStructure = yaml.load(is)
+		if(reosurce) {
+			def is = resource.newInputStream()
+			try {
+				def yaml = new Yaml()
+				Map<String, Object> projectStructure = yaml.load(is)
 
-			Map<String,Object> bindings = [
-				basePackage: basePackage,
-				basePackagePath: "src/main/${language}/${basePackage.replace(".","/")}".toString(),
-				pluginName: pluginName,
-				pluginCode: pluginCode,
-				pluginNameCamel: camelCase(pluginName,false),
-				pluginNameInstance:camelCase(pluginName,true),
-				providers: providers
-			]
-			providers.each { provider ->
-				bindings[provider] = true
-			}
-
-			projectStructure.base?.each { Map<String,Object> baseFileInfo ->
-				writeTemplateToZip(baseFileInfo, language,version,zipOutputStream,bindings)
-			}
-			providers.each { provider ->
-				projectStructure.providers[provider]?.each { Map<String,Object> fileInfo ->
-					writeTemplateToZip(fileInfo, language,version,zipOutputStream,bindings)
+				Map<String,Object> bindings = [
+					basePackage: basePackage,
+					basePackagePath: "src/main/${language}/${basePackage.replace(".","/")}".toString(),
+					pluginName: pluginName,
+					pluginCode: pluginCode,
+					pluginNameCamel: camelCase(pluginName,false),
+					pluginNameInstance:camelCase(pluginName,true),
+					providers: providers
+				]
+				providers.each { provider ->
+					bindings[provider] = true
 				}
+
+				projectStructure.base?.each { Map<String,Object> baseFileInfo ->
+					writeTemplateToZip(baseFileInfo, language,version,zipOutputStream,bindings)
+				}
+				providers.each { provider ->
+					projectStructure.providers[provider]?.each { Map<String,Object> fileInfo ->
+						writeTemplateToZip(fileInfo, language,version,zipOutputStream,bindings)
+					}
+				}
+			} finally {
+				is.close()
 			}
-		} finally {
-			is.close()
+		} else {
+			zipOutputStream.flush()
 		}
+		
 
 
 
