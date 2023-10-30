@@ -46,6 +46,7 @@ public class ProjectGeneratorService {
 				is.close()
 			}
 		} else {
+			log.warn("Invalid Options Chosen for project generator: ${language} - ${version}")
 			zipOutputStream.flush()
 		}
 		
