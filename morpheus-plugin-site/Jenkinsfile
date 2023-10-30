@@ -35,7 +35,7 @@ sh """
         script {
           docker.withRegistry('https://registry.prod.den.bertramlabs.com/v2/','06fec06b-b08a-4509-a6c8-96661d3354c3') {
             def image = docker.build("registry.prod.den.bertramlabs.com/library/morpheus-plugin-site:${findFiles(glob:'build/libs/*.jar').first().name.find(/\d+\.\d+\.\d+/)}",
-                                     "morpheus-plugin-site/Dockerfile")
+                                     "./morpheus-plugin-site")
             image.push()
             image.push('latest')
           }
