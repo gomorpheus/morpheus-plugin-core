@@ -1,10 +1,13 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.core.backup.AbstractBackupProvider;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.Date;
 
 public class BackupRepository extends MorpheusModel {
-
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected AbstractBackupProvider backupProvider;
 	// TODO: storage buckets? Need a storage provider plugin to do this?

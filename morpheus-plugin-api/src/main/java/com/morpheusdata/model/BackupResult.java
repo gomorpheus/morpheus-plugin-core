@@ -9,13 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BackupResult extends MorpheusModel {
-
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Backup backup;
-
 	protected String backupName;
 	protected String backupSetId; //to tie together backups that go together
 	protected String backupFormat; //data,file,snapshot

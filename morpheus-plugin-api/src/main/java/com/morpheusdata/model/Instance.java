@@ -51,6 +51,7 @@ public class Instance extends InstanceIdentityProjection {
 	public Long configId;
 	public String configGroup;
 	public String configRole;
+	public String externalId;
 	//	public String ports;
 	public String serviceUsername;
 	public String servicePassword;
@@ -166,6 +167,13 @@ public class Instance extends InstanceIdentityProjection {
 		this.instanceVersion = instanceVersion;
 	}
 
+	public ServicePlan getPlan() {
+		return plan;
+	}
+
+	public void setPlan(ServicePlan plan) {
+		this.plan = plan;
+	}
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -411,6 +419,24 @@ public class Instance extends InstanceIdentityProjection {
 	public void setIacId(String iacId) {
 		this.iacId = iacId;
 		markDirty("iacId", iacId);
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+		markDirty("externalId", externalId);
+	}
+
+	public ComputeSite getSite() {
+		return site;
+	}
+
+	public void setSite(ComputeSite site) {
+		this.site = site;
+		markDirty("site", site);
 	}
 
 	public enum Status {

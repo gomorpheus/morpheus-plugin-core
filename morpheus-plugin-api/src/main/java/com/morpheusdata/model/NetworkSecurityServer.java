@@ -11,6 +11,7 @@ public class NetworkSecurityServer extends MorpheusModel {
 	public NetworkServer networkServer; //if its a network and security server link;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public AccountIntegration integration;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Account account;
 	public String visibility = "public"; //['public', 'private'];
 	public String description;
