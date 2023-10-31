@@ -329,4 +329,18 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 		this.sourceSnapshotId = sourceSnapshotId;
 		markDirty("sourceSnapshotId", sourceSnapshotId, this.sourceSnapshotId);
 	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+		markDirty("account", account);
+	}
+
+	public Long getCloudId() {
+		return cloudId;
+	}
+
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
+		markDirty("cloudId", cloudId);
+	}
 }

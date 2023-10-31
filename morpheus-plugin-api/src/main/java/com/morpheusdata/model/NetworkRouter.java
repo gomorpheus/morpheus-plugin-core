@@ -729,4 +729,9 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 	public List<NetworkRoute> getRoutes() {
 		return routes;
 	}
+
+	public void setRoutes(List<NetworkRoute> routes) {
+		this.routes = routes;
+		markDirty("routes", routes);
+	}
 }

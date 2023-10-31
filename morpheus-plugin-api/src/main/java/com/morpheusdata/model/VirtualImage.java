@@ -447,4 +447,22 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
 	}
+
+	public Account getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Account owner) {
+		this.owner = owner;
+		markDirty("owner", owner);
+	}
+
+	public Boolean getCloudInit() {
+		return isCloudInit;
+	}
+
+	public void setCloudInit(Boolean cloudInit) {
+		isCloudInit = cloudInit;
+		markDirty("isCloudInit", isCloudInit);
+	}
 }

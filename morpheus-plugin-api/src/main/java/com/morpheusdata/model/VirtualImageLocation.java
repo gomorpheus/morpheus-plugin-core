@@ -129,4 +129,9 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	}
 
 	public void setExternalDiskId(String externalDiskId) { this.externalDiskId = externalDiskId; }
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
+	}
 }
