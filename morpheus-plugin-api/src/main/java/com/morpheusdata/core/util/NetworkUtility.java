@@ -631,4 +631,23 @@ public class NetworkUtility {
 		}
 		return rtn;
 	}
+
+	/**
+	 * Returns true if the ipv4 address ipToCheck is within the ipv4 range defined via the rangeIpStart and rangeIpEnd parameters
+	 * @param rangeIpStart ipv4 address for the start of the range
+	 * @param rangeIpEnd ipv4 address for the end of the range
+	 * @param ipToCheck ipv4 address to check
+	 * @return true if the address is within the range
+	 */
+	public static boolean isIpv4InRange(String rangeIpStart, String rangeIpEnd, String ipToCheck) {
+		try {
+			long startIp = ipToLong(rangeIpStart);
+			long endIp = ipToLong(rangeIpEnd);
+			long ipToTest = ipToLong(ipToCheck);
+			return (ipToTest >= startIp && ipToTest <= endIp);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 }

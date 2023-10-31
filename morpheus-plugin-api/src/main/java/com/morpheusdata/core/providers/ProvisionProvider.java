@@ -90,6 +90,19 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * Provides a Collection of TemplateParameter to describe the options for the ResourceSpecTemplate for
+	 * this ProvisionProvider
+	 * @param template The ResourceSpecTemplate
+	 * @param fileContent The file content of the template
+	 * @param opts Additional options
+	 * @return Collection of TemplateParameter objects to describe the options for the ResourceSpecTemplate
+	 * @since 0.15.4
+	 */
+	default Collection<TemplateParameter> getTemplateParameters(ResourceSpecTemplate template, String fileContent, Map opts) {
+		return new ArrayList<TemplateParameter>();
+	}
+
+	/**
 	 * Determines if this provision type has datastores that can be selected or not.
 	 * @return Boolean representation of whether or not this provision type has datastores
 	 */
