@@ -1,5 +1,6 @@
 package com.morpheusdata.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -39,7 +40,7 @@ public class ComputeServerType  extends MorpheusModel {
 
 	protected ClusterType clusterType = ClusterType.none;
 
-	protected Collection<OptionType> optionTypes;
+	protected Collection<OptionType> optionTypes = new ArrayList<>();
 
 	protected PlatformType platform;
 

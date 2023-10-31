@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.StorageServerIdentityProjection;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
 public class StorageServer extends StorageServerIdentityProjection {
@@ -13,6 +14,7 @@ public class StorageServer extends StorageServerIdentityProjection {
 	protected String name;
 	protected StorageServerType type;
 	//protected ComputeChassis chassis;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String visibility;
 	protected String description;

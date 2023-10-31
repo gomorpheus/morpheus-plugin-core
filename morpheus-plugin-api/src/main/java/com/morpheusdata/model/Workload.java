@@ -769,6 +769,21 @@ public class Workload extends WorkloadIdentityProjection {
 		markDirty("subnet", subnet);
 	}
 
+	public String getName() {
+		String rtn = getInternalName();
+
+		if(rtn == null) {
+			if(getInstance() != null) {
+				rtn = getInstance().getName() + "_" + getId();
+			} else if(getWorkloadType() != null) {
+				rtn = getWorkloadType().getShortName() + "_" + getId();
+			} else {
+				rtn = "container" + getId();
+			}
+		}
+		return rtn;
+	}
+
 	public enum Status {
 		deploying,
 		running,
