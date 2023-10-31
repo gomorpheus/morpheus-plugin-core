@@ -784,6 +784,15 @@ public class Workload extends WorkloadIdentityProjection {
 		return rtn;
 	}
 
+	public CloudPool getComputeZonePool() {
+		return computeZonePool;
+	}
+
+	public void setComputeZonePool(CloudPool computeZonePool) {
+		this.computeZonePool = computeZonePool;
+		markDirty("computeZonePool", computeZonePool);
+	}
+
 	public enum Status {
 		deploying,
 		running,

@@ -439,6 +439,71 @@ public class Instance extends InstanceIdentityProjection {
 		markDirty("site", site);
 	}
 
+	public Long getProvisionZoneId() {
+		return provisionZoneId;
+	}
+
+	public void setProvisionZoneId(Long provisionZoneId) {
+		this.provisionZoneId = provisionZoneId;
+		markDirty("provisionZoneId", provisionZoneId);
+	}
+
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+		markDirty("hostName", hostName);
+	}
+
+	public CloudPool getResourcePool() {
+		return resourcePool;
+	}
+
+	public void setResourcePool(CloudPool resourcePool) {
+		this.resourcePool = resourcePool;
+		markDirty("resourcePool", resourcePool);
+	}
+
+	public InstanceTypeLayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(InstanceTypeLayout layout) {
+		this.layout = layout;
+		markDirty("layout", layout);
+	}
+
+	public NetworkDomain getNetworkDomain() {
+		return networkDomain;
+	}
+
+	public void setNetworkDomain(NetworkDomain networkDomain) {
+		this.networkDomain = networkDomain;
+		markDirty("networkDomain", networkDomain);
+	}
+
+	public UserGroup getUserGroup() {
+		return userGroup;
+	}
+
+	public void setUserGroup(UserGroup userGroup) {
+		this.userGroup = userGroup;
+		markDirty("userGroup", userGroup);
+	}
+
+	public List<UserGroup> getUserGroups() {
+		return userGroups;
+	}
+
+	public void setUserGroups(List<UserGroup> userGroups) {
+		this.userGroups = userGroups;
+		markDirty("userGroups", userGroups);
+	}
+
+
+
 	public enum Status {
 		pending,
 		denied,

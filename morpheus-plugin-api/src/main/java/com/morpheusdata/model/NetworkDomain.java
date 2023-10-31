@@ -328,4 +328,33 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
+
+	public String getDcServer() {
+		return dcServer;
+	}
+
+	public void setDcServer(String dcServer) {
+		this.dcServer = dcServer;
+		markDirty("dcServer", dcServer);
+	}
+
+	public String getFqdn() {
+		return fqdn;
+	}
+
+	public void setFqdn(String fqdn) {
+		this.fqdn = fqdn;
+		markDirty("fqdn", fqdn);
+	}
 }

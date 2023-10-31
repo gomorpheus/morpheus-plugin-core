@@ -220,4 +220,13 @@ public class NetworkType extends MorpheusModel {
 		this.ipv6Editable = ipv6Editable;
 		markDirty("ipv6Editable", ipv6Editable, this.ipv6Editable);
 	}
+
+	public List<NetworkSubnetType> getSubnetTypes() {
+		return subnetTypes;
+	}
+
+	public void setSubnetTypes(List<NetworkSubnetType> subnetTypes) {
+		this.subnetTypes = subnetTypes;
+		markDirty("subnetTypes", subnetTypes);
+	}
 }
