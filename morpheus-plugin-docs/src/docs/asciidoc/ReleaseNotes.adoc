@@ -1,6 +1,6 @@
 === Release Notes
 
-**Note:** Morphues Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
+**Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
 
 * **1.0.2**
