@@ -25,6 +25,9 @@ public class PricePlan extends PricePlanIdentityProjection {
 	protected String refTypeName;
 	protected String refType;
 	protected Long refId;
+	protected Boolean deletable = true;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	PricePlanType type;
 
 	public Account getAccount() {
 		return account;
@@ -141,5 +144,23 @@ public class PricePlan extends PricePlanIdentityProjection {
 	public void setRefId(Long refId) {
 		this.refId = refId;
 		markDirty("refId", refId);
+	}
+
+	public Boolean getDeletable() {
+		return deletable;
+	}
+
+	public void setDeletable(Boolean deletable) {
+		this.deletable = deletable;
+		markDirty("deletable", deletable);
+	}
+
+	public PricePlanType getType() {
+		return type;
+	}
+
+	public void setType(PricePlanType type) {
+		this.type = type;
+		markDirty("type", type);
 	}
 }

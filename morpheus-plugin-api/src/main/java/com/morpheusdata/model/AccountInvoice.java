@@ -1,6 +1,8 @@
 package com.morpheusdata.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class AccountInvoice extends MorpheusModel {
 
@@ -26,9 +28,13 @@ public class AccountInvoice extends MorpheusModel {
 	protected Long userId;
 	protected String userName;
 	protected Long zoneId;
+	protected Long cloudId;
 	protected String zoneUUID;
+	protected String cloudUUID;
 	protected String zoneName;
+	protected String cloudName;
 	protected String zoneRegion;
+	protected String cloudRegion;
 	protected Long siteId;
 	protected String siteName;
 	protected Long resourceId;
@@ -56,6 +62,7 @@ public class AccountInvoice extends MorpheusModel {
 	protected String refName;
 	protected String refCategory; //discovered / instance / host / vm / container
 	protected String rawData;
+	protected List<MetadataTag> metadata = new ArrayList<>();
 	//date range
 	protected String interval = "month"; //hour, month, year etc
 	protected String period; //month year day hour or whatever for easy filtering
@@ -197,35 +204,67 @@ public class AccountInvoice extends MorpheusModel {
 	}
 
 	public Long getZoneId() {
-		return zoneId;
+		return getCloudId();
 	}
 
 	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
+		setCloudId(zoneId);
+	}
+
+	public Long getCloudId() {
+		return cloudId;
+	}
+
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
 	}
 
 	public String getZoneUUID() {
-		return zoneUUID;
+		return getCloudUUID();
 	}
 
 	public void setZoneUUID(String zoneUUID) {
-		this.zoneUUID = zoneUUID;
+		setCloudUUID(zoneUUID);
+	}
+
+	public String getCloudUUID() {
+		return cloudUUID;
+	}
+
+	public void setCloudUUID(String cloudUUID) {
+		this.cloudUUID = cloudUUID;
 	}
 
 	public String getZoneName() {
-		return zoneName;
+		return getCloudName();
 	}
 
 	public void setZoneName(String zoneName) {
-		this.zoneName = zoneName;
+		setCloudName(zoneName);
+	}
+
+	public String getCloudName() {
+		return cloudName;
+	}
+
+	public void setCloudName(String cloudName) {
+		this.cloudName = cloudName;
 	}
 
 	public String getZoneRegion() {
-		return zoneRegion;
+		return getCloudRegion();
 	}
 
 	public void setZoneRegion(String zoneRegion) {
-		this.zoneRegion = zoneRegion;
+		setCloudRegion(zoneRegion);
+	}
+
+	public String getCloudRegion() {
+		return cloudRegion;
+	}
+
+	public void setCloudRegion(String cloudRegion) {
+		this.cloudRegion = cloudRegion;
 	}
 
 	public Long getSiteId() {
@@ -442,6 +481,14 @@ public class AccountInvoice extends MorpheusModel {
 
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
+	}
+
+	public List<MetadataTag> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(List<MetadataTag> metadata) {
+		this.metadata = metadata;
 	}
 
 	public String getInterval() {

@@ -39,6 +39,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ComputeTypeLayout layout;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServerGroup serverGroup;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected User createdBy;
 	protected String internalName;
 	protected String status = "provisioning";
 	protected Long provisionSiteId;
@@ -902,6 +904,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setServerGroup(ComputeServerGroup serverGroup) {
 		this.serverGroup = serverGroup;
 		markDirty("serverGroup", serverGroup);
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy", createdBy);
 	}
 
 	public void setMetadata(List<MetadataTag> metadata) {
