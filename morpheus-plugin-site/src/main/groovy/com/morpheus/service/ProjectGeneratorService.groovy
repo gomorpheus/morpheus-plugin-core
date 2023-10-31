@@ -15,7 +15,7 @@ public class ProjectGeneratorService {
 
 	def generateProject(ZipOutputStream zipOutputStream, String language, String version, String pluginName, String pluginCode, String basePackage, List<String> providers) {
 		URL resource = classLoader.getResource("project-templates/${version}/${language}/project-structure.yaml".toString())
-		if(reosurce) {
+		if(resource) {
 			def is = resource.newInputStream()
 			try {
 				def yaml = new Yaml()
