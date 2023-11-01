@@ -74,12 +74,21 @@ subprojects { project ->
         afterEvaluate {
             signing {
                 required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
-                sign publishing.publications.maven
+                if(project.name == 'morpheus-plugin-gradle') {
+                } else {
+                    sign publishing.publications.maven
+                }
+                
             }
         }
 
         tasks.withType(Sign) {
             onlyIf { isReleaseVersion }
+        }
+
+        tasks.withType(AbstractPublishToMaven).configureEach {
+          def signingTasks = tasks.withType(Sign)
+          mustRunAfter(signingTasks)
         }
 
         //do not generate extra load on Nexus with new staging repository if signing fails
