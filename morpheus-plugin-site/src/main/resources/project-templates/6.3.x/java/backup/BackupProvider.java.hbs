@@ -228,8 +228,7 @@ public class {{pluginNameCamel}}BackupProvider extends AbstractBackupProvider {
 	 */
 	@Override
 	public ServiceResponse validateBackupProvider(BackupProvider backupProvider, Map opts) {
-		ServiceResponse rtn = ServiceResponse.success(backupProvider);
-		return rtn;
+		return ServiceResponse.success(backupProvider);
 	}
 
 	/**
