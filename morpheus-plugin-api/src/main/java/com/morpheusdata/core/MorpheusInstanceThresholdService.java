@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.InstanceThreshold;
 import com.morpheusdata.model.projection.InstanceThresholdIdentityProjection;
-import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.Observable;
 
 import java.util.Collection;
 
