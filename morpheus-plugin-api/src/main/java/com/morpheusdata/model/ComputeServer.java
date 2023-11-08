@@ -956,6 +956,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("accesses", accesses);
 	}
 
+	public ComputeCapacityInfo getCapacityInfo() {
+		return capacityInfo;
+	}
+
+	public void setCapacityInfo(ComputeCapacityInfo capacityInfo) {
+		this.capacityInfo = capacityInfo;
+		markDirty("capacityInfo", capacityInfo);
+	}
+
 	public enum GuestConsoleType {
 		disabled,
 		vnc,

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-class DefaultBackupJobProvider implements BackupJobProvider {
+public class DefaultBackupJobProvider implements BackupJobProvider {
 
 	static Logger log = LoggerFactory.getLogger(DefaultBackupJobProvider.class);
 

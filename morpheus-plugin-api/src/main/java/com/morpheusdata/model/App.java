@@ -133,4 +133,13 @@ public class App extends AppIdentityProjection {
 		this.createdBy = createdBy;
 		markDirty("createdBy", createdBy);
 	}
+
+	public Collection<AccountResource> getResources() {
+		return resources;
+	}
+
+	public void setResources(Collection<AccountResource> resources) {
+		this.resources = resources;
+		markDirty("resources", resources);
+	}
 }

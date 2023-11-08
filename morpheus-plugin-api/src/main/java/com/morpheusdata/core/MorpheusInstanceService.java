@@ -34,4 +34,10 @@ public interface MorpheusInstanceService extends MorpheusDataService<Instance, I
 	 * @return An instance of the Instance Scale Service
 	 */
 	MorpheusInstanceScaleService getScale();
+
+	/**
+	 * Returns the Instance Threshold Service
+	 * @return An instance of the Instance Threshold Service
+	 */
+	MorpheusInstanceThresholdService getThreshold();
 }

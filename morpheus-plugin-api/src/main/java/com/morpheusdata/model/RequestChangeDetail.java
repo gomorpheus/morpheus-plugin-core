@@ -52,6 +52,14 @@ public class RequestChangeDetail {
 		this.toValue = toValue;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public enum Category {
 		network,
 		volume,

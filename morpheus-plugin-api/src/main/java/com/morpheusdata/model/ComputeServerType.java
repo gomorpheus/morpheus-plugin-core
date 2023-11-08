@@ -273,6 +273,15 @@ public class ComputeServerType  extends MorpheusModel {
 		markDirty("containerEngine", containerEngine, this.containerEngine);
 	}
 
+	public Boolean getCreatable() {
+		return creatable;
+	}
+
+	public void setCreatable(Boolean creatable) {
+		this.creatable = creatable;
+		markDirty("creatable", creatable);
+	}
+
 	public enum AgentType {
 		guest, //vm-node for guest OS agents for vms or workloads
 		host, //node for docker and kube and kvm
