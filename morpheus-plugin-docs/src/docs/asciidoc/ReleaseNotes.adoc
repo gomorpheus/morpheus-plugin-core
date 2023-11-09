@@ -3,6 +3,15 @@
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
 
+* **1.0.3**
+** Improvements to Model serialization
+** Additional method calls to support Amazon ScaleGroups
+** Added Backup Provider templates to generator
+* **0.15.7
+** Improvements to Model serialization
+** Additional method calls to support Amazon ScaleGroups
+* **0.14.7
+** Added missing method in NetworkUtility
 * **1.0.2**
 ** 1.0 Release with proper deprecation support!
 ** Moved all rxjava calls to rxjava3 from rxjava2 (NOTE: This requires all plugins to be updated for 6.3.0 of morpheus)
