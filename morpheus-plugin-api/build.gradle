@@ -30,7 +30,7 @@ dependencies {
 	api "org.slf4j:slf4j-parent:$slf4jVersion"
 	api 'com.github.jknack:handlebars:4.2.0'
     api "org.slf4j:slf4j-api:1.7.26"
-	api 'org.bouncycastle:bcprov-jdk15on:1.70'
+	api 'org.bouncycastle:bcprov-jdk18on:1.76'
 	implementation 'javax.servlet:javax.servlet-api:3.0.1'
 	implementation "org.codehaus.groovy:groovy:$groovyVersion"
     implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
