@@ -42,5 +42,12 @@ sh """
         }
       }
     }
+    stage ('Run Mend scan') {
+      steps {
+sh """
+mend image registry.prod.den.bertramlabs.com/library/morpheus-plugin-site:${env.BUILD_NUMBER} --non-interactive --scope "Morpheus Plugin Core//morpheus-plugin-site-${env.BUILD_NUMBER}"
+"""
+      }
+    }
   }
 }
