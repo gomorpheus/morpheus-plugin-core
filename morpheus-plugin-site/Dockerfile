@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.8.1_1-jdk-alpine
+FROM eclipse-temurin:17.0.9_9-jdk-alpine
 
 MAINTAINER Morpheus <docker@morpheusdata.com>
 
