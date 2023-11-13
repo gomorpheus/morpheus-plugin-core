@@ -9,7 +9,7 @@ ADD entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 ADD build/libs/*.jar /app/app.jar
 
-EXPOSE 8080
+EXPOSE 8090
 
 ENTRYPOINT ["/entrypoint.sh"]
 
