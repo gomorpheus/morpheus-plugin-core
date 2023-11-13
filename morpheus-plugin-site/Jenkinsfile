@@ -9,7 +9,7 @@ pipeline {
     stage ('morpheus-plugin-site - Checkout') {
       steps {
         checkout([$class: 'GitSCM', 
-                  branches: [[name: "*/${params.BUILD_TAG}"]], 
+                  branches: [[name: params.BUILD_TAG]], 
                   doGenerateSubmoduleConfigurations: false, 
                   extensions: [], 
                   submoduleCfg: [], 
