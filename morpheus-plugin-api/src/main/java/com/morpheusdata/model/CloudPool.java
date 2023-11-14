@@ -20,7 +20,6 @@ public class CloudPool extends ComputeZonePoolIdentityProjection {
 	public ComputeServerGroup serverGroup;
 	public String displayName;
 	public String code;
-	public String config;
 	public String treeName;
 	public String rawData;
 	public String type = "default";
@@ -90,17 +89,6 @@ public class CloudPool extends ComputeZonePoolIdentityProjection {
 	public void setCode(String code) {
 		this.code = code;
 		markDirty("code", code);
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
-		markDirty("config", config);
 	}
 
 	public String getTreeName() {
