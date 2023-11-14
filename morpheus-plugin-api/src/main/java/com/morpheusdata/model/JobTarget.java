@@ -16,7 +16,6 @@ public class JobTarget extends MorpheusModel {
 	protected String description;
 	protected String jobSummary;
 	protected Boolean enabled = true;
-	protected String config;
 	protected String status;
 	protected String statusMessage;
 	protected String errorMessage;
@@ -138,16 +137,6 @@ public class JobTarget extends MorpheusModel {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	@Override
-	public String getConfig() {
-		return config;
-	}
-
-	@Override
-	public void setConfig(String config) {
-		this.config = config;
 	}
 
 	public String getStatus() {
