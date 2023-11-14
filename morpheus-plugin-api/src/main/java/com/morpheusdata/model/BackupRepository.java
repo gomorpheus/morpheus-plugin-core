@@ -1,7 +1,6 @@
 package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.core.backup.AbstractBackupProvider;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
@@ -9,7 +8,7 @@ import java.util.Date;
 public class BackupRepository extends MorpheusModel {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
-	protected AbstractBackupProvider backupProvider;
+	protected BackupProvider backupProvider;
 	// TODO: storage buckets? Need a storage provider plugin to do this?
 	// protected StorageBucket storageProvider;
 	protected String name;
@@ -36,11 +35,11 @@ public class BackupRepository extends MorpheusModel {
 		this.account = account;
 	}
 
-	public AbstractBackupProvider getBackupProvider() {
+	public BackupProvider getBackupProvider() {
 		return backupProvider;
 	}
 
-	public void setBackupProvider(AbstractBackupProvider backupProvider) {
+	public void setBackupProvider(BackupProvider backupProvider) {
 		markDirty("backupProvider", backupProvider, this.backupProvider);
 		this.backupProvider = backupProvider;
 	}
