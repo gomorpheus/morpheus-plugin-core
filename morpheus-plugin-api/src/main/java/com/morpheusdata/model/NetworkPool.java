@@ -380,6 +380,25 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 		markDirty("cidr", cidr);
 	}
 
+	/**
+	 * Gets the IPv6 CIDR Representation of the network Pool being synced. Typically this may look like a '2001:db8::' format.
+	 * See CIDR Specifications for more information on how to properly form a CIDR Block.
+	 * @return the IPv6 CIDR block represented by the current pool.
+	 */
+	public String getCidrIPv6() {
+		return cidr;
+	}
+
+	/**
+	 * Sets the IPv6 CIDR Block representation of the Network Pool being synced. Typically this may look like '2001:db8::' format.
+	 * See CIDR Specifications for more information on how to properly form a CIDR Block.
+	 * @param cidr the IPv6 CIDR block represented by the current pool.
+	 */
+	public void setCidrIPv6(String cidr) {
+		this.cidrIPv6 = cidr;
+		markDirty("cidrIPv6", cidr);
+	}
+
 	
 	protected String name;
 	protected String displayName;
@@ -402,6 +421,7 @@ public class NetworkPool extends NetworkPoolIdentityProjection {
 	protected String refId;
 	protected String configuration;
 	protected String cidr;
+	protected String cidrIPv6;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public NetworkPoolServer poolServer;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
