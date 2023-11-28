@@ -359,6 +359,7 @@ public class HttpApiClient {
 
 	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse<CloseableHttpResponse> rtn = new ServiceResponse<>();
+
 		URIBuilder uriBuilder = new URIBuilder(url);
 		try {
 
@@ -558,6 +559,7 @@ public class HttpApiClient {
 					rtn.setSuccess(false);
 				} finally {
 					lastCallTime = new Date();
+
 				}
 			});
 
