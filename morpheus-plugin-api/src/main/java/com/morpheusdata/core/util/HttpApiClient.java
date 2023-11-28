@@ -558,7 +558,6 @@ public class HttpApiClient {
 					rtn.setSuccess(false);
 				} finally {
 					lastCallTime = new Date();
-
 				}
 			});
 
