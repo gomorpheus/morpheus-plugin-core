@@ -355,8 +355,8 @@ public class HttpApiClient {
 	}
 
 
-	public ServiceResponse<InputStream> callStreamApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
-		ServiceResponse<InputStream> rtn = new ServiceResponse<>();
+	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		ServiceResponse<CloseableHttpResponse> rtn = new ServiceResponse<>();
 
 		URIBuilder uriBuilder = new URIBuilder(url);
 		try {
@@ -526,7 +526,7 @@ public class HttpApiClient {
 						HttpEntity entity = response.getEntity();
 
 						if(entity != null) {
-							rtn.setData(response.getEntity().getContent());
+							rtn.setData(response);
 							if(!opts.suppressLog) {
 								log.debug("results of SUCCESSFUL call to {}/{}, results: {}",url,path,rtn.getContent());
 							}
@@ -538,7 +538,7 @@ public class HttpApiClient {
 						rtn.setSuccess(true);
 					} else {
 						if(response.getEntity() != null) {
-							rtn.setData(response.getEntity().getContent());
+							rtn.setData(response);
 						}
 						rtn.setSuccess(false);
 						rtn.setErrorCode(Integer.toString(response.getStatusLine().getStatusCode()));
@@ -557,13 +557,7 @@ public class HttpApiClient {
 					rtn.setSuccess(false);
 				} finally {
 					lastCallTime = new Date();
-					if(response != null) {
-						try {
-							response.close();
-						} catch (IOException ignored) {
-							//ignored exception
-						}
-					}
+
 				}
 			});
 
