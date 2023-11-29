@@ -3,6 +3,7 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import groovy.json.JsonOutput;
+import groovy.json.JsonParserType;
 import groovy.json.JsonSlurper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
@@ -95,7 +96,7 @@ public class HttpApiClient {
 	public NetworkProxy networkProxy;
 	private Date lastCallTime;
 
-	static Logger log = LoggerFactory.getLogger(HttpApiClient.class);
+	static protected Logger log = LoggerFactory.getLogger(HttpApiClient.class);
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
@@ -598,19 +599,39 @@ public class HttpApiClient {
 		if(body != null && (bodyType == null || (!bodyType.equals("form") && !bodyType.equals("multi-part-form") && !bodyType.equals("application/octet-stream"))) && !(body instanceof String)) {
 			opts.body = JsonOutput.toJson(opts.body);
 		}
-
+		ServiceResponse rtn = new ServiceResponse();
 		//execute
-		ServiceResponse rtn = callApi(url, path, username, password, opts, method);
-		rtn.setData(new LinkedHashMap());
+		ServiceResponse<CloseableHttpResponse> result = callStreamApi(url, path, username, password, opts, method);
+		try {
+			rtn.setSuccess(result.getSuccess());
+			rtn.setData(new LinkedHashMap());
+			rtn.setErrors(result.getErrors());
+			rtn.setError(result.getError());
+			rtn.setMsg(result.getMsg());
+			rtn.setHeaders(result.getHeaders());
+			rtn.setCookies(result.getCookies());
+			rtn.setErrorCode(result.getErrorCode());
+			InputStream content = result.getData().getEntity().getContent();
+			if(content != null) {
+				try {
+					JsonSlurper jsonSlurper = new JsonSlurper();
+					if(result.getData().getEntity().getContentLength() >= 0 && result.getData().getEntity().getContentLength() > jsonSlurper.getMaxSizeForInMemory() ) {
+						jsonSlurper.setType(JsonParserType.CHARACTER_SOURCE);
+					} else {
+						jsonSlurper.setType(JsonParserType.INDEX_OVERLAY);
+					}
+					rtn.setData(jsonSlurper.parse(content,"UTF-8"));
 
-		if(rtn.getContent() != null && rtn.getContent().length() > 0) {
-			try {
-				//need a java based JSON Slurper hmmmm
-				rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
-			} catch(Exception e) {
-				log.debug("Error parsing API response JSON: ${e}", e);
+				} catch(Exception e) {
+					log.debug("Error parsing API response JSON: ${e}", e);
+				}
+			}
+		} finally {
+			if(result.getData() != null) {
+				result.getData().close();
 			}
 		}
+
 		return rtn;
 	}
 
