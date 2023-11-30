@@ -88,5 +88,4 @@ public class DataQueryResult {
 		return rtn;
 	}
 
-
 }

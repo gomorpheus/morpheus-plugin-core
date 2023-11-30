@@ -470,6 +470,54 @@ public interface MorpheusContext {
 	@Deprecated
 	MorpheusAccountInventoryService getAccountInventory();
 
+	/**
+	 * Returns the MorpheusAccountInventoryService
+	 * @return an instance of the MorpheusAccountInventoryService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusAccountInventoryTypeService getAccountInventoryType();
+
+	/**
+	 * Returns the MorpheusCodeRepositoryService
+	 * @return an instance of the MorpheusCodeRepositoryService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusCodeRepositoryService getCodeRepository();
+
+	/**
+	 * Returns the MorpheusWorkspaceService
+	 * @return an instance of the MorpheusWorkspaceService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusWorkspaceService getWorkspace();
+
+	/**
+	 * Returns the MorpheusWorkspaceTypeService
+	 * @return an instance of the MorpheusWorkspaceTypeService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusWorkspaceTypeService getWorkspaceType();
+
+	/**
+	 * Returns the MorpheusCodeRepositoryTraitService
+	 * @return an instance of the MorpheusCodeRepositoryTraitService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusCodeRepositoryTraitService getCodeRepositoryTrait();
+
+	/**
+	 * Returns the MorpheusCodeRepositoryTraitTypeService
+	 * @return an instance of the MorpheusCodeRepositoryTraitTypeService
+	 * @deprecated
+	 */
+	@Deprecated
+	MorpheusCodeRepositoryTraitTypeService getCodeRepositoryTraitType();
+
 	//Common methods used across various contexts
 
 	/**

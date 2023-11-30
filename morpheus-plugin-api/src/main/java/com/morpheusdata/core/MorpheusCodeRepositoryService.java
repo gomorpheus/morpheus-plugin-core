@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Maybe;
  * @author bdwheeler
  * @since 0.15.1
  */
-public interface MorpheusCodeRepositoryService extends MorpheusDataService<CodeRepository,CodeRepository> {
+public interface MorpheusCodeRepositoryService extends MorpheusDataService<CodeRepository, CodeRepository> {
 
 	/**
 	 * Fetches the contents of a code repos

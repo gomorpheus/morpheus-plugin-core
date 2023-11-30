@@ -3,6 +3,7 @@ package com.morpheusdata.core.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Api Parameters for some finders in the Context Services.
@@ -12,10 +13,17 @@ import java.util.LinkedHashMap;
  * @param <V> The Object class type (typically just Object)
  *
  */
-public class ApiParameterMap<K,V> extends LinkedHashMap<K,V> {
+public class ApiParameterMap<K, V> extends LinkedHashMap<K, V> {
 
 	public ApiParameterMap() {
 		super();
+	}
+
+	public ApiParameterMap(Map<K, V> params) {
+		super();
+		if(params != null) {
+			this.putAll(params);
+		}
 	}
 
 	public Collection<V> list(K key) throws ClassCastException {
