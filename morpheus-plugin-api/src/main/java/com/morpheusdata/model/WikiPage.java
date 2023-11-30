@@ -134,4 +134,37 @@ public class WikiPage extends WikiPageIdentityProjection {
 		this.createdByUsername = createdByUsername;
 		markDirty("createdByUsername", createdByUsername);
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+		markDirty("name", name);
+	}
+
+	@Override
+	public String getRefType() {
+		return refType;
+	}
+
+	@Override
+	public void setRefType(String refType) {
+		this.refType = refType;
+		markDirty("refType", refType);
+	}
+
+	@Override
+	public Long getRefId() {
+		return refId;
+	}
+
+	@Override
+	public void setRefId(Long refId) {
+		this.refId = refId;
+		markDirty("refId", refId);
+	}
 }

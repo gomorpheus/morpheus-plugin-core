@@ -72,3 +72,12 @@ providers:
           template: cypher/CypherProvider.groovy.hbs
         - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.groovy"
           template: cypher/CypherModule.groovy.hbs
+    backup:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupProvider.groovy"
+            template: backup/BackupProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupTypeProvider.groovy"
+            template: backup/BackupTypeProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupExecutionProvider.groovy"
+            template: backup/BackupExecutionProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupRestoreProvider.groovy"
+            template: backup/BackupRestoreProvider.groovy.hbs

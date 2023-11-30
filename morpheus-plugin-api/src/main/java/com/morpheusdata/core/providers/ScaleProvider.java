@@ -1,9 +1,7 @@
 package com.morpheusdata.core.providers;
 
-import com.morpheusdata.model.Icon;
-import com.morpheusdata.model.InstanceScaleType;
-import com.morpheusdata.model.NetworkLoadBalancerType;
-import com.morpheusdata.model.OptionType;
+import com.morpheusdata.model.*;
+import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Collection;
 
@@ -36,4 +34,32 @@ public interface ScaleProvider extends PluginProvider {
 	 * @return Collection of InstanceScaleType
 	 */
 	Collection<InstanceScaleType> getScaleTypes();
+
+	/**
+	 * Implement this method to perform some tasks after an instance has been provisioned via morpheus.  For example,
+	 * update a scale group details etc.
+	 * @param instance a provisioned {@link Instance}
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse postProvisionInstance(Instance instance) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform some operations when an instance has been removed from morpheus
+	 * @param instance the {@link Instance} to be removed
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse removeInstance(Instance instance) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Implement this method to perform some operations when an instance has been updated
+	 * @param instance the {@link Instance} being updated
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse updateInstance(Instance instance) {
+		return ServiceResponse.success();
+	}
 }

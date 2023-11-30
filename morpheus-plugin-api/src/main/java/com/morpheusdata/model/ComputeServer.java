@@ -39,6 +39,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ComputeTypeLayout layout;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected ComputeServerGroup serverGroup;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected User createdBy;
 	protected String internalName;
 	protected String status = "provisioning";
 	protected Long provisionSiteId;
@@ -904,6 +906,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		markDirty("serverGroup", serverGroup);
 	}
 
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+		markDirty("createdBy", createdBy);
+	}
+
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
 		markDirty("metadata", metadata);
@@ -943,6 +954,15 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setAccesses(List<ComputeServerAccess> accesses) {
 		this.accesses = accesses;
 		markDirty("accesses", accesses);
+	}
+
+	public ComputeCapacityInfo getCapacityInfo() {
+		return capacityInfo;
+	}
+
+	public void setCapacityInfo(ComputeCapacityInfo capacityInfo) {
+		this.capacityInfo = capacityInfo;
+		markDirty("capacityInfo", capacityInfo);
 	}
 
 	public enum GuestConsoleType {

@@ -21,6 +21,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
+	protected Long cloudId;
 	protected String deviceName = "/dev/sda";
 	protected String deviceDisplayName;
 	protected Long maxStorage = 0l;
@@ -51,6 +52,10 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
 		return account;
+	}
+
+	public Long getCloud() {
+		return cloudId;
 	}
 
 	public void setDeviceName(String deviceName) {
@@ -323,5 +328,19 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setSourceSnapshotId(String sourceSnapshotId) {
 		this.sourceSnapshotId = sourceSnapshotId;
 		markDirty("sourceSnapshotId", sourceSnapshotId, this.sourceSnapshotId);
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+		markDirty("account", account);
+	}
+
+	public Long getCloudId() {
+		return cloudId;
+	}
+
+	public void setCloudId(Long cloudId) {
+		this.cloudId = cloudId;
+		markDirty("cloudId", cloudId);
 	}
 }

@@ -1,0 +1,180 @@
+package {{basePackage}};
+
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
+import com.morpheusdata.core.backup.BackupExecutionProvider;
+import com.morpheusdata.core.backup.response.BackupExecutionResponse;
+import com.morpheusdata.core.backup.util.BackupStatusUtility;
+import com.morpheusdata.model.Backup;
+import com.morpheusdata.model.BackupResult;
+import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.response.ServiceResponse;
+
+import java.util.Map;
+
+public class {{pluginNameCamel}}BackupExecutionProvider implements BackupExecutionProvider {
+
+	protected Plugin plugin;
+	protected MorpheusContext morpheusContext;
+
+	public {{pluginNameCamel}}BackupExecutionProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		this.plugin = plugin;
+		this.morpheusContext = morpheusContext;
+	}
+	
+	/**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	public MorpheusContext getMorpheus() {
+		return morpheusContext;
+	}
+
+	/**
+	 * Add additional configurations to a backup. Morpheus will handle all basic configuration details, this is a
+	 * convenient way to add additional configuration details specific to this backup provider.
+	 * @param backup the current backup the configurations are applied to.
+	 * @param config the configuration supplied by external inputs.
+	 * @param opts optional parameters used for configuration.
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
+	 * configuration and will halt the backup creation process.
+	 */
+	@Override
+	public ServiceResponse configureBackup(Backup backup, Map config, Map opts) {
+		return ServiceResponse.success(backup);
+	}
+
+	/**
+	 * Validate the configuration of the backup. Morpheus will validate the backup based on the supplied option type
+	 * configurations such as required fields. Use this to either override the validation results supplied by the
+	 * default validation or to create additional validations beyond the capabilities of option type validation.
+	 * @param backup the backup to validate
+	 * @param config the original configuration supplied by external inputs.
+	 * @param opts optional parameters used for
+	 * @return a {@link ServiceResponse} object. The errors field of the ServiceResponse is used to send validation
+	 * results back to the interface in the format of {@code errors['fieldName'] = 'validation message' }. The msg
+	 * property can be used to send generic validation text that is not related to a specific field on the model.
+	 * A ServiceResponse with any items in the errors list or a success value of 'false' will halt the backup creation
+	 * process.
+	 */
+	@Override
+	public ServiceResponse validateBackup(Backup backup, Map config, Map opts) {
+		return ServiceResponse.success(backup);
+	}
+
+	/**
+	 * Create the backup resources on the external provider system.
+	 * @param backup the fully configured and validated backup
+	 * @param opts additional options used during backup creation
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
+	 * creation on the external system failed and will halt any further backup creation processes in morpheus.
+	 */
+	@Override
+	public ServiceResponse createBackup(Backup backup, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Delete the backup resources on the external provider system.
+	 * @param backup the backup details
+	 * @param opts additional options used during the backup deletion process
+	 * @return a {@link ServiceResponse} indicating the results of the deletion on the external provider system.
+	 * A ServiceResponse object with a success value of 'false' will halt the deletion process and the local refernce
+	 * will be retained.
+	 */
+	@Override
+	public ServiceResponse deleteBackup(Backup backup, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Delete the results of a backup execution on the external provider system.
+	 * @param backupResult the backup results details
+	 * @param opts additional options used during the backup result deletion process
+	 * @return a {@link ServiceResponse} indicating the results of the deletion on the external provider system.
+	 * A ServiceResponse object with a success value of 'false' will halt the deletion process and the local refernce
+	 * will be retained.
+	 */
+	@Override
+	public ServiceResponse deleteBackupResult(BackupResult backupResult, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * A hook into the execution process. This method is called before the backup execution occurs.
+	 * @param backup the backup details associated with the backup execution
+	 * @param opts additional options used during the backup execution process
+	 * @return a {@link ServiceResponse} indicating the success or failure of the execution preperation. A success value
+	 * of 'false' will halt the execution process.
+	 */
+	@Override
+	public ServiceResponse prepareExecuteBackup(Backup backup, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Provide additional configuration on the backup result. The backup result is a representation of the output of
+	 * the backup execution including the status and a reference to the output that can be used in any future operations.
+	 * @param backupResult
+	 * @param opts
+	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
+	 * of 'false' will halt the further execution process.
+	 */
+	@Override
+	public ServiceResponse prepareBackupResult(BackupResult backupResult, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Initiate the backup process on the external provider system.
+	 * @param backup the backup details associated with the backup execution.
+	 * @param backupResult the details associated with the results of the backup execution.
+	 * @param executionConfig original configuration supplied for the backup execution.
+	 * @param cloud cloud context of the target of the backup execution
+	 * @param computeServer the target of the backup execution
+	 * @param opts additional options used during the backup execution process
+	 * @return a {@link ServiceResponse} indicating the success or failure of the backup execution. A success value
+	 * of 'false' will halt the execution process.
+	 */
+	@Override
+	public ServiceResponse<BackupExecutionResponse> executeBackup(Backup backup, BackupResult backupResult, Map executionConfig, Cloud cloud, ComputeServer computeServer, Map opts) {
+		return ServiceResponse.success(new BackupExecutionResponse(backupResult));
+	}
+
+	/**
+	 * Periodically call until the backup execution has successfully completed. The default refresh interval is 60 seconds.
+	 * @param backupResult the reference to the results of the backup execution including the last known status. Set the
+	 *                     status to a canceled/succeeded/failed value from one of the {@link BackupStatusUtility} values
+	 *                     to end the execution process.
+	 * @return a {@link ServiceResponse} indicating the success or failure of the method. A success value
+	 * of 'false' will halt the further execution process.n
+	 */
+	@Override
+	public ServiceResponse<BackupExecutionResponse> refreshBackupResult(BackupResult backupResult) {
+		return ServiceResponse.success(new BackupExecutionResponse(backupResult));
+	}
+	
+	/**
+	 * Cancel the backup execution process without waiting for a result.
+	 * @param backupResult the details associated with the results of the backup execution.
+	 * @param opts additional options.
+	 * @return a {@link ServiceResponse} indicating the success or failure of the backup execution cancellation.
+	 */
+	@Override
+	public ServiceResponse cancelBackup(BackupResult backupResult, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Extract the results of a backup. This is generally used for packaging up a full backup for the purposes of
+	 * a download or full archive of the backup.
+	 * @param backupResult the details associated with the results of the backup execution.
+	 * @param opts additional options.
+	 * @return a {@link ServiceResponse} indicating the success or failure of the backup extraction.
+	 */
+	@Override
+	public ServiceResponse extractBackup(BackupResult backupResult, Map opts) {
+		return ServiceResponse.success();
+	}
+}		
