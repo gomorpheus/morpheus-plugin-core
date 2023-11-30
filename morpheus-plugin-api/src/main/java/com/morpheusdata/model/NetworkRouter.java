@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public class NetworkRouter extends NetworkRouterIdentityProjection {
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account owner;
 	protected String code;
 	protected String category;
@@ -727,5 +728,10 @@ public class NetworkRouter extends NetworkRouterIdentityProjection {
 
 	public List<NetworkRoute> getRoutes() {
 		return routes;
+	}
+
+	public void setRoutes(List<NetworkRoute> routes) {
+		this.routes = routes;
+		markDirty("routes", routes);
 	}
 }

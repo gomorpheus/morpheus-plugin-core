@@ -483,7 +483,7 @@ public class DateUtility {
 		rtn.set(Calendar.DAY_OF_MONTH, 1);
 
 		rtn.add(Calendar.MONTH, 1);
-		rtn.add(Calendar.DAY_OF_YEAR, -1);
+		rtn.add(Calendar.SECOND, -1);
 		return rtn.getTime();
 	}
 

@@ -4,6 +4,30 @@ import java.util.Map;
 
 public class ProcessEvent {
 
+	public ProcessType getType() {
+		return type;
+	}
+
+	public void setType(ProcessType type) {
+		this.type = type;
+	}
+
+	public String getJobName() {
+		return jobName;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
+	}
+
+	public Map getJobConfig() {
+		return jobConfig;
+	}
+
+	public void setJobConfig(Map jobConfig) {
+		this.jobConfig = jobConfig;
+	}
+
 	public enum ProcessType {
 		ansibleCommand,
 		ansibleInstall,

@@ -14,7 +14,11 @@ plugins {
     id 'com.gradle.plugin-publish' version '1.1.0'
 }
 
+
+
 group "com.morpheusdata"
+
+
 
 apply plugin:"eclipse"
 apply plugin:"groovy"
@@ -22,10 +26,9 @@ apply plugin:"idea"
 apply plugin:"maven-publish"
 apply plugin:"java-library"
 
-ext {
-  isBuildSnapshot = version.endsWith('-SNAPSHOT')
-  isReleaseVersion = !isBuildSnapshot
-}
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
+
 
 repositories {
 	mavenLocal()
@@ -41,42 +44,19 @@ dependencies {
 	implementation gradleApi()	
 }
 
+gradlePlugin {
+    plugins {
+        create("morpheusPlugin") {
+            id = "com.morpheusdata.morpheus-plugin-gradle"
+            displayName = "Morpheus Gradle Plugin"
+            description = 'A gradle plugin for packaging resources into a morpheus plugin such as scribe resources, packages, as well as i18n message definitions.'
+            implementationClass = "com.morpheusdata.gradle.MorpheusPlugin"
+        }
+    }
+}
+
 publishing {
-	
-	publications {
-		maven(MavenPublication) {
-			artifactId 'morpheus-plugin-gradle'
-			pom.withXml {
-				asNode().children().last() + {
-					resolveStrategy = Closure.DELEGATE_FIRST
-					name 'Morpheus Gradle Plugin'
-					description 'A gradle plugin for packaging resources into a morpheus plugin such as scribe resources, packages, as well as i18n message definitions.'
-					url 'https://github.com/morpheusdata/morpheus-plugin-core'
-					scm {
-						url 'https://github.com/morpheusdata/morpheus-plugin-core'
-						connection 'scm:https://bertramdev@github.com/morpheusdata/morpheus-plugin-core.git'
-						developerConnection 'scm:git://github.com/morpheusdata/morpheus-plugin-core.git'
-					}
-					licenses {
-						license {
-							name 'The Apache Software License, Version 2.0'
-							url 'http://www.apache.org/license/LICENSE-2.0.txt'
-							distribution 'repo'
-						}
-					}
-					developers {
-						developer {
-							id 'bdwheeler'
-							name 'bdwheeler'
-							email 'bdwheeler@gmail.com'
-						}
-					}
-				}
-			}
-			from components.java
-		}
-	}
-	
+
 	repositories {
 		maven {
 			if( !isReleaseVersion ) {
@@ -91,4 +71,37 @@ publishing {
 		}
 	}
 
+}
+
+afterEvaluate {
+    tasks.withType(GenerateMavenPom) { task ->
+        doFirst {
+            // Update POM here
+
+
+            def pom = task.pom
+            pom.name = 'Morpheus Gradle Plugin'
+            pom.description = 'A gradle plugin for packaging resources into a morpheus plugin such as scribe resources, packages, as well as i18n message definitions.'
+            pom.url = 'https://github.com/morpheusdata/morpheus-plugin-core'
+						pom.scm {
+								url = 'https://github.com/morpheusdata/morpheus-plugin-core'
+								connection = 'scm:https://bertramdev@github.com/morpheusdata/morpheus-plugin-core.git'
+								developerConnection = 'scm:git://github.com/morpheusdata/morpheus-plugin-core.git'
+							}
+						pom.licenses {
+								license {
+									name = 'The Apache Software License, Version 2.0'
+									url = 'http://www.apache.org/license/LICENSE-2.0.txt'
+									distribution = 'repo'
+								}
+							}
+						pom.developers {
+								developer {
+									id = 'bdwheeler'
+									name = 'bdwheeler'
+									email = 'bdwheeler@gmail.com'
+								}
+							}
+        }
+    }
 }

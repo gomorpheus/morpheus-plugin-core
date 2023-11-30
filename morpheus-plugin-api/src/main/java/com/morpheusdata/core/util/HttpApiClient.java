@@ -3,6 +3,7 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import groovy.json.JsonOutput;
+import groovy.json.JsonParserType;
 import groovy.json.JsonSlurper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
@@ -95,7 +96,7 @@ public class HttpApiClient {
 	public NetworkProxy networkProxy;
 	private Date lastCallTime;
 
-	static Logger log = LoggerFactory.getLogger(HttpApiClient.class);
+	static protected Logger log = LoggerFactory.getLogger(HttpApiClient.class);
 
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
@@ -130,6 +131,7 @@ public class HttpApiClient {
 	}
 
 	public ServiceResponse callApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		log.info("Calling Api: {} - {}",url,path);
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
@@ -299,6 +301,7 @@ public class HttpApiClient {
 
 
 						HttpEntity entity = response.getEntity();
+
 						if(entity != null) {
 							rtn.setContent(EntityUtils.toString(entity));
 							if(!opts.suppressLog) {
@@ -354,6 +357,224 @@ public class HttpApiClient {
 	}
 
 
+	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		ServiceResponse<CloseableHttpResponse> rtn = new ServiceResponse<>();
+		URIBuilder uriBuilder = new URIBuilder(url);
+		try {
+
+			sleepIfNecessary();
+			lastCallTime = new Date();
+
+			String existingPath = uriBuilder.getPath();
+			// retain path on base url if one exists
+			String newPath = path;
+			if(path != null && path.length() > 0) {
+				if(existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
+					if(existingPath.endsWith("/") && path.startsWith("/")) {
+						existingPath = existingPath.substring(0, existingPath.length() - 1);
+					} else if(!existingPath.endsWith("/") && !path.startsWith("/")) {
+						existingPath += "/";
+					}
+					newPath = existingPath + path;
+				}
+				uriBuilder.setPath(newPath);
+			}
+			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
+				for(CharSequence queryKey : opts.queryParams.keySet()) {
+					uriBuilder.addParameter(queryKey.toString(), opts.queryParams.get(queryKey).toString());
+				}
+			}
+
+			HttpRequestBase request;
+			switch(method) {
+				case "HEAD":
+					request = new HttpHead(uriBuilder.build());
+					break;
+				case "PUT":
+					request = new HttpPut(uriBuilder.build());
+					break;
+				case "POST":
+					request = new HttpPost(uriBuilder.build());
+					break;
+				case "PATCH":
+					request = new HttpPatch(uriBuilder.build());
+					break;
+				case "GET":
+					request = new HttpGet(uriBuilder.build());
+					break;
+				case "DELETE":
+					request = new HttpDelete(uriBuilder.build());
+					break;
+				default:
+					throw new Exception("method was not specified");
+			}
+			if(username != null && username.length() > 0 && password != null && password.length() > 0) {
+				String creds = username + ":" + password;
+				String credHeader = "Basic " + Base64.getEncoder().encodeToString(creds.getBytes());
+				request.addHeader("Authorization",credHeader);
+			}
+
+			//if bearer token
+			if(opts.apiToken != null) {
+				int newLine = opts.apiToken.indexOf('\n');
+				if(newLine > -1)
+					opts.apiToken = opts.apiToken.substring(0, newLine);
+				request.addHeader("Authorization", "Bearer " + opts.apiToken);
+			}
+			//if its oauth signing
+			if(opts.oauth != null) {
+				OauthUtility.signOAuthRequestPlainText(request, opts.oauth.consumerKey, opts.oauth.consumerSecret, opts.oauth.apiKey, opts.oauth.apiSecret, opts);
+			}
+
+			// Headers
+			if(opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
+				request.addHeader("Content-Type", "application/json");
+			}
+
+			if(opts.headers != null && !opts.headers.isEmpty()) {
+				for (CharSequence headerKey : opts.headers.keySet()) {
+					request.addHeader(headerKey.toString(), opts.headers.get(headerKey).toString());
+				}
+			}
+
+			if (opts.body != null) {
+				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase) request;
+				if(opts.body instanceof Map) {
+					if (opts.contentType == "form") {
+						List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
+						for (String key : bodyMap.keySet()) {
+							Object v = bodyMap.get(key);
+							Object rowValue;
+							if (v instanceof CharSequence) {
+								rowValue = v;
+							} else {
+								rowValue = v.toString();
+							}
+							urlParameters.add(new BasicNameValuePair(key, rowValue.toString()));
+						}
+						postRequest.setEntity(new UrlEncodedFormEntity(urlParameters));
+					} else if (opts.contentType == "multi-part-form") {
+						MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+						String rowBoundary = "--" + java.util.UUID.randomUUID().toString() + "--";
+						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
+						for (String key : bodyMap.keySet()) {
+							Object v = bodyMap.get(key);
+							//if multiples..
+							if (v instanceof Collection) {
+								for (String rowValue : (Collection<String>) v) {
+									StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+									entityBuilder.addPart(key, rowBody);
+								}
+							} else {
+								Object rowValue;
+								//convert it
+								if (v instanceof CharSequence) {
+									rowValue = v;
+								} else {
+									rowValue = v.toString();
+								}
+								StringBody rowBody = new StringBody(rowValue.toString(), ContentType.create("text/plain", "UTF-8"));
+								entityBuilder.addPart(key, rowBody);
+							}
+						}
+						entityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
+						entityBuilder.setBoundary(rowBoundary);
+						postRequest.setEntity(entityBuilder.build());
+						//replace the header
+						if (request.containsHeader("Content-Type")) {
+							//append the boundary
+							Header currentType = request.getFirstHeader("Content-Type");
+							String newValue = currentType.getValue();
+							newValue = newValue + "; boundary=" + rowBoundary;
+							request.setHeader("Content-Type", newValue);
+						}
+					} else {
+						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+					}
+				} else if(opts.body instanceof byte[]) {
+					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
+				} else if(opts.body instanceof InputStream) {
+					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body), opts.contentLength != null ? opts.contentLength : -1));
+				} else {
+					postRequest.setEntity(new StringEntity(opts.body.toString()));
+				}
+			}
+
+			withClient(opts,(HttpClient client, BasicCookieStore cookieStore) -> {
+
+				CloseableHttpResponse response = null;
+				try {
+
+					response = (CloseableHttpResponse)client.execute(request);
+					if(response.getStatusLine().getStatusCode() <= 399) {
+						for(Header header : response.getAllHeaders()) {
+							rtn.addHeader(header.getName(), header.getValue());
+						}
+
+
+						for(Header header : response.getHeaders("Set-Cookie")) {
+							Map<String,String> cookies = extractCookie(header.getValue());
+							for(String cookieKey : cookies.keySet()) {
+								BasicClientCookie cookie = new BasicClientCookie(cookieKey, cookies.get(cookieKey));
+								cookie.setPath("/");
+								cookie.setDomain(request.getURI().getHost());
+								cookieStore.addCookie(cookie);
+							}
+						}
+
+
+						HttpEntity entity = response.getEntity();
+
+						if(entity != null) {
+							rtn.setData(response);
+							if(!opts.suppressLog) {
+								log.debug("results of SUCCESSFUL call to {}/{}, results: {}",url,path,rtn.getContent());
+							}
+						} else {
+							rtn.setContent(null);
+						}
+
+
+						rtn.setSuccess(true);
+					} else {
+						if(response.getEntity() != null) {
+							rtn.setData(response);
+						}
+						rtn.setSuccess(false);
+						rtn.setErrorCode(Integer.toString(response.getStatusLine().getStatusCode()));
+						log.warn("path: {} error: {} - {}",path,rtn.getErrorCode(),rtn.getContent());
+					}
+				} catch(Exception ex) {
+					try {
+						log.error("Error occurred processing the response for {} : {}{}",uriBuilder.build().toString(),ex.getMessage(), ex);
+						rtn.setError("Error occurred processing the response for " + uriBuilder.build().toString() + " : " + ex.getMessage());
+					} catch(URISyntaxException uie) {
+						log.error("Error occurred processing the response for {} : {}","invalid uri",ex.getMessage(), ex);
+						rtn.setError("Error occurred processing the response for invalid uri  : " + ex.getMessage());
+
+					}
+
+					rtn.setSuccess(false);
+				} finally {
+					lastCallTime = new Date();
+
+				}
+			});
+
+		} catch(SSLProtocolException sslEx) {
+			log.error("Error Occurred calling API (SSL Exception): {}",sslEx.getMessage(),sslEx);
+			rtn.addError("sslHandshake",  "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
+			rtn.setSuccess(false);
+		} catch (Exception e) {
+			log.error("Error Occurred calling API: " + e.getMessage(),e);
+			rtn.addError("error", e.getMessage());
+			rtn.setSuccess(false);
+		}
+		return rtn;
+	}
+
+
 	public ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, new RequestOptions(), "POST");
 	}
@@ -380,12 +601,11 @@ public class HttpApiClient {
 		}
 
 		//execute
-		ServiceResponse rtn = callApi(url, path, username, password, opts, method);
+		com.morpheusdata.response.ServiceResponse rtn = callApi(url, path, username, password, opts, method);
 		rtn.setData(new LinkedHashMap());
 
 		if(rtn.getContent() != null && rtn.getContent().length() > 0) {
 			try {
-				//need a java based JSON Slurper hmmmm
 				rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
 			} catch(Exception e) {
 				log.debug("Error parsing API response JSON: ${e}", e);

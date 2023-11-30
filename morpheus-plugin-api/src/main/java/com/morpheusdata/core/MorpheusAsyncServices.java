@@ -1,6 +1,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.backup.MorpheusBackupJobService;
+import com.morpheusdata.core.backup.MorpheusBackupRepositoryService;
 import com.morpheusdata.core.backup.MorpheusBackupProviderService;
 import com.morpheusdata.core.backup.MorpheusBackupService;
 import com.morpheusdata.core.cloud.MorpheusCloudService;
@@ -257,6 +258,14 @@ public interface MorpheusAsyncServices {
 	 * @return an instance of the Backup Job Context
 	 */
 	MorpheusBackupJobService getBackupJob();
+
+	/**
+	 * Returns the Backup Repository Context for sync of backup repositories.
+	 * Typically this would be called by a {@link BackupProvider}.
+	 *
+	 * @return an instance of the Backup Repository Context
+	 */
+	MorpheusBackupRepositoryService getBackupRepository();
 
 	/**
 	 * Returns the Process Service

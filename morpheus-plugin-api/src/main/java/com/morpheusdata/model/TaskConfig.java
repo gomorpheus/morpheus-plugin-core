@@ -48,6 +48,286 @@ public class TaskConfig {
 	public ServerConfig server;
 	public Zone zone;
 
+	public Long getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(Long instanceId) {
+		this.instanceId = instanceId;
+	}
+
+	public Long getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(Long containerId) {
+		this.containerId = containerId;
+	}
+
+	public Long getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(Long serverId) {
+		this.serverId = serverId;
+	}
+
+	public String getInstanceName() {
+		return instanceName;
+	}
+
+	public void setInstanceName(String instanceName) {
+		this.instanceName = instanceName;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getContainerName() {
+		return containerName;
+	}
+
+	public void setContainerName(String containerName) {
+		this.containerName = containerName;
+	}
+
+	public String getInternalIp() {
+		return internalIp;
+	}
+
+	public void setInternalIp(String internalIp) {
+		this.internalIp = internalIp;
+	}
+
+	public String getExternalIp() {
+		return externalIp;
+	}
+
+	public void setExternalIp(String externalIp) {
+		this.externalIp = externalIp;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getLocalScriptGitRef() {
+		return localScriptGitRef;
+	}
+
+	public void setLocalScriptGitRef(String localScriptGitRef) {
+		this.localScriptGitRef = localScriptGitRef;
+	}
+
+	public List getResults() {
+		return results;
+	}
+
+	public void setResults(List results) {
+		this.results = results;
+	}
+
+	public Map getCustomOptions() {
+		return customOptions;
+	}
+
+	public void setCustomOptions(Map customOptions) {
+		this.customOptions = customOptions;
+	}
+
+	public Map getEvars() {
+		return evars;
+	}
+
+	public void setEvars(Map evars) {
+		this.evars = evars;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getGroupCode() {
+		return groupCode;
+	}
+
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
+
+	public String getCloudName() {
+		return cloudName;
+	}
+
+	public void setCloudName(String cloudName) {
+		this.cloudName = cloudName;
+	}
+
+	public String getCloudCode() {
+		return cloudCode;
+	}
+
+	public void setCloudCode(String cloudCode) {
+		this.cloudCode = cloudCode;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getUserDisplayName() {
+		return userDisplayName;
+	}
+
+	public void setUserDisplayName(String userDisplayName) {
+		this.userDisplayName = userDisplayName;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUserInitials() {
+		return userInitials;
+	}
+
+	public void setUserInitials(String userInitials) {
+		this.userInitials = userInitials;
+	}
+
+	public String getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(String accountId) {
+		this.accountId = accountId;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
+
+	public String getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+
+	public String getTenantSubdomain() {
+		return tenantSubdomain;
+	}
+
+	public void setTenantSubdomain(String tenantSubdomain) {
+		this.tenantSubdomain = tenantSubdomain;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	public String getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(String sequence) {
+		this.sequence = sequence;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public InstanceConfig getInstance() {
+		return instance;
+	}
+
+	public void setInstance(InstanceConfig instance) {
+		this.instance = instance;
+	}
+
+	public ContainerConfig getContainer() {
+		return container;
+	}
+
+	public void setContainer(ContainerConfig container) {
+		this.container = container;
+	}
+
+	public ServerConfig getServer() {
+		return server;
+	}
+
+	public void setServer(ServerConfig server) {
+		this.server = server;
+	}
+
+	public Zone getZone() {
+		return zone;
+	}
+
+	public void setZone(Zone zone) {
+		this.zone = zone;
+	}
+
 	public static class InstanceConfig {
 		public Long id;
 		public String instanceTypeName;

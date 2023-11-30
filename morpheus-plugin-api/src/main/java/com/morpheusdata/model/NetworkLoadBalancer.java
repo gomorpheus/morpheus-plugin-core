@@ -30,8 +30,8 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 	protected String managementUrl; //link to management UI
 	protected Integer apiPort;
 	protected Integer adminPort;
-	protected boolean sslEnabled = true;
-	protected boolean enabled = true;
+	protected Boolean sslEnabled = true;
+	protected Boolean enabled = true;
 	protected Date dateCreated;
 	protected Date lastUpdated;
 	protected String status = "ok"; //ok, error, warning, offline
@@ -202,20 +202,20 @@ public class NetworkLoadBalancer extends NetworkLoadBalancerIdentityProjection {
 		markDirty("adminPort", adminPort);
 	}
 
-	public boolean isSslEnabled() {
+	public Boolean isSslEnabled() {
 		return sslEnabled;
 	}
 
-	public void setSslEnabled(boolean sslEnabled) {
+	public void setSslEnabled(Boolean sslEnabled) {
 		this.sslEnabled = sslEnabled;
 		markDirty("sslEnabled", sslEnabled);
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 		markDirty("enabled", enabled);
 	}

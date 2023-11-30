@@ -789,9 +789,9 @@ public class SecurityGroupRule extends SecurityGroupRuleIdentityProjection {
 
 	/**
 	 * Is this rule a custom rule or a predefined rule.
-	 * @return boolean
+	 * @return Boolean
 	 */
-	public boolean isCustomRule() {
+	public Boolean isCustomRule() {
 		return ruleType != null && (ruleType.equals("custom") || ruleType.equals("customRule"));
 	}
 
