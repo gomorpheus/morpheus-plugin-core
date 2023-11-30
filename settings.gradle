@@ -1,6 +1,7 @@
 include 'morpheus-plugin-api'
 include 'morpheus-plugin-site'
 include 'morpheus-plugin-docs'
+// include 'morpheus-maas-plugin'
 include 'morpheus-vmware-plugin'
 include ':samples:morpheus-task-plugin'
 include ':samples:morpheus-global-ui-plugin'
