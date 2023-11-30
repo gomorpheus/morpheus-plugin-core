@@ -86,10 +86,6 @@ public class RequestReference {
 		return details;
 	}
 
-	public void setDetails(List<RequestChangeDetail> details) {
-		this.details = details;
-	}
-
 
 	public enum ApprovalStatus {
 		requesting,

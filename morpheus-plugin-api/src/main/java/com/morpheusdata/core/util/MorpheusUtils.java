@@ -416,13 +416,4 @@ public class MorpheusUtils {
 		return rtn;
 	}
 
-	static BigDecimal parseStringBigDecimal(String str) {
-		return parseStringBigDecimal(str, null);
-	}
-
-	static BigDecimal parseStringBigDecimal(String str, BigDecimal defaultValue) {
-		BigDecimal rtn = defaultValue;
-		try { rtn = new BigDecimal(str); } catch(Exception e) {}
-		return rtn;
-	}
 }

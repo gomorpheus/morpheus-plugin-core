@@ -117,6 +117,15 @@ public class BackupJob extends MorpheusModel {
 		this.externalId = externalId;
 	}
 
+	public String getConfig() {
+		return config;
+	}
+
+	public void setConfig(String config) {
+		markDirty("config", config, this.config);
+		this.config = config;
+	}
+
 	public String getRefType() {
 		return refType;
 	}

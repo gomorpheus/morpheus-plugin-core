@@ -1,8 +1,5 @@
 package com.morpheusdata.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.Map;
  */
 @Deprecated
 public class Container extends MorpheusModel {
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+
 	protected Account account;
 	protected Instance instance;
 	protected String internalName;

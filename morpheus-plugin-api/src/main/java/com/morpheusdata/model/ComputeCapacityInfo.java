@@ -18,69 +18,6 @@ public class ComputeCapacityInfo extends MorpheusModel {
 	Long usedCores = 0l;
 	Float maxCpu;
 
-	public Long getMaxCores() {
-		return maxCores;
-	}
-
-	public void setMaxCores(Long maxCores) {
-		this.maxCores = maxCores;
-		markDirty("maxCores", maxCores);
-	}
-
-	public Long getMaxMemory() {
-		return maxMemory;
-	}
-
-	public void setMaxMemory(Long maxMemory) {
-		this.maxMemory = maxMemory;
-		markDirty("maxMemory", maxMemory);
-	}
-
-	public Long getMaxStorage() {
-		return maxStorage;
-	}
-
-	public void setMaxStorage(Long maxStorage) {
-		this.maxStorage = maxStorage;
-		markDirty("maxStorage", maxStorage);
-	}
-
-	public Long getUsedMemory() {
-		return usedMemory;
-	}
-
-	public void setUsedMemory(Long usedMemory) {
-		this.usedMemory = usedMemory;
-		markDirty("usedMemory", usedMemory);
-	}
-
-	public Long getUsedStorage() {
-		return usedStorage;
-	}
-
-	public void setUsedStorage(Long usedStorage) {
-		this.usedStorage = usedStorage;
-		markDirty("usedStorage", usedStorage);
-	}
-
-	public Long getUsedCores() {
-		return usedCores;
-	}
-
-	public void setUsedCores(Long usedCores) {
-		this.usedCores = usedCores;
-		markDirty("usedCores", usedCores);
-	}
-
-	public Float getMaxCpu() {
-		return maxCpu;
-	}
-
-	public void setMaxCpu(Float maxCpu) {
-		this.maxCpu = maxCpu;
-		markDirty("maxCpu", maxCpu);
-	}
-
 	public Map toMap() {
 		Map<String, Object> computeCapacityMap = new HashMap<>();
 		computeCapacityMap.put("maxCores", this.maxCores);

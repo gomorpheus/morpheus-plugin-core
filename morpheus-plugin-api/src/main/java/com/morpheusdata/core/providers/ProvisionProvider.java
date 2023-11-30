@@ -218,16 +218,6 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
-	 * Used to create a new template or image from a given VM if the cloud supports doing so
-	 * @param workload The workload to use as the reference for the template
-	 * @param opts Additional settings, including templateName
-	 * @return ServiceResponse indicates success or failure along with any messages
-	 */
-	default public ServiceResponse cloneToTemplate(Workload workload, Map opts) {
-		return null;
-	}
-
-	/**
 	 * Indicates if this provider supports custom layouts
 	 * @return Boolean
 	 */

@@ -174,13 +174,5 @@ public class Dashboard extends MorpheusModel {
 		markDirty("lastUpdated", lastUpdated, this.lastUpdated);
 		this.lastUpdated = lastUpdated;
 	}
-
-	public List<DashboardItem> getDashboardItems() {
-		return dashboardItems;
-	}
-
-	public void setDashboardItems(List<DashboardItem> dashboardItems) {
-		this.dashboardItems = dashboardItems;
-		markDirty("dashboardItems", dashboardItems);
-	}
+	
 }

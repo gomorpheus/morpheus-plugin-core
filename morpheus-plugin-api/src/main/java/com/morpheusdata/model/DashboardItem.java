@@ -59,8 +59,4 @@ public class DashboardItem extends MorpheusModel {
 		this.groupRow = groupRow;
 	}
 
-	public void setType(DashboardItemType type) {
-		this.type = type;
-		markDirty("type", type);
-	}
 }

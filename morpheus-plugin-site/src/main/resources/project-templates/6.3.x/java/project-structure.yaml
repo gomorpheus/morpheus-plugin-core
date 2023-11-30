@@ -72,12 +72,3 @@ providers:
           template: cypher/CypherProvider.java.hbs
         - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.java"
           template: cypher/CypherModule.java.hbs
-    backup:
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupProvider.java"
-            template: backup/BackupProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupTypeProvider.java"
-            template: backup/BackupTypeProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupExecutionProvider.java"
-            template: backup/BackupExecutionProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupRestoreProvider.java"
-            template: backup/BackupRestoreProvider.java.hbs

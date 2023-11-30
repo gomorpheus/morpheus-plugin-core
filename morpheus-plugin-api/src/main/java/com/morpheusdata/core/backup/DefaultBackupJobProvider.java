@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  * @since 0.13.4
  * @author Dustin DeYoung
  */
-public class DefaultBackupJobProvider implements BackupJobProvider {
+class DefaultBackupJobProvider implements BackupJobProvider {
 
 	static Logger log = LoggerFactory.getLogger(DefaultBackupJobProvider.class);
 
 	Plugin plugin;
 	MorpheusContext morpheus;
 
-	public DefaultBackupJobProvider(Plugin plugin, MorpheusContext morpheus) {
+	DefaultBackupJobProvider(Plugin plugin, MorpheusContext morpheus) {
 		this.plugin = plugin;
 		this.morpheus = morpheus;
 	}

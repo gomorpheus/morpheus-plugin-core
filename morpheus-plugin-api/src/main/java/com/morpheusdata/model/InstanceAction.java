@@ -226,31 +226,4 @@ public class InstanceAction extends MorpheusModel {
 		this.layouts = layouts;
 		markDirty("layouts", layouts);
 	}
-
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-		markDirty("account", account);
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-		markDirty("uuid", uuid);
-	}
-
-	public String getSyncSource() {
-		return syncSource;
-	}
-
-	public void setSyncSource(String syncSource) {
-		this.syncSource = syncSource;
-		markDirty("syncSource", syncSource);
-	}
 }

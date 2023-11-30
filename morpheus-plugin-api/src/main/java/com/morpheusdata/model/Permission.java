@@ -17,15 +17,6 @@ public class Permission extends MorpheusModel {
 	protected String subCategory;
 	protected List<AccessType> availableAccessTypes;
 
-	public String getSubCategory() {
-		return subCategory;
-	}
-
-	public void setSubCategory(String subCategory) {
-		this.subCategory = subCategory;
-		markDirty("subCategory", subCategory);
-	}
-
 	public enum ResourceType {
 		ComputeZoneFolder,
 		ComputeZonePool,

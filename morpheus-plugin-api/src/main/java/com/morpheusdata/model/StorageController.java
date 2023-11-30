@@ -134,36 +134,4 @@ public class StorageController extends StorageControllerIdentityProjection {
 	}
 
 
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
-		markDirty("name", name);
-	}
-
-	@Override
-	public String getControllerKey() {
-		return controllerKey;
-	}
-
-	@Override
-	public void setControllerKey(String controllerKey) {
-		this.controllerKey = controllerKey;
-		markDirty("controllerKey", controllerKey);
-	}
-
-	@Override
-	public String getExternalId() {
-		return externalId;
-	}
-
-	@Override
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-		markDirty("externalId", externalId);
-	}
 }

@@ -5,6 +5,7 @@ public class AccountIntegrationObjectRef  extends MorpheusModel {
 	protected Long refId;
 	protected String refType;
 	protected String category;
+	protected String config;
 	protected String displayName;
 
 	public Long getRefId() {
@@ -32,6 +33,15 @@ public class AccountIntegrationObjectRef  extends MorpheusModel {
 	public void setCategory(String category) {
 		this.category = category;
 		markDirty("category", category, this.category);
+	}
+
+	public String getConfig() {
+		return config;
+	}
+
+	public void setConfig(String config) {
+		this.config = config;
+		markDirty("config", config, this.config);
 	}
 
 	public String getDisplayName() {

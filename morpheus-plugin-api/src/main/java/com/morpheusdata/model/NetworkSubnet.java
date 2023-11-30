@@ -75,42 +75,6 @@ public class NetworkSubnet extends NetworkSubnetIdentityProjection {
 		this.hasFloatingIps = hasFloatingIps;
 	}
 
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-		markDirty("account", account);
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-		markDirty("code", code);
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-		markDirty("category", category);
-	}
-
-	public Long getZonePoolId() {
-		return zonePoolId;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-		markDirty("displayName", displayName);
-	}
-
 	public enum Status {
 		PROVISIONING,
 		AVAILABLE,

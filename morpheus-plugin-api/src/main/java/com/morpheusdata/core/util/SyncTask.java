@@ -2,7 +2,10 @@ package com.morpheusdata.core.util;
 
 import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.MorpheusModel;
-import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import org.slf4j.Logger;
@@ -13,8 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * This Utility Class provides an rxJava compatible means for syncing remote API objects with local/morpheus backed models
@@ -64,14 +65,6 @@ public class SyncTask<Projection, ApiItem, Model> {
 	private OnUpdateFunction<UpdateItem<Model, ApiItem>> onUpdateFunction;
 	private OnAddFunction<ApiItem> onAddFunction;
 	private OnErrorfunction onErrorfunction;
-	
-	public static ExecutorService syncSchedulerThreads;
-	public static Scheduler syncScheduler;
-	static {
-		syncSchedulerThreads = Executors.newFixedThreadPool(20);
-		syncScheduler = Schedulers.from(syncSchedulerThreads);
-
-	}
 
 	public SyncTask(Observable<Projection> domainRecords, Collection<ApiItem> apiItems) {
 		this.domainRecords = domainRecords.publish().autoConnect(2);
@@ -256,13 +249,13 @@ public class SyncTask<Projection, ApiItem, Model> {
 	public void startAsync() {
 		//do all the subscribe crapola;
 		//delete missing
-		Completable deleteCompletable = Completable.fromObservable(domainRecords.subscribeOn(syncScheduler)
+		Completable deleteCompletable = Completable.fromObservable(domainRecords.subscribeOn(Schedulers.io())
 			.observeOn(Schedulers.computation())
 			.filter((Projection domainMatch) -> {
 				return !matchesExisting(domainMatch);
 			})
 			.buffer(bufferSize)
-			.observeOn(syncScheduler)
+			.observeOn(Schedulers.io())
 			.doOnNext((List<Projection> itemsToDelete) -> {
 				this.onDeleteFunction.method(itemsToDelete);
 			}).doOnError( (Throwable t) -> {
@@ -274,13 +267,13 @@ public class SyncTask<Projection, ApiItem, Model> {
 			})
 		);
 
-		Completable updateCompletable = Completable.fromObservable(domainRecords.subscribeOn(syncScheduler)
+		Completable updateCompletable = Completable.fromObservable(domainRecords.subscribeOn(Schedulers.io())
 			.observeOn(Schedulers.computation())
 			.filter(this::matchesExisting)
 			.map(this::buildUpdateItemDto)
 			.buffer(bufferSize)
-			.observeOn(syncScheduler)
-			.flatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
+			.observeOn(Schedulers.io())
+			.concatMap( (List<UpdateItemDto<Projection, ApiItem>> mapItems) -> {
 				return onLoadObjectDetailsFunction.method(mapItems).buffer(bufferSize);
 			})
 			.doOnNext( (updateItems) -> {

@@ -21,6 +21,7 @@ public class ReportResult extends MorpheusModel {
 	protected User createdBy;
 	protected String name;
 	protected ReportType type;
+	protected Map configMap;
 	protected Status status = Status.requested;
 	protected String reportTitle;
 	protected String filterTitle;
@@ -48,6 +49,15 @@ public class ReportResult extends MorpheusModel {
 
 	public void setType(ReportType type) {
 		this.type = type;
+	}
+
+	@Override
+	public Map getConfigMap() {
+		return configMap;
+	}
+
+	public void setConfigMap(Map configMap) {
+		this.configMap = configMap;
 	}
 
 	public Status getStatus() {

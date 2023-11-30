@@ -16,6 +16,8 @@ public class ComputeServerAccess extends MorpheusModel {
 	protected String status = "provisioning";
 	protected String statusMessage;
 	protected String errorMessage;
+	protected String config;
+
 
 	public String getAccessType() {
 		return accessType;
@@ -96,5 +98,14 @@ public class ComputeServerAccess extends MorpheusModel {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 		markDirty("errorMessage", errorMessage);
+	}
+
+	public String getConfig() {
+		return config;
+	}
+
+	public void setConfig(String config) {
+		this.config = config;
+		markDirty("config", config);
 	}
 }

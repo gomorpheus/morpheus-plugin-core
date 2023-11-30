@@ -95,13 +95,4 @@ public class Replication extends MorpheusModel {
 		markDirty("account", account, this.account);
 		this.account = account;
 	}
-
-	public User getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(User createdBy) {
-		this.createdBy = createdBy;
-		markDirty("createdBy", createdBy);
-	}
 }

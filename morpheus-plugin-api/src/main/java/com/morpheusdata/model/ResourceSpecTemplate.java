@@ -282,31 +282,5 @@ public class ResourceSpecTemplate extends ResourceSpecTemplateIdentityProjection
 		this.failOnError = failOnError;
 		markDirty("failOnError", failOnError);
 	}
-
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-		markDirty("account", account);
-	}
-
-	public String getResourceType() {
-		return resourceType;
-	}
-
-	public void setResourceType(String resourceType) {
-		this.resourceType = resourceType;
-		markDirty("resourceType", resourceType);
-	}
-
-	public FileContent getTemplate() {
-		return template;
-	}
-
-	public void setTemplate(FileContent template) {
-		this.template = template;
-		markDirty("template", template);
-	}
+	
 }

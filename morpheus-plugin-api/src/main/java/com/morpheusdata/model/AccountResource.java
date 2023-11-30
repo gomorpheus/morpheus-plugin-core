@@ -5,7 +5,6 @@ import com.morpheusdata.model.projection.AccountResourceIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.Date;
-import java.util.List;
 
 public class AccountResource extends AccountResourceIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -29,7 +28,6 @@ public class AccountResource extends AccountResourceIdentityProjection {
 	protected String tags;
 	protected Boolean enabled = true;
 	protected Boolean locked = false;
-	protected List<MetadataTag> metadata;
 	//related stuff
 	protected Long resourcePoolId;
 	protected String resourcePoolName;
@@ -248,14 +246,6 @@ public class AccountResource extends AccountResourceIdentityProjection {
 
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
-	}
-
-	public List<MetadataTag> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(List<MetadataTag> metadata) {
-		this.metadata = metadata;
 	}
 
 	public Long getResourcePoolId() {

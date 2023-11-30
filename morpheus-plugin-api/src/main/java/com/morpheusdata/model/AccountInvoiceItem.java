@@ -1,12 +1,11 @@
 package com.morpheusdata.model;
 
-import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.AccountInvoice;
+import com.morpheusdata.model.MorpheusModel;
 
 import java.util.Date;
 
 public class AccountInvoiceItem extends MorpheusModel {
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected AccountInvoice invoice;
 	//linkage
 	protected String refType;
@@ -28,7 +27,7 @@ public class AccountInvoiceItem extends MorpheusModel {
 	protected String itemDescription;
 	protected String productId;
 	protected String productCode;
-	protected String productName;
+	protected String procutName;
 	protected String itemSeller;
 	protected String itemAction;
 	//usage
@@ -74,7 +73,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setInvoice(AccountInvoice invoice) {
 		this.invoice = invoice;
-		markDirty("invoice", invoice, this.invoice);
 	}
 
 	public String getRefType() {
@@ -83,7 +81,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRefType(String refType) {
 		this.refType = refType;
-		markDirty("refType", refType, this.refType);
 	}
 
 	public Long getRefId() {
@@ -92,7 +89,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRefId(Long refId) {
 		this.refId = refId;
-		markDirty("refId", refId, this.refId);
 	}
 
 	public String getRefName() {
@@ -101,7 +97,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRefName(String refName) {
 		this.refName = refName;
-		markDirty("refName", refName, this.refName);
 	}
 
 	public String getRefCategory() {
@@ -110,7 +105,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRefCategory(String refCategory) {
 		this.refCategory = refCategory;
-		markDirty("refCategory", refCategory, this.refCategory);
 	}
 
 	public String getRawData() {
@@ -119,7 +113,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
-		markDirty("rawData", rawData, this.rawData);
 	}
 
 	public String getExternalId() {
@@ -128,7 +121,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-		markDirty("externalId", externalId, this.externalId);
 	}
 
 	public String getResourceExternalId() {
@@ -137,7 +129,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setResourceExternalId(String resourceExternalId) {
 		this.resourceExternalId = resourceExternalId;
-		markDirty("resourceExternalId", resourceExternalId, this.resourceExternalId);
 	}
 
 	public String getRateExternalId() {
@@ -146,7 +137,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRateExternalId(String rateExternalId) {
 		this.rateExternalId = rateExternalId;
-		markDirty("rateExternalId", rateExternalId, this.rateExternalId);
 	}
 
 	public String getUniqueId() {
@@ -155,7 +145,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
-		markDirty("uniqueId", uniqueId, this.uniqueId);
 	}
 
 	public Date getStartDate() {
@@ -164,7 +153,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
-		markDirty("startDate", startDate, this.startDate);
 	}
 
 	public Date getEndDate() {
@@ -173,7 +161,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		markDirty("endDate", endDate, this.endDate);
 	}
 
 	public String getItemId() {
@@ -182,7 +169,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
-		markDirty("itemId", itemId, this.itemId);
 	}
 
 	public String getItemType() {
@@ -191,7 +177,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
-		markDirty("itemType", itemType, this.itemType);
 	}
 
 	public String getItemName() {
@@ -200,7 +185,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
-		markDirty("itemName", itemName, this.itemName);
 	}
 
 	public String getItemDescription() {
@@ -209,7 +193,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemDescription(String itemDescription) {
 		this.itemDescription = itemDescription;
-		markDirty("itemDescription", itemDescription, this.itemDescription);
 	}
 
 	public String getProductId() {
@@ -218,7 +201,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setProductId(String productId) {
 		this.productId = productId;
-		markDirty("productId", productId, this.productId);
 	}
 
 	public String getProductCode() {
@@ -227,16 +209,14 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setProductCode(String productCode) {
 		this.productCode = productCode;
-		markDirty("productCode", productCode, this.productCode);
 	}
 
-	public String getProductName() {
-		return productName;
+	public String getProcutName() {
+		return procutName;
 	}
 
-	public void setProductName(String productName) {
-		this.productName = productName;
-		markDirty("productName", productName, this.productName);
+	public void setProcutName(String procutName) {
+		this.procutName = procutName;
 	}
 
 	public String getItemSeller() {
@@ -245,7 +225,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemSeller(String itemSeller) {
 		this.itemSeller = itemSeller;
-		markDirty("itemSeller", itemSeller, this.itemSeller);
 	}
 
 	public String getItemAction() {
@@ -254,7 +233,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemAction(String itemAction) {
 		this.itemAction = itemAction;
-		markDirty("itemAction", itemAction, this.itemAction);
 	}
 
 	public String getUsageType() {
@@ -263,7 +241,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setUsageType(String usageType) {
 		this.usageType = usageType;
-		markDirty("usageType", usageType, this.usageType);
 	}
 
 	public String getUsageCategory() {
@@ -272,7 +249,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setUsageCategory(String usageCategory) {
 		this.usageCategory = usageCategory;
-		markDirty("usageCategory", usageCategory, this.usageCategory);
 	}
 
 	public String getUsageService() {
@@ -281,7 +257,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setUsageService(String usageService) {
 		this.usageService = usageService;
-		markDirty("usageService", usageService, this.usageService);
 	}
 
 	public String getRateId() {
@@ -290,7 +265,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRateId(String rateId) {
 		this.rateId = rateId;
-		markDirty("rateId", rateId, this.rateId);
 	}
 
 	public String getRateClass() {
@@ -299,7 +273,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRateClass(String rateClass) {
 		this.rateClass = rateClass;
-		markDirty("rateClass", rateClass, this.rateClass);
 	}
 
 	public String getRateUnit() {
@@ -308,7 +281,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRateUnit(String rateUnit) {
 		this.rateUnit = rateUnit;
-		markDirty("rateUnit", rateUnit, this.rateUnit);
 	}
 
 	public String getRateTerm() {
@@ -317,7 +289,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRateTerm(String rateTerm) {
 		this.rateTerm = rateTerm;
-		markDirty("rateTerm", rateTerm, this.rateTerm);
 	}
 
 	public Double getItemUsage() {
@@ -326,7 +297,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemUsage(Double itemUsage) {
 		this.itemUsage = itemUsage;
-		markDirty("itemUsage", itemUsage, this.itemUsage);
 	}
 
 	public Double getItemRate() {
@@ -335,7 +305,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemRate(Double itemRate) {
 		this.itemRate = itemRate;
-		markDirty("itemRate", itemRate, this.itemRate);
 	}
 
 	public Double getItemCost() {
@@ -344,7 +313,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemCost(Double itemCost) {
 		this.itemCost = itemCost;
-		markDirty("itemCost", itemCost, this.itemCost);
 	}
 
 	public Double getItemPrice() {
@@ -353,7 +321,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemPrice(Double itemPrice) {
 		this.itemPrice = itemPrice;
-		markDirty("itemPrice", itemPrice, this.itemPrice);
 	}
 
 	public Double getItemTax() {
@@ -362,7 +329,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemTax(Double itemTax) {
 		this.itemTax = itemTax;
-		markDirty("itemTax", itemTax, this.itemTax);
 	}
 
 	public Double getAmortizedCost() {
@@ -371,7 +337,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setAmortizedCost(Double amortizedCost) {
 		this.amortizedCost = amortizedCost;
-		markDirty("amortizedCost", amortizedCost, this.amortizedCost);
 	}
 
 	public Double getOnDemandCost() {
@@ -380,7 +345,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setOnDemandCost(Double onDemandCost) {
 		this.onDemandCost = onDemandCost;
-		markDirty("onDemandCost", onDemandCost, this.onDemandCost);
 	}
 
 	public String getItemTerm() {
@@ -389,7 +353,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setItemTerm(String itemTerm) {
 		this.itemTerm = itemTerm;
-		markDirty("itemTerm", itemTerm, this.itemTerm);
 	}
 
 	public String getTaxType() {
@@ -398,7 +361,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setTaxType(String taxType) {
 		this.taxType = taxType;
-		markDirty("taxType", taxType, this.taxType);
 	}
 
 	public String getCostProject() {
@@ -407,7 +369,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setCostProject(String costProject) {
 		this.costProject = costProject;
-		markDirty("costProject", costProject, this.costProject);
 	}
 
 	public String getCostTeam() {
@@ -416,7 +377,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setCostTeam(String costTeam) {
 		this.costTeam = costTeam;
-		markDirty("costTeam", costTeam, this.costTeam);
 	}
 
 	public String getCostEnvironment() {
@@ -425,7 +385,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setCostEnvironment(String costEnvironment) {
 		this.costEnvironment = costEnvironment;
-		markDirty("costEnvironment", costEnvironment, this.costEnvironment);
 	}
 
 	public String getAvailabilityZone() {
@@ -434,7 +393,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setAvailabilityZone(String availabilityZone) {
 		this.availabilityZone = availabilityZone;
-		markDirty("availabilityZone", availabilityZone, this.availabilityZone);
 	}
 
 	public String getOperatingSystem() {
@@ -443,7 +401,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setOperatingSystem(String operatingSystem) {
 		this.operatingSystem = operatingSystem;
-		markDirty("operatingSystem", operatingSystem, this.operatingSystem);
 	}
 
 	public String getPurchaseOption() {
@@ -452,7 +409,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setPurchaseOption(String purchaseOption) {
 		this.purchaseOption = purchaseOption;
-		markDirty("purchaseOption", purchaseOption, this.purchaseOption);
 	}
 
 	public String getTenancy() {
@@ -461,7 +417,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setTenancy(String tenancy) {
 		this.tenancy = tenancy;
-		markDirty("tenancy", tenancy, this.tenancy);
 	}
 
 	public String getDatabaseEngine() {
@@ -470,7 +425,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setDatabaseEngine(String databaseEngine) {
 		this.databaseEngine = databaseEngine;
-		markDirty("databaseEngine", databaseEngine, this.databaseEngine);
 	}
 
 	public String getBillingEntity() {
@@ -479,7 +433,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setBillingEntity(String billingEntity) {
 		this.billingEntity = billingEntity;
-		markDirty("billingEntity", billingEntity, this.billingEntity);
 	}
 
 	public String getRegionCode() {
@@ -488,7 +441,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
-		markDirty("regionCode", regionCode, this.regionCode);
 	}
 
 	public Long getLastInvoiceSyncTimestamp() {
@@ -497,7 +449,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setLastInvoiceSyncTimestamp(Long lastInvoiceSyncTimestamp) {
 		this.lastInvoiceSyncTimestamp = lastInvoiceSyncTimestamp;
-		markDirty("lastInvoiceSyncTimestamp", lastInvoiceSyncTimestamp, this.lastInvoiceSyncTimestamp);
 	}
 
 	/**
@@ -510,7 +461,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setDateCheckHash(String dateCheckHash) {
 		this.dateCheckHash = dateCheckHash;
-		markDirty("dateCheckHash", dateCheckHash, this.dateCheckHash);
 	}
 
 	public Date getDateCreated() {
@@ -519,7 +469,6 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-		markDirty("dateCreated", dateCreated, this.dateCreated);
 	}
 
 	public Date getLastUpdated() {
@@ -528,6 +477,5 @@ public class AccountInvoiceItem extends MorpheusModel {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
-		markDirty("lastUpdated", lastUpdated, this.lastUpdated);
 	}
 }

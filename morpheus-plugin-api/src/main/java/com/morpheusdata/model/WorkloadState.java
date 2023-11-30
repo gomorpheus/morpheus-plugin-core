@@ -45,6 +45,7 @@ public class WorkloadState extends MorpheusModel {
 	protected String status;
 	protected String statusMessage;
 	protected String errorMessage;
+	protected String config;
 	protected String rawData;
 	protected String stateData;
 	protected String planData;
@@ -357,6 +358,17 @@ public class WorkloadState extends MorpheusModel {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 		markDirty("errorMessage", errorMessage);
+	}
+
+	@Override
+	public String getConfig() {
+		return config;
+	}
+
+	@Override
+	public void setConfig(String config) {
+		this.config = config;
+		markDirty("config", config);
 	}
 
 	public String getRawData() {

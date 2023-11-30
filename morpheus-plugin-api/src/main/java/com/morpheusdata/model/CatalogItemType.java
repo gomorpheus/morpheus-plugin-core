@@ -20,6 +20,7 @@ public class CatalogItemType extends MorpheusModel {
 	protected String visibility;
 	protected String name;
 	protected String description;
+	protected Map configMap;
 	protected String refType;
 	protected String refId;
 	protected Boolean enabled;
@@ -61,6 +62,15 @@ public class CatalogItemType extends MorpheusModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public Map getConfigMap() {
+		return configMap;
+	}
+
+	public void setConfigMap(Map configMap) {
+		this.configMap = configMap;
 	}
 
 	public String getRefType() {

@@ -1,9 +1,5 @@
 properties([pipelineTriggers([githubPush()])])
 
-def getImageTag() {
-  findFiles(glob:'build/libs/*.jar').first().name.find(/\d+\.\d+\.\d+/)
-}
-
 pipeline {
   agent {
     label "builder-5"
@@ -13,7 +9,7 @@ pipeline {
     stage ('morpheus-plugin-site - Checkout') {
       steps {
         checkout([$class: 'GitSCM', 
-                  branches: [[name: params.BUILD_TAG]], 
+                  branches: [[name: '*/v1.0.x']], 
                   doGenerateSubmoduleConfigurations: false, 
                   extensions: [], 
                   submoduleCfg: [], 
@@ -38,19 +34,12 @@ sh """
       steps {
         script {
           docker.withRegistry('https://registry.prod.den.bertramlabs.com/v2/','06fec06b-b08a-4509-a6c8-96661d3354c3') {
-            def image = docker.build("registry.prod.den.bertramlabs.com/library/morpheus-plugin-site:${getImageTag()}",
+            def image = docker.build("registry.prod.den.bertramlabs.com/library/morpheus-plugin-site:${findFiles(glob:'build/libs/*.jar').first().name.find(/\d+\.\d+\.\d+/)}",
                                      "./morpheus-plugin-site")
             image.push()
             image.push('latest')
           }
         }
-      }
-    }
-    stage ('Run Mend scan') {
-      steps {
-sh """
-mend image registry.prod.den.bertramlabs.com/library/morpheus-plugin-site:${getImageTag()} --non-interactive --scope "Morpheus Plugin Core//morpheus-plugin-site-${getImageTag()}"
-"""
       }
     }
   }
