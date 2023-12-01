@@ -193,7 +193,7 @@ public class NetworkUtility {
 					endValue += part * (long) Math.pow(256d, (double) index);
 				}
 
-				cnt = (int) Math.abs(startValue - endValue);
+				cnt = (int) Math.abs(startValue - endValue) + 1;
 			}
 		} catch (Exception e) {
 			log.error("error in calculating address count for {}, {}", startAddress, endAddress, e);
