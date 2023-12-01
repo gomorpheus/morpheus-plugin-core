@@ -113,7 +113,7 @@ public class InvoiceUtility {
 		invoice.setServerId(resource.getServerId());
 		invoice.setServerName(resource.getServerName());
 		invoice.setResourceName(resource.getName());
-		invoice.setResourceType(resource.getResourceType());
+		invoice.setResourceType(resource.getType().getName());
 		invoice.setResourceUuid(resource.getUuid());
 	}
 
