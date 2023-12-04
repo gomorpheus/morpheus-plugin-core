@@ -10,6 +10,7 @@ public class WorkspaceType extends MorpheusModel {
 	protected String uuid;
 	//lists
 	protected List<OptionType> optionTypes;
+	protected List<OptionTypeFieldGroup> optionTypeFieldGroups;
 
 	public String getCode() {
 		return code;
@@ -54,6 +55,15 @@ public class WorkspaceType extends MorpheusModel {
 	public void setOptionTypes(List<OptionType> optionTypes) {
 		this.optionTypes = optionTypes;
 		markDirty("optionTypes", optionTypes);
+	}
+
+	public List<OptionTypeFieldGroup> getOptionTypeFieldGroups() {
+		return optionTypeFieldGroups;
+	}
+
+	public void setOptionTypeFieldGroups(List<OptionTypeFieldGroup> optionTypeFieldGroups) {
+		this.optionTypeFieldGroups = optionTypeFieldGroups;
+		markDirty("optionTypeFieldGroups", optionTypeFieldGroups);
 	}
 	
 }
