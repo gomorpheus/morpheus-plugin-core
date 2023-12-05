@@ -3,6 +3,7 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.model.*;
 import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressSeqRange;
 import inet.ipaddr.IPAddressString;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
@@ -648,6 +649,20 @@ public class NetworkUtility {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Returns true if the ip address ipToCheck is within the ip range defined via the cidr
+	 * Supporting both ipv6 and ipv4 addresses
+	 * @param cidr cidr address for the range
+	 * @param ipToCheck ip address to check
+	 * @return true if the address is within the range
+	 */
+	public static boolean checkIpInCidrRange(String cidr, String ipToCheck) throws AddressStringException{
+		IPAddressString ipString = new IPAddressString(cidr);
+		IPAddressSeqRange ipRange = ipString.toSequentialRange();
+		IPAddress inputIPAddress = new IPAddressString(ipToCheck).toAddress();
+		return ipRange.contains(inputIPAddress);
 	}
 
 }
