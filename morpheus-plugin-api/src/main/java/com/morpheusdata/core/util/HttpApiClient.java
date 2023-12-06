@@ -131,7 +131,7 @@ public class HttpApiClient {
 	}
 
 	public ServiceResponse callApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
-		log.info("Calling Api: {} - {}",url,path);
+		log.debug("Calling Api: {} - {}",url,path);
 		ServiceResponse rtn = new ServiceResponse();
 		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
