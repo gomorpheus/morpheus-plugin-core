@@ -21,7 +21,8 @@ import java.util.List;
 public class Network extends NetworkIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	public Cloud cloud;
-	protected Long zonePoolId;
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected CloudPool cloudPool;
 	protected NetworkType type;
 	protected String networkType = "vlan"; //old field - replaced with type domain
 	protected String displayName;
@@ -87,9 +88,13 @@ public class Network extends NetworkIdentityProjection {
 		markDirty("cloud", id);
 	}
 
-	public void setZonePoolId(Long zonePoolId) {
-		this.zonePoolId = zonePoolId;
-		markDirty("zonePoolId", zonePoolId);
+	public CloudPool getCloudPool() {
+		return cloudPool;
+	}
+
+	public void setCloudPool(CloudPool cloudPool) {
+		this.cloudPool = cloudPool;
+		markDirty("cloudPool", cloudPool);
 	}
 
 	public NetworkType getType() {
