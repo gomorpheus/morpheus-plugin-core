@@ -3,7 +3,6 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import groovy.json.JsonOutput;
-import groovy.json.JsonParserType;
 import groovy.json.JsonSlurper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
@@ -77,8 +76,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Map;
+
 import org.xml.sax.SAXParseException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * Utility methods for calling external APIs in a standardized way.
@@ -103,22 +102,22 @@ public class HttpApiClient {
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
 	public ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
-		return callApi(url,path,username,password,new RequestOptions(),"POST");
+		return callApi(url, path, username, password, new RequestOptions(), "POST");
 	}
 
 	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
-		return callApi(url,path,username,password,opts,"POST");
+		return callApi(url, path, username, password, opts, "POST");
 	}
 
 	private void sleepIfNecessary() {
 		try {
 			Long tmpThrottleRate = throttleRate;
-			if(tmpThrottleRate != null && tmpThrottleRate > 0) {
-				if(lastCallTime != null) {
+			if (tmpThrottleRate != null && tmpThrottleRate > 0) {
+				if (lastCallTime != null) {
 					Date now = new Date();
 					Long timeDiff = now.getTime() - lastCallTime.getTime();
 					tmpThrottleRate = tmpThrottleRate - timeDiff;
-					if(tmpThrottleRate > 0) {
+					if (tmpThrottleRate > 0) {
 						Thread.sleep(tmpThrottleRate);
 					}
 				} else {
@@ -126,16 +125,16 @@ public class HttpApiClient {
 				}
 
 			}
-		} catch(InterruptedException ignore) {
+		} catch (InterruptedException ignore) {
 
 		}
 
 	}
 
 	public ServiceResponse callApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
-		log.debug("Calling Api: {} - {}",url,path);
+		log.debug("Calling Api: {} - {}", url, path);
 		ServiceResponse rtn = new ServiceResponse();
-		LinkedHashMap<String,Object> data = new LinkedHashMap<>();
+		LinkedHashMap<String, Object> data = new LinkedHashMap<>();
 		rtn.setData(data);
 		URIBuilder uriBuilder = new URIBuilder(url);
 		try {
@@ -146,25 +145,25 @@ public class HttpApiClient {
 			String existingPath = uriBuilder.getPath();
 			// retain path on base url if one exists
 			String newPath = path;
-			if(path != null && path.length() > 0) {
-				if(existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
-					if(existingPath.endsWith("/") && path.startsWith("/")) {
+			if (path != null && path.length() > 0) {
+				if (existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
+					if (existingPath.endsWith("/") && path.startsWith("/")) {
 						existingPath = existingPath.substring(0, existingPath.length() - 1);
-					} else if(!existingPath.endsWith("/") && !path.startsWith("/")) {
+					} else if (!existingPath.endsWith("/") && !path.startsWith("/")) {
 						existingPath += "/";
 					}
 					newPath = existingPath + path;
 				}
 				uriBuilder.setPath(newPath);
 			}
-			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
-				for(CharSequence queryKey : opts.queryParams.keySet()) {
+			if (opts.queryParams != null && !opts.queryParams.isEmpty()) {
+				for (CharSequence queryKey : opts.queryParams.keySet()) {
 					uriBuilder.addParameter(queryKey.toString(), opts.queryParams.get(queryKey).toString());
 				}
 			}
 
 			HttpRequestBase request;
-			switch(method) {
+			switch (method) {
 				case "HEAD":
 					request = new HttpHead(uriBuilder.build());
 					break;
@@ -186,30 +185,30 @@ public class HttpApiClient {
 				default:
 					throw new Exception("method was not specified");
 			}
-			if(username != null && username.length() > 0 && password != null && password.length() > 0) {
+			if (username != null && username.length() > 0 && password != null && password.length() > 0) {
 				String creds = username + ":" + password;
 				String credHeader = "Basic " + Base64.getEncoder().encodeToString(creds.getBytes());
-				request.addHeader("Authorization",credHeader);
+				request.addHeader("Authorization", credHeader);
 			}
 
 			//if bearer token
-			if(opts.apiToken != null) {
+			if (opts.apiToken != null) {
 				int newLine = opts.apiToken.indexOf('\n');
-				if(newLine > -1)
+				if (newLine > -1)
 					opts.apiToken = opts.apiToken.substring(0, newLine);
 				request.addHeader("Authorization", "Bearer " + opts.apiToken);
 			}
 			//if its oauth signing
-			if(opts.oauth != null) {
+			if (opts.oauth != null) {
 				OauthUtility.signOAuthRequestPlainText(request, opts.oauth.consumerKey, opts.oauth.consumerSecret, opts.oauth.apiKey, opts.oauth.apiSecret, opts);
 			}
 
 			// Headers
-			if(opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
+			if (opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
 				request.addHeader("Content-Type", "application/json");
 			}
 
-			if(opts.headers != null && !opts.headers.isEmpty()) {
+			if (opts.headers != null && !opts.headers.isEmpty()) {
 				for (CharSequence headerKey : opts.headers.keySet()) {
 					request.addHeader(headerKey.toString(), opts.headers.get(headerKey).toString());
 				}
@@ -217,7 +216,7 @@ public class HttpApiClient {
 
 			if (opts.body != null) {
 				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase) request;
-				if(opts.body instanceof Map) {
+				if (opts.body instanceof Map) {
 					if (opts.contentType == "form") {
 						List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
@@ -270,30 +269,30 @@ public class HttpApiClient {
 					} else {
 						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
 					}
-				} else if(opts.body instanceof byte[]) {
+				} else if (opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
-				} else if(opts.body instanceof InputStream) {
-					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body), opts.contentLength != null ? opts.contentLength : -1));
+				} else if (opts.body instanceof InputStream) {
+					postRequest.setEntity(new InputStreamEntity((InputStream) (opts.body), opts.contentLength != null ? opts.contentLength : -1));
 				} else {
 					postRequest.setEntity(new StringEntity(opts.body.toString()));
 				}
 			}
 
-			withClient(opts,(HttpClient client, BasicCookieStore cookieStore) -> {
+			withClient(opts, (HttpClient client, BasicCookieStore cookieStore) -> {
 
 				CloseableHttpResponse response = null;
 				try {
 
-					response = (CloseableHttpResponse)client.execute(request);
-					if(response.getStatusLine().getStatusCode() <= 399) {
-						for(Header header : response.getAllHeaders()) {
+					response = (CloseableHttpResponse) client.execute(request);
+					if (response.getStatusLine().getStatusCode() <= 399) {
+						for (Header header : response.getAllHeaders()) {
 							rtn.addHeader(header.getName(), header.getValue());
 						}
 
 
-						for(Header header : response.getHeaders("Set-Cookie")) {
-							Map<String,String> cookies = extractCookie(header.getValue());
-							for(String cookieKey : cookies.keySet()) {
+						for (Header header : response.getHeaders("Set-Cookie")) {
+							Map<String, String> cookies = extractCookie(header.getValue());
+							for (String cookieKey : cookies.keySet()) {
 								BasicClientCookie cookie = new BasicClientCookie(cookieKey, cookies.get(cookieKey));
 								cookie.setPath("/");
 								cookie.setDomain(request.getURI().getHost());
@@ -304,10 +303,10 @@ public class HttpApiClient {
 
 						HttpEntity entity = response.getEntity();
 
-						if(entity != null) {
+						if (entity != null) {
 							rtn.setContent(EntityUtils.toString(entity));
-							if(!opts.suppressLog) {
-								log.debug("results of SUCCESSFUL call to {}/{}, results: {}",url,path,rtn.getContent());
+							if (!opts.suppressLog) {
+								log.debug("results of SUCCESSFUL call to {}/{}, results: {}", url, path, rtn.getContent());
 							}
 						} else {
 							rtn.setContent(null);
@@ -316,19 +315,19 @@ public class HttpApiClient {
 
 						rtn.setSuccess(true);
 					} else {
-						if(response.getEntity() != null) {
+						if (response.getEntity() != null) {
 							rtn.setContent(EntityUtils.toString(response.getEntity()));
 						}
 						rtn.setSuccess(false);
 						rtn.setErrorCode(Integer.toString(response.getStatusLine().getStatusCode()));
-						log.warn("path: {} error: {} - {}",path,rtn.getErrorCode(),rtn.getContent());
+						log.warn("path: {} error: {} - {}", path, rtn.getErrorCode(), rtn.getContent());
 					}
-				} catch(Exception ex) {
+				} catch (Exception ex) {
 					try {
-						log.error("Error occurred processing the response for {} : {}{}",uriBuilder.build().toString(),ex.getMessage(), ex);
+						log.error("Error occurred processing the response for {} : {}{}", uriBuilder.build().toString(), ex.getMessage(), ex);
 						rtn.setError("Error occurred processing the response for " + uriBuilder.build().toString() + " : " + ex.getMessage());
-					} catch(URISyntaxException uie) {
-						log.error("Error occurred processing the response for {} : {}","invalid uri",ex.getMessage(), ex);
+					} catch (URISyntaxException uie) {
+						log.error("Error occurred processing the response for {} : {}", "invalid uri", ex.getMessage(), ex);
 						rtn.setError("Error occurred processing the response for invalid uri  : " + ex.getMessage());
 
 					}
@@ -336,7 +335,7 @@ public class HttpApiClient {
 					rtn.setSuccess(false);
 				} finally {
 					lastCallTime = new Date();
-					if(response != null) {
+					if (response != null) {
 						try {
 							response.close();
 						} catch (IOException ignored) {
@@ -346,12 +345,12 @@ public class HttpApiClient {
 				}
 			});
 
-		} catch(SSLProtocolException sslEx) {
-			log.error("Error Occurred calling API (SSL Exception): {}",sslEx.getMessage(),sslEx);
-			rtn.addError("sslHandshake",  "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
+		} catch (SSLProtocolException sslEx) {
+			log.error("Error Occurred calling API (SSL Exception): {}", sslEx.getMessage(), sslEx);
+			rtn.addError("sslHandshake", "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
 			rtn.setSuccess(false);
 		} catch (Exception e) {
-			log.error("Error Occurred calling API: " + e.getMessage(),e);
+			log.error("Error Occurred calling API: " + e.getMessage(), e);
 			rtn.addError("error", e.getMessage());
 			rtn.setSuccess(false);
 		}
@@ -370,25 +369,25 @@ public class HttpApiClient {
 			String existingPath = uriBuilder.getPath();
 			// retain path on base url if one exists
 			String newPath = path;
-			if(path != null && path.length() > 0) {
-				if(existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
-					if(existingPath.endsWith("/") && path.startsWith("/")) {
+			if (path != null && path.length() > 0) {
+				if (existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {
+					if (existingPath.endsWith("/") && path.startsWith("/")) {
 						existingPath = existingPath.substring(0, existingPath.length() - 1);
-					} else if(!existingPath.endsWith("/") && !path.startsWith("/")) {
+					} else if (!existingPath.endsWith("/") && !path.startsWith("/")) {
 						existingPath += "/";
 					}
 					newPath = existingPath + path;
 				}
 				uriBuilder.setPath(newPath);
 			}
-			if(opts.queryParams != null && !opts.queryParams.isEmpty()) {
-				for(CharSequence queryKey : opts.queryParams.keySet()) {
+			if (opts.queryParams != null && !opts.queryParams.isEmpty()) {
+				for (CharSequence queryKey : opts.queryParams.keySet()) {
 					uriBuilder.addParameter(queryKey.toString(), opts.queryParams.get(queryKey).toString());
 				}
 			}
 
 			HttpRequestBase request;
-			switch(method) {
+			switch (method) {
 				case "HEAD":
 					request = new HttpHead(uriBuilder.build());
 					break;
@@ -410,30 +409,30 @@ public class HttpApiClient {
 				default:
 					throw new Exception("method was not specified");
 			}
-			if(username != null && username.length() > 0 && password != null && password.length() > 0) {
+			if (username != null && username.length() > 0 && password != null && password.length() > 0) {
 				String creds = username + ":" + password;
 				String credHeader = "Basic " + Base64.getEncoder().encodeToString(creds.getBytes());
-				request.addHeader("Authorization",credHeader);
+				request.addHeader("Authorization", credHeader);
 			}
 
 			//if bearer token
-			if(opts.apiToken != null) {
+			if (opts.apiToken != null) {
 				int newLine = opts.apiToken.indexOf('\n');
-				if(newLine > -1)
+				if (newLine > -1)
 					opts.apiToken = opts.apiToken.substring(0, newLine);
 				request.addHeader("Authorization", "Bearer " + opts.apiToken);
 			}
 			//if its oauth signing
-			if(opts.oauth != null) {
+			if (opts.oauth != null) {
 				OauthUtility.signOAuthRequestPlainText(request, opts.oauth.consumerKey, opts.oauth.consumerSecret, opts.oauth.apiKey, opts.oauth.apiSecret, opts);
 			}
 
 			// Headers
-			if(opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
+			if (opts.headers == null || opts.headers.isEmpty() || !opts.headers.containsKey("Content-Type")) {
 				request.addHeader("Content-Type", "application/json");
 			}
 
-			if(opts.headers != null && !opts.headers.isEmpty()) {
+			if (opts.headers != null && !opts.headers.isEmpty()) {
 				for (CharSequence headerKey : opts.headers.keySet()) {
 					request.addHeader(headerKey.toString(), opts.headers.get(headerKey).toString());
 				}
@@ -441,7 +440,7 @@ public class HttpApiClient {
 
 			if (opts.body != null) {
 				HttpEntityEnclosingRequestBase postRequest = (HttpEntityEnclosingRequestBase) request;
-				if(opts.body instanceof Map) {
+				if (opts.body instanceof Map) {
 					if (opts.contentType == "form") {
 						List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 						Map<String, Object> bodyMap = (Map<String, Object>) opts.body;
@@ -494,30 +493,30 @@ public class HttpApiClient {
 					} else {
 						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
 					}
-				} else if(opts.body instanceof byte[]) {
+				} else if (opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
-				} else if(opts.body instanceof InputStream) {
-					postRequest.setEntity(new InputStreamEntity((InputStream)(opts.body), opts.contentLength != null ? opts.contentLength : -1));
+				} else if (opts.body instanceof InputStream) {
+					postRequest.setEntity(new InputStreamEntity((InputStream) (opts.body), opts.contentLength != null ? opts.contentLength : -1));
 				} else {
 					postRequest.setEntity(new StringEntity(opts.body.toString()));
 				}
 			}
 
-			withClient(opts,(HttpClient client, BasicCookieStore cookieStore) -> {
+			withClient(opts, (HttpClient client, BasicCookieStore cookieStore) -> {
 
 				CloseableHttpResponse response = null;
 				try {
 
-					response = (CloseableHttpResponse)client.execute(request);
-					if(response.getStatusLine().getStatusCode() <= 399) {
-						for(Header header : response.getAllHeaders()) {
+					response = (CloseableHttpResponse) client.execute(request);
+					if (response.getStatusLine().getStatusCode() <= 399) {
+						for (Header header : response.getAllHeaders()) {
 							rtn.addHeader(header.getName(), header.getValue());
 						}
 
 
-						for(Header header : response.getHeaders("Set-Cookie")) {
-							Map<String,String> cookies = extractCookie(header.getValue());
-							for(String cookieKey : cookies.keySet()) {
+						for (Header header : response.getHeaders("Set-Cookie")) {
+							Map<String, String> cookies = extractCookie(header.getValue());
+							for (String cookieKey : cookies.keySet()) {
 								BasicClientCookie cookie = new BasicClientCookie(cookieKey, cookies.get(cookieKey));
 								cookie.setPath("/");
 								cookie.setDomain(request.getURI().getHost());
@@ -528,10 +527,10 @@ public class HttpApiClient {
 
 						HttpEntity entity = response.getEntity();
 
-						if(entity != null) {
+						if (entity != null) {
 							rtn.setData(response);
-							if(!opts.suppressLog) {
-								log.debug("results of SUCCESSFUL call to {}/{}, results: {}",url,path,rtn.getContent());
+							if (!opts.suppressLog) {
+								log.debug("results of SUCCESSFUL call to {}/{}, results: {}", url, path, rtn.getContent());
 							}
 						} else {
 							rtn.setContent(null);
@@ -540,19 +539,19 @@ public class HttpApiClient {
 
 						rtn.setSuccess(true);
 					} else {
-						if(response.getEntity() != null) {
+						if (response.getEntity() != null) {
 							rtn.setData(response);
 						}
 						rtn.setSuccess(false);
 						rtn.setErrorCode(Integer.toString(response.getStatusLine().getStatusCode()));
-						log.warn("path: {} error: {} - {}",path,rtn.getErrorCode(),rtn.getContent());
+						log.warn("path: {} error: {} - {}", path, rtn.getErrorCode(), rtn.getContent());
 					}
-				} catch(Exception ex) {
+				} catch (Exception ex) {
 					try {
-						log.error("Error occurred processing the response for {} : {}{}",uriBuilder.build().toString(),ex.getMessage(), ex);
+						log.error("Error occurred processing the response for {} : {}{}", uriBuilder.build().toString(), ex.getMessage(), ex);
 						rtn.setError("Error occurred processing the response for " + uriBuilder.build().toString() + " : " + ex.getMessage());
-					} catch(URISyntaxException uie) {
-						log.error("Error occurred processing the response for {} : {}","invalid uri",ex.getMessage(), ex);
+					} catch (URISyntaxException uie) {
+						log.error("Error occurred processing the response for {} : {}", "invalid uri", ex.getMessage(), ex);
 						rtn.setError("Error occurred processing the response for invalid uri  : " + ex.getMessage());
 
 					}
@@ -564,12 +563,12 @@ public class HttpApiClient {
 				}
 			});
 
-		} catch(SSLProtocolException sslEx) {
-			log.error("Error Occurred calling API (SSL Exception): {}",sslEx.getMessage(),sslEx);
-			rtn.addError("sslHandshake",  "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
+		} catch (SSLProtocolException sslEx) {
+			log.error("Error Occurred calling API (SSL Exception): {}", sslEx.getMessage(), sslEx);
+			rtn.addError("sslHandshake", "SSL Handshake Exception (is SNI Misconfigured): " + sslEx.getMessage());
 			rtn.setSuccess(false);
 		} catch (Exception e) {
-			log.error("Error Occurred calling API: " + e.getMessage(),e);
+			log.error("Error Occurred calling API: " + e.getMessage(), e);
 			rtn.addError("error", e.getMessage());
 			rtn.setSuccess(false);
 		}
@@ -590,7 +589,7 @@ public class HttpApiClient {
 	}
 
 	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
-		return callJsonApi(url,path,username,password,opts,"POST");
+		return callJsonApi(url, path, username, password, opts, "POST");
 	}
 
 	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
@@ -598,7 +597,7 @@ public class HttpApiClient {
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
 
-		if(body != null && (bodyType == null || (!bodyType.equals("form") && !bodyType.equals("multi-part-form") && !bodyType.equals("application/octet-stream"))) && !(body instanceof String)) {
+		if (body != null && (bodyType == null || (!bodyType.equals("form") && !bodyType.equals("multi-part-form") && !bodyType.equals("application/octet-stream"))) && !(body instanceof String)) {
 			opts.body = JsonOutput.toJson(opts.body);
 		}
 
@@ -606,10 +605,10 @@ public class HttpApiClient {
 		com.morpheusdata.response.ServiceResponse rtn = callApi(url, path, username, password, opts, method);
 		rtn.setData(new LinkedHashMap());
 
-		if(rtn.getContent() != null && rtn.getContent().length() > 0) {
+		if (rtn.getContent() != null && rtn.getContent().length() > 0) {
 			try {
 				rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
-			} catch(Exception e) {
+			} catch (Exception e) {
 				log.debug("Error parsing API response JSON: ${e}", e);
 			}
 		}
@@ -625,8 +624,8 @@ public class HttpApiClient {
 		Object body = opts != null ? (opts.body) : null;
 		String bodyType = opts != null ? opts.contentType : null;
 
-		if(body != null) {
-			if(body instanceof String) {
+		if (body != null) {
+			if (body instanceof String) {
 				opts.body = body.toString().getBytes("UTF-8");
 			}
 			//add xml content type if not set
@@ -635,47 +634,45 @@ public class HttpApiClient {
 		//execute
 		ServiceResponse rtn = callApi(url, path, username, password, opts, method);
 		rtn.setData(new LinkedHashMap());
-		if(rtn.getContent() != null && rtn.getContent().length() > 0) {
+		if (rtn.getContent() != null && rtn.getContent().length() > 0) {
 			try {
-				rtn.setData(new groovy.util.XmlSlurper(false,true).parseText(rtn.getContent()));
-			}
-			catch (SAXParseException spe) {
+				rtn.setData(new groovy.util.XmlSlurper(false, true).parseText(rtn.getContent()));
+			} catch (SAXParseException spe) {
 				log.debug("Response is NOT XML: ${rtn.content}");
-			}
-			catch(Exception e) {
+			} catch (Exception e) {
 				log.debug("Error parsing API response XML: " + e.getMessage(), e);
 			}
 		}
 		return rtn;
 	}
 
-	public Map<CharSequence,CharSequence> addRequiredHeader(Map<CharSequence,CharSequence> headers, String name, String value) {
-		if(headers == null) {
+	public Map<CharSequence, CharSequence> addRequiredHeader(Map<CharSequence, CharSequence> headers, String name, String value) {
+		if (headers == null) {
 			headers = new LinkedHashMap<>();
 		}
-		headers.putIfAbsent(name,value);
+		headers.putIfAbsent(name, value);
 		return headers;
 	}
 
 	Map<String, String> extractCookie(String rawCookie) {
-		if(rawCookie == null || rawCookie.length() == 0) return null;
+		if (rawCookie == null || rawCookie.length() == 0) return null;
 		String[] cookieArgs = rawCookie.split("=");
 		String name = cookieArgs[0];
 		String data = rawCookie.split(name + "=")[1].split(";")[0];
 		String value = "";
-		if(data != null && data.length() > 0) {
-			value = data.substring(1,data.length() - 1);
+		if (data != null && data.length() > 0) {
+			value = data.substring(1, data.length() - 1);
 		}
-		Map<String,String> cookieMap = new LinkedHashMap<>();
-		cookieMap.put(name,value);
+		Map<String, String> cookieMap = new LinkedHashMap<>();
+		cookieMap.put(name, value);
 		return cookieMap;
 	}
 
 	private void withClient(RequestOptions opts, WithClientFunction withClientFunction) {
 
 		Boolean ignoreSSL = opts.ignoreSSL;
-		if(httpClient != null) {
-			withClientFunction.method(httpClient,cookieStore);
+		if (httpClient != null) {
+			withClientFunction.method(httpClient, cookieStore);
 			return;
 		} else {
 			HttpClientBuilder clientBuilder = HttpClients.custom();
@@ -683,11 +680,11 @@ public class HttpApiClient {
 
 			RequestConfig.Builder reqConfigBuilder = RequestConfig.custom();
 			reqConfigBuilder.setCookieSpec(CookieSpecs.STANDARD);
-			if(opts.connectionTimeout != null) {
+			if (opts.connectionTimeout != null) {
 				reqConfigBuilder.setConnectTimeout(opts.connectionTimeout);
 				reqConfigBuilder.setConnectionRequestTimeout(opts.connectionTimeout);
 			}
-			if(opts.readTimeout != null) {
+			if (opts.readTimeout != null) {
 				reqConfigBuilder.setSocketTimeout(opts.readTimeout);
 			}
 			clientBuilder.setDefaultRequestConfig(reqConfigBuilder.build());
@@ -714,32 +711,26 @@ public class HttpApiClient {
 			});
 			SSLConnectionSocketFactory sslConnectionFactory;
 			SSLContext sslcontext = null;
-			if(ignoreSSL) {
+			if (ignoreSSL) {
 				try {
-					if (opts.kubeKeyStore != null) {
-            try {
-                sslcontext = new SSLContextBuilder().loadKeyMaterial(opts.kubeKeyStore, "".toCharArray())
-                        .loadTrustMaterial(null, new TrustStrategy() {
-                            @Override
-                            public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-                                return true;
-                            }
-                        })
-                        .build();
-            } catch (Exception e) {
-                //;
-								log.info("Error creating keystore {}", e.getMessage(), e);
-            }
-        } else {
-						sslcontext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-							@Override
-							public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-								return true;
-							}
-						}).build();
+					SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+					sslContextBuilder = sslContextBuilder.loadTrustMaterial(null, new TrustStrategy() {
+						@Override
+						public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+							return true;
+						}
+					});
+					if (opts.clientCertKeyStore != null) {
+						try {
+							sslcontext = sslContextBuilder.loadKeyMaterial(opts.clientCertKeyStore, "".toCharArray()).build();
+						} catch (Exception e) {
+							log.error("Error creating keystore {}", e.getMessage(), e);
+						}
+					} else {
+						sslcontext = sslContextBuilder.build();
 					}
 				} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException ignored) {
-					//;
+					//Are we sure this should be ignored?
 				}
 				sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER) {
 
@@ -750,21 +741,22 @@ public class HttpApiClient {
 						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 							e.printStackTrace();
 						}
-						List<SNIServerName> serverNames  = Collections.<SNIServerName> emptyList();
+						List<SNIServerName> serverNames = Collections.<SNIServerName>emptyList();
 						SSLParameters sslParams = socket.getSSLParameters();
 						sslParams.setServerNames(serverNames);
 						socket.setSSLParameters(sslParams);
 					}
+
 					@Override
 					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
-						if(socket instanceof SSLSocket) {
+						if (socket instanceof SSLSocket) {
 							try {
 								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-								SSLSocket sslSocket = (SSLSocket)socket;
+								SSLSocket sslSocket = (SSLSocket) socket;
 								sslSocket.setEnabledProtocols(enabledProtocols);
 								PropertyUtils.setProperty(socket, "host", host.getHostName());
 							} catch (Exception ex) {
-								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors",host, ex);
+								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors", host, ex);
 							}
 						}
 						return super.connectSocket(WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
@@ -775,13 +767,14 @@ public class HttpApiClient {
 				sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext) {
 					@Override
 					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
-						if(socket instanceof SSLSocket) {
+						if (socket instanceof SSLSocket) {
 							try {
 								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-								SSLSocket sslSocket = (SSLSocket)socket;
+								SSLSocket sslSocket = (SSLSocket) socket;
 								sslSocket.setEnabledProtocols(enabledProtocols);
 								PropertyUtils.setProperty(socket, "host", host.getHostName());
-							} catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+							} catch (NoSuchMethodException | IllegalAccessException |
+									 InvocationTargetException ignored) {
 								//;
 							}
 						}
@@ -808,11 +801,11 @@ public class HttpApiClient {
 
 					};
 					return new DefaultHttpResponseParser(
-							ibuffer, lineParser, DefaultHttpResponseFactory.INSTANCE, constraints != null ? constraints : MessageConstraints.DEFAULT) {
+						ibuffer, lineParser, DefaultHttpResponseFactory.INSTANCE, constraints != null ? constraints : MessageConstraints.DEFAULT) {
 						@Override
 						protected boolean reject(final CharArrayBuffer line, int count) {
 							//We need to break out of forever head reads
-							if(count > 100) {
+							if (count > 100) {
 								return true;
 							}
 							return false;
@@ -824,18 +817,18 @@ public class HttpApiClient {
 			};
 
 			clientBuilder.setSSLSocketFactory(sslConnectionFactory);
-			Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-					.register("https", sslConnectionFactory)
-					.register("http", PlainConnectionSocketFactory.INSTANCE)
-					.build();
+			Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+				.register("https", sslConnectionFactory)
+				.register("http", PlainConnectionSocketFactory.INSTANCE)
+				.build();
 
 			HttpMessageWriterFactory<HttpRequest> requestWriterFactory = new DefaultHttpRequestWriterFactory();
 
 			HttpConnectionFactory<HttpRoute, ManagedHttpClientConnection> connFactory = new ManagedHttpClientConnectionFactory(
-					requestWriterFactory, responseParserFactory);
+				requestWriterFactory, responseParserFactory);
 			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
 			clientBuilder.setConnectionManager(connectionManager);
-			if(networkProxy != null) {
+			if (networkProxy != null) {
 				String proxyHost = networkProxy.getProxyHost();
 				Integer proxyPort = networkProxy.getProxyPort();
 				if (proxyHost != null && proxyPort != null) {
@@ -860,17 +853,17 @@ public class HttpApiClient {
 			httpClient = client;
 			this.connectionManager = connectionManager;
 
-			withClientFunction.method(client,cookieStore);
+			withClientFunction.method(client, cookieStore);
 		}
 
 	}
 
 	public void shutdownClient() {
-		if(connectionManager != null) {
+		if (connectionManager != null) {
 			try {
 				connectionManager.shutdown();
-			} catch(Exception ex) {
-				log.error("Error Shutting Down Keep-Alive {}",ex.getMessage(),ex);
+			} catch (Exception ex) {
+				log.error("Error Shutting Down Keep-Alive {}", ex.getMessage(), ex);
 			}
 		}
 	}
@@ -883,10 +876,10 @@ public class HttpApiClient {
 	public static class RequestOptions {
 		public Object body;
 		public String contentType; //bodyType originally
-		public Map<CharSequence,CharSequence> headers;
-		public Map<CharSequence,CharSequence> queryParams;
+		public Map<CharSequence, CharSequence> headers;
+		public Map<CharSequence, CharSequence> queryParams;
 		public Boolean suppressLog = true;
-		public Boolean ignoreSSL=true;
+		public Boolean ignoreSSL = true;
 		public Integer timeout = 30000;
 		public Integer connectionTimeout = null;
 		public Integer readTimeout = null;
@@ -897,7 +890,7 @@ public class HttpApiClient {
 		public HttpClient httpClient; //optional pass the client
 		public HttpClientConnectionManager connectionManager;
 
-		public KeyStore kubeKeyStore;
+		public KeyStore clientCertKeyStore;
 
 		public static class OauthOptions {
 			public String version;
