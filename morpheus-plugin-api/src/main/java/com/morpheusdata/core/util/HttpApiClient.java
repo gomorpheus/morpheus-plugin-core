@@ -70,13 +70,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.security.*;
+import java.security.cert.X509Certificate;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map;
 import org.xml.sax.SAXParseException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Utility methods for calling external APIs in a standardized way.
@@ -714,12 +716,28 @@ public class HttpApiClient {
 			SSLContext sslcontext = null;
 			if(ignoreSSL) {
 				try {
-					sslcontext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-						@Override
-						public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-							return true;
-						}
-					}).build();
+					if (opts.kubeKeyStore != null) {
+            try {
+                sslcontext = new SSLContextBuilder().loadKeyMaterial(opts.kubeKeyStore, "".toCharArray())
+                        .loadTrustMaterial(null, new TrustStrategy() {
+                            @Override
+                            public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+                                return true;
+                            }
+                        })
+                        .build();
+            } catch (Exception e) {
+                //;
+								log.info("Error creating keystore {}", e.getMessage(), e);
+            }
+        } else {
+						sslcontext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+							@Override
+							public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+								return true;
+							}
+						}).build();
+					}
 				} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException ignored) {
 					//;
 				}
@@ -878,6 +896,8 @@ public class HttpApiClient {
 		public String apiToken;
 		public HttpClient httpClient; //optional pass the client
 		public HttpClientConnectionManager connectionManager;
+
+		public KeyStore kubeKeyStore;
 
 		public static class OauthOptions {
 			public String version;
