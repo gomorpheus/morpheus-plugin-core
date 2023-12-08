@@ -716,9 +716,9 @@ public class HttpApiClient {
 			SSLContext sslcontext = null;
 			if(ignoreSSL) {
 				try {
-					if (opts.kubeKeyStore != null) {
+					if (opts.keyStore != null) {
             try {
-                sslcontext = new SSLContextBuilder().loadKeyMaterial(opts.kubeKeyStore, "".toCharArray())
+                sslcontext = new SSLContextBuilder().loadKeyMaterial(opts.keyStore, "".toCharArray())
                         .loadTrustMaterial(null, new TrustStrategy() {
                             @Override
                             public boolean isTrusted(X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
@@ -897,7 +897,7 @@ public class HttpApiClient {
 		public HttpClient httpClient; //optional pass the client
 		public HttpClientConnectionManager connectionManager;
 
-		public KeyStore kubeKeyStore;
+		public KeyStore keyStore;
 
 		public static class OauthOptions {
 			public String version;
