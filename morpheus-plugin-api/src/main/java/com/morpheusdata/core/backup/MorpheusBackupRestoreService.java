@@ -82,4 +82,12 @@ public interface MorpheusBackupRestoreService extends MorpheusDataService<Backup
 	 */
 	@Deprecated(since="0.15.4")
 	Single<Boolean> save(List<BackupRestore> saveList);
+
+	/**
+	 * Trigger the provision finalize process on a restored workload.
+	 * @param workload the workload to be finalized
+	 * @return if the finalize process was triggered successfully
+	 */
+	Single<Boolean> finalizeRestore(com.morpheusdata.model.Workload workload);
+
 }
