@@ -20,18 +20,12 @@ import java.util.List;
 public interface MorpheusBackupRepositoryService extends MorpheusDataService<BackupRepository, BackupRepositoryIdentityProjection>, MorpheusIdentityService<BackupRepositoryIdentityProjection> {
 
 	/**
-	 * Returns the BackupContext used for performing updates or queries on {@link Backup} related assets within Morpheus.
-	 * Typically this would be called by a {@link BackupProvider}
-	 * @return An instance of the Backup Context to be used for calls by various backup providers
-	 */
-	MorpheusBackupService getBackup();
-
-	/**
 	 * Lists all Backup Repository projection objects for a specified backup provider id.
 	 * The projection is a subset of the properties on a full {@link BackupRepository} object for sync matching.
 	 * @param backupProvider the {@link AbstractBackupProvider} identifier associated to the backup repositories to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
+	@Deprecated(since="1.0.5", forRemoval=true)
 	Observable<BackupRepositoryIdentityProjection> listIdentityProjections(BackupProvider backupProvider);
 
 	/**
@@ -39,6 +33,7 @@ public interface MorpheusBackupRepositoryService extends MorpheusDataService<Bac
 	 * @param ids list of {@link BackupRepository} ids to fetch.
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
+	@Deprecated(since="1.0.5", forRemoval=true)
 	Observable<BackupRepositoryIdentityProjection> listById(Collection<Long> ids);
 
 	/**
@@ -51,6 +46,7 @@ public interface MorpheusBackupRepositoryService extends MorpheusDataService<Bac
 	 * @param removeList a list of Backup Repository projections to be removed
 	 * @return a Single {@link Observable} returning the success status of the operation.
 	 */
+	@Deprecated(since="1.0.5", forRemoval=true)
 	Single<Boolean> remove(List<BackupRepositoryIdentityProjection> removeList);
 
 	/**
@@ -58,6 +54,7 @@ public interface MorpheusBackupRepositoryService extends MorpheusDataService<Bac
 	 * @param addList List of new {@link BackupRepository} objects to be inserted into the database
 	 * @return notification of completion
 	 */
+	@Deprecated(since="1.0.5", forRemoval=true)
 	Single<Boolean> create(List<BackupRepository> addList);
 
 	/**
@@ -66,13 +63,6 @@ public interface MorpheusBackupRepositoryService extends MorpheusDataService<Bac
 	 * @param saveList a List of Backup Repository objects that need to be updated in the database.
 	 * @return the Single Observable stating the success state of the save attempt
 	 */
+	@Deprecated(since="1.0.5", forRemoval=true)
 	Single<Boolean> save(List<BackupRepository> saveList);
-
-	/**
-	 * Saves a {@link BackupRepository} object. Be mindful this is an RxJava implementation and must be subscribed
-	 * to for any action to actually take place.
-	 * @param backupRepository a Backup Object to be updated in the database.
-	 * @return the Single Observable containing the resulting Backup Repository Object
-	 */
-	Single<BackupRepository> save(BackupRepository backupRepository);
 }

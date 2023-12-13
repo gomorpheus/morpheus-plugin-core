@@ -24,6 +24,7 @@ import com.morpheusdata.core.providers.TaskProvider;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.core.admin.MorpheusAdminService;
+import com.morpheusdata.core.MorpheusExecuteScheduleTypeService;
 
 public interface MorpheusAsyncServices {
 	/**
@@ -439,5 +440,10 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAccountDiscoveryService getDiscovery();
 
+
+	/**
+	 * Returns the {@link MorpheusExecuteScheduleTypeService} which allows access to execute schedule types
+	 */
+	MorpheusExecuteScheduleTypeService getExecuteScheduleType();
 
 }

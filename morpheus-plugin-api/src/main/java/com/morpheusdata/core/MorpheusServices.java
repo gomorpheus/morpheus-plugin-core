@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.morpheusdata.core.synchronous.backup.MorpheusSynchronousBackupRepositoryService;
 import com.morpheusdata.core.guidance.MorpheusSynchronousAccountDiscoveryService;
 import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.synchronous.*;
@@ -19,6 +20,7 @@ import com.morpheusdata.core.synchronous.MorpheusSynchronousComputeTypeSetServic
 import com.morpheusdata.core.synchronous.library.MorpheusSynchronousWorkloadTypeService;
 import com.morpheusdata.core.synchronous.network.MorpheusSynchronousNetworkService;
 import com.morpheusdata.core.synchronous.network.MorpheusSynchronousNetworkSubnetService;
+import com.morpheusdata.core.synchronous.MorpheusSynchronousExecuteScheduleTypeService;
 import com.morpheusdata.core.synchronous.MorpheusSynchronousVirtualImageService;
 import com.morpheusdata.core.synchronous.network.loadbalancer.MorpheusSynchronousLoadBalancerPartitionService;
 import com.morpheusdata.core.synchronous.policy.MorpheusSynchronousPolicyService;
@@ -30,6 +32,7 @@ import com.morpheusdata.core.synchronous.provisioning.MorpheusSynchronousProvisi
 import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.localization.MorpheusLocalizationService;
 import com.morpheusdata.model.BackupProvider;
+
 
 public interface MorpheusServices {
 
@@ -238,6 +241,14 @@ public interface MorpheusServices {
 	MorpheusSynchronousBackupJobService getBackupJob();
 
 	/**
+	 * Returns the Backup Repository Context for sync of backup repositories.
+	 * Typically this would be called by a {@link BackupProvider}.
+	 *
+	 * @return an instance of the Backup Repository Context
+	 */
+	MorpheusSynchronousBackupRepositoryService getBackupRepository();
+
+	/**
 	 * Returns the Permission Service
 	 * @return An instance of the MorpheusSynchronousPermissionService
 	 */
@@ -422,6 +433,12 @@ public interface MorpheusServices {
 	 * @return an instance of {@link MorpheusSynchronousAccountDiscoveryService}
 	 */
 	MorpheusSynchronousAccountDiscoveryService getDiscovery();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousExecuteScheduleTypeService} which allows access to execute schedule types
+	 */
+	MorpheusSynchronousExecuteScheduleTypeService getExecuteScheduleType();
+
 
 
 }
