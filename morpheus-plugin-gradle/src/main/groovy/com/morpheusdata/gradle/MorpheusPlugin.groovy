@@ -74,7 +74,10 @@ class MorpheusPlugin implements Plugin<Project> {
 			
 			if(project.file(morpheusPluginConfig.packageSource).exists()) {
 				processResources.dependsOn(scribePackageTask)
-				processResources.dependsOn(scribeResourcesTask)	
+			}
+
+			if(project.file(morpheusPluginConfig.scribeSource).exists()) {
+				processResources.dependsOn(scribeResourcesTask)
 			}
 
 			if(project.file(morpheusPluginConfig.i18nDir).exists()) {
