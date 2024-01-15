@@ -10,7 +10,6 @@ public class ReferenceData extends ReferenceDataSyncProjection {
 	protected Account account;
 
 	protected String code;
-	protected String category;
 	protected String keyValue;
 	protected String value;
 	protected String content;
@@ -21,7 +20,6 @@ public class ReferenceData extends ReferenceDataSyncProjection {
 	protected Boolean enabled = true;
 	protected String type;
 	protected String description;
-	protected String internalId;
 	protected String rawData;
 	protected String visibility = "private";
 	protected Boolean flagValue;
@@ -47,15 +45,6 @@ public class ReferenceData extends ReferenceDataSyncProjection {
 	public void setCode(String code) {
 		this.code = code;
 		markDirty("code", code, this.code);
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-		markDirty("category", category, this.category);
 	}
 
 	public String getKeyValue() {
@@ -146,17 +135,6 @@ public class ReferenceData extends ReferenceDataSyncProjection {
 	public void setDescription(String description) {
 		this.description = description;
 		markDirty("description", description, this.description);
-	}
-
-	@Override
-	public String getInternalId() {
-		return internalId;
-	}
-
-	@Override
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
-		markDirty("internalId", internalId, this.internalId);
 	}
 
 	public String getRawData() {
