@@ -36,6 +36,13 @@ public interface ScaleProvider extends PluginProvider {
 	Collection<InstanceScaleType> getScaleTypes();
 
 	/**
+	 * Implement this method to perform any operations that occur PRIOR to the instance being provisioned.
+	 * @param instance an {@link Instance} to be provisioned
+	 * @return {@link ServiceResponse}
+	 */
+	default ServiceResponse provisionInstance(Instance instance) { return ServiceResponse.success(); }
+
+	/**
 	 * Implement this method to perform some tasks after an instance has been provisioned via morpheus.  For example,
 	 * update a scale group details etc.
 	 * @param instance a provisioned {@link Instance}
