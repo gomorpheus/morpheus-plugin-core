@@ -272,14 +272,14 @@ public interface CloudProvider extends PluginProvider {
 	 * This is only really necessary if the provision type code is the exact same as the cloud code.
 	 * @return the provision provider code
 	 */
-	default String getDefaultProvisionTypeCode() { return null; };
+	default String getDefaultProvisionTypeCode() { return null; }
 
 	/**
 	 * Returns the default network code for fetching a {@link NetworkProvider} for this cloud.
 	 * This is only really necessary if the network type code is the exact same as the cloud code.
 	 * @return the network provider code
 	 */
-	default String getDefaultNetworkServerTypeCode() { return null; };
+	default String getDefaultNetworkServerTypeCode() { return null; }
 
 
 	default ServiceResponse<CloudPool> createCloudPool(Cloud cloud, CloudPool cloudPool) {
@@ -301,7 +301,15 @@ public interface CloudProvider extends PluginProvider {
 	 * is utilized based on pricing and Morpheus metering data. This is often used for public clouds such as Amazon or Azure.
 	 * @return an instance of a cloud specific CostingProvider.
 	 */
-	default CloudCostingProvider getCloudCostingProvider() { return null; };
+	default CloudCostingProvider getCloudCostingProvider() { return null; }
+
+	/**
+	 * If the cloud supports IaC based provisioning, return the mapping provider here and implement the {@link com.morpheusdata.core.providers.ProvisionProvider.IacResourceFacet} in your ProvisionProvider
+	 * @since 0.15.10
+	 * @return an instance of a cloud specific IacResourceMappingProvider.
+	 */
+	default IacResourceMappingProvider getIacResourceMappingProvider() { return null; }
+
 
 
 }
