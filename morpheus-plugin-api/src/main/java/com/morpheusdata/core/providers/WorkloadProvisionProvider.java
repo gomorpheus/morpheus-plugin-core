@@ -103,6 +103,16 @@ public interface WorkloadProvisionProvider extends ComputeProvisionProvider {
 	 */
 	ServiceResponse<ProvisionResponse> getServerDetails(ComputeServer server);
 
+	/**
+	 * This is the method called when a server's metadata tags are updated in Morpheus. Should return success if tags are updated
+	 * and fail if tags are not/can't be updated.
+	 * @param server server object with updated metadata field
+	 * @param opts map of options
+	 * @return Response from API
+	 */
+	default ServiceResponse updateMetadataTags(ComputeServer server, Map opts) {
+		return ServiceResponse.error();
+	}
 
 	/**
 	 * Method called before runWorkload to allow implementers to create resources required before runWorkload is called

@@ -619,6 +619,15 @@ public class HttpApiClient {
 		return callXmlApi(url, path, null, null, opts, "POST");
 	}
 
+	public ServiceResponse callXmlApi(String url, String path, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		return callXmlApi(url, path, null, null, opts, method);
+	}
+
+	public ServiceResponse callXmlApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
+		return callXmlApi(url, path, username, password, opts, "POST");
+	}
+
+
 	public ServiceResponse callXmlApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;

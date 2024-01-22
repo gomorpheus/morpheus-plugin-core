@@ -4,9 +4,12 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import groovy.io.FileType
 
@@ -18,9 +21,10 @@ class MorpheusScribeResources extends DefaultTask {
 
 	private String destinationDirectoryPath
 
-	@Delegate MorpheusPluginExtension scribeExtension = new MorpheusPluginExtension()
+	@Internal
+	MorpheusPluginExtension scribeExtension = new MorpheusPluginExtension()
 
-	@Input
+	@InputDirectory
 	File getScribeDir() {
 		def path = scribeExtension.scribeSource
 		return path ? new File(path) : null
@@ -46,6 +50,7 @@ class MorpheusScribeResources extends DefaultTask {
 		return src
 	}
 
+	@OutputFile
 	File getManifestFile() {
 		def outputDir = getDestinationDir()
 		def outputFile = scribeExtension.scribeManifest

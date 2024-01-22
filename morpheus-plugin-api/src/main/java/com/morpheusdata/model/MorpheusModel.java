@@ -168,7 +168,7 @@ public class MorpheusModel {
 		setConfig(object.toString());
 	}
 
-	private JsonObject mapToJson(Map<String, Object> map) {
+	protected JsonObject mapToJson(Map<String, Object> map) {
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		for (String key : map.keySet()) {
 			Object val = map.get(key);
@@ -248,7 +248,7 @@ public class MorpheusModel {
 		return builder.build();
 	}
 
-	private Map toMap(JsonObject object) {
+	protected Map toMap(JsonObject object) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String key : object.keySet()) {
 			Object val = null;

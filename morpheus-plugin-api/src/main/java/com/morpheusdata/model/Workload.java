@@ -6,7 +6,13 @@ import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.StringReader;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a workload running in morpheus. This is also known internally to morpheus as a Container object but due
@@ -301,6 +307,28 @@ public class Workload extends WorkloadIdentityProjection {
 	public void setConfigs(String configs) {
 		this.configs = configs;
 		markDirty("configs", configs);
+	}
+
+	@Override
+	public Map getConfigMap() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(this.configs != null && this.configs != "") {
+				JsonReader jsonReader = Json.createReader(new StringReader(this.configs));
+				JsonObject object = jsonReader.readObject();
+				jsonReader.close();
+				map = toMap(object);
+			}
+		} catch(Exception e) {
+			//fail silently
+		}
+		return map;
+	}
+
+	@Override
+	public void setConfigMap(Map<String, Object> map) {
+		JsonObject object = mapToJson(map);
+		setConfigs(object.toString());
 	}
 
 	public String getRawData() {

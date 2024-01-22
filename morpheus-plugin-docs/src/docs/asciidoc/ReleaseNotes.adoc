@@ -2,7 +2,12 @@
 
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
-
+* ** 1.0.5**
+** Added Packages to compute type layout
+** Copyright updates
+** Plugin API Services
+* **0.15.9**
+** Added Packages to compute type layout
 * **1.0.4**
 ** Improvements to HTTPApiClient to support Certificate Auth as well as new methods for capturing response as a stream
 ** Cloud Pool management support for cloud plugins and network associations
