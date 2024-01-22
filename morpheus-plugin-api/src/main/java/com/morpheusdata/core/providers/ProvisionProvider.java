@@ -580,6 +580,26 @@ public interface ProvisionProvider extends PluginProvider {
 
 	}
 
+	/**
+	 * Provides methods for supporting Infrastructure as Code provisioning
+	 * @author Alex Clement
+	 * @since 0.15.10
+	 */
+	public interface IacResourceFacet {
+
+		/**
+		 * Called at the end of the provsioning process to ensure that the workload is properly provisioned and provides
+		 * an opportunity to perform some final actions during the provisioning process.
+		 * @author Alex Clement
+		 * @since 0.15.10
+		 * @param workload The Morpheus {@link Workload} to update and verify success provisioning
+		 * @param resource The Morpheus {@link AccountResource} for reference
+		 * @return A {@link ServiceResponse} indicating success or failure
+		 */
+		ServiceResponse finalizeResourceWorkload(Workload workload, AccountResource resource);
+
+	}
+
 
 
 }
