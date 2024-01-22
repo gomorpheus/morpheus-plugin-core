@@ -34,11 +34,12 @@ public interface IacResourceMappingProvider extends PluginProvider {
 	 * @param instance The Morpheus {@link Instance} to update
 	 * @param resource The Morpheus {@link AccountResource} for reference
 	 * @param resourceResult The response from the IaC service
+	 * @param iacProvider The IaC provider, e.g. terraform
 	 * @param iacProviderType The IaC provider type, e.g. aws
 	 * @param iacType The IaC type, e.g. aws_instance
 	 * @return A ServiceResponse with a {@link WorkloadResourceMappingResponse} as the data
 	 */
-	ServiceResponse<WorkloadResourceMappingResponse> resolveInstance(Instance instance, AccountResource resource, Map resourceResult, String iacProviderType, String iacType);
+	ServiceResponse<WorkloadResourceMappingResponse> resolveInstance(Instance instance, AccountResource resource, Map resourceResult, String iacProvider, String iacProviderType, String iacType);
 
 	/**
 	 * Handles mapping an IaC resource to a Morpheus Workload. Should set externalId the workload server as well as any other fields desired
@@ -47,10 +48,11 @@ public interface IacResourceMappingProvider extends PluginProvider {
 	 * @param workload The Morpheus {@link Workload} to update
 	 * @param resource The Morpheus {@link AccountResource} for reference
 	 * @param resourceResult The response from the IaC service
+	 * @param iacProvider The IaC provider, e.g. terraform
 	 * @param iacProviderType The IaC provider type, e.g. aws
 	 * @param iacType The IaC type, e.g. aws_instance
 	 * @return A ServiceResponse with a {@link WorkloadResourceMappingResponse} as the data
 	 */
-	ServiceResponse<WorkloadResourceMappingResponse> resolveContainer(Workload workload, AccountResource resource, Map resourceResult, String iacProviderType, String iacType);
+	ServiceResponse<WorkloadResourceMappingResponse> resolveContainer(Workload workload, AccountResource resource, Map resourceResult, String iacProvider, String iacProviderType, String iacType);
 
 }
