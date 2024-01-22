@@ -3,6 +3,7 @@ package com.morpheusdata.core.providers;
 import com.morpheusdata.model.AccountResource;
 import com.morpheusdata.model.Instance;
 import com.morpheusdata.model.Workload;
+import com.morpheusdata.response.InstanceResourceMappingResponse;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.response.WorkloadResourceMappingResponse;
 
@@ -39,7 +40,7 @@ public interface IacResourceMappingProvider extends PluginProvider {
 	 * @param iacType The IaC type, e.g. aws_instance
 	 * @return A ServiceResponse with a {@link WorkloadResourceMappingResponse} as the data
 	 */
-	ServiceResponse<WorkloadResourceMappingResponse> resolveInstance(Instance instance, AccountResource resource, Map resourceResult, String iacProvider, String iacProviderType, String iacType);
+	ServiceResponse<InstanceResourceMappingResponse> resolveInstance(Instance instance, AccountResource resource, Map resourceResult, String iacProvider, String iacProviderType, String iacType);
 
 	/**
 	 * Handles mapping an IaC resource to a Morpheus Workload. Should set externalId the workload server as well as any other fields desired
