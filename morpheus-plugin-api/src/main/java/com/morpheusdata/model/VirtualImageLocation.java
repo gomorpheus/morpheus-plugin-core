@@ -33,6 +33,7 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 	protected List<StorageControllerIdentityProjection> controllers = new ArrayList<>();
 	protected String owner;
 	protected Boolean isPublic;
+	protected Boolean systemImage = false;
 
 	public String getCode() {
 		return code;
@@ -122,6 +123,14 @@ public class VirtualImageLocation extends VirtualImageLocationIdentityProjection
 
 	public void setPublic(Boolean aPublic) {
 		isPublic = aPublic;
+	}
+
+	public Boolean getSystemImage() {
+		return systemImage;
+	}
+
+	public void setSystemImage(Boolean systemImage) {
+		this.systemImage = systemImage;
 	}
 
 	public String getExternalDiskId() {
