@@ -441,13 +441,13 @@ public interface MorpheusServices {
 	MorpheusSynchronousAccountDiscoveryService getDiscovery();
 
 	/**
+	 * Returns the {@link MorpheusSynchronousExecuteScheduleTypeService} which allows access to execute schedule types
+	 */
+	MorpheusSynchronousExecuteScheduleTypeService getExecuteScheduleType();
+
+	/**
 	 * Returns the {@link MorpheusExecuteScheduleService } which allows access to execute schedule data operations
 	 * @return an instance of {@link MorpheusExecuteScheduleService }
 	 */
 	MorpheusSynchronousExecuteScheduleService getExecuteSchedule();
-
-	/**
-	 * Returns the {@link MorpheusSynchronousExecuteScheduleTypeService} which allows access to execute schedule types
-	 */
-	MorpheusSynchronousExecuteScheduleTypeService getExecuteScheduleType();
 }
