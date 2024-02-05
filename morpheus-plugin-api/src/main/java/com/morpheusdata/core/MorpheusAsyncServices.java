@@ -439,14 +439,12 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusSeedService getSeed();
 
-
 	/**
 	 * Returns the {@link MorpheusAccountDiscoveryService} which allows access to creating guidance
 	 * recommendations
 	 * @return an instance of {@link MorpheusAccountDiscoveryService}
 	 */
 	MorpheusAccountDiscoveryService getDiscovery();
-
 
 	/**
 	 * Returns the {@link MorpheusExecuteScheduleTypeService} which allows access to execute schedule types
