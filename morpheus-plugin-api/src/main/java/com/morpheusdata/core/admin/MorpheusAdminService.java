@@ -15,4 +15,9 @@ public interface MorpheusAdminService {
 	 */
 	MorpheusUserService getUser();
 
+	/**
+	 * Returns the Appliance Service for querying appliance related objects asynchronously (reactive).
+	 * @return an instance of the implementation of the {@link MorpheusApplianceService}
+	 */
+	MorpheusApplianceService getAppliance();
 }

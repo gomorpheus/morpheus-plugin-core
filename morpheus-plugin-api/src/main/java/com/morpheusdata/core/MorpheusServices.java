@@ -33,7 +33,6 @@ import com.morpheusdata.core.web.MorpheusWebRequestService;
 import com.morpheusdata.core.localization.MorpheusLocalizationService;
 import com.morpheusdata.model.BackupProvider;
 
-
 public interface MorpheusServices {
 
 	/**
@@ -168,6 +167,13 @@ public interface MorpheusServices {
 	 * @return An instance of the Tag Service
 	 */
 	MorpheusSynchronousMetadataTagService getMetadataTag();
+
+	/**
+	 * Returns the Setting Service
+	 *
+	 * @return An instance of the Setting Service
+	 */
+	MorpheusSynchronousSettingService getSetting();
 
 	/**
 	 * Returns the Wiki Page Service
@@ -435,10 +441,13 @@ public interface MorpheusServices {
 	MorpheusSynchronousAccountDiscoveryService getDiscovery();
 
 	/**
+	 * Returns the {@link MorpheusExecuteScheduleService } which allows access to execute schedule data operations
+	 * @return an instance of {@link MorpheusExecuteScheduleService }
+	 */
+	MorpheusSynchronousExecuteScheduleService getExecuteSchedule();
+
+	/**
 	 * Returns the {@link MorpheusSynchronousExecuteScheduleTypeService} which allows access to execute schedule types
 	 */
 	MorpheusSynchronousExecuteScheduleTypeService getExecuteScheduleType();
-
-
-
 }

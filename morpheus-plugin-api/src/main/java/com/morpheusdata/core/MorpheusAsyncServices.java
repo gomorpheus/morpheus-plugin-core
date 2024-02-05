@@ -176,6 +176,13 @@ public interface MorpheusAsyncServices {
 	MorpheusMetadataTagService getMetadataTag();
 
 	/**
+	 * Returns the Setting Service
+	 *
+	 * @return An instance of the Setting Service
+	 */
+	MorpheusSettingService getSetting();
+
+	/**
 	 * Returns the Wiki Page Service
 	 *
 	 * @return An instance of the Wiki Page Service
@@ -440,6 +447,11 @@ public interface MorpheusAsyncServices {
 	 */
 	MorpheusAccountDiscoveryService getDiscovery();
 
+	/**
+	 * Returns the {@link MorpheusExecuteScheduleService} which allows access to execute schedule operations
+	 * @return on instance of {@link MorpheusExecuteScheduleService}
+	 */
+	MorpheusExecuteScheduleService getExecuteSchedule();
 
 	/**
 	 * Returns the {@link MorpheusExecuteScheduleTypeService} which allows access to execute schedule types
