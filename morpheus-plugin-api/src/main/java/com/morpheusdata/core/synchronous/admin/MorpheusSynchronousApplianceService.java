@@ -1,0 +1,9 @@
+package com.morpheusdata.core.synchronous.admin;
+
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.model.ApplianceInstance;
+import com.morpheusdata.model.projection.ApplianceInstanceIdentityProjection;
+
+public interface MorpheusSynchronousApplianceService extends MorpheusSynchronousDataService<ApplianceInstance, ApplianceInstanceIdentityProjection>, MorpheusSynchronousIdentityService<ApplianceInstanceIdentityProjection> {
+}
