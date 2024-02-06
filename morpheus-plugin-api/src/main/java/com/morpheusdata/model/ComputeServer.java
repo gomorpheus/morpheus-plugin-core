@@ -123,6 +123,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected ComputeStats computeStats;
 	@JsonIgnore
 	protected List<MetadataTag> metadata;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<Label> labels;
 	protected Date statusDate;
 	protected String cloudConfigUser;
 	protected String cloudConfigMeta;
@@ -368,6 +370,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	}
 
 	public List<MetadataTag> getMetadata() { return metadata;}
+
+	public List<Label> getLabels() {
+		return labels;
+	}
 
 	public Long getUsedMemory() {
 		return usedMemory;
@@ -918,6 +924,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setMetadata(List<MetadataTag> metadata) {
 		this.metadata = metadata;
 		markDirty("metadata", metadata);
+	}
+
+	public void setLabels(List<Label> labels) {
+		this.labels = labels;
+		markDirty("labels", labels);
 	}
 
 	public Date getDateCreated() {
