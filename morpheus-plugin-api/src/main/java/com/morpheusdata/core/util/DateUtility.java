@@ -524,4 +524,12 @@ public class DateUtility {
 		}
 		return rtn;
 	}
+
+	public static Date addToDate(Date date, int field, int amount) {
+		Calendar rtn = Calendar.getInstance();
+		rtn.setTimeZone(gmtTimezone);
+		rtn.setTime(date);
+		rtn.add(field, amount);
+		return rtn.getTime();
+	}
 }
