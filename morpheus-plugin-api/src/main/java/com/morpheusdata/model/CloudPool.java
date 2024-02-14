@@ -228,7 +228,7 @@ public class CloudPool extends ComputeZonePoolIdentityProjection {
 		markDirty("removable", removable);
 	}
 
-	enum Status {
+	public enum Status {
 		deploying,
 		failed,
 		available
