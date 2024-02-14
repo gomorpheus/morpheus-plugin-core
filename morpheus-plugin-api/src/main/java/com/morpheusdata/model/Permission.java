@@ -27,9 +27,11 @@ public class Permission extends MorpheusModel {
 	}
 
 	public enum ResourceType {
+		BackupRepository,
 		ComputeZoneFolder,
 		ComputeZonePool,
 		Datastore,
+		ManagedServer,
 		Network,
 		NetworkDomain,
 		NetworkEdgeCluster,
