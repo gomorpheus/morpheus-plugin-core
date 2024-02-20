@@ -284,6 +284,13 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * Implement this method if you need specific option types for the default instance type for this provision
+	 * provider.  For example, image/template selection.
+	 * @return a collection of {@link OptionType}
+	 */
+	default public ArrayList<OptionType> getDefaultInstanceTypeOptions() { return new ArrayList<OptionType>();}
+
+	/**
 	 * Does this provision type allow more than one instance on a box
 	 * @return
 	 */
