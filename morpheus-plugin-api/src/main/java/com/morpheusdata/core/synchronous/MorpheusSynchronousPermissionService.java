@@ -3,7 +3,7 @@ package com.morpheusdata.core.synchronous;
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.Permission;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 public interface MorpheusSynchronousPermissionService extends MorpheusSynchronousDataService<Permission, Permission> {
 
