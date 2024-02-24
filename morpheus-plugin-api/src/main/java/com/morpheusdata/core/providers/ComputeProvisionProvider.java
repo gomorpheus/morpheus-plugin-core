@@ -1,6 +1,8 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.ComputeServer;
+import com.morpheusdata.model.Instance;
+import com.morpheusdata.model.Workload;
 import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.ServiceResponse;
 
@@ -28,5 +30,17 @@ public interface ComputeProvisionProvider extends ProvisionProvider {
 	 */
 	ServiceResponse startServer(ComputeServer computeServer);
 
+
+	/**
+	 * Allows the workload to be moved
+	 *
+	 * @since 1.1.0
+	 * @author David Estes
+	 */
+	public interface MoveFacet {
+		ServiceResponse validateMoveServer(ComputeServer server, ComputeServer targetHost, Boolean live);
+
+		ServiceResponse moveServer(ComputeServer server, ComputeServer targetHost, Boolean live);
+	}
 
 }
