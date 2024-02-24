@@ -2,6 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.Setting;
 import com.morpheusdata.model.SettingType;
+import com.morpheusdata.model.NetworkProxy;
 
 public interface MorpheusSettingService extends MorpheusDataService<Setting, Setting>, MorpheusIdentityService<Setting> {
 
@@ -10,4 +11,10 @@ public interface MorpheusSettingService extends MorpheusDataService<Setting, Set
 	 * @return An instance of the SettingType Context
 	 */
 	MorpheusSettingTypeService getType();
+
+	/**
+	 * Returns the Global NetworkProxy
+	 * @return An instance of the NetworkProxy
+	 */
+	NetworkProxy getGlobalNetworkProxy();
 }
