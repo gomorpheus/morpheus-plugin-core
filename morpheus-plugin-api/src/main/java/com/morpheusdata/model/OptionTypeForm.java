@@ -20,6 +20,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setAccount(Account account) {
 		this.account = account;
+		markDirty("account", name);
 	}
 
 	@Override
@@ -29,6 +30,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setName(String name) {
 		this.name = name;
+		markDirty("name", name);
 	}
 
 	@Override
@@ -38,6 +40,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setCode(String code) {
 		this.code = code;
+		markDirty("code", name);
 	}
 
 	@Override
@@ -47,6 +50,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+		markDirty("uuid", name);
 	}
 
 	public String getDescription() {
@@ -55,6 +59,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setDescription(String description) {
 		this.description = description;
+		markDirty("description", name);
 	}
 
 	public List<OptionType> getOptions() {
@@ -63,6 +68,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setOptions(List<OptionType> options) {
 		this.options = options;
+		markDirty("options", name);
 	}
 
 	public List<OptionTypeFieldGroup> getFieldGroups() {
@@ -71,6 +77,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setFieldGroups(List<OptionTypeFieldGroup> fieldGroups) {
 		this.fieldGroups = fieldGroups;
+		markDirty("fieldGroups", name);
 	}
 
 	public Boolean getEnabled() {
@@ -79,6 +86,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+		markDirty("enabled", name);
 	}
 
 	public String getContext() {
@@ -87,6 +95,7 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setContext(String context) {
 		this.context = context;
+		markDirty("context", name);
 	}
 
 	public Boolean getLocked() {
@@ -95,5 +104,6 @@ public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
 
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
+		markDirty("locked", name);
 	}
 }
