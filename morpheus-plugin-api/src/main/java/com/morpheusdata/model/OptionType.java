@@ -1,5 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 /**
  * A Model representation of an input / option that is represented either in a UI or CLI. This allows an Integration to
  * specify custom inputs for various configuration screens where custom data may need to be provided. This could include
@@ -10,6 +13,8 @@ package com.morpheusdata.model;
  * @author David Estes
  */
 public class OptionType extends MorpheusModel implements IModelUuidCodeName {
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected Account account;
 
 	protected String name;
 	protected String code;
@@ -1036,6 +1041,14 @@ public class OptionType extends MorpheusModel implements IModelUuidCodeName {
 	public void setMultiTenant(Boolean multiTenant) {
 		this.multiTenant = multiTenant;
 		markDirty("multiTenant", multiTenant, this.multiTenant);
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public enum InputType {

@@ -1,8 +1,12 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+
 import java.util.List;
 
 public class OptionTypeForm extends MorpheusModel implements IModelUuidCodeName{
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected String name;
 	protected String code;
