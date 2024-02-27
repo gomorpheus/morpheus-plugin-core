@@ -15,7 +15,7 @@ public class OptionTypeFieldGroup extends MorpheusModel {
 	protected Boolean defaultCollapsed;
 	protected String visibleOnCode;
 
-	protected List<OptionType> optionTypes;
+	protected List<OptionType> options;
 
 	public String getName() {
 		return name;
@@ -80,12 +80,12 @@ public class OptionTypeFieldGroup extends MorpheusModel {
 		markDirty("defaultCollapsed", defaultCollapsed);
 	}
 
-	public List<OptionType> getOptionTypes() {
-		return optionTypes;
+	public List<OptionType> getOptions() {
+		return options;
 	}
 
-	public void setOptionTypes(List<OptionType> optionTypes) {
-		this.optionTypes = optionTypes;
-		markDirty("optionTypes", optionTypes);
+	public void setOptions(List<OptionType> options) {
+		this.options = options;
+		markDirty("optionTypes", options);
 	}
 }

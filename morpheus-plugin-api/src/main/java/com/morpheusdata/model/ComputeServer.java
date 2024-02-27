@@ -982,4 +982,10 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		rdp,
 		ssh
 	}
+
+	public enum PlacementStrategy {
+		auto,
+		failover,
+		pinned
+	}
 }
