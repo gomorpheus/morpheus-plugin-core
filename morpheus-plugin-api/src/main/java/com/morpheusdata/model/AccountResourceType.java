@@ -27,6 +27,7 @@ public class AccountResourceType extends MorpheusModel {
 	protected Boolean defaultType = false;
 	protected Boolean enabled = true;
 	protected Boolean hasCosting = false;
+	protected Boolean isPlugin = false;
 
 	public String getCode() {
 		return code;
@@ -210,5 +211,14 @@ public class AccountResourceType extends MorpheusModel {
 
 	public void setHasCosting(Boolean hasCosting) {
 		this.hasCosting = hasCosting;
+	}
+
+	public Boolean getPlugin() {
+		return isPlugin;
+	}
+
+	public void setPlugin(Boolean plugin) {
+		isPlugin = plugin;
+		markDirty("isPlugin", isPlugin);
 	}
 }
