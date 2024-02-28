@@ -53,7 +53,7 @@ public class ConnectionUtils {
 				try {
 					Integer soTimeout = 20000;
 					InetSocketAddress proxyHost = new InetSocketAddress(networkProxy.getProxyHost(), networkProxy.getProxyPort());
-					Proxy serverProxy = new Proxy(java.net.Proxy.Type.SOCKS, proxyHost);
+					Proxy serverProxy = new Proxy(java.net.Proxy.Type.HTTP, proxyHost);
 					testSocket = new Socket(serverProxy);
 					testSocket.setSoTimeout(soTimeout);
 					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout);
