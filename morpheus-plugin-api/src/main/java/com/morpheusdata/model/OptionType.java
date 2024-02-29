@@ -120,6 +120,13 @@ public class OptionType extends MorpheusModel implements IModelUuidCodeName {
 	protected Boolean secretField = false;
 	protected Boolean excludeFromSearch = false; // (if true) dont submit this field as extra data in a typeahead
 
+	/**
+	 * If this was sourced as a direct input on a form or not. If true, it is hidden from the main
+	 * ui inputs list
+	 */
+
+	protected Boolean formField = false;
+
 
 	/**
 	 * this field is for form functionality only, will not save to the domain object.
@@ -1049,6 +1056,14 @@ public class OptionType extends MorpheusModel implements IModelUuidCodeName {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public Boolean getFormField() {
+		return formField;
+	}
+
+	public void setFormField(Boolean formField) {
+		this.formField = formField;
 	}
 
 	public enum InputType {
