@@ -20,6 +20,7 @@ public class AccountInventory extends AccountInventoryIdentityProjection {
 	protected String description;
 	protected String refType;
 	protected Long refId;
+	protected AccountInventoryType type;
 
 	/**
 	 * Gets the name of the inventory file for display
@@ -106,5 +107,13 @@ public class AccountInventory extends AccountInventoryIdentityProjection {
 	 */
 	public void setRefId(Long refId) {
 		this.refId = refId;
+	}
+
+	public AccountInventoryType getType() {
+		return type;
+	}
+
+	public void setType(AccountInventoryType type) {
+		this.type = type;
 	}
 }
