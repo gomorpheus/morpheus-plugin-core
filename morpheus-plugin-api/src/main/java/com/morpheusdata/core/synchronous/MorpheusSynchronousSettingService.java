@@ -2,6 +2,7 @@ package com.morpheusdata.core.synchronous;
 
 import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.model.NetworkProxy;
 import com.morpheusdata.model.SettingType;
 import com.morpheusdata.model.Setting;
 
@@ -12,4 +13,10 @@ public interface MorpheusSynchronousSettingService extends MorpheusSynchronousDa
 	 * @return An instance of the SettingType Context
 	 */
 	MorpheusSynchronousSettingTypeService getType();
+
+	/**
+	 * Returns the Global NetworkProxy if exists else null
+	 * @return An instance of the NetworkProxy
+	 */
+	NetworkProxy getGlobalNetworkProxy();
 }
