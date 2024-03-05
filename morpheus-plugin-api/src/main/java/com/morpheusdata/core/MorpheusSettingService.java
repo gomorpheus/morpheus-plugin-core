@@ -3,6 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.Setting;
 import com.morpheusdata.model.SettingType;
 import com.morpheusdata.model.NetworkProxy;
+import io.reactivex.rxjava3.core.Maybe;
 
 public interface MorpheusSettingService extends MorpheusDataService<Setting, Setting>, MorpheusIdentityService<Setting> {
 
@@ -13,8 +14,8 @@ public interface MorpheusSettingService extends MorpheusDataService<Setting, Set
 	MorpheusSettingTypeService getType();
 
 	/**
-	 * Returns the Global NetworkProxy
+	 * Returns the Global NetworkProxy if exists else null
 	 * @return An instance of the NetworkProxy
 	 */
-	NetworkProxy getGlobalNetworkProxy();
+	Maybe<NetworkProxy> getGlobalNetworkProxy();
 }
