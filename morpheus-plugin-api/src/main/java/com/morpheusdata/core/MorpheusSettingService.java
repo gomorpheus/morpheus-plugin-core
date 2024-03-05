@@ -3,7 +3,7 @@ package com.morpheusdata.core;
 import com.morpheusdata.model.Setting;
 import com.morpheusdata.model.SettingType;
 import com.morpheusdata.model.NetworkProxy;
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 
 public interface MorpheusSettingService extends MorpheusDataService<Setting, Setting>, MorpheusIdentityService<Setting> {
 
