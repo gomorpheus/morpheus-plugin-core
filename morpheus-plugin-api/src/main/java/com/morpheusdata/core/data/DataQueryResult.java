@@ -72,6 +72,9 @@ public class DataQueryResult {
 		//info
 		if(filters != null)
 			rtn.put("filters", filters);
+		if(phrase != null) {
+			rtn.put("phrase",phrase);
+		}
 		if(groups != null)
 			rtn.put("groups", groups);
 		if(stats != null)
