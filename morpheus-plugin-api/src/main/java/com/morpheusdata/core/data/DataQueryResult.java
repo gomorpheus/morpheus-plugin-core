@@ -29,6 +29,8 @@ public class DataQueryResult {
 	public Long total;
 	//applied filters
 	public Collection filters = new ArrayList();
+	//original search phrase string
+	public String phrase;
 	//applied groups
 	public Collection groups = new ArrayList();
 	//applied stats
