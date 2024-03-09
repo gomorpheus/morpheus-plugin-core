@@ -35,29 +35,29 @@ public abstract class AbstractDatasetProvider<T, V> implements DatasetProvider<T
 
 	public String getKey() {
 		String rtn = null;
-		if(datasetInfo != null)
-			rtn = datasetInfo.key;
+		if(getInfo() != null)
+			rtn = getInfo().key;
 		return rtn;
 	}
 
 	public String getNamespace() {
 		String rtn = null;
-		if(datasetInfo != null)
-			rtn = datasetInfo.namespace;
+		if(getInfo() != null)
+			rtn = getInfo().namespace;
 		return rtn;
 	}
 
 	public String getCode() {
 		String rtn = null;
-		if(datasetInfo != null)
-			rtn = datasetInfo.getDatasetCode();
+		if(getInfo() != null)
+			rtn = getInfo().getDatasetCode();
 		return rtn;
 	}
 
 	public String getName() {
 		String rtn = null;
-		if(datasetInfo != null)
-			rtn = datasetInfo.name;
+		if(getInfo() != null)
+			rtn = getInfo().name;
 		return rtn;
 	}
 	
