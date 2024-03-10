@@ -1,12 +1,12 @@
 == DataSet Providers
 
-A DataSetProvider is a server side call to load a dynamic dataset for custom form inputs, as well as data references with scribe templates. These normally feed dropdown lists, multiselect components, and typeahead components. These can be very useful when designing task types that have custom options or even custom catalog item layouts. In the past, this was accomplished with an `OptionSourceProvider` which allowed for multiple definitions in one class. The key difference is a `DataSetProvider` only has one dataset per class but also provides associative information so that it can b used for export/import scribe functionality and more easily provide documentation per dataset.
+A DataSetProvider is a server side call to load a dynamic data for custom form inputs, as well as data references with scribe templates. A dataset can feed data to dropdown lists, multiselect components, and typeahead components. Datasets can be very useful when designing task types that have custom options or even custom catalog item layouts. In the past, this type of data was provided with an `OptionSourceProvider` which contained multiple definitions in a single provider, but had its own limitations and did not provide sufficient documentation on the data provided. The `DataSetProvider` improved dynamic data definitions by: isolating one dataset per provider, including associative information so that it can be used for export/import scribe functionality,  and including documentation on the dataset within the dataset definition.
 
 === Getting Started
 
-To get started, simply create an implementation of a `DataSetProvider` or with some convenience methods `AbstractDataSetProvider`.
+Create an implementation of a `DataSetProvider` or with some convenience methods an `AbstractDataSetProvider`.
 
-Now, when defining your `OptionType` simply set your `optionSource` property to the `getKey()` defined in your provider. It is important not to conflict names with other plugins so please try to use a unique method name. Additionally, datasets can be isolated using the `getNamespace()` method. This should be set in the `optionoSourceType` of your `OptionSource` definition.
+When defining an `OptionType` set the `optionSource` property to the `getKey()` defined in the dataset provider. Avoid naming conflicts with other plugins with unique method name or isolate the dataset by using a namespaces. A namespace is set on the `namespace` property of the `DatasetInfo` in `getDataset()`. Alternatively, the `getNamespace()` method can be implemented or overridden. When a dataset is namespaced the  `optionSourceType` of an `OptionType` or `OptionSource` should correlate to the dataset's namespace.
 
 [TIP]
 Use a unique namespace for your DataSetProvider to isolate from other plugins.
@@ -14,15 +14,20 @@ Use a unique namespace for your DataSetProvider to isolate from other plugins.
 [source,groovy]
 ----
 OptionType ot4 = new OptionType(
-				name: 'Region',
-				code: 'google-plugin-region',
-				fieldName: 'googleRegionId',
-				optionSource: 'googlePluginRegions', //Note the Option Source Defined here.
-				displayOrder: 3,
-				fieldLabel: 'Region',
-				required: true,
-				inputType: OptionType.InputType.SELECT,
-				dependsOn: 'google-plugin-project-id',
-				fieldContext: 'config'
-		)
+name: 'Region',
+code: 'google-plugin-region',
+fieldName: 'googleRegionId',
+optionSourceType: 'google', // Note: this references the dataset namespace.
+optionSource: 'googlePluginRegions', // Note: this references the dataset key.
+displayOrder: 3,
+fieldLabel: 'Region',
+required: true,
+inputType: OptionType.InputType.SELECT,
+dependsOn: 'google-plugin-project-id',
+fieldContext: 'config'
+)
 ----
+
+==== Examples
+
+DatasetProvider examples can be found in the https://github.com/gomorpheus/morpheus-plugin-dataset-examples/tree/main/src/main/groovy/com/morpheusdata/datasets[example plugin repository] on GitHub.
