@@ -1,0 +1,83 @@
+/*
+* Copyright 2022 the original author or authors.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package {{basePackage}};
+
+import com.morpheusdata.core.Plugin;
+
+
+public class {{pluginNameCamel}}Plugin extends Plugin {
+
+    @Override
+    public String getCode() {
+        return "{{pluginCode}}";
+    }
+
+    @Override
+    public void initialize() {
+        this.setName("{{pluginName}}");
+		{{#if cloud ~}}
+		this.registerProvider(new {{pluginNameCamel}}CloudProvider(this,this.morpheus));
+		this.registerProvider(new {{pluginNameCamel}}ProvisionProvider(this,this.morpheus));
+		{{/if ~}}
+        {{#if dns ~}}
+		this.registerProvider(new {{pluginNameCamel}}DNSProvider(this,this.morpheus));
+        {{/if ~}}
+        {{#if ipam ~}}
+        this.registerProvider(new {{pluginNameCamel}}IPAMProvider(this,this.morpheus));
+        {{/if ~}}
+        {{#if instanceTab ~}}
+        this.registerProvider(new {{pluginNameCamel}}InstanceTabProvider(this,this.morpheus));
+        {{/if ~}}
+        {{#if serverTab ~}}
+        this.registerProvider(new {{pluginNameCamel}}ServerTabProvider(this,this.morpheus));
+        {{/if ~}}
+		{{#if clusterTab ~}}
+		this.registerProvider(new {{pluginNameCamel}}ClusterTabProvider(this,this.morpheus));
+		{{/if ~}}
+		{{#if appTab ~}}
+		this.registerProvider(new {{pluginNameCamel}}AppTabProvider(this,this.morpheus));
+		{{/if ~}}
+		{{#if networkTab ~}}
+		this.registerProvider(new {{pluginNameCamel}}NetworkTabProvider(this,this.morpheus));
+		{{/if ~}}
+		{{#if report ~}}
+        this.registerProvider(new {{pluginNameCamel}}ReportProvider(this,this.morpheus));
+        {{/if ~}}
+		{{#if loadBalancer ~}}
+		this.registerProvider(new {{pluginNameCamel}}LoadBalancerProvider(this,this.morpheus));
+		{{/if ~}}
+        {{#if storageBucket ~}}
+        this.registerProvider(new {{pluginNameCamel}}StorageBucketProvider(this,this.morpheus));
+        {{/if ~}}
+        {{#if cypher ~}}
+        this.registerProvider(new {{pluginNameCamel}}CypherProvider(this,this.morpheus));
+        {{/if ~}}
+        {{#if credential ~}}
+        this.registerProvider(new {{pluginNameCamel}}CredentialProvider(this,this.morpheus));
+        {{/if ~}}
+		{{#if backup ~}}
+		this.registerProvider(new {{pluginNameCamel}}BackupProvider(this,this.morpheus));
+		{{~/if }}
+	}
+
+	/**
+	 * Called when a plugin is being removed from the plugin manager (aka Uninstalled)
+     */
+    @Override
+    public void onDestroy() {
+        //nothing to do for now
+    }
+}

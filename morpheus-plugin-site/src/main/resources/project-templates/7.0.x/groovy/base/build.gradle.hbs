@@ -1,0 +1,108 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.github.johnrengelman:shadow:8.1.1"
+        classpath "com.morpheusdata:morpheus-plugin-gradle:$morpheusApiVersion"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'asset-pipeline'
+apply plugin: 'com.morpheusdata.morpheus-plugin-gradle'
+
+
+group = '{{basePackage}}'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+java {
+	sourceCompatibility = JavaVersion.toVersion('1.11')
+    targetCompatibility = JavaVersion.toVersion('1.11')
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+configurations {
+	provided
+}
+
+dependencies {
+	provided "com.morpheusdata:morpheus-plugin-api:$morpheusApiVersion"
+	{{#if cypher}}
+	provided("com.morpheusdata:cypher-core:0.5.1")
+	{{/if}}
+	provided "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation 'commons-beanutils:commons-beanutils:1.9.3'
+	implementation "org.slf4j:slf4j-api:$slf4jVersion"
+	implementation "org.slf4j:slf4j-parent:$slf4jVersion"
+	implementation 'commons-net:commons-net:3.6'
+
+	// Include morpheus-core and it's dependencies
+	testImplementation 'io.reactivex.rxjava3:rxjava:3.1.7'
+	testImplementation 'org.apache.httpcomponents:httpclient:4.5.3'
+	testImplementation 'org.apache.httpcomponents:httpcore:4.4.5'
+	testImplementation "org.slf4j:slf4j-parent:$slf4jVersion"
+
+	testImplementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testImplementation 'net.bytebuddy:byte-buddy:1.9.3'
+	testImplementation 'org.objenesis:objenesis:2.6'
+	testImplementation platform("org.spockframework:spock-bom:$spockVersion")
+	testImplementation "org.spockframework:spock-core"
+	testImplementation "org.spockframework:spock-junit4"  // you can remove this if your code does not rely on old JUnit 4 rules
+	testImplementation 'cglib:cglib-nodep:3.2.12'
+}
+
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+	}
+}
+
+//Set plugin metadata information here that gets written into the jar
+jar {
+	manifest {
+		attributes(
+				'Plugin-Class': '{{basePackage}}.{{pluginNameCamel}}Plugin',
+				'Plugin-Version': version,
+				'Morpheus-Name': '{{pluginName}}',
+				'Morpheus-Organization': 'morpheus',
+				'Morpheus-Code': '{{pluginCode}}',
+				'Morpheus-Description': 'TODO: Fill in the Plugin Description',
+				'Morpheus-Logo': 'assets/morpheus.svg',
+				'Morpheus-Logo-Dark': 'assets/morpheus.svg',
+				'Morpheus-Labels': 'Plugin',
+				'Morpheus-Repo': 'https://github.com/gomorpheus/example',
+				'Morpheus-Min-Appliance-Version': "6.3.0"
+		)
+	}
+}
+
+assets {
+	packagePlugin = false //leave this false for plugins
+}
+
+
+task(console, dependsOn: 'classes', type: JavaExec) {
+	main = 'groovy.ui.Console'
+	classpath = sourceSets.main.compileClasspath + sourceSets.main.runtimeClasspath
+}
+
+test {
+	testLogging {
+		exceptionFormat = 'full'
+		showStandardStreams = true
+	}
+}
+tasks.assemble.dependsOn tasks.shadowJar

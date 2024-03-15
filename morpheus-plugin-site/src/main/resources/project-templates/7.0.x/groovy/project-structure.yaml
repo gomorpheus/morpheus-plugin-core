@@ -1,0 +1,83 @@
+syntax: groovy
+base:
+    - name: build.gradle
+      template: base/build.gradle.hbs
+    - name: gradle.properties
+      template: base/gradle.properties.hbs
+    - name: gradlew
+      template: base/gradlew
+    - name: gradlew.bat
+      template: base/gradlew.bat
+    - name: gradle/wrapper/gradle-wrapper.jar
+      template: base/gradle/wrapper/gradle-wrapper.jart
+    - name: gradle/wrapper/gradle-wrapper.properties
+      template: base/gradle/wrapper/gradle-wrapper.properties
+    - name: "{{basePackagePath}}/{{pluginNameCamel}}Plugin.groovy"
+      template: base/Plugin.groovy.hbs
+    - name: "src/assets/images/morpheus.svg"
+      template: base/assets/images/morpheus.svg  
+providers:
+    cloud:
+      - name: "{{basePackagePath}}/{{pluginNameCamel}}CloudProvider.groovy"
+        template: cloud/CloudProvider.groovy.hbs
+      - name: "{{basePackagePath}}/{{pluginNameCamel}}ProvisionProvider.groovy"
+        template: cloud/ProvisionProvider.groovy.hbs
+    ipam:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.groovy"
+          template: ipam/IPAMProvider.groovy.hbs
+    dns:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}DNSProvider.groovy"
+          template: dns/DNSProvider.groovy.hbs
+    report:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.groovy"
+          template: report/ReportProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Report.hbs"
+          template: report/report.hbsr
+    instanceTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.groovy"
+          template: instanceTab/InstanceTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/instanceTab.hbs"
+          template: instanceTab/instanceTab.hbs.hbs
+    serverTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ServerTabProvider.groovy"
+          template: serverTab/ServerTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/serverTab.hbs"
+          template: serverTab/serverTab.hbs.hbs
+    clusterTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ClusterTabProvider.groovy"
+          template: clusterTab/ClusterTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/clusterTab.hbs"
+          template: clusterTab/clusterTab.hbs.hbs
+    networkTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}NetworkTabProvider.groovy"
+          template: networkTab/NetworkTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/networkTab.hbs"
+          template: networkTab/networkTab.hbs.hbs
+    appTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}AppTabProvider.groovy"
+          template: appTab/AppTabProvider.groovy.hbs
+        - name: "src/main/resources/renderer/hbs/appTab.hbs"
+          template: appTab/appTab.hbs.hbs
+    loadBalancer:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.groovy"
+          template: loadBalancer/LoadBalancerProvider.groovy.hbs
+    storageBucket:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}StorageBucketProvider.groovy"
+          template: storage/StorageBucketProvider.groovy.hbs
+    credential:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CredentialProvider.groovy"
+          template: credential/CredentialProvider.groovy.hbs
+    cypher:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherProvider.groovy"
+          template: cypher/CypherProvider.groovy.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.groovy"
+          template: cypher/CypherModule.groovy.hbs
+    backup:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupProvider.groovy"
+            template: backup/BackupProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupTypeProvider.groovy"
+            template: backup/BackupTypeProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupExecutionProvider.groovy"
+            template: backup/BackupExecutionProvider.groovy.hbs
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupRestoreProvider.groovy"
+            template: backup/BackupRestoreProvider.groovy.hbs

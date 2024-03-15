@@ -1,0 +1,89 @@
+package {{basePackage}};
+
+import com.morpheusdata.core.AbstractAppTabProvider;
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
+import com.morpheusdata.model.Account;
+import com.morpheusdata.model.App;
+import com.morpheusdata.model.User;
+import com.morpheusdata.views.HTMLResponse;
+import com.morpheusdata.views.ViewModel;
+
+public class {{pluginNameCamel}}AppTabProvider extends AbstractAppTabProvider {
+	protected MorpheusContext context;
+	protected Plugin plugin;
+
+	public {{pluginNameCamel}}AppTabProvider(Plugin plugin, MorpheusContext ctx) {
+		super();
+		this.context = ctx;
+		this.plugin = plugin;
+	}
+
+	/**
+	 * The render method for rendering custom tabs as it relates to an Application view.
+	 *
+	 * @param app details of an App
+	 * @return result of rendering an template
+	 */
+	@Override
+	public HTMLResponse renderTemplate(App app) {
+		ViewModel<App> model = new ViewModel<>();
+		model.object = app;
+		return getRenderer().renderTemplate("hbs/appTab", model);
+	}
+
+	/**
+	 * Provide logic when tab should be displayed. This logic is checked after permissions are validated.
+	 *
+	 * @param app     App details
+	 * @param user    current User details
+	 * @param account Account details
+	 * @return whether the tab should be displayed
+	 */
+	@Override
+	public Boolean show(App app, User user, Account account) {
+		return true;
+	}
+
+	/**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 *
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	@Override
+	public MorpheusContext getMorpheus() {
+		return this.context;
+	}
+
+	/**
+	 * Returns the instance of the Plugin class that this provider is loaded from
+	 *
+	 * @return Plugin class contains references to other providers
+	 */
+	@Override
+	public Plugin getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
+	 * that is seeded or generated related to this provider will reference it by this code.
+	 *
+	 * @return short code string that should be unique across all other plugin implementations.
+	 */
+	@Override
+	public String getCode() {
+		return "{{pluginCode}}-appTab";
+	}
+
+	/**
+	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+	public String getName() {
+		return "{{pluginName}}";
+	}
+}
