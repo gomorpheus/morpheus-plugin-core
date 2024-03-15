@@ -1,0 +1,43 @@
+syntax: groovy
+base:
+    - name: build.gradle
+      template: base/build.gradle.hbs
+    - name: gradle.properties
+      template: base/gradle.properties.hbs
+    - name: gradlew
+      template: base/gradlew
+    - name: gradlew.bat
+      template: base/gradlew.bat
+    - name: gradle/wrapper/gradle-wrapper.jar
+      template: base/gradle/wrapper/gradle-wrapper.jart
+    - name: gradle/wrapper/gradle-wrapper.properties
+      template: base/gradle/wrapper/gradle-wrapper.properties  
+    - name: "{{basePackagePath}}/{{pluginNameCamel}}Plugin.java"
+      template: base/Plugin.java.hbs
+    - name: "src/assets/images/morpheus.svg"
+      template: base/assets/images/morpheus.svg  
+providers:
+    ipam:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}IPAMProvider.java"
+          template: ipam/IPAMProvider.java.hbs
+    dns:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}DNSProvider.java"
+          template: dns/DNSProvider.java.hbs
+    report:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.java"
+          template: report/ReportProvider.java.hbs
+        - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Report.hbs"
+          template: report/report.hbsr  
+    instanceTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.java"
+          template: instanceTab/InstanceTabProvider.java.hbs
+        - name: "src/main/resources/renderer/hbs/instanceTab.hbs"
+          template: instanceTab/instanceTab.hbs.hbs
+    serverTab:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}ServerTabProvider.java"
+          template: serverTab/ServerTabProvider.java.hbs
+        - name: "src/main/resources/renderer/hbs/serverTab.hbs"
+          template: serverTab/serverTab.hbs.hbs
+    loadBalancer:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}LoadBalancerProvider.java"
+          template: loadBalancer/LoadBalancerProvider.java.hbs
