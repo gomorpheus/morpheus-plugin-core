@@ -2,12 +2,18 @@ package com.morpheusdata.core.util.image;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 /**
  * Created by davidestes on 4/11/16.
  */
 public class QcowHeader {
+	public QcowHeader() {
+		this.cachedBytes = new ByteArrayOutputStream();
+	}
+
 	public Long getClusterSize() {
 		return DefaultGroovyMethods.asType(1 << clusterBits, Long.class);
 	}
@@ -137,6 +143,27 @@ public class QcowHeader {
 		this.l2Table = l2Table;
 	}
 
+	public byte[] getBytes() {
+		return cachedBytes.toByteArray();
+	}
+
+	protected void cacheByte(int b) throws IOException {
+		this.cachedBytes.write(b);
+	}
+
+	protected void cacheBytes(byte[] bytes) throws IOException {
+		this.cachedBytes.write(bytes);
+	}
+
+	protected void cacheBytes(byte[] b, int off, int len) throws IOException {
+		this.cachedBytes.write(b, off, len);
+	}
+
+	protected void closeCache() throws IOException {
+		if (cachedBytes != null)
+			cachedBytes.close();
+	}
+
 	private String magic;
 	private Long version;
 	private Long backingFileOffset;
@@ -152,4 +179,5 @@ public class QcowHeader {
 	private Long snapshotsOffset;
 	private long[] l1Table;
 	private LinkedHashMap<Long, Long[]> l2Table;
+	private ByteArrayOutputStream cachedBytes;
 }

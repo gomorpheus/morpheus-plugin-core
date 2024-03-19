@@ -13,25 +13,30 @@ import java.util.zip.Inflater;
  */
 public class Qcow2InputStream extends InputStream {
 
-	public Qcow2InputStream(InputStream sourceStream) throws IllegalArgumentException, IllegalStateException, IOException {
+	public Qcow2InputStream(InputStream sourceStream, boolean cacheHeaderBytes) throws IllegalArgumentException, IllegalStateException, IOException {
 		if(!DefaultGroovyMethods.asBoolean(sourceStream)) {
 			throw new IllegalArgumentException("A source stream must be passed to the XvaInputStream constructor.");
 		}
 		this.sourceStream = sourceStream;
+		this.cacheHeaderBytes = cacheHeaderBytes;
 		initializeQcowHeader();
+	}
+
+	public Qcow2InputStream(InputStream sourceStream) throws IllegalArgumentException, IllegalStateException, IOException {
+		this(sourceStream, false);
 	}
 
 	private void initializeQcowHeader() throws IllegalStateException, IOException {
 		this.qcowHeader = new QcowHeader();
 		//Note: we dont want to use any Helper classes for parsing the stream because most of them close the stream
 		int b;
-		b = sourceStream.read();
+		b = read_();
 		qcowHeader.setMagic(new String(new char[]{(char)b}));
-		b = sourceStream.read();
+		b = read_();
 		qcowHeader.setMagic(qcowHeader.getMagic() + (char)b);
-		b = sourceStream.read();
+		b = read_();
 		qcowHeader.setMagic(qcowHeader.getMagic() + (char)b);
-		b = sourceStream.read();// 0xfb ignore please
+		b = read_();// 0xfb ignore please
 		position = 4L;
 		//b = sourceStream.read()
 		qcowHeader.setVersion(read32());
@@ -66,7 +71,7 @@ public class Qcow2InputStream extends InputStream {
 		while(seekDistance > 0) {
 			byte[] throwAway = new byte[1024];
 			int readLen = DefaultGroovyMethods.asType(Math.min(1024, seekDistance), Integer.class);
-			int c = sourceStream.read(throwAway, 0, readLen);
+			int c = read_(throwAway, 0, readLen);
 			if(c < 0) {
 				throw new IOException("Premature end of file reached while seeking to position");
 			}
@@ -77,7 +82,7 @@ public class Qcow2InputStream extends InputStream {
 
 	private long read32() throws IOException {
 		byte[] buff = new byte[4];
-		int c = sourceStream.read(buff);
+		int c = read_(buff);
 		if(c < 0) {
 			return -1;
 		}
@@ -95,7 +100,7 @@ public class Qcow2InputStream extends InputStream {
 		int elementsRead = 0;
 		byte[] buff = new byte[longArray.length * 8];
 
-		int c = sourceStream.read(buff);
+		int c = read_(buff);
 		if(c < 0) {
 			return -1;
 		}
@@ -129,6 +134,11 @@ public class Qcow2InputStream extends InputStream {
 	@Override
 	public int available() throws IOException {
 		return sourceStream.available();
+	}
+
+	@Override
+	public int read(byte[] buffer) throws IOException {
+		return sourceStream.read(buffer);
 	}
 
 	@Override
@@ -235,6 +245,8 @@ public class Qcow2InputStream extends InputStream {
 	public void close() throws IOException {
 		super.close();
 		sourceStream.close();
+		if (cacheHeaderBytes)
+			qcowHeader.closeCache();
 	}
 
 	private Long[] loadL2Cluster(Long location) throws IOException {
@@ -305,11 +317,40 @@ public class Qcow2InputStream extends InputStream {
 		this.clusterCache = clusterCache;
 	}
 
+	/**
+	 * One of several internal read methods that will perform reads on the sourceStream of this instance
+	 * and cache the bytes of the QcowHeader to be used later, only if this stream was instantiated
+	 * with the cache instruction
+	 * @return
+	 * @throws IOException
+	 */
+	private int read_() throws IOException {
+		int b = sourceStream.read();
+		if (cacheHeaderBytes)
+			qcowHeader.cacheByte(b);
+		return b;
+	}
+
+	private int read_(byte[] b, int off, int len) throws IOException {
+		int bytesRead = sourceStream.read(b, off, len);
+		if (cacheHeaderBytes)
+			qcowHeader.cacheBytes(b, off, bytesRead);
+		return bytesRead;
+	}
+
+	private int read_(byte[] b) throws IOException {
+		int bytesRead = sourceStream.read(b);
+		if (cacheHeaderBytes)
+			qcowHeader.cacheBytes(b, 0, bytesRead);
+		return bytesRead;
+	}
+
 	private InputStream sourceStream;
 	private QcowHeader qcowHeader;
 	private Long position = 0L;
 	private Long offset = 0L;
 	private Long currentCluster = 0L;
 	private byte[] clusterCache;
+	private boolean cacheHeaderBytes = false;
 
 }
