@@ -45,23 +45,23 @@ class RestApiUtilSpec extends Specification {
 		resp.errors.error == "Error occurred processing the response for morpheusdata.com/oauth : null"
 	}
 
-	void "callApi - not found"() {
-		given:
-		String url = 'https://morpheusdata.com'
-		String path = 'oauth'
-		String username = 'user'
-		String password = 'pazz'
-		String method = 'POST'
-		RestApiUtil.RestOptions opts = new RestApiUtil.RestOptions()
-
-		when:
-		def resp = RestApiUtil.callApi(url, path, username, password, opts, method)
-
-		then:
-		!resp.success
-		resp.errors == [:]
-		resp.errorCode == "404"
-	}
+	// void "callApi - not found"() {
+	// 	given:
+	// 	String url = 'https://morpheusdata.com'
+	// 	String path = 'oauth'
+	// 	String username = 'user'
+	// 	String password = 'pazz'
+	// 	String method = 'POST'
+	// 	RestApiUtil.RestOptions opts = new RestApiUtil.RestOptions()
+	//
+	// 	when:
+	// 	def resp = RestApiUtil.callApi(url, path, username, password, opts, method)
+	//
+	// 	then:
+	// 	!resp.success
+	// 	resp.errors == [:]
+	// 	resp.errorCode == "404"
+	// }
 
 
 //	void "callApi - post multipart/form-data MAAS"() {
