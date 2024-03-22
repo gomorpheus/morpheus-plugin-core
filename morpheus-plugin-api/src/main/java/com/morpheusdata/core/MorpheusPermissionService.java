@@ -21,7 +21,9 @@ public interface MorpheusPermissionService extends MorpheusDataService<Permissio
 	 * @param siteId (Optional)
 	 * @param planId (Optional)
 	 * @return list of ids
+	 * @deprecated Use {@link MorpheusResourcePermissionService#listAccessibleResources(Long, ResourcePermission.ResourceType, Long, Long)} instead
 	 */
+	@Deprecated(since="0.15.12", forRemoval=true)
 	Observable<Long> listAccessibleResources(Long accountId, Permission.ResourceType resourceType, Long siteId, Long planId);
 
 }

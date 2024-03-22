@@ -261,6 +261,12 @@ public interface MorpheusServices {
 	MorpheusSynchronousPermissionService getPermission();
 
 	/**
+	 * Returns the Resource Permission Service
+	 * @return An instance of the MorpheusSynchronousPermissionService
+	 */
+	MorpheusSynchronousResourcePermissionService getResourcePermission();
+
+	/**
 	 * Returns the MorpheusSynchronousAccountCredentialTypeService
 	 * @return An instance of the MorpheusSynchronousAccountCredentialTypeService
 	 */

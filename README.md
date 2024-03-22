@@ -9,8 +9,6 @@ The plugin architecture requires Morpheus 5 or later.
 
 Ensure you are using a version of the plugin that is compatible with your version of Morpheus. See the releases tab for more info.
 
-
-
 ### Setup a new Gradle project
 
 The plugin API is published to Maven Central, include it in your gradle project:
@@ -20,13 +18,9 @@ dependencies {
 	compileOnly 'com.morpheusdata:morpheus-plugin-api:1.1.0'
 }
 ```
-
-
-
 ### Documentation
 
 Please refer to the [official documentation](https://developer.morpheusdata.com/docs) for more up to date guides on how to create a plugin.
-
 
 ### Implement your plugin
 
