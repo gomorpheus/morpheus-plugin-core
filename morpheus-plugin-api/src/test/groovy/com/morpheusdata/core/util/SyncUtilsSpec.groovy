@@ -45,6 +45,16 @@ class SyncUtilsSpec extends Specification {
 		provisionType: new ProvisionType(code: 'generic'),
 		visibility: 'private'
 	)
+	@Shared plan3072 = new ServicePlan(
+		id: 6,
+		account: new Account(id: 1),
+		name:'3GB Memory',
+		maxCores:1,
+		maxStorage:10l * ONE_GIGABYTE,
+		maxMemory: 3l * ONE_GIGABYTE,
+		maxCpu:1,
+		provisionType: new ProvisionType(code: 'generic')
+	)
 	@Shared plan4096 = new ServicePlan(
 		id:  4,
 		account: new Account(id: 1),
