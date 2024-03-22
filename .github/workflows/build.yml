@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.17
-    # mass plugin causing test failures, run individual tests until mass is moved to a separeate repo in v1.0
+    # mass plugin causing test failures, run individual tests until mass is moved to a separate repo
     - name: test core
       run: ./gradlew morpheus-plugin-api:test --no-daemon
     - name: test gradle plugin
