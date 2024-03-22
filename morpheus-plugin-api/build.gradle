@@ -147,6 +147,7 @@ test {
 		showStandardStreams = true
 		events "started", "passed", "skipped", "failed"
 	}
+	jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
 
 
