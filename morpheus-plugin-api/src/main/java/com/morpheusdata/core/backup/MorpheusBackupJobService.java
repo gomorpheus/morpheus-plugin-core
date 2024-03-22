@@ -40,7 +40,7 @@ public interface MorpheusBackupJobService extends MorpheusDataService<BackupJob,
 	 * @param ids list of {@link BackupJob} ids to fetch.
 	 * @return an RxJava Observable stream of {@link Backup} objects for subscription.
 	 */
-	Observable<BackupJobIdentityProjection> listById(Collection<Long> ids);
+	Observable<BackupJob> listById(Collection<Long> ids);
 
 	/**
 	 * Removes missing Backup Jobs on the Morpheus side. This accepts the Projection Object instead of the main Object.
