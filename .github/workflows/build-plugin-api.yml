@@ -22,3 +22,6 @@ jobs:
     - name: assemble
       run: ./gradlew morpheus-plugin-api:assemble --no-daemon
     - uses: actions/upload-artifact@v2
+      with:
+        name: plugin-artifacts
+        path: plugins/
