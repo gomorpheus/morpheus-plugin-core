@@ -12,7 +12,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 4
+		props.size() == 5
 	}
 
 	void "NetworkPool.getProperties()"() {
@@ -23,7 +23,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 35
+		props.size() == 38
 		and: "property of parent is included"
 		props['id'] == 1
 	}
@@ -36,7 +36,7 @@ class MorpheusModelSpec extends Specification {
 		def props = model.getProperties()
 
 		then:
-		props.size() == 50
+		props.size() == 59
 		and: "private properties are unavailable"
 		props['description'] == null
 	}
