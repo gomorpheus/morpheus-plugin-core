@@ -1,9 +1,9 @@
-name: Plugin API CI
+name: Plugin CI
 on:
   push:
     branches-ignore:
       - 'master'
-    paths-ignore:
+    paths:
       - 'morpheus-plugin-api/**'
 jobs:
   test:
@@ -16,12 +16,9 @@ jobs:
       with:
         java-version: 1.17
     - name: test
-      run: ./gradlew --no-daemon
+      run: ./gradlew morpheus-plugin-api:test --no-daemon
     - name: javadoc
-      run: ./gradlew javadoc --no-daemon
+      run: ./gradlew morpheus-plugin-api:javadoc --no-daemon
     - name: assemble
-      run: ./gradlew assemble --no-daemon
+      run: ./gradlew morpheus-plugin-api:assemble --no-daemon
     - uses: actions/upload-artifact@v2
-      with:
-        name: plugin-artifacts
-        path: plugins/
