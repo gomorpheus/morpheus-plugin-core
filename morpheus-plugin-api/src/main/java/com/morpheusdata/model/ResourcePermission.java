@@ -1,6 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.ResourcePermissionIdentity;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +16,13 @@ import java.util.Map;
  */
 public class ResourcePermission extends ResourcePermissionIdentity {
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected Boolean allSites = true;
 	protected Boolean allPlans = true;
 	protected Boolean allGroups = true;
 	protected Long morpheusResourceId;
-	protected ResourceType morpheusResourceType;
+	protected String morpheusResourceType;
 	protected Boolean defaultTarget = false;
 	protected Boolean defaultStore = false;
 	protected Boolean canManage = false;
@@ -90,12 +93,17 @@ public class ResourcePermission extends ResourcePermissionIdentity {
 		markDirty("morpheusResourceId", morpheusResourceId, this.morpheusResourceId);
 	}
 
-	public ResourceType getMorpheusResourceType() {
+	public String getMorpheusResourceType() {
 		return morpheusResourceType;
 	}
 
-	public void setMorpheusResourceType(ResourceType morpheusResourceType) {
+	public void setMorpheusResourceType(String morpheusResourceType) {
 		this.morpheusResourceType = morpheusResourceType;
+		markDirty("morpheusResourceType", morpheusResourceType, this.morpheusResourceType);
+	}
+
+	public void setMorpheusResourceType(ResourceType morpheusResourceType) {
+		this.morpheusResourceType = morpheusResourceType.toString();
 		markDirty("morpheusResourceType", morpheusResourceType, this.morpheusResourceType);
 	}
 
