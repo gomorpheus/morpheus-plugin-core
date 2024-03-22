@@ -1,6 +1,8 @@
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.ResourcePermissionIdentity;
+import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 
 /**
  * A model for defining custom resource access permissions
@@ -9,6 +11,7 @@ import com.morpheusdata.model.projection.ResourcePermissionIdentity;
  */
 public class ResourcePermission extends ResourcePermissionIdentity {
 
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Account account;
 	protected Boolean allSites = true;
 	protected Boolean allPlans = true;
@@ -76,6 +79,15 @@ public class ResourcePermission extends ResourcePermissionIdentity {
 		markDirty("allGroups", allGroups, this.allGroups);
 	}
 
+	public Long getMorpheusResourceId() {
+		return morpheusResourceId;
+	}
+
+	public void setMorpheusResourceId(Long morpheusResourceId) {
+		this.morpheusResourceId = morpheusResourceId;
+		markDirty("morpheusResourceId", morpheusResourceId, this.morpheusResourceId);
+	}
+
 	public String getMorpheusResourceType() {
 		return morpheusResourceType;
 	}
@@ -89,7 +101,7 @@ public class ResourcePermission extends ResourcePermissionIdentity {
 		this.morpheusResourceType = morpheusResourceType.toString();
 		markDirty("morpheusResourceType", morpheusResourceType, this.morpheusResourceType);
 	}
-
+	
 	public Boolean getDefaultTarget() {
 		return defaultTarget;
 	}
