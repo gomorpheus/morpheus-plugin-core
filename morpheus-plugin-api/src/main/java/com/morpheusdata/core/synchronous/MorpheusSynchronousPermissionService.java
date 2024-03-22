@@ -3,7 +3,9 @@ package com.morpheusdata.core.synchronous;
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.Permission;
-import io.reactivex.Observable;
+import com.morpheusdata.model.ResourcePermission;
+
+import java.util.Collection;
 
 public interface MorpheusSynchronousPermissionService extends MorpheusSynchronousDataService<Permission, Permission> {
 
@@ -14,7 +16,9 @@ public interface MorpheusSynchronousPermissionService extends MorpheusSynchronou
 	 * @param siteId (Optional)
 	 * @param planId (Optional)
 	 * @return list of ids
+	 * @deprecated Use {@link MorpheusSynchronousResourcePermissionService#listAccessibleResources(Long, ResourcePermission.ResourceType, Long, Long)} instead
 	 */
-	Observable<Long> listAccessibleResources(Long accountId, Permission.ResourceType resourceType, Long siteId, Long planId);
+	@Deprecated(since="0.15.12", forRemoval=true)
+	Collection<Long> listAccessibleResources(Long accountId, Permission.ResourceType resourceType, Long siteId, Long planId);
 
 }

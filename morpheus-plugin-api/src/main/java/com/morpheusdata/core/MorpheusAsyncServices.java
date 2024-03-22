@@ -278,6 +278,12 @@ public interface MorpheusAsyncServices {
 	MorpheusPermissionService getPermission();
 
 	/**
+	 * Returns the Resource Permission Service
+	 * @return An instance of the MorpheusPermissionService
+	 */
+	MorpheusResourcePermissionService getResourcePermission();
+
+	/**
 	 * Returns the MorpheusAccountCredentialTypeService
 	 * @return An instance of the MorpheusAccountCredentialTypeService
 	 */
