@@ -5,6 +5,7 @@ on:
       - 'master'
     paths:
       - 'morpheus-plugin-api/**'
+      - '.github/workflows/build-plugin-api.yml'
 jobs:
   test:
     runs-on: ubuntu-latest
