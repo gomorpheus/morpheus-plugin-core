@@ -1,4 +1,4 @@
-name: Plugin CI
+name: Plugin API CI
 on:
   push:
     branches-ignore:
