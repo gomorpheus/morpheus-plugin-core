@@ -101,7 +101,7 @@ public class ResourcePermission extends ResourcePermissionIdentity {
 		this.morpheusResourceType = morpheusResourceType.toString();
 		markDirty("morpheusResourceType", morpheusResourceType, this.morpheusResourceType);
 	}
-	
+
 	public Boolean getDefaultTarget() {
 		return defaultTarget;
 	}

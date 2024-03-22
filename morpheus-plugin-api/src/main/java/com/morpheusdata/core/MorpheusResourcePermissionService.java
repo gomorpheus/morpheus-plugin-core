@@ -2,7 +2,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.ResourcePermission;
 import com.morpheusdata.model.projection.ResourcePermissionIdentity;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 
 public interface MorpheusResourcePermissionService extends MorpheusDataService<ResourcePermission, ResourcePermissionIdentity> {
