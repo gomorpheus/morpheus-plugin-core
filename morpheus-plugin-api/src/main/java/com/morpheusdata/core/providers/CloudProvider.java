@@ -266,6 +266,14 @@ public interface CloudProvider extends PluginProvider {
 		return false;
 	}
 
+	/**
+	 * Specifies whether the current cloud allows the user to create new networks
+	 * @since 0.15.12
+	 * @return Boolean
+	 */
+	default Boolean canCreateNetworks() {
+		return false;
+	}
 
 	/**
 	 * Returns the default provision code for fetching a {@link ProvisionProvider} for this cloud.
