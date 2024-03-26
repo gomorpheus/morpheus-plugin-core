@@ -112,6 +112,17 @@ class SyncUtilsSpec extends Specification {
 		planMatch == plan512
 	}
 
+	def "FindServicePlanBySizing with null cores"() {
+		given: "maxMemory"
+		Long maxMemory = 512L * ONE_MEGABYTE
+
+		when:
+		ServicePlan planMatch = SyncUtils.findServicePlanBySizing(allServicePlans, maxMemory, null)
+
+		then: "it should not match a plan"
+		planMatch == null
+	}
+
 	def "FindServicePlanBySizing with only memory, cores, and cores per socket"() {
 		given: "maxMemory, maxCores, and coresPerSocket"
 		Long maxMemory = 512L * ONE_MEGABYTE

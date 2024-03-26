@@ -100,13 +100,13 @@ public class SyncUtils {
 				.filter(it -> it.getMaxMemory().equals(maxMemory) &&
 					!it.getCustomMaxMemory() &&
 					!it.getCustomCores() &&
-					((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
 					(it.getCoresPerSocket() == null || it.getCoresPerSocket() == 1))
 				.collect(Collectors.toList());
 		} else {
 			matchedPlans = availablePlans.stream()
 				.filter(it -> it.getMaxMemory().equals(maxMemory) &&
-					((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
 					!it.getCustomMaxMemory() &&
 					!it.getCustomCores() &&
 					it.getCoresPerSocket().equals(coresPerSocket))
@@ -124,13 +124,13 @@ public class SyncUtils {
 			//we need to look by custom
 			if (coresPerSocket == null || coresPerSocket == 0 || coresPerSocket == 1) {
 				matchedPlans = availablePlans.stream()
-					.filter(it -> ((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					.filter(it -> ((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
 						(it.getCoresPerSocket() == null || it.getCoresPerSocket() == 1) &&
 						it.getCustomMaxMemory())
 					.collect(Collectors.toList());
 			} else {
 				matchedPlans = availablePlans.stream()
-					.filter(it -> ((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					.filter(it -> ((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
 						it.getCoresPerSocket().equals(coresPerSocket) &&
 						it.getCustomMaxMemory())
 					.collect(Collectors.toList());
