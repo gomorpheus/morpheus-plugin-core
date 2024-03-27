@@ -65,18 +65,18 @@ public class SyncUtils {
 			Collection<ResourcePermission> finalResourcePermissions = resourcePermissions;
 			availablePlans = allPlans.stream()
 				.filter(pl -> "public".equals(pl.visibility) ||
-					(pl.account != null && pl.account.getId().equals(account.getId())) ||
-					(pl.owner != null && pl.owner.getId().equals(account.getId())) ||
+					(pl.account != null && Objects.equals(pl.account.getId(), account.getId())) ||
+					(pl.owner != null && Objects.equals(pl.owner.getId(), account.getId())) ||
 					(pl.getAccount() == null && "public".equals(pl.getVisibility())) ||
-					finalResourcePermissions.stream().anyMatch(rp -> rp.getMorpheusResourceId().equals(pl.getId()) && rp.getAccount().getId().equals(account.getId())))
+					finalResourcePermissions.stream().anyMatch(rp -> Objects.equals(rp.getMorpheusResourceId(), pl.getId()) && Objects.equals(rp.getAccount().getId(), account.getId())))
 				.collect(Collectors.toList());
 			if (existingPlan != null) {
 				ServicePlan finalExistingPlan = existingPlan;
 				if ("public".equals(existingPlan.getVisibility()) ||
-					(existingPlan.getAccount() != null && existingPlan.getAccount().getId().equals(account.getId())) ||
-					(existingPlan.getOwner() != null && existingPlan.getOwner().getId().equals(account.getId())) ||
+					(existingPlan.getAccount() != null && Objects.equals(existingPlan.getAccount().getId(), account.getId())) ||
+					(existingPlan.getOwner() != null && Objects.equals(existingPlan.getOwner().getId(), account.getId())) ||
 					(existingPlan.getAccount() == null && "public".equals(existingPlan.getVisibility())) ||
-					resourcePermissions.stream().anyMatch(rp -> rp.getMorpheusResourceId().equals(finalExistingPlan.getId()) && rp.getAccount().getId().equals(account.getId()))) {
+					resourcePermissions.stream().anyMatch(rp -> Objects.equals(rp.getMorpheusResourceId(), finalExistingPlan.getId()) && Objects.equals(rp.getAccount().getId(), account.getId()))) {
 					// silly assignment because the inverse of the above is difficult to express
 					existingPlan = existingPlan;
 				} else {
@@ -85,37 +85,37 @@ public class SyncUtils {
 			}
 		}
 
-		//first lets try to find a match by zone and an exact match at that
-		if (existingPlan != null && !existingPlan.equals(fallbackPlan)) {
-			if ((existingPlan.getMaxMemory().equals(maxMemory) || existingPlan.getCustomMaxMemory()) &&
-				((existingPlan.getMaxCores() == 0 && maxCores == 1) || existingPlan.getMaxCores().equals(maxCores) || existingPlan.getCustomCores()) &&
-				(coresPerSocket == null || existingPlan.getCoresPerSocket().equals(coresPerSocket) || existingPlan.getCustomCores())) {
+		// does the current plan the correct size and is not the fallback plan
+		if (existingPlan != null && (fallbackPlan == null || !existingPlan.getId().equals(fallbackPlan.getId()))) {
+			if ((Objects.equals(existingPlan.getMaxMemory(), maxMemory) || existingPlan.getCustomMaxMemory()) &&
+				((Objects.equals(existingPlan.getMaxCores(), 0L) && maxCores == 1) || Objects.equals(existingPlan.getMaxCores(), maxCores) || existingPlan.getCustomCores()) &&
+				(coresPerSocket == null || Objects.equals(existingPlan.getCoresPerSocket(), coresPerSocket) || existingPlan.getCustomCores())) {
 				return existingPlan;
 			}
 		}
 
 		Collection<ServicePlan> matchedPlans;
-		if (coresPerSocket == null || coresPerSocket == 1) {
+		if (coresPerSocket == null || coresPerSocket == 0 || coresPerSocket == 1) {
 			matchedPlans = availablePlans.stream()
-				.filter(it -> it.getMaxMemory().equals(maxMemory) &&
+				.filter(it -> Objects.equals(it.getMaxMemory(), maxMemory) &&
 					!it.getCustomMaxMemory() &&
 					!it.getCustomCores() &&
-					((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || Objects.equals(it.getMaxCores(), maxCores)) &&
 					(it.getCoresPerSocket() == null || it.getCoresPerSocket() == 1))
 				.collect(Collectors.toList());
 		} else {
 			matchedPlans = availablePlans.stream()
 				.filter(it -> it.getMaxMemory().equals(maxMemory) &&
-					((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || Objects.equals(it.getMaxCores(), maxCores)) &&
 					!it.getCustomMaxMemory() &&
 					!it.getCustomCores() &&
-					it.getCoresPerSocket().equals(coresPerSocket))
+					Objects.equals(it.getCoresPerSocket(), coresPerSocket))
 				.collect(Collectors.toList());
 		}
 
 		if (matchedPlans.isEmpty()) {
 			matchedPlans = availablePlans.stream()
-				.filter(it -> it.getMaxMemory().equals(maxMemory) && it.getCustomCores())
+				.filter(it -> Objects.equals(it.getMaxMemory(), maxMemory) && it.getCustomCores())
 				.collect(Collectors.toList());
 		}
 
@@ -124,14 +124,14 @@ public class SyncUtils {
 			//we need to look by custom
 			if (coresPerSocket == null || coresPerSocket == 0 || coresPerSocket == 1) {
 				matchedPlans = availablePlans.stream()
-					.filter(it -> ((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
+					.filter(it -> ((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || Objects.equals(it.getMaxCores(), maxCores)) &&
 						(it.getCoresPerSocket() == null || it.getCoresPerSocket() == 1) &&
 						it.getCustomMaxMemory())
 					.collect(Collectors.toList());
 			} else {
 				matchedPlans = availablePlans.stream()
-					.filter(it -> ((maxCores == 1 && (it.getMaxCores() == null || it.getMaxCores() == 0)) || it.getMaxCores().equals(maxCores)) &&
-						it.getCoresPerSocket().equals(coresPerSocket) &&
+					.filter(it -> ((Objects.equals(maxCores, 1L) && (it.getMaxCores() == null || it.getMaxCores() == 0)) || Objects.equals(it.getMaxCores(), maxCores)) &&
+						Objects.equals(it.getCoresPerSocket(), coresPerSocket) &&
 						it.getCustomMaxMemory())
 					.collect(Collectors.toList());
 			}
