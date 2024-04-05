@@ -15,7 +15,7 @@ The plugin API is published to Maven Central, include it in your gradle project:
 
 ```gradle
 dependencies {
-	compileOnly 'com.morpheusdata:morpheus-plugin-api:1.1.0'
+	compileOnly 'com.morpheusdata:morpheus-plugin-api:1.1.1'
 }
 ```
 ### Documentation
