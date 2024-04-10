@@ -318,6 +318,24 @@ public interface CloudProvider extends PluginProvider {
 	 */
 	default IacResourceMappingProvider getIacResourceMappingProvider() { return null; }
 
+	/**
+	 * Support for additional network filtering during provisioning
+	 * @since 0.15.13
+	 * @return Collection of {@link Network}
+	 */
+	default Collection<Network> filterNetworks(Cloud cloud, Collection<Network> networks, CloudPool cloudPool) {
+		return networks;
+	}
+
+	/**
+	 * Support for additional datastore filtering during provisioning
+	 * @since 0.15.13
+	 * @return Collection of {@link Datastore}.
+	 */
+	default Collection<Datastore> filterDatastores(Cloud cloud, Collection<Datastore> datastores, Collection<CloudPool> resourcePools) {
+		return datastores;
+	}
+
 
 
 }
