@@ -43,6 +43,11 @@ public class NetworkProxy extends MorpheusModel {
 	protected String proxyDomain;
 
 	/**
+	 * Used for specifying a list of hosts that should not be proxied.
+	 */
+	protected String noProxy;
+
+	/**
 	 * Used for authenticating with Windows specific Proxy servers. (optional)
 	 */
 	protected String proxyWorkstation;
@@ -157,6 +162,21 @@ public class NetworkProxy extends MorpheusModel {
 	public void setProxyDomain(String proxyDomain) {
 		this.proxyDomain = proxyDomain;
 		markDirty("proxyDomain", proxyDomain);
+	}
+
+	/**
+	 * Gets the list of hosts that should not be proxied.
+	 * @return the list of hosts that should not be proxied
+	 */
+	public String getNoProxy() { return noProxy; }
+
+	/**
+	 * Sets the list of hosts that should not be proxied.
+	 * @param noProxy the list of hosts that should not be proxied
+	 */
+	public void setNoProxy(String noProxy) {
+		this.noProxy = noProxy;
+		markDirty("noProxy", noProxy);
 	}
 
 	/**

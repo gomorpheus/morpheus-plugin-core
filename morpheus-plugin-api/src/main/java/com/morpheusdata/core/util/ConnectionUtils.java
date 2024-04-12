@@ -5,6 +5,7 @@ import com.morpheusdata.model.NetworkProxy;
 import java.net.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,7 +49,8 @@ public class ConnectionUtils {
 			if(port == -1) {
 				port = 80;
 			}
-			if(networkProxy != null) {
+			boolean noProxy = networkProxy != null && networkProxy.getNoProxy() != null && Arrays.stream(networkProxy.getNoProxy().split("[,|\\s]+")).anyMatch(it -> it.equalsIgnoreCase(hostname));
+			if(networkProxy != null && !noProxy) {
 				Socket testSocket = null;
 				try {
 					Integer soTimeout = 20000;
