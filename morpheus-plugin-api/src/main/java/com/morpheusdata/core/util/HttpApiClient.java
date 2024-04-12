@@ -68,6 +68,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -275,6 +276,7 @@ public class HttpApiClient {
 				}
 			}
 
+			opts.targetUri = uriBuilder.build();
 			withClient(opts,(HttpClient client, BasicCookieStore cookieStore) -> {
 
 				CloseableHttpResponse response = null;
@@ -597,7 +599,8 @@ public class HttpApiClient {
 					requestWriterFactory, responseParserFactory);
 			BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(registry, connFactory);
 			clientBuilder.setConnectionManager(connectionManager);
-			if(networkProxy != null) {
+			boolean noProxy = networkProxy != null && networkProxy.getNoProxy() != null && Arrays.stream(networkProxy.getNoProxy().split("[,|\\s]+")).anyMatch(it -> it.equalsIgnoreCase(opts.targetUri.getHost()));
+			if(networkProxy != null && !noProxy) {
 				String proxyHost = networkProxy.getProxyHost();
 				Integer proxyPort = networkProxy.getProxyPort();
 				if (proxyHost != null && proxyPort != null) {
@@ -658,6 +661,7 @@ public class HttpApiClient {
 		public String apiToken;
 		public HttpClient httpClient; //optional pass the client
 		public HttpClientConnectionManager connectionManager;
+		public URI targetUri;
 
 		public static class OauthOptions {
 			public String version;
