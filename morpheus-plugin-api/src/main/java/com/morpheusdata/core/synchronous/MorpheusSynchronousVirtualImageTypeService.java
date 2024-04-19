@@ -1,0 +1,10 @@
+package com.morpheusdata.core.synchronous;
+
+import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.core.MorpheusSynchronousIdentityService;
+import com.morpheusdata.model.VirtualImageType;
+import com.morpheusdata.model.projection.VirtualImageTypeIdentityProjection;
+
+public interface MorpheusSynchronousVirtualImageTypeService extends MorpheusSynchronousDataService<VirtualImageType, VirtualImageTypeIdentityProjection>, MorpheusSynchronousIdentityService<VirtualImageTypeIdentityProjection> {
+
+}

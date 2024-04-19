@@ -402,6 +402,16 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * Provides a Collection of {@link VirtualImageType} compatible to this ProvisionProvider. The list of compatible virtual
+	 * image types (raw, iso, qcow2) are used to determine which virtual images are compatible with this cloud. A common use for virtual image
+	 * types is filtering list of virtual images during the creation of a workload.
+	 * @return Collection of {@link VirtualImageType}
+	 */
+	default Collection<VirtualImageType> getVirtualImageTypes() {
+		return new ArrayList<VirtualImageType>();
+	}
+
+	/**
 	 * Provides a Collection of {@link ComputeTypeLayout} related to this ProvisionProvider. These define the types
 	 * of clusters that are exposed for this ProvisionProvider. ComputeTypeLayouts have a collection of ComputeTypeSets,
 	 * which reference a ContainerType. When returning this structure from implementations, it is often helpful to start

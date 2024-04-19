@@ -25,6 +25,11 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	MorpheusVirtualImageLocationService getLocation();
 
 	/**
+	 * The context for VirtualIMageType
+	 */
+	MorpheusVirtualImageTypeService getType();
+
+	/**
 	 * Get a list of VirtualImage projections based on Cloud id
 	 * @param cloudId Cloud id
 	 * @return Observable stream of sync projections

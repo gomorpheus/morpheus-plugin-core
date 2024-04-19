@@ -2,6 +2,7 @@ package com.morpheusdata.model.projection;
 
 import com.morpheusdata.core.MorpheusVirtualImageService;
 import com.morpheusdata.model.ImageType;
+import com.morpheusdata.model.VirtualImageType;
 
 /**
  * Provides a subset of properties from the {@link com.morpheusdata.model.VirtualImage} object for doing a sync match
@@ -15,6 +16,7 @@ public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	protected String externalId;
 	protected String name;
 	protected ImageType imageType;
+	protected VirtualImageType virtualImageType;
 	protected Boolean linkedClone = false;
 	protected String snapshotId;
 	protected Long ownerId;
@@ -48,6 +50,15 @@ public class VirtualImageIdentityProjection extends MorpheusIdentityModel {
 	public void setImageType(ImageType imageType) {
 		this.imageType = imageType;
 		markDirty("imageType", imageType);
+	}
+
+	public VirtualImageType getVirtualImageType() {
+		return virtualImageType;
+	}
+
+	public void setVirtualImageType(VirtualImageType virtualImageType) {
+		this.virtualImageType = virtualImageType;
+		markDirty("virtualImageType", virtualImageType, this.virtualImageType);
 	}
 
 	public Boolean getLinkedClone() {

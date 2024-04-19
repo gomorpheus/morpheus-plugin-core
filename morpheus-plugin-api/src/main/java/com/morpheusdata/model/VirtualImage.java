@@ -61,6 +61,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String interfaceName = "eth0";
 	protected String blockDeviceConfig;
 	protected String productCode;
+	protected VirtualImageType virtualImageType;
 	@JsonIgnore
 	protected List<VirtualImageLocation> imageLocations = new ArrayList<>();
 	@JsonIgnore
@@ -221,6 +222,25 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setIsCloudInit(Boolean isCloudInit) {
 		this.isCloudInit = isCloudInit;
 		markDirty("isCloudInit", isCloudInit);
+	}
+
+	/**
+	 * Retrieve the VirtualImageType for the VirtualImage
+	 * @return virtualImageType
+	 */
+	@Override
+	public VirtualImageType getVirtualImageType() {
+		return virtualImageType;
+	}
+
+	/**
+	 * Set the VirtualImageType for the VirtualImage
+	 * @param virtualImageType
+	 */
+	@Override
+	public void setVirtualImageType(VirtualImageType virtualImageType) {
+		this.virtualImageType = virtualImageType;
+		markDirty("virtualImageType", virtualImageType, this.virtualImageType);
 	}
 
 	/**
