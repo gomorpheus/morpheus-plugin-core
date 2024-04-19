@@ -4,6 +4,7 @@ import com.bertramlabs.plugins.karman.CloudFile;
 import com.morpheusdata.model.Cloud;
 import com.morpheusdata.model.ImageType;
 import com.morpheusdata.model.VirtualImage;
+import com.morpheusdata.model.Workload;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -171,4 +172,15 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	Single<Boolean> remove(List<VirtualImageIdentityProjection> virtualImages, Cloud cloud);
 
 	Single<Collection<CloudFile>> getVirtualImageFiles(VirtualImage virtualImage);
+
+	/**
+	 * Get a one-off url for an image to upload to it to a cloud
+	 * @since 0.15.13
+	 * @param virtualImage the image
+	 * @param cloudFile the specific file
+	 * @param workload the associated workload
+	 * @param cloud the Cloud instance
+	 * @return the url of the image file
+	 */
+	Single<String> getCloudFileStreamUrl(VirtualImage virtualImage, CloudFile cloudFile, Workload workload, Cloud cloud);
 }
