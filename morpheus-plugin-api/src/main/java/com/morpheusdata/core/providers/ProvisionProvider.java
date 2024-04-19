@@ -284,6 +284,15 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * If your provision type creates a default instance type, implement this method to provide a description for the
+	 * default instance type which will appear in the morpheus provision wizard.
+	 * @return a String detailing the use of the ProvisionProvider default instance type
+	 */
+	default public String getDefaultInstanceTypeDescription() {
+		return "Implement ProvisionProvider.getDefaultInstanceTypeDescription() to change description";
+	}
+
+	/**
 	 * Implement this method if you need specific option types for the default instance type for this provision
 	 * provider.  For example, image/template selection.
 	 * @return a collection of {@link OptionType}
