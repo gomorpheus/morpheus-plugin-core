@@ -28,7 +28,7 @@ dependencies {
 	api 'org.apache.httpcomponents:httpmime:4.5.13'
 	api 'com.github.seancfoley:ipaddress:5.3.4'
 	api "org.slf4j:slf4j-parent:$slf4jVersion"
-	api 'com.github.jknack:handlebars:4.2.0'
+	api 'com.github.jknack:handlebars:4.3.1'
     api "org.slf4j:slf4j-api:1.7.26"
 	api 'org.bouncycastle:bcprov-jdk18on:1.76'
 	implementation 'javax.servlet:javax.servlet-api:3.0.1'
