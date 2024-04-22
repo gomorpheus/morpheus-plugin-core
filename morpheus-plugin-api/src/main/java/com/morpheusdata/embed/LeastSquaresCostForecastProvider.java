@@ -36,7 +36,7 @@ public class LeastSquaresCostForecastProvider implements CostForecastProvider {
 		return 1;
 	}
 
-	public List<Forecast> generateForecast(String interval, List<CostHistory> costHistory, Integer numberOfForecastIntervals) {
+	public List<Forecast> generateForecast(Interval interval, List<CostHistory> costHistory, Integer numberOfForecastIntervals) {
 		List<Forecast> forecast = new ArrayList<>();
 		//get max index of costHistory
 		int initialForecastIndex = costHistory.get(costHistory.size() - 1).getIndex() + 1;
@@ -61,8 +61,8 @@ public class LeastSquaresCostForecastProvider implements CostForecastProvider {
 				sumxy = sumxy.add(BigDecimal.valueOf(forecast.stream().map(it -> it.getIndex() * it.getForecastCost().doubleValue()).mapToDouble(d -> d).sum()));
 			}
 			BigDecimal divisor = n.multiply(sumx2).subtract(sumx.pow(2));
-			BigDecimal m = n.multiply(sumxy).subtract(sumx.multiply(sumy)).divide(divisor, RoundingMode.UNNECESSARY);
-			BigDecimal b = sumx2.multiply(sumy).subtract(sumx.multiply(sumxy)).divide(divisor, RoundingMode.UNNECESSARY);
+			BigDecimal m = n.multiply(sumxy).subtract(sumx.multiply(sumy)).divide(divisor,2, RoundingMode.CEILING);
+			BigDecimal b = sumx2.multiply(sumy).subtract(sumx.multiply(sumxy)).divide(divisor,2, RoundingMode.CEILING);
 
 			forecastEntry.setForecastCost(m.multiply(BigDecimal.valueOf(forecastEntry.getIndex())).add(b));
 
