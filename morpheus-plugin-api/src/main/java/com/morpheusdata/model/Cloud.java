@@ -61,9 +61,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected String datacenterId;
 	protected String userDataLinux;
 	protected String userDataWindows;
-	protected Double reservedMemory = 0d;
-	protected Double provisionPercent = 1.0d;
-	protected Double costAdjustment = 1.0d;
+
 	protected Boolean deleted = false;
 	protected String guidanceMode;
 	protected String costingMode;
@@ -74,8 +72,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected Date nextRunDate;
 	protected Long lastSyncDuration;
 	//zone integration config
-	protected String containerMode = "docker";
-	protected String storageMode = "standard";
+
 	protected String securityMode = "off"; //host firewall.. off or internal
 
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
@@ -88,10 +85,7 @@ public class Cloud extends CloudIdentityProjection {
 	protected String backupMode = "internal"; //if backups are off,run by morpheus or a provider
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public BackupProvider backupProvider; //integrated backup provider
-	//flags on if a cloud is ok to allow these types of provision - for ex, kvm needs a kvm host, kube mode need a master and 1 or more workers
-	protected Boolean kvmEnabled = false;
-	protected Boolean dockerEnabled = false;
-	protected Boolean nativeEnabled = true;
+
 	protected Boolean autoRecoverPowerState = true;
 	protected String consoleKeymap;
 	//external mapping
@@ -101,8 +95,22 @@ public class Cloud extends CloudIdentityProjection {
 	protected String iacId; //id for infrastructure as code integrations;
 	protected String uuid = UUID.randomUUID().toString();
 	protected String noProxy;
-	//non-persisted properties for active credentials
 
+	//adding default sync flags
+	protected Boolean defaultFolderSyncActive;
+	protected Boolean defaultPoolSyncActive;
+	protected Boolean defaultNetworkSyncActive;
+	protected Boolean defaultDatastoreSyncActive;
+	protected Boolean defaultPlanSyncActive;
+	protected Boolean defaultSecurityGroupSyncActive;
+	protected Long defaultFolderSyncAccount;
+	protected Long defaultPoolSyncAccount;
+	protected Long defaultNetworkSyncAccount;
+	protected Long defaultDatastoreSyncAccount;
+	protected Long defaultPlanSyncAccount;
+	protected Long defaultSecurityGroupSyncAccount;
+
+	//non-persisted properties for active credentials
 	protected Map accountCredentialData;
 	protected Boolean accountCredentialLoaded = false;
 
@@ -154,9 +162,6 @@ public class Cloud extends CloudIdentityProjection {
 		return lastUpdated;
 	}
 
-	public Boolean getAutoCapacity() {
-		return autoCapacity;
-	}
 
 	public String getServiceUrl() {
 		return serviceUrl;
@@ -274,17 +279,7 @@ public class Cloud extends CloudIdentityProjection {
 		return userDataWindows;
 	}
 
-	public Double getReservedMemory() {
-		return reservedMemory;
-	}
 
-	public Double getProvisionPercent() {
-		return provisionPercent;
-	}
-
-	public Double getCostAdjustment() {
-		return costAdjustment;
-	}
 
 	public Boolean getDeleted() {
 		return deleted;
@@ -322,14 +317,6 @@ public class Cloud extends CloudIdentityProjection {
 		return lastSyncDuration;
 	}
 
-	public String getContainerMode() {
-		return containerMode;
-	}
-
-	public String getStorageMode() {
-		return storageMode;
-	}
-
 	public String getSecurityMode() {
 		return securityMode;
 	}
@@ -347,18 +334,6 @@ public class Cloud extends CloudIdentityProjection {
 	}
 
 	public BackupProvider getBackupProvider() { return backupProvider; }
-
-	public Boolean getKvmEnabled() {
-		return kvmEnabled;
-	}
-
-	public Boolean getDockerEnabled() {
-		return dockerEnabled;
-	}
-
-	public Boolean getNativeEnabled() {
-		return nativeEnabled;
-	}
 
 	public Boolean getAutoRecoverPowerState() {
 		return autoRecoverPowerState;
@@ -432,6 +407,102 @@ public class Cloud extends CloudIdentityProjection {
 
 	public void setLinkedAccountId(String linkedAccountId) {
 		this.linkedAccountId = linkedAccountId;
+	}
+
+	public Boolean getDefaultFolderSyncActive() {
+		return defaultFolderSyncActive;
+	}
+
+	public void setDefaultFolderSyncActive(Boolean defaultFolderSyncActive) {
+		this.defaultFolderSyncActive = defaultFolderSyncActive;
+	}
+
+	public Boolean getDefaultPoolSyncActive() {
+		return defaultPoolSyncActive;
+	}
+
+	public void setDefaultPoolSyncActive(Boolean defaultPoolSyncActive) {
+		this.defaultPoolSyncActive = defaultPoolSyncActive;
+	}
+
+	public Boolean getDefaultNetworkSyncActive() {
+		return defaultNetworkSyncActive;
+	}
+
+	public void setDefaultNetworkSyncActive(Boolean defaultNetworkSyncActive) {
+		this.defaultNetworkSyncActive = defaultNetworkSyncActive;
+	}
+
+	public Boolean getDefaultDatastoreSyncActive() {
+		return defaultDatastoreSyncActive;
+	}
+
+	public void setDefaultDatastoreSyncActive(Boolean defaultDatastoreSyncActive) {
+		this.defaultDatastoreSyncActive = defaultDatastoreSyncActive;
+	}
+
+	public Boolean getDefaultPlanSyncActive() {
+		return defaultPlanSyncActive;
+	}
+
+	public void setDefaultPlanSyncActive(Boolean defaultPlanSyncActive) {
+		this.defaultPlanSyncActive = defaultPlanSyncActive;
+	}
+
+	public Boolean getDefaultSecurityGroupSyncActive() {
+		return defaultSecurityGroupSyncActive;
+	}
+
+	public void setDefaultSecurityGroupSyncActive(Boolean defaultSecurityGroupSyncActive) {
+		this.defaultSecurityGroupSyncActive = defaultSecurityGroupSyncActive;
+	}
+
+	public Long getDefaultFolderSyncAccount() {
+		return defaultFolderSyncAccount;
+	}
+
+	public void setDefaultFolderSyncAccount(Long defaultFolderSyncAccount) {
+		this.defaultFolderSyncAccount = defaultFolderSyncAccount;
+	}
+
+	public Long getDefaultPoolSyncAccount() {
+		return defaultPoolSyncAccount;
+	}
+
+	public void setDefaultPoolSyncAccount(Long defaultPoolSyncAccount) {
+		this.defaultPoolSyncAccount = defaultPoolSyncAccount;
+	}
+
+	public Long getDefaultNetworkSyncAccount() {
+		return defaultNetworkSyncAccount;
+	}
+
+	public void setDefaultNetworkSyncAccount(Long defaultNetworkSyncAccount) {
+		this.defaultNetworkSyncAccount = defaultNetworkSyncAccount;
+	}
+
+	public Long getDefaultDatastoreSyncAccount() {
+		return defaultDatastoreSyncAccount;
+	}
+
+	public void setDefaultDatastoreSyncAccount(Long defaultDatastoreSyncAccount) {
+		this.defaultDatastoreSyncAccount = defaultDatastoreSyncAccount;
+	}
+
+	public Long getDefaultPlanSyncAccount() {
+		return defaultPlanSyncAccount;
+	}
+
+	public void setDefaultPlanSyncAccount(Long defaultPlanSyncAccount) {
+		this.defaultPlanSyncAccount = defaultPlanSyncAccount;
+	}
+
+	public Long getDefaultSecurityGroupSyncAccount() {
+		return defaultSecurityGroupSyncAccount;
+	}
+
+	public void setDefaultSecurityGroupSyncAccount(Long defaultSecurityGroupSyncAccount) {
+		this.defaultSecurityGroupSyncAccount = defaultSecurityGroupSyncAccount;
 	}
 
 	public enum Status {
@@ -643,20 +714,6 @@ public class Cloud extends CloudIdentityProjection {
 		markDirty("userDataWindows", userDataWindows);
 	}
 
-	public void setReservedMemory(Double reservedMemory) {
-		this.reservedMemory = reservedMemory;
-		markDirty("reservedMemory", reservedMemory);
-	}
-
-	public void setProvisionPercent(Double provisionPercent) {
-		this.provisionPercent = provisionPercent;
-		markDirty("provisionPercent", provisionPercent);
-	}
-
-	public void setCostAdjustment(Double costAdjustment) {
-		this.costAdjustment = costAdjustment;
-		markDirty("costAdjustment", costAdjustment);
-	}
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
@@ -703,15 +760,6 @@ public class Cloud extends CloudIdentityProjection {
 		markDirty("lastSyncDuration", lastSyncDuration);
 	}
 
-	public void setContainerMode(String containerMode) {
-		this.containerMode = containerMode;
-		markDirty("containerMode", containerMode);
-	}
-
-	public void setStorageMode(String storageMode) {
-		this.storageMode = storageMode;
-		markDirty("storageMode", storageMode);
-	}
 
 	public void setSecurityMode(String securityMode) {
 		this.securityMode = securityMode;
@@ -736,21 +784,6 @@ public class Cloud extends CloudIdentityProjection {
 	public void setBackupProvider(BackupProvider backupProvider) {
 		this.backupProvider = backupProvider;
 		markDirty("backupProvider", backupProvider);
-	}
-
-	public void setKvmEnabled(Boolean kvmEnabled) {
-		this.kvmEnabled = kvmEnabled;
-		markDirty("kvmEnabled", kvmEnabled);
-	}
-
-	public void setDockerEnabled(Boolean dockerEnabled) {
-		this.dockerEnabled = dockerEnabled;
-		markDirty("dockerEnabled", dockerEnabled);
-	}
-
-	public void setNativeEnabled(Boolean nativeEnabled) {
-		this.nativeEnabled = nativeEnabled;
-		markDirty("nativeEnabled", nativeEnabled);
 	}
 
 	public void setAutoRecoverPowerState(Boolean autoRecoverPowerState) {
