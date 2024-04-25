@@ -191,6 +191,12 @@ public interface CloudProvider extends PluginProvider {
 	Boolean hasComputeZonePools();
 
 	/**
+	 * Returns whether the cloud requires a resource pool to be selected for provisioning
+	 * @return Boolean
+	 */
+	Boolean provisionRequiresResourcePool();
+
+	/**
 	 * Returns whether a cloud supports {@link Network}
 	 * @return Boolean
 	 */
