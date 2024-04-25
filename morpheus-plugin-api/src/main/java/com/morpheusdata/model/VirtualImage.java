@@ -50,6 +50,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String imageRegion;
 	protected Boolean isForceCustomization;
 	protected Boolean uefi=false;
+	protected Boolean tpm=false;
 	protected Boolean isCloudInit = true;
 	protected Boolean virtioSupported = true;
 	protected Boolean deleted = false;
@@ -367,6 +368,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setUefi(Boolean uefi) {
 		this.uefi = uefi;
 		markDirty("uefi", uefi);
+	}
+
+	public Boolean getTpm() {
+		return tpm;
+	}
+
+	public void setTpm(Boolean tpm) {
+		this.tpm = tpm;
+		markDirty("tpm", tpm);
 	}
 
 	public Boolean getVirtioSupported() {
