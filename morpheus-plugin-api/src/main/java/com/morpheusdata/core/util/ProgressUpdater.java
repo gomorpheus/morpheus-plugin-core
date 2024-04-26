@@ -1,10 +1,11 @@
 package com.morpheusdata.core.util;
 
 import groovy.lang.Closure;
-import groovy.util.logging.Commons;
+import groovy.util.logging.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-@Commons
+
+@Slf4j
 class ProgressUpdater extends Thread {
 	private int lastPercent=0;
 	private int progressPercent=0;
@@ -33,9 +34,9 @@ class ProgressUpdater extends Thread {
 						this.progressCallback.call(progressPercent);
 					}
 					if(updateStr != null && updateStr != "") {
-						log.debug("${updateStr}: ${progressPercent}%");
+						log.debug("{}: {}%", updateStr, progressPercent);
 					} else {
-						log.debug("stream progress: ${progressPercent}%");
+						log.debug("stream progress: {}%", progressPercent);
 					}
 					lastPercent = progressPercent;
 				}
