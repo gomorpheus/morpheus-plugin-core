@@ -17,6 +17,7 @@ class ProgressUpdater extends Thread {
 
 	ProgressUpdater() {
 	}
+
 	ProgressUpdater(int updateInterval) {
 		this.updateInterval = updateInterval;
 	}
@@ -33,7 +34,7 @@ class ProgressUpdater extends Thread {
 					if(this.progressCallback != null ) {
 						this.progressCallback.call(progressPercent);
 					}
-					if(updateStr != null && updateStr != "") {
+					if(updateStr != null && updateStr.isEmpty()) {
 						log.debug("{}: {}%", updateStr, progressPercent);
 					} else {
 						log.debug("stream progress: {}%", progressPercent);
@@ -53,9 +54,16 @@ class ProgressUpdater extends Thread {
 		this.progressCallback = progressCallback;
 	}
 
+	Closure getProgressCallback() {
+		return this.progressCallback;
+	}
 
 	void setPercent(int percent) {
 		this.progressPercent = percent;
+	}
+
+	int getPercent() {
+		return this.progressPercent;
 	}
 
 }
