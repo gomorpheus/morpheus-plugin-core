@@ -194,7 +194,9 @@ public interface CloudProvider extends PluginProvider {
 	 * Returns whether the cloud requires a resource pool to be selected for provisioning
 	 * @return Boolean
 	 */
-	Boolean provisionRequiresResourcePool();
+	default Boolean provisionRequiresResourcePool() {
+		return false;
+	}
 
 	/**
 	 * Returns whether a cloud supports {@link Network}
