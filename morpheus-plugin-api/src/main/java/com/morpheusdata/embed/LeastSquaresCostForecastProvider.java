@@ -64,7 +64,12 @@ public class LeastSquaresCostForecastProvider implements CostForecastProvider {
 			BigDecimal m = n.multiply(sumxy).subtract(sumx.multiply(sumy)).divide(divisor,2, RoundingMode.CEILING);
 			BigDecimal b = sumx2.multiply(sumy).subtract(sumx.multiply(sumxy)).divide(divisor,2, RoundingMode.CEILING);
 
-			forecastEntry.setForecastCost(m.multiply(BigDecimal.valueOf(forecastEntry.getIndex())).add(b));
+			BigDecimal forecastCost = m.multiply(BigDecimal.valueOf(forecastEntry.getIndex())).add(b)
+			if(forecastCost.compareTo(BigDecimal.ZERO) < 0) {
+				forecastCost = BigDecimal.ZERO;
+			}
+			forecastEntry.setForecastCost(forecastCost);
+
 
 
 			forecast.add(forecastEntry);
