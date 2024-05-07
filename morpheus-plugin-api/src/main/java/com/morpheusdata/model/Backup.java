@@ -17,7 +17,7 @@ public class Backup extends MorpheusModel {
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupType backupType;
 	// TODO: create storage bucket model
-	// protected StorageBucket storageProvider;
+	protected StorageBucket storageProvider;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected BackupRepository backupRepository;
 
@@ -133,14 +133,14 @@ public class Backup extends MorpheusModel {
 		this.backupType = backupType;
 	}
 
-	// public StorageBucket getStorageProvider() {
-	// 	return storageProvider;
-	// }
+	public StorageBucket getStorageProvider() {
+		return storageProvider;
+	}
 
-	// public void setStorageProvider(StorageBucket storageProvider) {
-	// 	markDirty("storageProvider", storageProvider, this.storageProvider);
-	// 	this.storageProvider = storageProvider;
-	// }
+	public void setStorageProvider(StorageBucket storageProvider) {
+		markDirty("storageProvider", storageProvider, this.storageProvider);
+		this.storageProvider = storageProvider;
+	}
 
 	public BackupRepository getBackupRepository() {
 		return backupRepository;
