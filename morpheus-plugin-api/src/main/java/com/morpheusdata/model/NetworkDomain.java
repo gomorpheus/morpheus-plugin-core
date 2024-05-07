@@ -42,6 +42,7 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	protected Boolean dnssec;
 	public String fqdn;
 	protected String domainSerial;
+	protected Boolean active = true;
 	//reverse zone
 	protected String reverseName;
 	protected String reverseFqdn;
@@ -356,5 +357,14 @@ public class NetworkDomain extends NetworkDomainIdentityProjection {
 	public void setFqdn(String fqdn) {
 		this.fqdn = fqdn;
 		markDirty("fqdn", fqdn);
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+		markDirty("active", active);
 	}
 }
