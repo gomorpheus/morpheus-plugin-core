@@ -114,12 +114,20 @@ public interface MorpheusLoadBalancerService extends MorpheusDataService<Network
 	String buildServerName(String namePattern, Long id, Map nameConfig);
 
 	/**
-	 * Retrive the correct IP address to use for load balancing from a container
+	 * Retrieve the correct IP address to use for load balancing from a container
 	 * @param container {@link Workload}
 	 * @param externalAddress a boolean on whether to prefer using an external address or nat
 	 * @return an ip address
 	 */
 	String getContainerIp(Workload container, Boolean externalAddress);
+
+	/**
+	 * Retrieve the correct IP address to use for load balancing from a server
+	 * @param server {@link ComputeServer}
+	 * @param externalAddress a boolean on whether to prefer using an external address or nat
+	 * @return an ip address
+	 */
+	String getServerIp(ComputeServer server, Boolean externalAddress);
 
 	/**
 	 * Build a name for a pool that applies any additional morpheus naming substitutions
