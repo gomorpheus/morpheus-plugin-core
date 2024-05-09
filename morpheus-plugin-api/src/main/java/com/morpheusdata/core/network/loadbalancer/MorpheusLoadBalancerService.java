@@ -96,6 +96,15 @@ public interface MorpheusLoadBalancerService extends MorpheusDataService<Network
 	Map buildNamingConfig(Workload container, Map opts, NetworkLoadBalancerInstance loadBalancerInstance);
 
 	/**
+	 * Helper method for load balancer operations to build naming configuration to certain items
+	 * @param server {@link ComputeServer}
+	 * @param opts optional parameters used in the naming implementation
+	 * @param loadBalancerInstance the {@link NetworkLoadBalancerInstance} to build a name for
+	 * @return a collection of naming details
+	 */
+	Map buildNamingConfig(ComputeServer server, Map opts, NetworkLoadBalancerInstance loadBalancerInstance);
+
+	/**
 	 * This is a helper method to generate a name and applying morpheus naming substitutions
 	 * @param namePattern naming pattern to apply
 	 * @param id id

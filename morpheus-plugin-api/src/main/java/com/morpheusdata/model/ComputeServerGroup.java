@@ -2,7 +2,9 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
+import java.util.Collection;
 import java.util.Date;
 
 public class ComputeServerGroup extends MorpheusModel {
@@ -17,6 +19,10 @@ public class ComputeServerGroup extends MorpheusModel {
 	protected ComputeSite site;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected Cloud zone;
+
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected Collection<ComputeServer> servers;
+
 	//ServiceEntry serviceEntry //represents the main api entrypoint to the service
 	protected String name;
 	protected String code;
@@ -414,5 +420,13 @@ public class ComputeServerGroup extends MorpheusModel {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+
+	public Collection<ComputeServer> getServers() {
+		return servers;
+	}
+
+	public void setServers(Collection<ComputeServer> servers) {
+		this.servers = servers;
 	}
 }
