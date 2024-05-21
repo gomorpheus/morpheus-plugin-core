@@ -599,6 +599,10 @@ public class NetworkUtility {
 		}
 	}
 
+	static public String normalizeIpAddress(String ipAddress) throws UnknownHostException {
+		return InetAddress.getByName(ipAddress).getHostAddress();
+	}
+
 	static public String getIpAddressIndex(String name) {
 		String rtn = null;
 		if (name != null) {
