@@ -65,6 +65,8 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	protected String partition;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected NetworkLoadBalancer loadBalancer;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected NetworkPool vipPool;
 
 	// the hasMany fields
 	protected List<CloudPool> assignedZonePools = new ArrayList<CloudPool>();
@@ -532,6 +534,13 @@ public class NetworkLoadBalancerInstance extends LoadBalancerInstanceIdentityPro
 	public void setLoadBalancer(NetworkLoadBalancer loadBalancer) {
 		this.loadBalancer = loadBalancer;
 		markDirty("loadBalancer", loadBalancer);
+	}
+
+	public NetworkPool getVipPool() { return this.vipPool; }
+
+	public void setVipPool(NetworkPool pool) {
+		this.vipPool = pool;
+		markDirty("vipPool", pool);
 	}
 
 	public List<CloudPool> getAssignedZonePools() {
