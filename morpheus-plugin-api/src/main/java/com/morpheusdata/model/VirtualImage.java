@@ -51,6 +51,8 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected Boolean isForceCustomization;
 	protected Boolean uefi=false;
 	protected Boolean tpm=false;
+	protected Boolean secureBoot=false;
+	protected Boolean credentialGuard=false;
 	protected Boolean isCloudInit = true;
 	protected Boolean virtioSupported = true;
 	protected Boolean deleted = false;
@@ -494,5 +496,32 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	public void setCloudInit(Boolean cloudInit) {
 		isCloudInit = cloudInit;
 		markDirty("isCloudInit", isCloudInit);
+	}
+
+	public Boolean getTpm() {
+		return tpm;
+	}
+
+	public void setTpm(Boolean tpm) {
+		this.tpm = tpm;
+		markDirty("tpm", tpm);
+	}
+
+	public Boolean getSecureBoot() {
+		return secureBoot;
+	}
+
+	public void setSecureBoot(Boolean secureBoot) {
+		this.secureBoot = secureBoot;
+		markDirty("secureBoot", secureBoot);
+	}
+
+	public Boolean getCredentialGuard() {
+		return credentialGuard;
+	}
+
+	public void setCredentialGuard(Boolean credentialGuard) {
+		this.credentialGuard = credentialGuard;
+		markDirty("credentialGuard", credentialGuard);
 	}
 }
