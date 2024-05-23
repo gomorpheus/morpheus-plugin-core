@@ -372,15 +372,6 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 		markDirty("uefi", uefi);
 	}
 
-	public Boolean getTpm() {
-		return tpm;
-	}
-
-	public void setTpm(Boolean tpm) {
-		this.tpm = tpm;
-		markDirty("tpm", tpm);
-	}
-
 	public Boolean getVirtioSupported() {
 		return virtioSupported;
 	}
