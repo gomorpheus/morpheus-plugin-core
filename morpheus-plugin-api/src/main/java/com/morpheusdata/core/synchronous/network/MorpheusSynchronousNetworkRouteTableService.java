@@ -5,7 +5,8 @@ import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.CloudPool;
 import com.morpheusdata.model.NetworkRouteTable;
 import com.morpheusdata.model.projection.NetworkRouteTableIdentityProjection;
-import io.reactivex.Observable;
+
+import java.util.List;
 
 public interface MorpheusSynchronousNetworkRouteTableService extends MorpheusSynchronousDataService<NetworkRouteTable, NetworkRouteTableIdentityProjection>, MorpheusSynchronousIdentityService<NetworkRouteTableIdentityProjection> {
 
@@ -15,7 +16,7 @@ public interface MorpheusSynchronousNetworkRouteTableService extends MorpheusSyn
 	 * @param zonePool the {@link CloudPool} identifier associated to the route tables to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(CloudPool zonePool);
+	List<NetworkRouteTableIdentityProjection> listIdentityProjections(CloudPool zonePool);
 
 	/**
 	 * Lists all route table projection objects for a specified cloud.
@@ -23,5 +24,5 @@ public interface MorpheusSynchronousNetworkRouteTableService extends MorpheusSyn
 	 * @param poolId the id of the {@link CloudPool} associated to the route tables to be listed.
 	 * @return an RxJava Observable stream of result projection objects.
 	 */
-	Observable<NetworkRouteTableIdentityProjection> listIdentityProjections(Long poolId);
+	List<NetworkRouteTableIdentityProjection> listIdentityProjections(Long poolId);
 }
