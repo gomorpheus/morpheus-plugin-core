@@ -626,13 +626,4 @@ public interface ProvisionProvider extends PluginProvider {
 		ServiceResponse finalizeResourceWorkload(Workload workload, AccountResource resource);
 
 	}
-
-	public interface ImportWorkloadFacet {
-		/**
-		 * Import a workload to an image
-		 * @param importWorkloadRequest The {@link ImportWorkloadRequest} containing the workload, source image, target image, image base path, and storage bucket
-		 * @return A ServiceResponse indicating success or failure
-		 */
-		ServiceResponse<ImportWorkloadResponse> importWorkload(ImportWorkloadRequest importWorkloadRequest);
-	}
 }

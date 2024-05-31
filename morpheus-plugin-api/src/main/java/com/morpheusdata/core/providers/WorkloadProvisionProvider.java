@@ -2,6 +2,7 @@ package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.provisioning.WorkloadRequest;
+import com.morpheusdata.request.ImportWorkloadRequest;
 import com.morpheusdata.request.ResizeRequest;
 import com.morpheusdata.response.*;
 
@@ -144,5 +145,15 @@ public interface WorkloadProvisionProvider extends ComputeProvisionProvider {
 		 * @return Response from API
 		 */
 		ServiceResponse resizeWorkload(Instance instance, Workload workload, ResizeRequest resizeRequest, Map opts);
+	}
+
+
+	public interface ImportWorkloadFacet {
+		/**
+		 * Import a workload to an image
+		 * @param importWorkloadRequest The {@link ImportWorkloadRequest} containing the workload, source image, target image, image base path, and storage bucket
+		 * @return A ServiceResponse indicating success or failure
+		 */
+		ServiceResponse<ImportWorkloadResponse> importWorkload(ImportWorkloadRequest importWorkloadRequest);
 	}
 }
