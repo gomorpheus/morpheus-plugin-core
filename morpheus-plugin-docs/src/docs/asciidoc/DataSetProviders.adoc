@@ -28,6 +28,5 @@ fieldContext: 'config'
 )
 ----
 
-==== Examples
+DatasetProvider examples can be found in the https://github.com/gomorpheus/morpheus-plugin-dataset-examples/tree/main/src/main/groovy/com/morpheusdata/datasets[example plugin repository,role=external,window=_blank] on GitHub.
 
-DatasetProvider examples can be found in the https://github.com/gomorpheus/morpheus-plugin-dataset-examples/tree/main/src/main/groovy/com/morpheusdata/datasets[example plugin repository] on GitHub.
