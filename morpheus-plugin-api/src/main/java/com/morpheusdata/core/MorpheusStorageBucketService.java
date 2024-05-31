@@ -1,5 +1,6 @@
 package com.morpheusdata.core;
 
+import com.bertramlabs.plugins.karman.StorageProvider;
 import com.morpheusdata.model.StorageServer;
 import com.morpheusdata.model.StorageBucket;
 import com.morpheusdata.model.projection.StorageBucketIdentityProjection;
@@ -35,4 +36,11 @@ public interface MorpheusStorageBucketService extends MorpheusDataService<Storag
 	 * @return success
 	 */
 	Single<Boolean> removeForSync(List<StorageBucketIdentityProjection> storageBuckets);
+
+	/**
+	 * Get a StorageProvider for a given StorageBucket
+	 * @param storageBucketId the id of the StorageBucket
+	 * @return Single stream of the StorageProvider for the storage bucket
+	 */
+	Single<StorageProvider> getBucketStorageProvider(Long storageBucketId);
 }

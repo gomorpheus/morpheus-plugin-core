@@ -2,11 +2,12 @@ package com.morpheusdata.core.providers;
 
 import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService;
 import com.morpheusdata.model.*;
+import com.morpheusdata.request.ImportWorkloadRequest;
+import com.morpheusdata.response.ImportWorkloadResponse;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -626,6 +627,12 @@ public interface ProvisionProvider extends PluginProvider {
 
 	}
 
-
-
+	public interface ImportWorkloadFacet {
+		/**
+		 * Import a workload to an image
+		 * @param importWorkloadRequest The {@link ImportWorkloadRequest} containing the workload, source image, target image, image base path, and storage bucket
+		 * @return A ServiceResponse indicating success or failure
+		 */
+		ServiceResponse<ImportWorkloadResponse> importWorkload(ImportWorkloadRequest importWorkloadRequest);
+	}
 }
