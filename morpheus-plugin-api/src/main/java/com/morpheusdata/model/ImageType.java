@@ -17,5 +17,7 @@ public enum ImageType {
 	vhdx,
 	vmdk,
 	xen,
-	zvhd2
+	zvhd2,
+	xva,
+	vmtx
 }
