@@ -330,6 +330,16 @@ public interface LoadBalancerProvider extends PluginProvider {
 	 */
 	ServiceResponse removeInstance(NetworkLoadBalancerInstance instance);
 
+    /**
+	 * Implement this method to remove all entities involved in a {@link NetworkLoadBalancerInstance} with a ComputeServerGroup such ass policies, pools,
+	 * profiles, nodes, virtual servers, etc.  This method should clean said entities from the load balancer integration itself
+	 * @param instance {@link NetworkLoadBalancerInstance}
+     * @param serverGroup {@link ComputeServerGroup}
+	 * @return {@link ServiceResponse}
+	 */
+	ServiceResponse removeInstance(NetworkLoadBalancerInstance instance, ComputeServerGroup serverGroup);
+
+
 	/**
 	 * Implement this method to update all entities involved in a {@link NetworkLoadBalancerInstance} such as policies, pools,
 	 * profiles, nodes, virtual servers, etc.  This method is usually called when a node is added/removed from an instance
