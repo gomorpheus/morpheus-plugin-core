@@ -337,7 +337,9 @@ public interface LoadBalancerProvider extends PluginProvider {
      * @param serverGroup {@link ComputeServerGroup}
 	 * @return {@link ServiceResponse}
 	 */
-	default ServiceResponse removeInstance(NetworkLoadBalancerInstance instance, ComputeServerGroup serverGroup);
+	default ServiceResponse removeInstance(NetworkLoadBalancerInstance instance, ComputeServerGroup serverGroup){
+		return ServiceResponse.success();
+	}
 
 
 	/**
