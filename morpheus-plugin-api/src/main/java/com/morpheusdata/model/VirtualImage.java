@@ -42,6 +42,7 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 	protected String remotePath;
 	protected String status;
 	protected String statusReason;
+	protected Double statusPercent;
 	@JsonIgnore
 	protected List<String> locations;
 	protected OsType osType;
@@ -353,6 +354,15 @@ public class VirtualImage extends VirtualImageIdentityProjection {
 
 	public void setStatusReason(String statusReason) {
 		this.statusReason = statusReason;
+	}
+
+	public Double getStatusPercent() {
+		return statusPercent;
+	}
+
+	public void setStatusPercent(Double statusPercent) {
+		this.statusPercent = statusPercent;
+		markDirty("statusPercent", statusPercent);
 	}
 
 	public Boolean getForceCustomization() {
