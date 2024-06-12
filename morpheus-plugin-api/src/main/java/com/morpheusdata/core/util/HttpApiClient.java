@@ -4,7 +4,6 @@ import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
@@ -746,11 +745,7 @@ public class HttpApiClient {
 
 					@Override
 					protected void prepareSocket(SSLSocket socket) {
-						try {
-							PropertyUtils.setProperty(socket, "host", null);
-						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-							e.printStackTrace();
-						}
+
 						List<SNIServerName> serverNames = Collections.<SNIServerName>emptyList();
 						SSLParameters sslParams = socket.getSSLParameters();
 						sslParams.setServerNames(serverNames);
@@ -764,7 +759,6 @@ public class HttpApiClient {
 								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
 								SSLSocket sslSocket = (SSLSocket) socket;
 								sslSocket.setEnabledProtocols(enabledProtocols);
-								PropertyUtils.setProperty(socket, "host", host.getHostName());
 							} catch (Exception ex) {
 								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors", host, ex);
 							}
@@ -778,15 +772,9 @@ public class HttpApiClient {
 					@Override
 					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
 						if (socket instanceof SSLSocket) {
-							try {
 								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
 								SSLSocket sslSocket = (SSLSocket) socket;
 								sslSocket.setEnabledProtocols(enabledProtocols);
-								PropertyUtils.setProperty(socket, "host", host.getHostName());
-							} catch (NoSuchMethodException | IllegalAccessException |
-									 InvocationTargetException ignored) {
-								//;
-							}
 						}
 
 						return super.connectSocket(opts.timeout != null ? opts.timeout : 30000, socket, host, remoteAddress, localAddress, context);
