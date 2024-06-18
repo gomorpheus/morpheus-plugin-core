@@ -24,6 +24,7 @@ public class ResourcePermission extends ResourcePermissionIdentity {
 
 
 	public enum ResourceType {
+		BackupServer,
 		ComputeZoneFolder,
 		ComputeZonePool,
 		Datastore,

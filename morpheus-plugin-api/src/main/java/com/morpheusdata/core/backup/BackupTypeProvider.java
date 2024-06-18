@@ -57,6 +57,13 @@ public interface BackupTypeProvider extends PluginProvider {
 	String getRestoreType();
 
 	/**
+	 * Determines if this backup type relies on a snapshot process. Snapshots are typically used for quick backups and
+	 * are not designed for long-term storage. For long-term backup creation, additional processes, such as copy to store,
+	 * should be utilized by providers that rely on snapshots.
+	 */
+	default Boolean isSnapshot() { return false; };
+
+	/**
 	 * Get the desired method of restoring a backup to a new instance.
 	 * <p>
 	 * Available options:
