@@ -27,6 +27,7 @@ public class CatalogItemType extends MorpheusModel {
 	protected Boolean featured;
 	protected String iconPath;
 	protected List<OptionType> optionTypes;
+	protected OptionTypeForm form;
 	protected String createdBy;
 	protected Date dateCreated;
 	protected Date lastUpdated;
@@ -160,5 +161,13 @@ public class CatalogItemType extends MorpheusModel {
 
 	public void setContentFormatted(String contentFormatted) {
 		this.contentFormatted = contentFormatted;
+	}
+
+	public OptionTypeForm getForm() {
+		return form;
+	}
+
+	public void setForm(OptionTypeForm form) {
+		this.form = form;
 	}
 }
