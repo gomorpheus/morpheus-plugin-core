@@ -31,6 +31,9 @@ public class CatalogItemType extends MorpheusModel {
 	protected Date dateCreated;
 	protected Date lastUpdated;
 
+	protected String content;
+	protected String contentFormatted;
+
 	public Account getOwner() {
 		return owner;
 	}
@@ -141,5 +144,21 @@ public class CatalogItemType extends MorpheusModel {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getContentFormatted() {
+		return contentFormatted;
+	}
+
+	public void setContentFormatted(String contentFormatted) {
+		this.contentFormatted = contentFormatted;
 	}
 }
