@@ -1,6 +1,7 @@
 build/
 bin/
 /plugins/
+m2libs/
 testplugins/
 .asscache
 .gradle/

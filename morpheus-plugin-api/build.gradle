@@ -140,6 +140,11 @@ task(console, dependsOn: 'classes', type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
 }
 
+task copyRuntimeLibs(type: Copy) {
+    into "m2libs"
+    from project.configurations.runtimeClasspath
+}
+
 test {
 	useJUnitPlatform()
 	testLogging {
