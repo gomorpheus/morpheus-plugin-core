@@ -2,33 +2,106 @@
 
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
+* **1.1.4**
+** Added `removeInstance` to `LoadBalancerProvider`.
+
+* **1.1.3**
+** Added missing image types to `ImageType` enum.
+** Moved `importWorkloadFacet` to `WorkloadProvisionProvider`.
+** Added methods for importing workloads and retrieving storage providers for storage buckets.
+** Added location getter on synchronous virtual image service.
+** Added `vipPool` to `NetworkLoadBalancerInstance`.
+** Includes all changes from 0.15.14
+
+* **0.15.14**
+** Added editable, nameEditable, and deletable flags to `StorageVolumeType`.
+** Introduced secure boot, TPM, and credential guard to `VirtualImage`.
+** Added IP normalization to `NetworkUtility`.
+
+* **1.1.2**
+** Added support for synchronous services for backup storage.
+** Introduced methods to get bucket and bucket Karman provider for a backup.
+** Added TPM flag to `VirtualImage`.
+** Added new flags for default sync active state.
+** Updated forecast models.
+** Added interface method on provision providers for setting explicit descriptions on default instance types.
+** Includes all changes from 0.15.13
+
+* **0.15.13**
+** Added `active` to `NetworkDomain`.
+** Introduced sync for `getCloudFileStreamUrl`.
+** Added `provisionRequiresResourcePool` flag to cloud types.
+** Added support for filtering networks and datastores during provisioning based on the selected resource pool.
+
+* **1.1.1**
+** Added caching capabilities to `Qcow2InputStream`.
+** Introduced QCOW conversion tools/helpers for plugins.
+** Added various model maps and option types.
+** Enhanced inventory types and form field options.
+** Fixed network count and improved data query services.
+** Includes all changes from 0.15.11 and 0.15.12
+
+* **0.15.12**
+** Deprecated unused host types.
+** Handled `maxCores` being null on plan lookup.
+** Allowed cloud plugins to set `canCreateNetworks` on cloud types.
+
+* **0.15.11**
+** Made `getGlobalNetworkProxy` asynchronous and synchronous.
+** Added `isPlugin` property to `AccountResourceType`.
+** Added `getGlobalNetworkProxy` to the settings service.
+
+* **1.0.6**
+** Added `addToDate` to `DateUtility`.
+** Introduced additional `callXmlApi` method options to match `callJsonApi` methods.
+** Includes all changes from 0.15.10
+
+* **0.15.10**
+** Added labels to compute server.
+** Introduced appliance instance, execute schedule, and setting APIs.
+** Added `systemImage` to `ImageLocation`.
+** Added interface for scale providers.
+** Supported IaC provisioning and resource mapping.
+** Added support for workload metadata tag updates.
+
 * ** 1.0.5**
 ** Added Packages to compute type layout
-** Copyright updates
 ** Plugin API Services
+** Includes all changes from 0.15.9
+
 * **0.15.9**
 ** Added Packages to compute type layout
+** Updated snapshot management.
+
 * **1.0.4**
 ** Improvements to HTTPApiClient to support Certificate Auth as well as new methods for capturing response as a stream
 ** Cloud Pool management support for cloud plugins and network associations
 ** Added IPv6 CIDR to NetworkPool
+** Includes all changes from 0.15.8
+
 * **0.15.8**
 ** Improvements to HTTPApiClient to support Certificate Auth as well as new methods for capturing response as a stream
 ** Cloud Pool management support for cloud plugins and network associations
 ** Added IPv6 CIDR to NetworkPool
+
 * **1.0.3**
 ** Improvements to Model serialization
 ** Additional method calls to support Amazon ScaleGroups
 ** Added Backup Provider templates to generator
+** Includes all changes from 0.15.7
+
 * **0.15.7**
 ** Improvements to Model serialization
 ** Additional method calls to support Amazon ScaleGroups
+
 * **0.14.7**
 ** Added missing method in NetworkUtility
+
 * **1.0.2**
 ** 1.0 Release with proper deprecation support!
 ** Moved all rxjava calls to rxjava3 from rxjava2 (NOTE: This requires all plugins to be updated for 6.3.0 of morpheus)
-** Includes all improvements from 0.15.6
+** Includes all changes from 0.15.6
+
 * **0.15.6**
 ** All Context Services now implement `MorpheusDataService`
 ** Created SynchronousDataService equivalents for all asynchronous ones
@@ -36,9 +109,11 @@
 ** New Task Provider format for simplification of making task plugins
 ** Additional `Facets` for injecting functionality into various `ProvisionProviders`
 ** ProvisionProvider classes split up based on type of provisioner. `WorkloadProvisionProvider`, `AppProvisionProvider`, `HostProvisionProvider, and `CloudNativeProvisionProvider`.
+
 * **0.15.5**
 * **0.15.4**
 ** Not released due to last minute issues
+
 * **0.15.3**
 ** Converting More Context Services to `MorpheusDataService` versions and deprecating old methods.
 ** Deprecated direct service accessors on `MorpheusContext` in favor of `morpheusContext.getAsync()` for all the existing reactive services and `morpheusContext.getServices()` for all the synchronous counterparts.
@@ -50,11 +125,13 @@
 ** Starting to rename `IdentityProjection` objects to `Identity` for shorter naming convention.
 ** New Base interfaces for ProvisionProvider based on if provisioning Compute or Cloud native resources or Apps.
 ** *NOTE*: There are breaking changes in this plugin release for cloud plugins and likely more to come as we polish for 1.0 GA
+
 * **0.15.2**
 ** MorpheusDataService enhancements with added query methods.
 ** Deprecated Service access directly on `MorpheusContext` in favor of accessing thru sub classes i.e. `morpheusContext.getAsync().getService()`.
 ** Began adding non-reactive synchronous service access via `morpheusContext.getServices().getService()`
 ** Improved javadoc for `DataQuery` and `DataService` methods.
+
 * **0.15.1**
 ** Moved most Providers new packages folder `com.morpheusdata.core.providers`
 ** Deprecated `OptionSourceProvider` in favor of new `DatasetProvider`
@@ -63,21 +140,28 @@
 *** Created new `MorpheusDataService` interface reference that allows for using dynamic db queries and object marshalling into the core/api models.
 ** New `StorageProvider` work began for abstracting various storage providers within morpheus.
 ** Enhanced `NetworkProvider` to support `Router` and `SecurityGroup` representations.
+
 * ** 0.15.0**
 ** Filling in more Models and Cloud representations.
+
 * ** 0.14.4**
 ** Fixed an issue where the BackupProvider wasn't marshalled to the cloud on option sources.
+
 * ** 0.14.3**
 ** Filling in more Models and Cloud representations.
 ** Completed Localization support. Plugins now can be fully localized in both server side, and client side rendering. Guide provided as well.
+
 * ** 0.14.2**
 ** Filling in more Models and Cloud representations.
 ** Added OptionType support for the `hidden` HTML Input.
+
 * ** 0.14.1.**
 ** Filling in more Models and Cloud representations.
+
 * ** 0.14.0**
 ** Filling in Cloud related gaps as we work to provide full cloud provider plugin support
 ** F5 Load Balancer support added and full abstractions for the `LoadBalancerProvider`.
+
 * **0.13.4**
 ** Backup Plugin Support Added
 ** Cloud Plugin Coverage Improved
@@ -90,15 +174,44 @@
 ** Context Services for Syncing additional cloud object types (such as Security Groups)
 ** Various other bug fixes and improvements on the road to 1.0.0
 ** Bump JVM Compatibility minimum to 1.11 (jdk 11)
-* **0.13.1** - Added Credential Providers support as well as significant CloudProvider refactoring (more to follow)
-* **0.12.5** - Task Providers now have a hasResults flag for result variable chaining.
-* **0.12.4** - IPAM NetworkPoolType filters for handling multiple pool types in one integration. Deprecated reservePoolAddress from IPAMProvider as its no longer needed. Added typeCode to the `NetworkPoolIdentityProjection`. Added `{{nonce}}` helper to handlebars tab providers for injecting javascript safely within the Content Security Policies in place.
-* **0.12.3** - Simplification and Polish if IPAM/DNS Interface Implementations (need Morpheus 5.4.4+). Added new ReportProvider helper for easier management of db connection use `withDbConnection { connection -> }`.
-* **0.12.0** - Cloud Provider Plugin Critical Fixes (WIP). Added Plugin settings.
-* **0.11.0** - Cloud Provider Plugin Support. UI Nonce token attribute added for injecting javascript securely and css. Network Provider Plugin support. Create providers for dynamically creating networks and network related objects.
-* **0.10.0** - Custom Report Type Providers have been added.
-* **0.8.0** - Overhauled DNS/IPAM Integrations, Reorganized contexts and standardized formats. Added utility classes for easier sync logic. Custom reports, Cloud Providers, Server Tabs, and more. Only compatible with Morpheus version `5.3.1` forward.
 
-* **0.7.0** - Please note due to jcenter() EOL Don't use 0.7.0
-* **0.6.0** - Primary Plugin target base version for 5.2.x Morpheus Releases
+* **0.13.1**
+** Added Credential Providers support as well as significant CloudProvider refactoring (more to follow)
+
+* **0.12.5**
+** Task Providers now have a hasResults flag for result variable chaining.
+
+* **0.12.4**
+** IPAM NetworkPoolType filters for handling multiple pool types in one integration.
+** Deprecated reservePoolAddress from IPAMProvider as its no longer needed.
+** Added typeCode to the `NetworkPoolIdentityProjection`.
+** Added `{{nonce}}` helper to handlebars tab providers for injecting javascript safely within the Content Security Policies in place.
+
+* **0.12.3**
+** Simplification and Polish if IPAM/DNS Interface Implementations (need Morpheus 5.4.4+).
+** Added new ReportProvider helper for easier management of db connection use `withDbConnection { connection -> }`.
+
+* **0.12.0**
+** Cloud Provider Plugin Critical Fixes (WIP).
+** Added Plugin settings.
+
+* **0.11.0**
+** Cloud Provider Plugin Support.
+** UI Nonce token attribute added for injecting javascript securely and css.
+** Network Provider Plugin support. Create providers for dynamically creating networks and network related objects.
+
+* **0.10.0**
+** Custom Report Type Providers have been added.
+
+* **0.8.0**
+** Overhauled DNS/IPAM Integrations, Reorganized contexts and standardized formats. \
+** Added utility classes for easier sync logic.
+** Custom reports, Cloud Providers, Server Tabs, and more.
+** Only compatible with Morpheus version `5.3.1` forward.
+
+* **0.7.0**
+** Please note due to jcenter() EOL Don't use 0.7.0
+
+* **0.6.0**
+** Primary Plugin target base version for 5.2.x Morpheus Releases
 
