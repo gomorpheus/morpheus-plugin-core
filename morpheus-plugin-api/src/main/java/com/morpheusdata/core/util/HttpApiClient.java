@@ -210,7 +210,8 @@ public class HttpApiClient {
 
 			if (opts.headers != null && !opts.headers.isEmpty()) {
 				for (CharSequence headerKey : opts.headers.keySet()) {
-					request.addHeader(headerKey.toString(), opts.headers.get(headerKey).toString());
+					String headerValue = opts.headers.get(headerKey) != null ? opts.headers.get(headerKey).toString() : "";
+					request.addHeader(headerKey.toString(), headerValue);
 				}
 			}
 
