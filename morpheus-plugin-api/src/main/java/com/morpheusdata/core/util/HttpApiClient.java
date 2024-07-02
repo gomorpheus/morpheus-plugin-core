@@ -16,10 +16,9 @@
 
 package com.morpheusdata.core.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
-import groovy.json.JsonOutput;
-import groovy.json.JsonSlurper;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
@@ -80,7 +79,6 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
@@ -90,8 +88,11 @@ import java.security.cert.X509Certificate;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.xml.sax.SAXParseException;
 
@@ -284,7 +285,10 @@ public class HttpApiClient {
 							request.setHeader("Content-Type", newValue);
 						}
 					} else {
-						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+						ObjectMapper mapper = new ObjectMapper();
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+						mapper.setDateFormat(df);
+						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
 					}
 				} else if (opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
@@ -508,7 +512,11 @@ public class HttpApiClient {
 							request.setHeader("Content-Type", newValue);
 						}
 					} else {
-						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+						ObjectMapper mapper = new ObjectMapper();
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+						mapper.setDateFormat(df);
+						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
+
 					}
 				} else if (opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
@@ -615,7 +623,10 @@ public class HttpApiClient {
 		String bodyType = opts != null ? opts.contentType : null;
 
 		if (body != null && (bodyType == null || (!bodyType.equals("form") && !bodyType.equals("multi-part-form") && !bodyType.equals("application/octet-stream"))) && !(body instanceof String)) {
-			opts.body = JsonOutput.toJson(opts.body);
+			ObjectMapper mapper = new ObjectMapper();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+			mapper.setDateFormat(df);
+			opts.body = mapper.writeValueAsString(opts.body);
 		}
 
 		//execute
@@ -624,7 +635,26 @@ public class HttpApiClient {
 
 		if (rtn.getContent() != null && rtn.getContent().length() > 0) {
 			try {
-				rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
+				//parse the json in jackson and remove groovy
+				ObjectMapper mapper = new ObjectMapper();
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+				mapper.setDateFormat(df);
+				TypeReference<Map<String,Object>> typeRefMap = new TypeReference<Map<String,Object>>() {
+				};
+				TypeReference<List<Map<String,Object>>> typeRefList = new TypeReference<List<Map<String,Object>>>() {
+				};
+				try {
+					rtn.setData(mapper.readValue(rtn.getContent(), typeRefMap));
+				} catch(Exception e) {
+					try {
+						rtn.setData(mapper.readValue(rtn.getContent(), typeRefList));
+					} catch(Exception e2) {
+						log.debug("Error parsing API response JSON: ${e}", e);
+					}
+				}
+
+
+				//rtn.setData(new JsonSlurper().parseText(rtn.getContent()));
 			} catch (Exception e) {
 				log.debug("Error parsing API response JSON: ${e}", e);
 			}

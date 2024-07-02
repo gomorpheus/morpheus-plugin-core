@@ -18,7 +18,6 @@ package com.morpheusdata.core.util;
 import com.morpheusdata.response.ServiceResponse;
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -466,11 +465,6 @@ public class RestApiUtil {
 
 					@Override
 					protected void prepareSocket(SSLSocket socket) {
-						try {
-							PropertyUtils.setProperty(socket, "host", null);
-						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-							e.printStackTrace();
-						}
 						List<SNIServerName> serverNames  = Collections.<SNIServerName> emptyList();
 						SSLParameters sslParams = socket.getSSLParameters();
 						sslParams.setServerNames(serverNames);
@@ -483,7 +477,6 @@ public class RestApiUtil {
 								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
 								SSLSocket sslSocket = (SSLSocket)socket;
 								sslSocket.setEnabledProtocols(enabledProtocols);
-								PropertyUtils.setProperty(socket, "host", host.getHostName());
 							} catch (Exception ex) {
 								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors",host, ex);
 							}
@@ -497,14 +490,11 @@ public class RestApiUtil {
 					@Override
 					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
 						if(socket instanceof SSLSocket) {
-							try {
-								String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-								SSLSocket sslSocket = (SSLSocket)socket;
-								sslSocket.setEnabledProtocols(enabledProtocols);
-								PropertyUtils.setProperty(socket, "host", host.getHostName());
-							} catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-								//;
-							}
+
+							String[] enabledProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+							SSLSocket sslSocket = (SSLSocket)socket;
+							sslSocket.setEnabledProtocols(enabledProtocols);
+
 						}
 
 						return super.connectSocket(opts.timeout != null ? opts.timeout : 30000, socket, host, remoteAddress, localAddress, context);

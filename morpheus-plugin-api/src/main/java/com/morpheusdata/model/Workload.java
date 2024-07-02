@@ -16,16 +16,13 @@
 
 package com.morpheusdata.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.morpheusdata.model.projection.WorkloadIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
-import com.morpheusdata.model.serializers.ModelCollectionIdUuidCodeNameSerializer;
 import com.morpheusdata.model.serializers.ModelIdUuidCodeNameSerializer;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -330,10 +327,10 @@ public class Workload extends WorkloadIdentityProjection {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			if(this.configs != null && this.configs != "") {
-				JsonReader jsonReader = Json.createReader(new StringReader(this.configs));
-				JsonObject object = jsonReader.readObject();
-				jsonReader.close();
-				map = toMap(object);
+				TypeReference<Map<String,Object>> typeRef = new TypeReference<>() {
+				};
+				ObjectMapper mapper = new ObjectMapper();
+				map = mapper.readValue(this.configs, typeRef);;
 			}
 		} catch(Exception e) {
 			//fail silently
@@ -342,9 +339,10 @@ public class Workload extends WorkloadIdentityProjection {
 	}
 
 	@Override
-	public void setConfigMap(Map<String, Object> map) {
-		JsonObject object = mapToJson(map);
-		setConfigs(object.toString());
+	public void setConfigMap(Map<String, Object> map) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String objString = mapper.writeValueAsString(map);
+		setConfigs(objString);
 	}
 
 	public String getRawData() {

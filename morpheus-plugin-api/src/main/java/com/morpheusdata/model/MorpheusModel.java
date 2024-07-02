@@ -18,11 +18,12 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.math.*;
 import java.util.*;
-import javax.json.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,10 +168,10 @@ public class MorpheusModel {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			if(this.config != null && this.config != "") {
-				JsonReader jsonReader = Json.createReader(new StringReader(this.config));
-				JsonObject object = jsonReader.readObject();
-				jsonReader.close();
-				map = toMap(object);
+				TypeReference<Map<String,Object>> typeRef = new TypeReference<>() {
+				};
+				ObjectMapper mapper = new ObjectMapper();
+				map = mapper.readValue(this.config, typeRef);
 			}
 		} catch(Exception e) {
 			//fail silently
@@ -179,139 +180,10 @@ public class MorpheusModel {
 		return map;
 	}
 
-	public void setConfigMap(Map<String, Object> map) {
-		JsonObject object = mapToJson(map);
-		setConfig(object.toString());
-	}
-
-	protected JsonObject mapToJson(Map<String, Object> map) {
-		JsonObjectBuilder builder = Json.createObjectBuilder();
-		for (String key : map.keySet()) {
-			Object val = map.get(key);
-			if (val instanceof String) {
-				builder.add(key, (String) val);
-			} else if (val instanceof Number) {
-				if(val instanceof Integer) {
-					builder.add(key, (Integer) val);
-				} else if(val instanceof Double) {
-					builder.add(key, (Double) val);
-				} else if(val instanceof Long) {
-					builder.add(key, (Long) val);
-				} else if(val instanceof Boolean) {
-					builder.add(key, (Boolean) val);
-				} else if(val instanceof Short) {
-					builder.add(key, (Short) val);
-				} else if(val instanceof Float) {
-					builder.add(key, (Float) val);
-				} else {
-					builder.add(key, (BigDecimal) val);
-				}
-			} else if(val instanceof Boolean) {
-				builder.add(key, (Boolean) val);
-			} else if(val instanceof Map) {
-				builder.add(key, mapToJson((Map<String, Object>) val));
-			} else if (val instanceof List) {
-				builder.add(key, listToJson((List<Object>) val));
-			} else {
-				if(val != null) {
-					builder.add(key, val.toString());
-				} else {
-					builder.addNull(key);
-				}
-			}
-		}
-
-		return builder.build();
-	}
-
-	private JsonArray listToJson(List<Object> list) {
-		JsonArrayBuilder builder = Json.createArrayBuilder();
-
-		for (Object val: list) {
-			if (val instanceof String) {
-				builder.add((String) val);
-			} else if (val instanceof Number) {
-				if(val instanceof Integer) {
-					builder.add((Integer) val);
-				} else if(val instanceof Double) {
-					builder.add((Double) val);
-				} else if(val instanceof Long) {
-					builder.add((Long) val);
-				} else if(val instanceof Boolean) {
-					builder.add((Boolean) val);
-				} else if(val instanceof Short) {
-					builder.add((Short) val);
-				} else if(val instanceof Float) {
-					builder.add((Float) val);
-				} else {
-					builder.add((BigDecimal) val);
-				}
-			} else if(val instanceof Boolean) {
-				builder.add((Boolean) val);
-			} else if(val instanceof Map) {
-				builder.add(mapToJson((Map<String, Object>) val));
-			} else if (val instanceof List) {
-				builder.add(listToJson((List<Object>) val));
-			} else {
-				if(val != null) {
-					builder.add(val.toString());
-				} else {
-					builder.addNull();
-				}
-			}
-		}
-
-		return builder.build();
-	}
-
-	protected Map toMap(JsonObject object) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (String key : object.keySet()) {
-			Object val = null;
-			JsonValue value = object.get(key);
-			if (value instanceof JsonArray) {
-				val = toList((JsonArray) value);
-			} else if (value instanceof JsonObject) {
-				val = toMap((JsonObject) value);
-			} else if(value.getValueType() == JsonValue.ValueType.STRING) {
-				val = object.getString(key);
-			} else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
-				JsonNumber number = object.getJsonNumber(key);
-				//val = number.isIntegral() ? number.longValue() : number.doubleValue();
-				// HACK: Removed the use of the ternary operator because of what appears to be a bug in java/groovy
-				// See Jordon for more explanation
-				if (number.isIntegral())
-					val = number.longValue();
-				else
-					val = number.doubleValue();
-			} else if(value.getValueType() == JsonValue.ValueType.FALSE || value.getValueType() == JsonValue.ValueType.TRUE) {
-				val = object.getBoolean(key);
-			}
-			map.put(key, val);
-		}
-		return map;
-	}
-
-	private List<Object> toList(JsonArray array) {
-		List<Object> list = new ArrayList<Object>();
-		for(int i = 0; i < array.size(); i++) {
-			JsonValue value = array.get(i);
-			Object val = new Object();
-			if (value instanceof JsonArray) {
-				val = toList((JsonArray) value);
-			} else if (value instanceof JsonObject) {
-				val = toMap((JsonObject) value);
-			} else if(value.getValueType() == JsonValue.ValueType.STRING) {
-				val = array.getString(i);
-			} else if(value.getValueType() == JsonValue.ValueType.NUMBER) {
-				JsonNumber number = array.getJsonNumber(i);
-				val = number.isIntegral() ? number.longValue() : number.doubleValue();
-			} else if(value.getValueType() == JsonValue.ValueType.FALSE || value.getValueType() == JsonValue.ValueType.TRUE) {
-				val = array.getBoolean(i);
-			}
-			list.add(val);
-		}
-		return list;
+	public void setConfigMap(Map<String, Object> map) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String objString = mapper.writeValueAsString(map);
+		setConfig(objString);
 	}
 
 	public Object getConfigProperty(String prop) {
@@ -337,7 +209,7 @@ public class MorpheusModel {
 		return propertyValue;
 	}
 
-	public void setConfigProperty(String prop, Object object) {
+	public void setConfigProperty(String prop, Object object) throws JsonProcessingException {
 		Map configMap = getConfigMap();
 		if(!prop.contains(".")) {
 			configMap.put(prop, object);

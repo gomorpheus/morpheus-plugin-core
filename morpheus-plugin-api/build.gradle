@@ -23,28 +23,27 @@ configurations {
  
 dependencies {
 	api 'io.reactivex.rxjava3:rxjava:3.1.7'
+	api 'commons-codec:commons-codec:1.13'
 	api 'org.apache.httpcomponents:httpclient:4.5.14'
 	api 'org.apache.httpcomponents:httpcore:4.4.15'
 	api 'org.apache.httpcomponents:httpmime:4.5.13'
-	api 'com.github.seancfoley:ipaddress:5.3.4'
+	api 'com.github.seancfoley:ipaddress:5.4.1'
 	api "org.slf4j:slf4j-parent:$slf4jVersion"
 	api 'com.github.jknack:handlebars:4.3.1'
-    api "org.slf4j:slf4j-api:1.7.26"
+	api "org.slf4j:slf4j-api:1.7.26"
 	api 'org.bouncycastle:bcprov-jdk18on:1.76'
 	implementation 'javax.servlet:javax.servlet-api:3.0.1'
 	implementation "org.codehaus.groovy:groovy:$groovyVersion"
-    implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
-    implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
+  implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
 	compileOnly('com.morpheusdata:cypher-core:0.10.0')
-	api 'org.glassfish:javax.json:1.1.4'
-	api 'javax.json:javax.json-api:1.1.4'
 	implementation 'commons-net:commons-net:3.9.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
 	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.1'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.1'
 
-	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-	implementation 'commons-net:commons-net:3.7.2'
+	//implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+	implementation 'commons-net:commons-net:3.9.0'
 	provided("com.bertramlabs.plugins:karman-core:${karmanVersion}") {
 		exclude module: 'groovy-all'
 	}
