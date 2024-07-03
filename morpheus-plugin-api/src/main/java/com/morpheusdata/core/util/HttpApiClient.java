@@ -94,8 +94,6 @@ import java.util.*;
 import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import org.xml.sax.SAXParseException;
-
 /**
  * Utility methods for calling external APIs in a standardized way.
  *
@@ -670,11 +668,13 @@ public class HttpApiClient {
 		return callXmlApi(url, path, null, null, opts, method);
 	}
 
+	@Deprecated(since="1.1.5")
 	public ServiceResponse callXmlApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
 		return callXmlApi(url, path, username, password, opts, "POST");
 	}
 
 
+	@Deprecated(since="1.1.5")
 	public ServiceResponse callXmlApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
@@ -692,9 +692,9 @@ public class HttpApiClient {
 		rtn.setData(new LinkedHashMap());
 		if (rtn.getContent() != null && rtn.getContent().length() > 0) {
 			try {
-				rtn.setData(new groovy.util.XmlSlurper(false, true).parseText(rtn.getContent()));
-			} catch (SAXParseException spe) {
-				log.debug("Response is NOT XML: ${rtn.content}");
+				Class<?> xmlSlurperClass = Class.forName("groovy.util.XmlSlurper");
+				Object xmlSlurper = xmlSlurperClass.getDeclaredConstructor(boolean.class,boolean.class).newInstance(false, true);
+				rtn.setData(xmlSlurperClass.getMethod("parseText", String.class).invoke(xmlSlurper, rtn.getContent()));
 			} catch (Exception e) {
 				log.debug("Error parsing API response XML: " + e.getMessage(), e);
 			}
