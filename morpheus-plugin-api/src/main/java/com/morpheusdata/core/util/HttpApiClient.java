@@ -16,7 +16,10 @@
 
 package com.morpheusdata.core.util;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import org.apache.http.*;
@@ -286,6 +289,13 @@ public class HttpApiClient {
 						ObjectMapper mapper = new ObjectMapper();
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
 						mapper.setDateFormat(df);
+						try {
+							Class<?> groovyStringClass = Class.forName("groovy.lang.GString");
+							Class<?> gStringSerializer = Class.forName("com.morpheusdata.core.util.GStringJsonSerializer");
+							mapper.registerModule(new SimpleModule().addSerializer(groovyStringClass, (StdSerializer) (gStringSerializer.getDeclaredConstructor().newInstance())));
+						} catch(Exception ge) {
+							//ignore this is just run if groovy is in runtime environment
+						}
 						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
 					}
 				} else if (opts.body instanceof byte[]) {
