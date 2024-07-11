@@ -2,6 +2,14 @@
 
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
 
+* **1.1.5**
+** Deprecated `callXmlApi()` method in `HttpApiClient`
+** Improve JSON handling in HttpApiClient
+** Added `content` and `contentFormatted` to `CatalogItemType`
+** Added `isSnapshot` to `BacupTypeProvider`
+** Added `BackupServer` to `ResourcePermission.ResourceType`
+** Added `statusPercent` to `VirtualImage`
+
 * **1.1.4**
 ** Added `removeInstance` to `LoadBalancerProvider`.
 
