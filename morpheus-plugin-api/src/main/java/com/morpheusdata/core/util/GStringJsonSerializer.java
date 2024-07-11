@@ -19,17 +19,16 @@ package com.morpheusdata.core.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import groovy.lang.GString;
 
 import java.io.IOException;
 
-public class GStringJsonSerializer extends StdSerializer<GString> {
+public class GStringJsonSerializer extends StdSerializer<CharSequence> {
 	protected GStringJsonSerializer() {
-		super(GString.class);
+		super(CharSequence.class);
 	}
 
 	@Override
-	public void serialize(GString gString, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+	public void serialize(CharSequence gString, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 		jsonGenerator.writeString(gString.toString());
 	}
 }
