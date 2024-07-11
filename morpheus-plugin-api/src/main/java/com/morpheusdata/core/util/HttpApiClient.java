@@ -289,13 +289,7 @@ public class HttpApiClient {
 						ObjectMapper mapper = new ObjectMapper();
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
 						mapper.setDateFormat(df);
-						try {
-							Class<?> groovyStringClass = Class.forName("groovy.lang.GString");
-							Class<?> gStringSerializer = Class.forName("com.morpheusdata.core.util.GStringJsonSerializer");
-							mapper.registerModule(new SimpleModule().addSerializer(groovyStringClass, (StdSerializer) (gStringSerializer.getDeclaredConstructor().newInstance())));
-						} catch(Exception ge) {
-							//ignore this is just run if groovy is in runtime environment
-						}
+						mapper.registerModule(new SimpleModule().addSerializer(CharSequence.class, new GStringJsonSerializer()));
 						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
 					}
 				} else if (opts.body instanceof byte[]) {
