@@ -628,6 +628,7 @@ public class HttpApiClient {
 			ObjectMapper mapper = new ObjectMapper();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
 			mapper.setDateFormat(df);
+			mapper.registerModule(new SimpleModule().addSerializer(CharSequence.class, new GStringJsonSerializer()));
 			opts.body = mapper.writeValueAsString(opts.body);
 		}
 
