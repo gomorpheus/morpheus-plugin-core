@@ -18,11 +18,14 @@ package com.morpheusdata.views;
 
 import com.github.jknack.handlebars.io.AbstractTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateSource;
-import com.github.jknack.handlebars.io.URLTemplateSource;
+import com.github.jknack.handlebars.io.StringTemplateSource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A Template Loader for handlebars that sets some defaults and uses an injected classloader
@@ -50,10 +53,14 @@ public class HandlebarsPluginTemplateLoader extends AbstractTemplateLoader {
 	public TemplateSource sourceAt(String uri) throws IOException {
 		String location = resolve(normalize(uri));
 	    URL resource = getResource(location);
-	    if (resource == null) {
+		if (resource == null) {
 			throw new FileNotFoundException(location);
-	    }
-		return new URLTemplateSource(location, resource);
+		}
+		URLConnection resourceConnection = resource.openConnection();
+		resourceConnection.setUseCaches(false);
+		InputStream resourceStream = resourceConnection.getInputStream();
+		String resourceString = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+		return new StringTemplateSource(location, resourceString);
     }
 
 	/**
