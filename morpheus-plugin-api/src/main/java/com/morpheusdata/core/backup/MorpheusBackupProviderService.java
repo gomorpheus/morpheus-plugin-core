@@ -49,7 +49,8 @@ public interface MorpheusBackupProviderService extends MorpheusDataService<Backu
 	Observable<BackupProvider> listById(Collection<Long> ids);
 
 	/**
-	 * Save a status update to a backup provider
+	 * Save a status update to a backup provider. When the status is updated to "error" or "offline" an alarm will be created with the
+	 * message provided. When the status is updated to "online" any alarms on the provider will be cleared.
 	 * @param backupProvider backup provider to update
 	 * @param status status to be set on the backup provider
 	 * @param message additional context for the current status. Useful in the case of adding details for an error or warning status.

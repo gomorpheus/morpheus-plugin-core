@@ -284,6 +284,10 @@ public interface BackupProviderInterface extends PluginProvider {
 	/**
 	 * The main refresh method called periodically by Morpheus to sync any necessary objects from the integration.
 	 * This can call sub services for better organization. It is recommended that {@link com.morpheusdata.core.util.SyncTask} is used.
+	 *<p>
+	 * When an unsuccessful services response is returned an alarm will be created with the value of either the {@link ServiceResponse#error()} or
+	 * {@link ServiceResponse#getMsg()} value. When a successful response is returned any alarms on the provider will be cleared.
+	 *</p>
 	 * @param backupProvider the current instance of the backupProvider being refreshed
 	 * @return the success state of the refresh
 	 */
