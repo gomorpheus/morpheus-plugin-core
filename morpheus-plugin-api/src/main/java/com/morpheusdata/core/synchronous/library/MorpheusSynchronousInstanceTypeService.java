@@ -16,9 +16,23 @@
 
 package com.morpheusdata.core.synchronous.library;
 
-import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.InstanceType;
+import com.morpheusdata.model.InstanceTypeLayout;
+import com.morpheusdata.model.projection.InstanceTypeIdentityProjection;
 
 public interface MorpheusSynchronousInstanceTypeService extends MorpheusSynchronousDataService<InstanceType, InstanceType> {
+
+	/**
+	 * Create scale actions for the instance type and its layouts.
+	 * @return boolean true if the actions were created successfully
+	 */
+	Boolean setInstanceTypeToScale(InstanceTypeIdentityProjection instanceTypeModel);
+
+	/**
+	 * Create scale actions for the instance layout.
+	 * @return boolean true if the actions were created successfully
+	 */
+	Boolean setInstanceTypeLayoutToScale(InstanceTypeLayout instanceTypeLayoutModel);
+
 }

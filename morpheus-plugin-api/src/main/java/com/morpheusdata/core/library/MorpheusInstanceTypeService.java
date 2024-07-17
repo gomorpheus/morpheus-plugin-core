@@ -18,6 +18,8 @@ package com.morpheusdata.core.library;
 
 import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.model.InstanceType;
+import com.morpheusdata.model.InstanceTypeLayout;
+import com.morpheusdata.model.projection.InstanceTypeIdentityProjection;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -29,5 +31,17 @@ import java.util.List;
  * @author ddeyoung
  */
 public interface MorpheusInstanceTypeService extends MorpheusDataService<InstanceType,InstanceType> {
+
+	/**
+	 * Create scale actions for the instance type and its layouts.
+	 * @return boolean true if the actions were created successfully
+	 */
+	Single<Boolean> setInstanceTypeToScale(InstanceTypeIdentityProjection instanceType);
+
+	/**
+	 * Create scale actions for the instance layout.
+	 * @return boolean true if the actions were created successfully
+	 */
+	Single<Boolean> setInstanceTypeLayoutToScale(InstanceTypeLayout instanceTypeLayout);
 
 }
