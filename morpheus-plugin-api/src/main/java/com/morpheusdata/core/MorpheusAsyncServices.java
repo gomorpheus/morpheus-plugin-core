@@ -478,4 +478,10 @@ public interface MorpheusAsyncServices {
 	 * @return on instance of {@link MorpheusExecuteScheduleService}
 	 */
 	MorpheusExecuteScheduleService getExecuteSchedule();
+
+	/**
+	 * Returns the {@link MorpheusOperationService} which allows access to operation related services
+	 * @return on instance of {@link MorpheusOperationService}
+	 */
+	MorpheusOperationService getOperation();
 }

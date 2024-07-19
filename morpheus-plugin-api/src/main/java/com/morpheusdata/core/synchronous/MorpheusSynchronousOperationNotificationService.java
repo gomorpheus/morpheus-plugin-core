@@ -18,8 +18,33 @@ package com.morpheusdata.core.synchronous;
 
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;
+import com.morpheusdata.model.BackupProvider;
+import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.OperationNotification;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.OperationNotificationIdentityProjection;
+import com.morpheusdata.response.ServiceResponse;
 
 public interface MorpheusSynchronousOperationNotificationService extends MorpheusSynchronousDataService<OperationNotification, OperationNotificationIdentityProjection>, MorpheusSynchronousIdentityService<OperationNotificationIdentityProjection> {
+
+	ServiceResponse clearAlarm(OperationNotification notification);
+
+	ServiceResponse createAlarm(OperationNotification notification);
+
+	ServiceResponse clearItemAlarms(String refType, Long refId);
+
+	ServiceResponse createZoneAlarm(CloudIdentityProjection cloud, String statusMessage);
+
+	ServiceResponse clearZoneAlarm(CloudIdentityProjection cloud);
+
+	ServiceResponse createHypervisorAlarm(ComputeServerIdentityProjection node, String statusMessage);
+
+	ServiceResponse clearHypervisorAlarm(ComputeServerIdentityProjection node);
+
+	ServiceResponse createBackupProviderAlarm(BackupProvider backupProvider, String statusMessage);
+
+	ServiceResponse clearBackupProviderAlarm(BackupProvider backupProvider);
+
 }

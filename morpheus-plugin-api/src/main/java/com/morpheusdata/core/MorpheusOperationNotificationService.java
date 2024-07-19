@@ -16,9 +16,14 @@
 
 package com.morpheusdata.core;
 
+import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.model.Cloud;
+import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.OperationNotification;
+import com.morpheusdata.model.projection.CloudIdentityProjection;
+import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.model.projection.OperationNotificationIdentityProjection;
+import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -77,4 +82,22 @@ public interface MorpheusOperationNotificationService extends MorpheusDataServic
 	 */
 	@Deprecated(since="0.15.4")
 	Single<Boolean> remove(List<OperationNotificationIdentityProjection> operationNotifications);
+
+	Single<ServiceResponse> clearAlarm(OperationNotification notification);
+
+	Single<ServiceResponse> createAlarm(OperationNotification notification);
+
+	Single<ServiceResponse> clearItemAlarms(String refType, Long refId);
+
+	Single<ServiceResponse> createZoneAlarm(CloudIdentityProjection cloud, String statusMessage);
+
+	Single<ServiceResponse> clearZoneAlarm(CloudIdentityProjection cloud);
+
+	Single<ServiceResponse> createHypervisorAlarm(ComputeServerIdentityProjection node, String statusMessage);
+
+	Single<ServiceResponse> clearHypervisorAlarm(ComputeServerIdentityProjection node);
+
+	Single<ServiceResponse> createBackupProviderAlarm(BackupProvider backupProvider, String message);
+
+	Single<ServiceResponse> clearBackupProviderAlarm(BackupProvider backupProvider);
 }

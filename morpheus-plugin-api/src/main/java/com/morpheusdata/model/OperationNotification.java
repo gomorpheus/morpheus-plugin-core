@@ -45,6 +45,7 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	protected String refType;
 	protected Long refId;
 	protected String regionCode;
+	protected Boolean active = true;
 
 	/**
 	 * The account related to this OperationNotification
@@ -270,5 +271,21 @@ public class OperationNotification extends OperationNotificationIdentityProjecti
 	 */
 	public void setRegionCode(String regionCode) {
 		this.regionCode = regionCode;
+	}
+
+	/**
+	 * Returns if this OperationNotification is active
+	 * @return active
+	 */
+	public Boolean getActive() {
+		return active;
+	}
+
+	/**
+	 * Sets whether this OperationNotification is active
+	 * @param active active
+	 */
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 }

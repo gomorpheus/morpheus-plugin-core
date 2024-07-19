@@ -472,4 +472,10 @@ public interface MorpheusServices {
 	 * @return an instance of {@link MorpheusExecuteScheduleService }
 	 */
 	MorpheusSynchronousExecuteScheduleService getExecuteSchedule();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousOperationService} which allows access to operation related services
+	 * @return an instance of {@link MorpheusSynchronousOperationService}
+	 */
+	MorpheusSynchronousOperationService getOperation();
 }
