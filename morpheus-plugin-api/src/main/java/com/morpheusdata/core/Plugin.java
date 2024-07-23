@@ -22,8 +22,6 @@ import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.Permission;
 import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -49,8 +47,6 @@ import java.util.*;
  * @author David Estes
  */
 public abstract class Plugin implements PluginInterface {
-
-	protected final Logger log = LoggerFactory.getLogger(PluginManager.class);
 
 	/**
 	 * All registered plugin providers by provider code.
@@ -468,10 +464,10 @@ public abstract class Plugin implements PluginInterface {
 		try {
 			PluginProvider existingProvider = pluginProviders.get(provider.getCode());
 			if(existingProvider != null && provider.getClass() != existingProvider.getClass()) {
-				log.warn("Plugin Provider Code Overlap Detected: {}. Provider \"{}\" with type {} will replace provider \"{}\" with type {}.", provider.getCode(), provider.getName(), provider.getClass().getSimpleName(), existingProvider.getName(), existingProvider.getClass().getSimpleName());
+				System.out.println("Plugin Provider Code Overlap Detected: " + provider.getCode() + ". Provider \"" + provider.getName() + "\" with type " + provider.getClass().getSimpleName() + "will replace provider \"" + existingProvider.getName() + "\" with type " + existingProvider.getClass().getSimpleName() + ".");
 			}
 		} catch (Exception e) {
-			log.error("Error checking for provider conflict", e);
+			System.out.println("Error checking for provider conflict: " + e.getMessage());
 		}
 	}
 
