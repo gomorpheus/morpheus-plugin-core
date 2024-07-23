@@ -464,7 +464,7 @@ public abstract class Plugin implements PluginInterface {
 		try {
 			PluginProvider existingProvider = pluginProviders.get(provider.getCode());
 			if(existingProvider != null && provider.getClass() != existingProvider.getClass()) {
-				System.out.println("Plugin Provider Code Overlap Detected: " + provider.getCode() + ". Provider \"" + provider.getName() + "\" with type " + provider.getClass().getSimpleName() + "will replace provider \"" + existingProvider.getName() + "\" with type " + existingProvider.getClass().getSimpleName() + ".");
+				System.out.println("Plugin Provider Code Overlap Detected: " + provider.getCode() + ". Provider \"" + provider.getName() + "\" with type " + provider.getClass().getSimpleName() + " will replace provider \"" + existingProvider.getName() + "\" with type " + existingProvider.getClass().getSimpleName() + ".");
 			}
 		} catch (Exception e) {
 			System.out.println("Error checking for provider conflict: " + e.getMessage());
