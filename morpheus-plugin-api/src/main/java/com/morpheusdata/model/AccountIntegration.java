@@ -372,5 +372,24 @@ public class AccountIntegration extends MorpheusModel {
 		syncing,
 		error
 	}
+
+	public enum Category {
+		automation,
+		dns,
+		code,
+		repository,
+		serviceRegistry,
+		build,
+		itsm,
+		cmdb,
+		monitoring,
+		logs,
+		backups,
+		network,
+		security,
+		ipam,
+		trusted,
+		other
+	}
 	
 }
