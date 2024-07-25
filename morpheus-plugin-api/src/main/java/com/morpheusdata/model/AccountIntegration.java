@@ -18,6 +18,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionIdCodeNameSerializer;
 
 import java.util.List;
@@ -63,7 +64,7 @@ public class AccountIntegration extends MorpheusModel {
 	@JsonSerialize(using = ModelCollectionIdCodeNameSerializer.class)
 	protected List<OptionType> optionTypes;
 
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<AccountIntegrationObjectRef> objectRefs;
 
 	public String getUuid() {
