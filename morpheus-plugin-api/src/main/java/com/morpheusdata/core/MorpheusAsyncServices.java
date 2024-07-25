@@ -27,7 +27,7 @@ import com.morpheusdata.core.dashboard.MorpheusDashboardService;
 import com.morpheusdata.core.guidance.MorpheusAccountDiscoveryService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
-import com.morpheusdata.core.library.MorpheusLibraryServices;
+import com.morpheusdata.core.library.MorpheusLibraryService;
 import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.network.MorpheusNetworkService;
 import com.morpheusdata.core.network.MorpheusNetworkSubnetService;
@@ -40,7 +40,6 @@ import com.morpheusdata.core.providers.TaskProvider;
 import com.morpheusdata.core.provisioning.MorpheusProvisionService;
 import com.morpheusdata.model.BackupProvider;
 import com.morpheusdata.core.admin.MorpheusAdminService;
-import com.morpheusdata.core.MorpheusExecuteScheduleTypeService;
 
 public interface MorpheusAsyncServices {
 	/**
@@ -444,10 +443,10 @@ public interface MorpheusAsyncServices {
 	MorpheusInstanceTypeLayoutService getInstanceTypeLayout();
 
 	/**
-	 * Returns the {@link MorpheusLibraryServices } which contains all library services
+	 * Returns the {@link MorpheusLibraryService } which contains all library services
 	 * @return an instance of the MorpheusLibraryServices
 	 */
-	MorpheusLibraryServices getLibrary();
+	MorpheusLibraryService getLibrary();
 
 	/**
 	 * Returns the {@link MorpheusCodeRepositoryService } which contains all code repository services

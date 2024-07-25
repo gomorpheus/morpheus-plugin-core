@@ -16,7 +16,7 @@
 
 package com.morpheusdata.core.library;
 
-public interface MorpheusLibraryServices {
+public interface MorpheusLibraryService {
 
 	MorpheusInstanceTypeService getInstanceTypeService();
 }
