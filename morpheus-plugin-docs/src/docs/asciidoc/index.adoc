@@ -39,6 +39,7 @@ include::Views.adoc[]
 include::Localization.adoc[]
 
 include::DataSetProviders.adoc[]
+
 include::OptionSources.adoc[]
 
 include::Credentials.adoc[]
@@ -49,18 +50,31 @@ include::Seeding.adoc[]
 
 == Examples
 
+include::ApprovalsPlugin.adoc[]
+
+include::BackupPlugins.adoc[]
+
+include::CatalogLayout.adoc[]
+
+include::CloudPlugins.adoc[]
+
+include::GenericIntegrationPlugin.adoc[]
+
+include::IPAMPlugins.adoc[]
+
+include::ReportsPlugin.adoc[]
+
 include::TaskPlugin.adoc[]
 
 include::TabsPlugin.adoc[]
 
-include::CatalogLayout.adoc[]
 
-include::ReportsPlugin.adoc[]
 
-include::ApprovalsPlugin.adoc[]
 
-include::IPAMPlugins.adoc[]
 
-include::CloudPlugins.adoc[]
 
-include::BackupPlugins.adoc[]
+
+
+
+
+

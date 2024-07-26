@@ -73,11 +73,16 @@ providers:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}CypherModule.java"
           template: cypher/CypherModule.java.hbs
     backup:
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupProvider.java"
-            template: backup/BackupProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupTypeProvider.java"
-            template: backup/BackupTypeProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupExecutionProvider.java"
-            template: backup/BackupExecutionProvider.java.hbs
-        -   name: "{{basePackagePath}}/{{pluginNameCamel}}BackupRestoreProvider.java"
-            template: backup/BackupRestoreProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}BackupProvider.java"
+          template: backup/BackupProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}BackupTypeProvider.java"
+          template: backup/BackupTypeProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}BackupExecutionProvider.java"
+          template: backup/BackupExecutionProvider.java.hbs
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}BackupRestoreProvider.java"
+          template: backup/BackupRestoreProvider.java.hbs
+    generic:
+        - name: "{{basePackagePath}}/{{pluginNameCamel}}GenericProvider.java"
+          template: generic/GenericProvider.java.hbs
+        - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Show.hbs"
+          template: generic/show.hbsr

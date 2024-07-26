@@ -1,0 +1,3 @@
+rootProject.name = "morpheus-plugin-site"
+include '../morpheus-plugin-api'
+include '../morpheus-plugin-docs'

@@ -71,6 +71,9 @@ public class {{pluginNameCamel}}Plugin extends Plugin {
 		{{#if backup ~}}
 		this.registerProvider(new {{pluginNameCamel}}BackupProvider(this,this.morpheus));
 		{{~/if }}
+		{{#if generic ~}}
+			this.registerProvider(new {{pluginNameCamel}}GenericProvider(this,this.morpheus));
+		{{~/if }}
 	}
 
 	/**

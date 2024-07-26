@@ -18,10 +18,10 @@ Finally one must also provide the option types inputs for configuring the add cl
 
 During the `refresh()` call (and others) the `CloudProvider` implementation will need to reach out to underlying cloud using credentials. There are two ways to define and store the required credentials.
 
-====== Using OptionTypes
+===== Using OptionTypes
 The simplest method is to define `OptionType` fields (like username and password) and return them on implementation of `CloudProvider.getOptionTypes()`. These will then be displayed on the Cloud configuration UI. The values can then be obtained during sync operations via the Cloud's `getConfigMap` or directly on the object itself (i.e. `serviceUsername`) depending on how the `OptionType` was defined.
 
-====== Using Morpheus Credentials
+===== Using Morpheus Credentials
 A more flexible option is to use Morpheus' built-in Credentials support. With this option, Credentials can be stored securely in Morpheus and utilized in various locations. In order to user this method, a few specific `OptionType` objects need to be defined. (Refer to `VmwareCloudProvider` for an example implementation)
 
 . An `OptionType` needs to be defined to represent the selection of the Credential type. The following properties must be configured on the `OptionType`: `inputType=OptionType.InputType.CREDENTIAL`, `fieldContext=credential`, `fieldName=type`, `optionSource=credentials`. In addition, the `config` for the `OptionType` should be something like `'{"credentialTypes":["username-password"]}'`. Where the array of types may be one or more of `username-password,

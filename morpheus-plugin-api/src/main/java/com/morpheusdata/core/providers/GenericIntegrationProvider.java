@@ -36,13 +36,22 @@ import java.util.List;
  */
 public interface GenericIntegrationProvider extends PluginProvider,UIExtensionProvider {
 
+	/**
+	 * The category of the integration. This is used to group integrations in the UI. Available categories are defined in {@link com.morpheusdata.model.AccountIntegration.Category}.
+	 * @return
+	 */
 	String getCategory();
+
 	/**
 	 * Provide custom configuration options when creating a new {@link AccountIntegration}
 	 * @return a List of OptionType
 	 */
 	List<OptionType> getOptionTypes();
 
+	/**
+	 * Refresh the integration with the latest data from the provider
+	 * @param accountIntegration the integration to refresh
+	 */
 	void refresh(AccountIntegration accountIntegration);
 
 	/**

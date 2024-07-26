@@ -19,6 +19,12 @@ package com.morpheusdata.core.providers;
 import com.morpheusdata.views.HandlebarsRenderer;
 import com.morpheusdata.views.Renderer;
 
+/**
+ * Creates a base implementation for a Generic Integration Provider. This class provides a default implementation for the
+ * {@link #getRenderer()} method that returns a {@link HandlebarsRenderer} with the necessary helpers registered.
+ *
+ * @since 0.15.4
+ */
 public abstract class AbstractGenericIntegrationProvider implements GenericIntegrationProvider {
 	private HandlebarsRenderer renderer;
 

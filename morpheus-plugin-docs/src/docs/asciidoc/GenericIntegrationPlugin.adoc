@@ -1,0 +1,9 @@
+[#generic-integration]
+=== Generic Integration Plugins
+
+Generic Integration Plugins enable the registration of a "Generic" `AccountIntegrationType`. A Generic Integration plugin is designed to add additional functionality to existing providers and extend the capability of Morpheus where existing providers are not available.
+
+For example, a Jenkins plugin implementing a Generic Integration Provider could store credentials for Jenkins task types, allowing users to avoid entering credentials repeatedly when creating new tasks. Additionally, the plugin could periodically sync data, such as a list of projects, used the `DatasetProvider` dropdowns in the Jenkins task types.
+
+
+A Generic Integration example can be found in the https://github.com/gomorpheus/morpheus-plugin-samples/tree/main/morpheus-generic-integration-plugin[sample plugin repository,role=external,window=_blank] on GitHub.

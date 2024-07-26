@@ -46,7 +46,7 @@ To override this default, implement the `com.morpheusdata.core.ServerTabProvider
 your own `getRenderer()` method.
 
 
-=== Templating
+==== Templating
 See the <<Views.adoc#views, Views>> section and the documentation for your templating engine for specific syntax.
 
 ==== Security Policies

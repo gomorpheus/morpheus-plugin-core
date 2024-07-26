@@ -1,8 +1,8 @@
-== Backups Plugin
+=== Backups Plugin
 
 Backups are a big part of self-service workload management. Allowing a customer to back up their application and especially restore it on the fly are critical to creating a complete self-service solution. This is why Morpheus integrates with several best-in-class backup solutions like Veeam, Rubrik, Commvault, and more. Morpheus even provides its own basic backup providers for those customers still looking for a final solution.
 
-=== Plugin Setup
+==== Plugin Setup
 
 First we need to register the backup provider in the plugin
 [source, groovy]
@@ -28,7 +28,7 @@ class MyPlugin extends Plugin {
 
 Creating a BackupPlugin involves registration of 2 types of providers: https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupProvider.html[Backup Provider] and https://developer.morpheusdata.com/api/com/morpheusdata/core/backup/BackupTypeProvider.html[Backup Type Provider].
 
-=== Backup Provider
+==== Backup Provider
 The primary entry point into the plugin is the Backup Provider. The backup provider will handle all the high level operations within morpheus including creating and syncing the integration.
 
 The example below is Backup provider is a single Backup Provider with multiple Backup Type Providers.
@@ -72,7 +72,7 @@ class MyPluginBackupProvider extends AbstractBackupProvider {
 
 A Backup Type Provider **MyVmwareBackupProvider** is created and scoped by a provision type code. Adding a scoped provider will associate the provider to the provision type defined by the scoped provider. In the example a backup provider is defined for provisioning VMware instances.
 
-=== Backup Type Provider
+==== Backup Type Provider
 
 All operations regarding the instance of a backup, including the creation and restoring of a backup, are handled by the **BackupTypeProvider**. A Backup Provider also can have many Backup Type Providers. For example some backup solutions can back up VMs on many cloud types and they each may have different relevant APIs.
 
@@ -118,7 +118,7 @@ There are various service interfaces provided for implementing the backup and re
 
 See the https://github.com/gomorpheus/morpheus-rubrik-plugin[Rubrik Plugin] for a full example implementation including execution and restore providers.
 
-=== Syncing Provider Data
+==== Syncing Provider Data
 
 Like most other integrations, a periodic refresh method is called to sync in any necessary data the integration might need. It is recommended to use a https://developer.morpheusdata.com/api/com/morpheusdata/core/util/SyncTask.html[SyncTask] in these refresh methods which are optimized to handle blocking vs non-blocking thread scheduling.
 
@@ -141,7 +141,7 @@ class MyPluginBackupProvider extends AbstractBackupProvider {
 }
 ----
 
-=== Morpheus Backup Provider
+==== Morpheus Backup Provider
 
 A full backup provider implementation may not be required in many cases. The Morpheus Backup Provider can be used to handle all the high level operations. The example below would allow Morpheus to manage the backup job and delegate the backup execution and restore to back to the plugin's Backup Type Providers.
 
