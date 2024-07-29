@@ -74,6 +74,8 @@ public interface NetworkProvider extends PluginProvider {
 	
 	Collection<OptionType> getOptionTypes();
 
+	default Boolean isUserVisible() { return false; }
+
 	default Collection<OptionType> getScopeOptionTypes() {
 		return new ArrayList<>();
 	}
