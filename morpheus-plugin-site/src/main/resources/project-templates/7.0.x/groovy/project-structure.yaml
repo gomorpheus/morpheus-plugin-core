@@ -33,6 +33,11 @@ providers:
           template: report/ReportProvider.groovy.hbs
         - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Report.hbs"
           template: report/report.hbsr
+    analytics:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}AnalyticsProvider.groovy"
+            template: analytics/AnalyticsProvider.groovy.hbs
+        -   name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Analytics.hbs"
+            template: analytics/analytics.hbsr
     instanceTab:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.groovy"
           template: instanceTab/InstanceTabProvider.groovy.hbs

@@ -32,7 +32,12 @@ providers:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}ReportProvider.java"
           template: report/ReportProvider.java.hbs
         - name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Report.hbs"
-          template: report/report.hbsr  
+          template: report/report.hbsr
+    analytics:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}AnalyticsProvider.java"
+            template: analytics/AnalyticsProvider.java.hbs
+        -   name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Analytics.hbs"
+            template: analytics/analytics.hbsr
     instanceTab:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.java"
           template: instanceTab/InstanceTabProvider.java.hbs

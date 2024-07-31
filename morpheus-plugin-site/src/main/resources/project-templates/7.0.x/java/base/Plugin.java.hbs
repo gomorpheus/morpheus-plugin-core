@@ -56,6 +56,9 @@ public class {{pluginNameCamel}}Plugin extends Plugin {
 		{{#if report ~}}
         this.registerProvider(new {{pluginNameCamel}}ReportProvider(this,this.morpheus));
         {{/if ~}}
+        {{#if analytics ~}}
+		this.registerProvider(new {{pluginNameCamel}}AnalyticsProvider(this,this.morpheus));
+		{{/if ~}}
 		{{#if loadBalancer ~}}
 		this.registerProvider(new {{pluginNameCamel}}LoadBalancerProvider(this,this.morpheus));
 		{{/if ~}}
