@@ -16,6 +16,7 @@
 
 package com.morpheusdata.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -101,6 +102,8 @@ public class AccountInvoice extends MorpheusModel {
 	protected Double networkCost = 0.0d;
 	protected Double licensePrice = 0.0d;
 	protected Double licenseCost = 0.0d;
+	protected BigDecimal softwareOrServicePrice = new BigDecimal(0);
+	protected BigDecimal softwareOrServiceCost = new BigDecimal(0);
 	protected Double extraPrice = 0.0d;
 	protected Double extraCost = 0.0d;
 	protected Double totalPrice = 0.0d;
@@ -1153,5 +1156,21 @@ public class AccountInvoice extends MorpheusModel {
 
 	public void setSummaryInvoice(Boolean summaryInvoice) {
 		this.summaryInvoice = summaryInvoice;
+	}
+
+	public BigDecimal getSoftwareOrServicePrice() {
+		return softwareOrServicePrice;
+	}
+
+	public void setSoftwareOrServicePrice(BigDecimal softwareOrServicePrice) {
+		this.softwareOrServicePrice = softwareOrServicePrice;
+	}
+
+	public BigDecimal getSoftwareOrServiceCost() {
+		return softwareOrServiceCost;
+	}
+
+	public void setSoftwareOrServiceCost(BigDecimal softwareOrServiceCost) {
+		this.softwareOrServiceCost = softwareOrServiceCost;
 	}
 }
