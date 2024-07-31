@@ -20,6 +20,19 @@ import com.morpheusdata.core.MorpheusDataService;
 import com.morpheusdata.core.MorpheusIdentityService;
 import com.morpheusdata.model.ApplianceInstance;
 import com.morpheusdata.model.projection.ApplianceInstanceIdentityProjection;
+import io.reactivex.rxjava3.core.Single;
 
 public interface MorpheusApplianceService extends MorpheusDataService<ApplianceInstance, ApplianceInstanceIdentityProjection>, MorpheusIdentityService<ApplianceInstanceIdentityProjection> {
+
+	/**
+	 * Returns the most recent version of the windows agent for this Morpheus Appliance
+	 * @return a version descriptor
+	 */
+	Single<String> getLatestWindowsAgentVersion();
+
+	/**
+	 * Returns the most recent version of the linux agent for this Morpheus Appliance
+	 * @return a version descriptor
+	 */
+	Single<String> getLatestLinuxAgentVersion();
 }

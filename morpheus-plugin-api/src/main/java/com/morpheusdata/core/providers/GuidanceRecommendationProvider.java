@@ -36,7 +36,7 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 	 * This is the main entry point for creating discoveries / recommendations for the end user. This method will perform any logic necessary and generate new discovery records
 	 */
 	void calculateRecommendations();
-	
+
 
 	/**
 	 * Discovery details provided to your rendering engine
@@ -76,6 +76,6 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 		 * Performs an action based on the data in the discovery object.
 		 * @param discovery details of the recommendation used for performing an action
 		 */
-		void execute(AccountDiscovery discovery);
+		ServiceResponse<AccountDiscovery> execute(AccountDiscovery discovery);
 	}
 }
