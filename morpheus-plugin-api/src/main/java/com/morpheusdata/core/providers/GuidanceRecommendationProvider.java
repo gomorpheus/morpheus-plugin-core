@@ -17,7 +17,9 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.AccountDiscovery;
+import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.Icon;
+import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.views.HTMLResponse;
 import  com.morpheusdata.model.AccountDiscoveryType;
 
@@ -34,12 +36,7 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 	 * This is the main entry point for creating discoveries / recommendations for the end user. This method will perform any logic necessary and generate new discovery records
 	 */
 	void calculateRecommendations();
-
-	/**
-	 * Performs an action based on the data in the discovery object.
-	 * @param discovery details of the recommendation used for performing an action
-	 */
-	void execute(AccountDiscovery discovery);
+	
 
 	/**
 	 * Discovery details provided to your rendering engine
@@ -67,4 +64,18 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 	 * @return the desired description of the discovery type
 	 */
 	String getDescription();
+
+	/**
+	 * Allows the workload to be executed
+	 *
+	 * @since 1.1.6
+	 * @author David Estes
+	 */
+	public interface ExecutableFacet {
+		/**
+		 * Performs an action based on the data in the discovery object.
+		 * @param discovery details of the recommendation used for performing an action
+		 */
+		void execute(AccountDiscovery discovery);
+	}
 }
