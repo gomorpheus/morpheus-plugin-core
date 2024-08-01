@@ -624,7 +624,8 @@ public interface MorpheusContext {
 
 	/**
 	 * Trigger an agent upgrade operation on a server
-	 * @param serverId
+	 * @since 1.1.6
+	 * @param serverId the ID of the {@link ComputeServer} object to initiate an agent upgrade on
 	 */
 	void queueUpgradeServerAgent(Long serverId);
 
