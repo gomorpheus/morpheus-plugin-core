@@ -622,6 +622,12 @@ public interface MorpheusContext {
 	 */
 	Single<TaskResult> executeCommandOnServer(ComputeServer server, String command, Boolean rpc, String sshUsername, String sshPassword, String publicKey, String privateKey, String passPhrase, Boolean noProfile, Boolean sudo);
 
+	/**
+	 * Trigger an agent upgrade operation on a server
+	 * @param serverId
+	 */
+	void queueUpgradeServerAgent(Long serverId);
+
 
 	/**
 	 * Execute a command on a server using custom connection details

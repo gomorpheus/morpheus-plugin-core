@@ -55,6 +55,7 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 
 	/**
 	 * Provide a more user-friendly title of the guidance recommendation
+	 * NOTE: Localized versions of the title can be created by creating an i18n key with the format: gomorpheus.discovery.type.${type.code}.title
 	 * @return the desired title of the discovery type
 	 */
 	String getTitle();
