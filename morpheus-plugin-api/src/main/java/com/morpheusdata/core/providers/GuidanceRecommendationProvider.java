@@ -60,6 +60,13 @@ public interface GuidanceRecommendationProvider  extends PluginProvider, UIExten
 	String getTitle();
 
 	/**
+	 * Specifies the guidance category for the recommendation. i.e. (security, cost savings, utilization, maintenance, etc)
+	 * NOTE: This Can be localized by creating an i18n key with the format: (TODO)
+	 * @return the category string
+	 */
+	String getCategory();
+
+	/**
 	 * Provide a more user-friendly description of the guidance recommendation
 	 * @return the desired description of the discovery type
 	 */
