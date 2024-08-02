@@ -38,6 +38,11 @@ providers:
             template: analytics/AnalyticsProvider.java.hbs
         -   name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}Analytics.hbs"
             template: analytics/analytics.hbsr
+    guidance:
+        -   name: "{{basePackagePath}}/{{pluginNameCamel}}GuidanceRecommendationProvider.java"
+            template: guidance/GuidanceRecommendationProvider.java.hbs
+        -   name: "src/main/resources/renderer/hbs/{{pluginNameInstance}}GuidanceModal.hbs"
+            template: guidance/guidanceModal.hbsr
     instanceTab:
         - name: "{{basePackagePath}}/{{pluginNameCamel}}InstanceTabProvider.java"
           template: instanceTab/InstanceTabProvider.java.hbs

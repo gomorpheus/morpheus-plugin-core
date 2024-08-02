@@ -1,0 +1,125 @@
+package {{basePackage}};
+
+import com.morpheusdata.core.MorpheusContext;
+import com.morpheusdata.core.Plugin;
+import com.morpheusdata.core.providers.AbstractGuidanceRecommendationProvider;
+import com.morpheusdata.model.AccountDiscovery;
+import com.morpheusdata.model.Icon;
+import com.morpheusdata.core.data.DataFilter;
+import com.morpheusdata.core.data.DataOrFilter;
+import com.morpheusdata.core.data.DataQuery;
+import com.morpheusdata.model.AccountDiscoveryType;
+import com.morpheusdata.views.HTMLResponse;
+import com.morpheusdata.views.ViewModel;
+
+public class {{pluginNameCamel}}GuidanceRecommendationProvider extends AbstractGuidanceRecommendationProvider {
+
+	protected MorpheusContext morpheusContext;
+	protected Plugin plugin;
+
+	{{pluginNameCamel}}GuidanceRecommendationProvider(Plugin plugin, MorpheusContext morpheusContext) {
+		this.morpheusContext = morpheusContext;
+		this.plugin = plugin;
+	}
+
+	/**
+	 * This is the main entry point for creating discoveries / recommendations for the end user. This method will perform any logic necessary and generate new discovery records
+	 */
+	@Override
+	public void calculateRecommendations() {
+
+	}
+
+	/**
+	 * Discovery details provided to your rendering engine
+	 * @param discovery details of the recommendation used for rendering a detailed recommendation description
+	 * @return result of rendering a template
+	 */
+	@Override
+	public HTMLResponse renderTemplate(AccountDiscovery discovery) {
+		ViewModel<AccountDiscovery> model = new ViewModel<AccountDiscovery>();
+		model.object = accountDiscovery;
+		getRenderer().renderTemplate("hbs/{{pluginNameInstance}}GuidanceModal", model);
+	}
+
+	/**
+	 * Returns the Discovery Icon related to this particularly associated {@link AccountDiscoveryType}
+	 * @since 0.13.2
+	 * @return Icon representation of assets stored in the src/assets of the project.
+	 */
+	@Override
+	public Icon getIcon() {
+		// TODO: change icon paths to correct filenames once added to your project
+		Icon icon = new Icon();
+		icon.setPath("morpheus.svg");
+		icon.setDarkPath("morpheus.svg");
+
+		return icon;
+	}
+
+	/**
+	 * Provide a more user-friendly title of the guidance recommendation
+	 * NOTE: Localized versions of the title can be created by creating an i18n key with the format: gomorpheus.discovery.type.${type.code}.title
+	 * @return the desired title of the discovery type
+	 */
+	@Override
+	public String getTitle() {
+		return "{{pluginName}}";
+	}
+
+	/**
+	 * Specifies the guidance category for the recommendation. i.e. (security, cost savings, utilization, maintenance, etc)
+	 * NOTE: This Can be localized by creating an i18n key with the format: (TODO)
+	 * @return the category string
+	 */
+	@Override
+	public String getCategory() {
+		return "maintenance";
+	}
+
+	/**
+	 * Provide a more user-friendly description of the guidance recommendation
+	 * @return the desired description of the discovery type
+	 */
+	@Override
+	public String getDescription() {
+		return null;
+	}
+
+	/**
+	 * Returns the Morpheus Context for interacting with data stored in the Main Morpheus Application
+	 *
+	 * @return an implementation of the MorpheusContext for running Future based rxJava queries
+	 */
+	@Override
+	public MorpheusContext getMorpheus() {
+		return morpheusContext;
+	}
+
+	@Override
+	public Plugin getPlugin() {
+		return plugin;
+	}
+
+
+	/**
+	 * A unique shortcode used for referencing the provided provider. Make sure this is going to be unique as any data
+	 * that is seeded or generated related to this provider will reference it by this code.
+	 * @return short code string that should be unique across all other plugin implementations.
+	 */
+	@Override
+	public String getCode() {
+		return "{{pluginCode}}-guidance";
+	}
+
+	/**
+	 * Provides the provider name for reference when adding to the Morpheus Orchestrator
+	 * NOTE: This may be useful to set as an i18n key for UI reference and localization support.
+	 *
+	 * @return either an English name of a Provider or an i18n based key that can be scanned for in a properties file.
+	 */
+	@Override
+	public String getName() {
+		return "{{pluginName}}";
+	}
+}
