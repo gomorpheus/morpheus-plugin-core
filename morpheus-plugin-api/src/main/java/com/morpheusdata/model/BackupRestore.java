@@ -224,6 +224,7 @@ public class BackupRestore extends MorpheusModel {
 		START_REQUESTED,
 		INITIALIZING,
 		IN_PROGRESS,
+		FINALIZING,
 		CANCEL_REQUESTED,
 		CANCELLED,
 		SUCCEEDED,
