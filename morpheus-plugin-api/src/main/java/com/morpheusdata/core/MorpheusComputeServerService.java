@@ -100,4 +100,25 @@ public interface MorpheusComputeServerService extends MorpheusDataService<Comput
 	 * @return success
 	 */
 	Single<Boolean> remove(List<ComputeServer> computeServers, InstanceScale instanceScale);
+
+	/**
+	 * Stop a ComputeServer. This is an async operation and the server may not be stopped immediately.
+	 * @param computeServerId ComputeServer id to stop
+	 * @return success if the request to stop the server was successful
+	 */
+	Single<Boolean> stopServer(Long computeServerId);
+
+	/**
+	 * Start a ComputeServer. This is an async operation and the server may not be started immediately.
+	 * @param computeServerId ComputeServer id to start
+	 * @return success if the request to start the server was successful
+	 */
+	Single<Boolean> startServer(Long computeServerId);
+
+	/**
+	 * Restart a ComputeServer. This is an async operation and the server may not be restarted immediately.
+	 * @param computeServerId ComputeServer id to restart
+	 * @return success if the request to restart the server was successful
+	 */
+	Single<Boolean> restartServer(Long computeServerId);
 }
