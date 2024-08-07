@@ -1,6 +1,16 @@
 === Release Notes
 
-**Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.0 requires a minimum Morpheus Version of `6.3.0`. Morpheus `6.2.x` still runs on Core version `0.15.x`
+**Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API 1.1 requires a minimum Morpheus Version of `7.0.x`. Morpheus `6.2.x` still runs on Core version `0.15.x`
+
+* **1.1.6**
+** Finalized GenericIntegrationProvider and created generator
+** Finalized GuidanceRecommendationProvider and created generator
+** Finalized AnalyticsProvider and created generator
+** added endpoint for triggering agent upgrade
+** added endpoints for getting latest agent versions for current release
+** added stop/start/restart server actions
+** Handlebars and Asset reloading when a plugin is re-uploaded has been fixed.
+** Added additional endpoints for creating alarms
 
 * **1.1.5**
 ** Deprecated `callXmlApi()` method in `HttpApiClient`
