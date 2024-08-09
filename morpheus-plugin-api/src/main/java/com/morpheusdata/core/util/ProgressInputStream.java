@@ -21,7 +21,7 @@ import groovy.lang.Closure;
 import java.io.IOException;
 import java.io.InputStream;
 
-class ProgressInputStream extends InputStream {
+public class ProgressInputStream extends InputStream {
 
 	private InputStream sourceStream;
 	private Long counter = 0l;
@@ -30,7 +30,7 @@ class ProgressInputStream extends InputStream {
 	private Integer totalFiles;
 	private Integer currentFile;
 
-	ProgressInputStream(InputStream sourceStream, Long totalCount, Integer totalFiles, Integer currentFile) {
+	public ProgressInputStream(InputStream sourceStream, Long totalCount, Integer totalFiles, Integer currentFile) {
 		this.sourceStream = sourceStream;
 		this.totalCount = totalCount;
 		if(this.totalFiles == null) {
@@ -45,7 +45,7 @@ class ProgressInputStream extends InputStream {
 		progressUpdater.start();
 	}
 
-	ProgressInputStream(InputStream sourceStream, Long totalCount, Integer totalFiles, Integer currentFile, String updateStr) {
+	public ProgressInputStream(InputStream sourceStream, Long totalCount, Integer totalFiles, Integer currentFile, String updateStr) {
 		this.sourceStream = sourceStream;
 		this.totalCount = totalCount;
 		this.currentFile = currentFile;
