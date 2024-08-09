@@ -50,7 +50,7 @@ class ProgressUpdater extends Thread {
 					if(this.progressCallback != null ) {
 						this.progressCallback.call(progressPercent);
 					}
-					if(updateStr != null && updateStr.isEmpty()) {
+					if(updateStr != null && !updateStr.isEmpty()) {
 						log.debug("{}: {}%", updateStr, progressPercent);
 					} else {
 						log.debug("stream progress: {}%", progressPercent);
