@@ -16,10 +16,8 @@
 
 package com.morpheusdata.core.util;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.NetworkProxy;
 import org.apache.http.*;
@@ -105,28 +103,79 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class HttpApiClient {
 
+	/**
+	 * The HTTP client used to make requests.
+	 */
 	HttpClient httpClient;
+
+	/**
+	 * The connection manager for the HTTP client.
+	 */
 	HttpClientConnectionManager connectionManager;
+
+	/**
+	 * The cookie store for the HTTP client.
+	 */
 	BasicCookieStore cookieStore = new BasicCookieStore();
+
 	/**
 	 * Sets a throttle rate (in milliseconds) between HTTP Calls. This is used to slow down queries to the remote server.
 	 */
 	public Long throttleRate = 0L;
+
+	/**
+	 * The network proxy to use for requests.
+	 */
 	public NetworkProxy networkProxy;
+
+	/**
+	 * The last time a call was made to the API. Used for throttling.
+	 */
 	private Date lastCallTime;
 
+	/**
+	 * The logger for this class.
+	 */
 	static protected Logger log = LoggerFactory.getLogger(HttpApiClient.class);
 
+	/**
+	 * The default connection timeout for the HTTP client.
+	 */
 	static final Integer WEB_CONNECTION_TIMEOUT = 120 * 1000;
 
+	/**
+	 * Make a POST request to an API with the specified URL, path, and credentials. This method is intended for simple POST requests.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://").
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callApi(String url, String path, String username, String password) throws URISyntaxException, Exception {
 		return callApi(url, path, username, password, new RequestOptions(), "POST");
 	}
 
+	/**
+	 * Make a POST request to an API with the specified URL, path, credentials, and {@link RequestOptions}.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body.
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
 		return callApi(url, path, username, password, opts, "POST");
 	}
 
+	/**
+	 * Pause the request if a sleep period is required to enforce a throttle rate between API calls.
+	 */
 	private void sleepIfNecessary() {
 		try {
 			Long tmpThrottleRate = throttleRate;
@@ -149,6 +198,20 @@ public class HttpApiClient {
 
 	}
 
+	/**
+	 * Make a request to an API with the specified URL, path, credentials, {@link RequestOptions}, and HTTP request method.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body. The Request body
+	 *             can be one of {@link Map}, {@link String}, byte[], or {@link InputStream}.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		log.debug("Calling Api: {} - {}", url, path);
 		ServiceResponse rtn = new ServiceResponse();
@@ -380,7 +443,97 @@ public class HttpApiClient {
 		return rtn;
 	}
 
+	/**
+	 * Executes an HTTP request with streaming capabilities to a specified URL and path. This method is intended for
+	 * scenarios where large amounts of data need to be transferred, such as uploading or downloading files, without
+	 * fully loading the data into memory. The method handles authentication and custom request options, and returns
+	 * the raw HTTP response for further processing.
+	 *
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param body The request body to be sent to the server.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the {@link CloseableHttpResponse} from the server. This response
+	 *         can be used to read the server's response, including status codes, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
+	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, String body, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		opts.body = body;
+		return callStreamApi(url, path, username, password, opts, method);
+	}
 
+	/**
+	 * Executes an HTTP request with streaming capabilities to a specified URL and path. This method is intended for
+	 * scenarios where large amounts of data need to be transferred, such as uploading or downloading files, without
+	 * fully loading the data into memory. The method handles authentication and custom request options, and returns
+	 * the raw HTTP response for further processing.
+	 *
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param body The request body to be sent to the server.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the {@link CloseableHttpResponse} from the server. This response
+	 *         can be used to read the server's response, including status codes, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
+	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, InputStream body, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		opts.body = body;
+		return callStreamApi(url, path, username, password, opts, method);
+	}
+
+	/**
+	 * Executes an HTTP request with streaming capabilities to a specified URL and path. This method is intended for
+	 * scenarios where large amounts of data need to be transferred, such as uploading or downloading files, without
+	 * fully loading the data into memory. The method handles authentication and custom request options, and returns
+	 * the raw HTTP response for further processing.
+	 *
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param body The request body to be sent to the server.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the {@link CloseableHttpResponse} from the server. This response
+	 *         can be used to read the server's response, including status codes, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
+	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, byte[] body, RequestOptions opts, String method) throws URISyntaxException, Exception {
+		opts.body = body;
+		return callStreamApi(url, path, username, password, opts, method);
+	}
+
+	/**
+	 * Executes an HTTP request with streaming capabilities to a specified URL and path. This method is intended for
+	 * scenarios where large amounts of data need to be transferred, such as uploading or downloading files, without
+	 * fully loading the data into memory. The method handles authentication and custom request options, and returns
+	 * the raw HTTP response for further processing.
+	 *
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 *            included in the URL will be maintained when appending the path and query params supplied in other arguments in this method.
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body. The Request body
+	 *             can be one of {@link Map}, {@link String}, byte[], or {@link InputStream}.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the {@link CloseableHttpResponse} from the server. This response
+	 *         can be used to read the server's response, including status codes, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse<CloseableHttpResponse> callStreamApi(String url, final String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		ServiceResponse<CloseableHttpResponse> rtn = new ServiceResponse<>();
 		URIBuilder uriBuilder = new URIBuilder(url);
@@ -603,22 +756,72 @@ public class HttpApiClient {
 	}
 
 
+	/**
+	 * Make a POST request to a JSON API with the specified URL and path.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://").
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callJsonApi(String url, String path) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, new RequestOptions(), "POST");
 	}
 
+	/**
+	 * Make a POST request to a JSON API with the specified URL, path, and {@link RequestOptions}.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body.
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callJsonApi(String url, String path, RequestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, "POST");
 	}
 
+	/**
+	 * Make a request to a JSON API with the specified URL, path, {@link RequestOptions} and HTTP method.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callJsonApi(String url, String path, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, null, null, opts, method);
 	}
 
+	/**
+	 * Make a POST request to a JSON API with the specified URL, path, username, password, and {@link RequestOptions}.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body.
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts) throws URISyntaxException, Exception {
 		return callJsonApi(url, path, username, password, opts, "POST");
 	}
 
+	/**
+	 * Make a request to a JSON API with the specified URL, path, username, password, {@link RequestOptions}, and HTTP method.
+	 * @param url The base URL of the server to which the request is sent. This should include the protocol (e.g., "https://"). Any path or query params
+	 * @param path The specific path or endpoint on the server to which the request is made. This path is appended to the base URL.
+	 * @param username The username used for basic authentication with the server. This can be null if authentication is not required.
+	 * @param password The password used for basic authentication with the server. This should match the provided username. Can be null if authentication is not required.
+	 * @param opts The {@link RequestOptions} object containing various options for the request, such as headers, query parameters, and the request body.
+	 * @param method The HTTP method to be used for the request, one of "HEAD", "GET", "POST", "PUT", "PATCH", or "DELETE".
+	 * @return A {@link ServiceResponse} containing the response from the server. This response includes the status code, headers, and content.
+	 * @throws URISyntaxException If the provided URL or path is invalid or cannot be correctly parsed into a URI.
+	 * @throws Exception If an error occurs during the execution of the request, such as an I/O error, authentication failure, or invalid response.
+	 */
 	public ServiceResponse callJsonApi(String url, String path, String username, String password, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		//encode the body
 		Object body = opts != null ? (opts.body) : null;
@@ -665,10 +868,12 @@ public class HttpApiClient {
 		return rtn;
 	}
 
+	@Deprecated(since="1.1.5")
 	public ServiceResponse callXmlApi(String url, String path, RequestOptions opts) throws URISyntaxException, Exception {
 		return callXmlApi(url, path, null, null, opts, "POST");
 	}
 
+	@Deprecated(since="1.1.5")
 	public ServiceResponse callXmlApi(String url, String path, RequestOptions opts, String method) throws URISyntaxException, Exception {
 		return callXmlApi(url, path, null, null, opts, method);
 	}
@@ -707,6 +912,13 @@ public class HttpApiClient {
 		return rtn;
 	}
 
+	/**
+	 * Add a required header to the headers map if it does not already exist.
+	 * @param headers
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	public Map<CharSequence, CharSequence> addRequiredHeader(Map<CharSequence, CharSequence> headers, String name, String value) {
 		if (headers == null) {
 			headers = new LinkedHashMap<>();
@@ -715,6 +927,11 @@ public class HttpApiClient {
 		return headers;
 	}
 
+	/**
+	 * Extracts a cookie from a raw cookie string.
+	 * @param rawCookie
+	 * @return
+	 */
 	Map<String, String> extractCookie(String rawCookie) {
 		if (rawCookie == null || rawCookie.length() == 0) return null;
 		String[] cookieArgs = rawCookie.split("=");
@@ -909,6 +1126,9 @@ public class HttpApiClient {
 
 	}
 
+	/**
+	 * Shutdown the client connection manager
+	 */
 	public void shutdownClient() {
 		if (connectionManager != null) {
 			try {
@@ -924,31 +1144,119 @@ public class HttpApiClient {
 		void method(HttpClient client, BasicCookieStore cookieStore);
 	}
 
+	/**
+	 * Options for making an HTTP request.
+	 */
 	public static class RequestOptions {
+
+		/**
+		 * The body of the request.
+		 */
 		public Object body;
+
+		/**
+		 * The content type of the request body.
+		 */
 		public String contentType; //bodyType originally
+
+		/**
+		 * The headers to include in the request.
+		 */
 		public Map<CharSequence, CharSequence> headers;
+
+		/**
+		 * The query parameters to include in the request.
+		 */
 		public Map<CharSequence, CharSequence> queryParams;
+
+		/**
+		 * Suppress logging of the request and response.
+		 */
 		public Boolean suppressLog = true;
+
+		/**
+		 * Ignore SSL certificate errors.
+		 */
 		public Boolean ignoreSSL = true;
+
+		/**
+		 * The connection timeout in milliseconds. Used when ignoreSSL is false.
+		 */
 		public Integer timeout = 30000;
+
+		/**
+		 * The connection timeout in milliseconds.
+		 */
 		public Integer connectionTimeout = null;
+
+		/**
+		 * The read timeout in milliseconds.
+		 */
 		public Integer readTimeout = null;
+
+		/**
+		 * The content length of the request body.
+		 */
 		public Long contentLength = null;
 
+		/**
+		 * Oauth options for signing the request.
+		 */
 		public OauthOptions oauth;
+
+		/**
+		 * The API token to include in the request.
+		 */
 		public String apiToken;
-		public HttpClient httpClient; //optional pass the client
+
+		/**
+		 * Override the client used for the request.
+		 */
+		public HttpClient httpClient;
+
+		/**
+		 * Override the connection manager used for the client.
+		 */
 		public HttpClientConnectionManager connectionManager;
+
+		/**
+		 * URI of the request.
+		 */
 		public URI targetUri;
 
+		/**
+		 * KeyStore for client certificate
+		 */
 		public KeyStore clientCertKeyStore;
 
+		/**
+		 * Oauth options for signing the request.
+		 */
 		public static class OauthOptions {
+
+			/**
+			 * Oauth Version
+			 */
 			public String version;
+
+			/**
+			 * Oauth Consumer Key
+			 */
 			public String consumerKey;
+
+			/**
+			 * Oauth Consumer Secret
+			 */
 			public String consumerSecret;
+
+			/**
+			 * Oauth Token
+			 */
 			public String apiKey;
+
+			/**
+			 * Oauth Token Secret
+			 */
 			public String apiSecret;
 		}
 	}
