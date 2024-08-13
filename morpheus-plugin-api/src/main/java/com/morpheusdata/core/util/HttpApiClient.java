@@ -1032,7 +1032,7 @@ public class HttpApiClient {
 								log.error("We have an unhandled exception when attempting to connect to {} ignoring SSL errors", host, ex);
 							}
 						}
-						return super.connectSocket(WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
+						return super.connectSocket(opts.timeout != null ? opts.timeout : WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
 					}
 				};
 			} else {
