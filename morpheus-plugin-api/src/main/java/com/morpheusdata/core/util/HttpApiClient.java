@@ -1046,7 +1046,7 @@ public class HttpApiClient {
 								sslSocket.setEnabledProtocols(enabledProtocols);
 						}
 
-						return super.connectSocket(opts.timeout != null ? opts.timeout : 30000, socket, host, remoteAddress, localAddress, context);
+						return super.connectSocket(opts.timeout != null ? opts.timeout : WEB_CONNECTION_TIMEOUT, socket, host, remoteAddress, localAddress, context);
 					}
 				};
 			}
