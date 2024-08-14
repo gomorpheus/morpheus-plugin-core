@@ -24,6 +24,7 @@ import com.morpheusdata.core.cloud.MorpheusCloudService;
 import com.morpheusdata.core.costing.MorpheusCostingService;
 import com.morpheusdata.core.cypher.MorpheusCypherService;
 import com.morpheusdata.core.dashboard.MorpheusDashboardService;
+import com.morpheusdata.core.MorpheusFileCopyService;
 import com.morpheusdata.core.guidance.MorpheusAccountDiscoveryService;
 import com.morpheusdata.core.integration.MorpheusAccountInventoryService;
 import com.morpheusdata.core.integration.MorpheusIntegrationService;
@@ -483,4 +484,10 @@ public interface MorpheusAsyncServices {
 	 * @return on instance of {@link MorpheusOperationService}
 	 */
 	MorpheusOperationService getOperation();
+
+	/**
+	 * Returns the {@link MorpheusFileCopyService} which allows access to file copy services
+	 * @return an instance of {@link MorpheusFileCopyService}
+	 */
+	MorpheusFileCopyService getFileCopy();
 }

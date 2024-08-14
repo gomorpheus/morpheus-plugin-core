@@ -478,4 +478,10 @@ public interface MorpheusServices {
 	 * @return an instance of {@link MorpheusSynchronousOperationService}
 	 */
 	MorpheusSynchronousOperationService getOperation();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousFileCopyService} which allows access to file copy services
+	 * @return an instance of {@link MorpheusSynchronousFileCopyService}
+	 */
+	MorpheusSynchronousFileCopyService getFileCopy();
 }
