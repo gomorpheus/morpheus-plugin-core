@@ -64,6 +64,13 @@ public interface MorpheusNetworkService extends MorpheusDataService<Network, Net
 	 */
 	MorpheusNetworkTypeService getType();
 
+	/**
+	 * Returns the {@link MorpheusNetworkServerService} used for performing updates/queries on {@link NetworkServer} related assets
+	 * within Morpheus
+	 * @return An instance of the {@link MorpheusNetworkServerService}
+	 */
+	MorpheusNetworkServerService getServer();
+
 
 	/**
 	 * Returns the {@link MorpheusNetworkRouterService} used for performing updates/queries on {@link NetworkRouter} related assets
