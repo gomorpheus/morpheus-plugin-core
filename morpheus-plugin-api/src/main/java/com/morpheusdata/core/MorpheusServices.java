@@ -18,7 +18,6 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.core.synchronous.backup.MorpheusSynchronousBackupRepositoryService;
 import com.morpheusdata.core.guidance.MorpheusSynchronousAccountDiscoveryService;
-import com.morpheusdata.core.library.MorpheusWorkloadTypeService;
 import com.morpheusdata.core.synchronous.*;
 import com.morpheusdata.core.synchronous.admin.MorpheusSynchronousAdminService;
 import com.morpheusdata.core.synchronous.backup.MorpheusSynchronousBackupJobService;
@@ -40,6 +39,7 @@ import com.morpheusdata.core.synchronous.MorpheusSynchronousExecuteScheduleTypeS
 import com.morpheusdata.core.synchronous.MorpheusSynchronousVirtualImageService;
 import com.morpheusdata.core.synchronous.network.loadbalancer.MorpheusSynchronousLoadBalancerPartitionService;
 import com.morpheusdata.core.synchronous.policy.MorpheusSynchronousPolicyService;
+import com.morpheusdata.core.synchronous.MorpheusSynchronousHypervisorService;
 import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.core.providers.DNSProvider;
 import com.morpheusdata.core.providers.IPAMProvider;
@@ -484,4 +484,10 @@ public interface MorpheusServices {
 	 * @return an instance of {@link MorpheusSynchronousFileCopyService}
 	 */
 	MorpheusSynchronousFileCopyService getFileCopy();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousHypervisorService} which allows access to hypervisor services
+	 * @return an instance of {@link MorpheusSynchronousHypervisorService}
+	 */
+	MorpheusSynchronousHypervisorService getHypervisorService();
 }

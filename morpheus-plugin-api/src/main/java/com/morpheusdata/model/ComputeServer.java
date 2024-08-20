@@ -1004,4 +1004,9 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		failover,
 		pinned
 	}
+
+	public enum CommType {
+		ssh,
+		winrm
+	}
 }

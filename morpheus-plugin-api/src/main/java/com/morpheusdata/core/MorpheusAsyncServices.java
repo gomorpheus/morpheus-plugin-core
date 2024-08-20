@@ -490,4 +490,10 @@ public interface MorpheusAsyncServices {
 	 * @return an instance of {@link MorpheusFileCopyService}
 	 */
 	MorpheusFileCopyService getFileCopy();
+
+	/**
+	 * Returns the {@link MorpheusHypervisorService} which allows access to hypervisor services
+	 * @return an instance of {@link MorpheusHypervisorService}
+	 */
+	MorpheusHypervisorService getHypervisorService();
 }

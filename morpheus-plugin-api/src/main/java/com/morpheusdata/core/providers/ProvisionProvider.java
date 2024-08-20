@@ -20,6 +20,7 @@ import com.morpheusdata.core.MorpheusComputeTypeLayoutFactoryService;
 import com.morpheusdata.model.*;
 import com.morpheusdata.request.ImportWorkloadRequest;
 import com.morpheusdata.response.ImportWorkloadResponse;
+import com.morpheusdata.response.InitializeHypervisorResponse;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.ArrayList;
@@ -641,5 +642,24 @@ public interface ProvisionProvider extends PluginProvider {
 		 */
 		ServiceResponse finalizeResourceWorkload(Workload workload, AccountResource resource);
 
+	}
+
+	/**
+	 * Provides methods for provisioning hypervisors
+	 * @author ddeyoung
+	 * @since 1.1.7
+	 */
+	public interface HypervisorProvisionFacet {
+
+		/**
+		 * Initialize a compute server as a Hypervisor. Common attributes defined in the {@link InitializeHypervisorResponse} will be used
+		 * to update attributes on the hypervisor, including capacity information. Additional details can be updated by the plugin provider
+		 * using the `context.services.computeServer.save(server)` API.
+		 * @param cloud cloud associated to the hypervisor
+		 * @param server representing the hypervisor
+		 * @return a {@link ServiceResponse} containing an {@link InitializeHypervisorResponse}. The response attributes will be
+		 * used to fill in necessary attributes of the server.
+		 */
+		ServiceResponse<InitializeHypervisorResponse> initializeHypervisor(Cloud cloud, ComputeServer server);
 	}
 }
