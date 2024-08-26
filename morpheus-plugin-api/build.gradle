@@ -36,6 +36,7 @@ dependencies {
 	implementation "org.codehaus.groovy:groovy:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
   implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-console:$groovyVersion"
 	compileOnly('com.morpheusdata:cypher-core:0.10.0')
 	implementation 'commons-net:commons-net:3.9.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
