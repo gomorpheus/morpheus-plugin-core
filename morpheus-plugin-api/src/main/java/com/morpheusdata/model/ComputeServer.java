@@ -89,6 +89,7 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	protected String internalIp;
 	protected String externalIp;
 	protected String sshHost;
+	protected Integer sshPort = 22;
 	protected String sshUsername;
 	protected String internalSshUsername;
 	protected String sshPassword;
@@ -369,6 +370,8 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 		return sshHost;
 	}
 
+	public Integer getSshPort() { return sshPort; }
+
 	public List<ComputeServerInterface> getInterfaces() {
 		return interfaces;
 	}
@@ -614,6 +617,11 @@ public class ComputeServer extends ComputeServerIdentityProjection {
 	public void setSshHost(String sshHost) {
 		this.sshHost = sshHost;
 		markDirty("sshHost", sshHost);
+	}
+
+	public void setSshPort(Integer sshPort) {
+		this.sshPort = sshPort;
+		markDirty("sshPort", sshPort);
 	}
 
 	/**
