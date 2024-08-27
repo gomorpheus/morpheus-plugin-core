@@ -20,6 +20,7 @@ import com.morpheusdata.core.providers.CloudProvider;
 import com.morpheusdata.model.projection.NetworkIdentityProjection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,9 @@ public class Network extends NetworkIdentityProjection {
 	protected String regionCode;
 	protected Integer cidrMask;
 	protected NetworkIdentityProjection parentNetwork;
+
+	@JsonSerialize(using=ModelCollectionAsIdsOnlySerializer.class)
+	protected List<NetworkSubnet> subnets = new ArrayList<>();
 
 	protected List<CloudPool> assignedZonePools = new ArrayList<>();
 
@@ -563,5 +567,14 @@ public class Network extends NetworkIdentityProjection {
 
 	public void setCidrMask(Integer cidrMask) {
 		this.cidrMask = cidrMask;
+	}
+
+	public List<NetworkSubnet> getSubnets() {
+		return subnets;
+	}
+
+	public void setSubnets(List<NetworkSubnet> subnets) {
+		this.subnets = subnets;
+		markDirty("subnets", subnets, this.subnets);
 	}
 }
