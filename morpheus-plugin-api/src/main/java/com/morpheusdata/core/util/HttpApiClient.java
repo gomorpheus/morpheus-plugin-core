@@ -1100,7 +1100,7 @@ public class HttpApiClient {
 				String proxyHost = networkProxy.getProxyHost();
 				Integer proxyPort = networkProxy.getProxyPort();
 				if (proxyHost != null && proxyPort != null) {
-					log.debug("proxy detected at ${proxyHost}:${proxyPort}");
+					log.debug("proxy detected at {}:{}", proxyHost, proxyPort);
 					String proxyUser = networkProxy.getProxyUser();
 					String proxyPassword = networkProxy.getProxyPassword();
 					String proxyWorkstation = networkProxy.getProxyWorkstation() != null ? networkProxy.getProxyWorkstation() : null;
