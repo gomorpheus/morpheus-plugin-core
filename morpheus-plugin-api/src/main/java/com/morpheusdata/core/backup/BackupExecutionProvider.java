@@ -63,10 +63,12 @@ public interface BackupExecutionProvider {
 
 	/**
 	 * Create the backup resources on the external provider system.
-	 * @param backupModel the fully configured and validated backup
+	 * @param backupModel the fully configured and validated backup. The backupModel has not been persisted at this point and does not have an ID to save
+	 *                    changes via the plugin API. Modify the backupModel and send it back to morpheus on the response data attributed.
 	 * @param opts additional options used during backup creation
 	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
-	 * creation on the external system failed and will halt any further backup creation processes in morpheus.
+	 * creation on the external system failed and will halt any further backup creation processes in morpheus. Return the backupModel
+	 * on the ServiceResponse.data attribute to persist changes to the backup object.
 	 */
 	ServiceResponse createBackup(Backup backupModel, Map opts);
 
