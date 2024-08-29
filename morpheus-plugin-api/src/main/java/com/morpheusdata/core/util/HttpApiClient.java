@@ -400,6 +400,7 @@ public class HttpApiClient {
 
 
 						rtn.setSuccess(true);
+						rtn.setStatusCode(Integer.toString(response.getStatusLine().getStatusCode()));
 					} else {
 						if (response.getEntity() != null) {
 							rtn.setContent(EntityUtils.toString(response.getEntity()));

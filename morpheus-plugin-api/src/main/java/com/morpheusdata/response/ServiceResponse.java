@@ -45,6 +45,7 @@ public class ServiceResponse<T> {
 	private Map<String,Object> headers;
 	private String content;
 	private String errorCode;
+	private String statusCode;
 	// Holds the parsed json map or array.
 	// TODO: Add jackson or a java json lib.
 	private Object results;
@@ -344,6 +345,10 @@ public class ServiceResponse<T> {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
+
+	public String getStatusCode() { return statusCode; }
+
+	public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
 
 	public Object getResults() {
 		return results;
