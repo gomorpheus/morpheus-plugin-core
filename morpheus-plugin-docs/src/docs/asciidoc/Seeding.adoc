@@ -1,6 +1,6 @@
 == Seeding data during plugin installation
 
-If you need to ensure that certain data (e.g. layouts, plans, etc.) are added to the database when your plugin is installed, you can use this process to "seed" that data. Morpheus consumes and produces HCL formated data. The same principles that you can use here for plugins also apply to https://docs.morpheusdata.com/en/latest/administration/integrations/packages.html[Morpheus packages].
+If you need to ensure that certain data (e.g. layouts, plans, etc.) are added to the database when your plugin is installed, you can use this process to "seed" that data. Morpheus consumes and produces https://github.com/hashicorp/hcl/tree/main?tab=readme-ov-file#information-model-and-syntax[HCL formated data]. The same principles that you can use here for plugins also apply to https://docs.morpheusdata.com/en/latest/administration/integrations/packages.html[Morpheus packages].
 
 For plugins, you will need to create a folder called *scribe* in your your plugin's resources folder ('src/main/resources/scribe'). Then add HCL seed files to that folder. We recommend descriptive names like _Ubuntu22Layouts.scribe_. The scribe files should be modeled off of https://developer.morpheusdata.com/api/com/morpheusdata/model/package-summary.html[plugin database model classes]. The resource type should be the model name in dash-case and the resource should have a unique identifier (the `code` field for most models). All new scribe files and updates to existing those files will be processed when your plugin is installed or reloaded.
 
