@@ -79,7 +79,7 @@ public interface DatasetProvider<T, V> extends PluginProvider {
 	}
 
 	/**
-	 * list the values in teh dataset in a common format of a name value pair. (example: [[name: "blue", value: 1]])
+	 * list the values in the dataset in a common format of a name value pair. (example: [[name: "blue", value: 1]])
 	 * @param query a DatasetQuery containing the user and map of query params or options to apply to the list
 	 * @return a list of maps that have name value pairs of the items
 	 */

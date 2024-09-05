@@ -1,36 +1,47 @@
 == Seeding data during plugin installation
 
-If you need to ensure that certain data (e.g. layouts, plans, etc.) is added to the database when your plugin is installed, you can use this process to "seed" that data.
+If you need to ensure that certain data (e.g. layouts, plans, etc.) are added to the database when your plugin is installed, you can use this process to "seed" that data. Morpheus consumes and produces HCL formated data. The same principles that you can use here for plugins also apply to https://docs.morpheusdata.com/en/latest/administration/integrations/packages.html[Morpheus packages].
 
-You will need to create a folder called *seed* in your your plugin's resources folder ('src/main/resources/seed'). Then add YAML seed files to that folder. We recommend descriptive names like _Ubuntu22Seeds.yaml_. The seed files should be modeled off of plugin database model classes (see examples below). All new seeds and updates to existing seeds will be processed when your plugin is installed or reloaded.
+For plugins, you will need to create a folder called *scribe* in your your plugin's resources folder ('src/main/resources/scribe'). Then add HCL seed files to that folder. We recommend descriptive names like _Ubuntu22Layouts.scribe_. The scribe files should be modeled off of https://developer.morpheusdata.com/api/com/morpheusdata/model/package-summary.html[plugin database model classes]. The resource type should be the model name in dash-case and the resource should have a unique identifier (the `code` field for most models). All new scribe files and updates to existing those files will be processed when your plugin is installed or reloaded.
 
-=== Example
+=== Here are some examples
 
-[source,yaml]
+This is an https://developer.morpheusdata.com/api/com/morpheusdata/model/OptionType.html[option type]. Note that the `optionSource` field is a reference to a https://developer.morpheusdata.com/docs#dataset-providers[DatasetProvider].
+[source,hcl]
 ----
-# seed entries
-seed:
-  optionType:
-  - meta:
-      key: code
-    code: demo-option-1
-    name: Demo Option 1
-    type: text
-    fieldClass: input-tall
-    fieldLabel: Demo Option 1
-    fieldName: demoOption1
-    fieldGroup: Demo Config
-    fieldContext: config
-    displayOrder: 10
-  - meta:
-      key: code
-    code: demo-option-2
-    name: Demo Option 2
-    type: password
-    fieldLabel: Demo Option
-    fieldName: demoOption2
-    fieldGroup: Demo Config
-    fieldContext: config
-    displayOrder: 20
+resource "option-type" "demo-option" {
+	name = "Demo Option"
+	code = "demo-option"
+	fieldName = "demoOption"
+	fieldContext = "config"
+	fieldLabel = "Demo Option"
+	type = "select"
+	displayOrder = 10
+	required = true
+	optionSource = "demoOptionSource"
+}
+----
+
+This is an https://developer.morpheusdata.com/api/com/morpheusdata/model/OptionType.html[instance type] that references the option type above. They could be in the same .scribe file, or different files. However, if they come from different plugins, make sure that the plugin that provides the option type is loaded first.
+[source,hcl]
+----
+resource "instance-type" "demo-instance" {
+	name = "Demo Instance"
+	code = "demo-instance"
+	description = "Spin up any VM on our Demo infrastructure."
+	environmentPrefix = "DEMO"
+	category = "cloud"
+	active = true
+	enabled = true
+	versions = ["1.0"]
+	optionTypes = [
+		option-type.demo-option
+	]
+	provisionTypeDefault = true
+	pluginIconPath = "demo.svg"
+	pluginIconHidpiPath= "demo.svg"
+	pluginIconDarkPath = "demo-dark.svg"
+	pluginIconDarkHidpiPath = "demo-dark.svg"
+}
 ----
 
