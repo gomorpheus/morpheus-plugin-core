@@ -2,9 +2,11 @@
 
 If you need to ensure that certain data (e.g. layouts, plans, etc.) are added to the database when your plugin is installed, you can use this process to "seed" that data. Morpheus consumes and produces https://github.com/hashicorp/hcl/tree/main?tab=readme-ov-file#information-model-and-syntax[HCL formated data]. The same principles that you can use here for plugins also apply to https://docs.morpheusdata.com/en/latest/administration/integrations/packages.html[Morpheus packages].
 
-For plugins, you will need to create a folder called *scribe* in your your plugin's resources folder ('src/main/resources/scribe'). Then add HCL seed files to that folder. We recommend descriptive names like _Ubuntu22Layouts.scribe_. The scribe files should be modeled off of https://developer.morpheusdata.com/api/com/morpheusdata/model/package-summary.html[plugin database model classes]. The resource type should be the model name in dash-case and the resource should have a unique identifier (the `code` field for most models). All new scribe files and updates to existing those files will be processed when your plugin is installed or reloaded.
+For plugins, you will need to create a folder called *scribe* in your your plugin's resources folder (`src/main/resources/scribe`). Then add HCL seed files to that folder. We recommend descriptive names like _Ubuntu22Layouts.scribe_. The scribe files should be modeled off of https://developer.morpheusdata.com/api/com/morpheusdata/model/package-summary.html[plugin database model classes]. The resource type should be the model name in dash-case and the resource should have a unique identifier (the `code` field for most models). All new scribe files and updates to existing those files will be processed when your plugin is installed or reloaded.
 
-=== Here are some examples
+Resources can reference other resources in the same .scribe file, other resources from different .scribe files, resources from other plugins, and even existing resources in Morpheus. The references are made by specifying the resource type and a unique identifier, often the code. Just make sure that if your plugin expects resources from other plugins or packages, those plugins or packages are loaded first.
+
+=== Examples
 
 This is an https://developer.morpheusdata.com/api/com/morpheusdata/model/OptionType.html[option type]. Note that the `optionSource` field is a reference to a https://developer.morpheusdata.com/docs#dataset-providers[DatasetProvider].
 [source,hcl]
@@ -22,7 +24,7 @@ resource "option-type" "demo-option" {
 }
 ----
 
-This is an https://developer.morpheusdata.com/api/com/morpheusdata/model/OptionType.html[instance type] that references the option type above. They could be in the same .scribe file, or different files. However, if they come from different plugins, make sure that the plugin that provides the option type is loaded first.
+This is an https://developer.morpheusdata.com/api/com/morpheusdata/model/InstanceType.html[instance type] that references the option type above. They could be in the same .scribe file, or different files. However, if they come from different plugins, make sure that the plugin that provides the option type is loaded first.
 [source,hcl]
 ----
 resource "instance-type" "demo-instance" {
@@ -42,6 +44,29 @@ resource "instance-type" "demo-instance" {
 	pluginIconHidpiPath= "demo.svg"
 	pluginIconDarkPath = "demo-dark.svg"
 	pluginIconDarkHidpiPath = "demo-dark.svg"
+}
+----
+
+This is an example https://developer.morpheusdata.com/api/com/morpheusdata/model/InstanceTypeLayout.html[instance type layout] that references the built-in Morpheus Ubuntu instance type. The `provisionType` type here references a https://developer.morpheusdata.com/docs#cloud-provider-plugins[ProvisionProvider from a Cloud Plugin].
+[source,hcl]
+----
+resource "instance-type-layout" "demo-ubuntu-22" {
+	code = "demo-ubuntu-22"
+	name = "Demo VM"
+	sortOrder = 22
+	instanceVersion = "22"
+	description = "This will provision a single vm"
+	instanceType {
+		code = "ubuntu"
+	}
+	serverCount = 1
+	hasAutoScale = true
+	portCount = 1
+	serverType = "vm"
+	enabled = true
+	creatable = true
+	supportsConvertToManaged = true
+	provisionType = "demo-provision-provider"
 }
 ----
 
