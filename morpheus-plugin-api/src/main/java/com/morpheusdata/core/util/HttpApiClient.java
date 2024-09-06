@@ -544,7 +544,7 @@ public class HttpApiClient {
 			lastCallTime = new Date();
 
 			String existingPath = uriBuilder.getPath();
-			// retain path on base url if one exists
+			// retain path on base url if one exists`
 			String newPath = path;
 			if (path != null && path.length() > 0) {
 				if (existingPath != null && existingPath.length() > 0 && !path.startsWith(existingPath)) {

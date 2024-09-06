@@ -64,6 +64,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String uuid = java.util.UUID.randomUUID().toString();
 	protected String sourceSnapshotId;
 
+	protected StorageServer storageServer;
+
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	public Account getAccount() {
@@ -358,5 +360,13 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setCloudId(Long cloudId) {
 		this.cloudId = cloudId;
 		markDirty("cloudId", cloudId);
+	}
+
+	public StorageServer getStorageServer() {
+		return storageServer;
+	}
+
+	public void setStorageServer(StorageServer storageServer) {
+		this.storageServer = storageServer;
 	}
 }
