@@ -50,6 +50,9 @@ public class StorageGroup extends MorpheusModel {
 	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
 	protected List<Account> accounts;
 
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected StorageServer storageServer;
+
 	public Account getOwner() {
 		return owner;
 	}
@@ -237,6 +240,15 @@ public class StorageGroup extends MorpheusModel {
 	public void setAccounts(List<Account> accounts) {
 		this.accounts = accounts;
 		markDirty("accounts", accounts);
+	}
+
+	public StorageServer getStorageServer() {
+		return storageServer;
+	}
+
+	public void setStorageServer(StorageServer storageServer) {
+		this.storageServer = storageServer;
+		markDirty("storageServer", storageServer);
 	}
 
 }
