@@ -48,10 +48,6 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String internalId;
 	protected String unitNumber;
 	protected DatastoreIdentityProjection datastore;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected StorageServer storageServer;
-	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
-	protected StorageGroup storageGroup;
 	protected Integer maxIOPS;
 	protected Boolean removable = false;
 	protected Integer diskIndex;
@@ -69,6 +65,9 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String sourceSnapshotId;
 
 	protected StorageServer storageServer;
+	
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected StorageGroup storageGroup;
 
 
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
@@ -197,24 +196,6 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	 */
 	public void setDatastore(DatastoreIdentityProjection datastore) {
 		this.datastore = datastore;
-	}
-
-	public StorageServer getStorageServer() {
-		return storageServer;
-	}
-
-	public void setStorageServer(StorageServer storageServer) {
-		this.storageServer = storageServer;
-		markDirty("storageServer", storageServer);
-	}
-
-	public StorageGroup getStorageGroup() {
-		return storageGroup;
-	}
-
-	public void setStorageGroup(StorageGroup storageGroup) {
-		this.storageGroup = storageGroup;
-		markDirty("storageGroup", storageGroup);
 	}
 
 	public Integer getMaxIOPS() {
@@ -390,5 +371,14 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 
 	public void setStorageServer(StorageServer storageServer) {
 		this.storageServer = storageServer;
+	}
+
+	public StorageGroup getStorageGroup() {
+		return storageGroup;
+	}
+
+	public void setStorageGroup(StorageGroup storageGroup) {
+		this.storageGroup = storageGroup;
+		markDirty("storageGroup", storageGroup);
 	}
 }
