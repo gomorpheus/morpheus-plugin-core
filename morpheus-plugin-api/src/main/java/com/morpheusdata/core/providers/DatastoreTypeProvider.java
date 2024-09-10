@@ -33,6 +33,14 @@ public interface DatastoreTypeProvider extends PluginProvider {
 
 	String getProvisionTypeCode();
 
+
+	/**
+	 * Returns the provider code for interacting with the {@link StorageServer} interface
+	 * This is optional and can be null if there is no interaction with a storage server whatsoever
+	 * @return the code for the storage provider (also matches the {@link StorageServerType} code)
+	 */
+	String getStorageProviderCode();
+
 	/**
 	 * Provide custom configuration options when creating a new {@link AccountIntegration}
 	 * @return a List of OptionType

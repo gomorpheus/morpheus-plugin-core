@@ -20,6 +20,7 @@ import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,5 +84,6 @@ public interface StorageProvider extends PluginProvider {
 	 * refresh process has failed and will change the storage server status to 'error'
 	 */
 	ServiceResponse refreshStorageServer(StorageServer storageServer, Map opts);
+
 
 }
