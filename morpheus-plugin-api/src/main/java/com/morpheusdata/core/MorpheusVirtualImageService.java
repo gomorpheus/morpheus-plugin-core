@@ -19,11 +19,13 @@ package com.morpheusdata.core;
 import com.bertramlabs.plugins.karman.CloudFile;
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Context methods for syncing VirtualImages in Morpheus
@@ -201,4 +203,11 @@ public interface MorpheusVirtualImageService extends MorpheusDataService<Virtual
 	 * @return the url of the image file
 	 */
 	Single<String> getCloudFileStreamUrl(VirtualImage virtualImage, CloudFile cloudFile, User createdBy, Cloud cloud);
+
+	/**
+	 * Get metadata for a virtual image. The metadata can include a list of disks in the virtual image.
+	 * @param virtualImageModel the virtual image to extract disk information about.
+	 * @return the disk mapping information
+	 */
+	Maybe<Map<String, Object>> getImageDiskMap(VirtualImage virtualImageModel);
 }

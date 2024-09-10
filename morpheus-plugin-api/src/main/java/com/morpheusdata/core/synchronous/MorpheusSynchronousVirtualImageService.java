@@ -26,6 +26,8 @@ import com.morpheusdata.model.User;
 import com.morpheusdata.model.VirtualImage;
 import com.morpheusdata.model.projection.VirtualImageIdentityProjection;
 
+import java.util.Map;
+
 public interface MorpheusSynchronousVirtualImageService extends MorpheusSynchronousDataService<VirtualImage, VirtualImageIdentityProjection>, MorpheusSynchronousIdentityService<VirtualImage> {
 
 	/**
@@ -50,4 +52,11 @@ public interface MorpheusSynchronousVirtualImageService extends MorpheusSynchron
 	 * @return the url of the image file
 	 */
 	String getCloudFileStreamUrl(VirtualImage virtualImage, CloudFile cloudFile, User createdBy, Cloud cloud);
+
+	/**
+	 * Get metadata for a virtual image. The metadata can include a list of disks in the virtual image.
+	 * @param virtualImageModel the virtual image to extract disk information about.
+	 * @return the disk mapping information
+	 */
+	Map<String, Object> getImageDiskMap(VirtualImage virtualImageModel);
 }
