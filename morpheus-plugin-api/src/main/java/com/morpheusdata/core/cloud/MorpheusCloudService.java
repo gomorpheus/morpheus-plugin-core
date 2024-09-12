@@ -172,4 +172,18 @@ public interface MorpheusCloudService extends MorpheusDataService<Cloud,CloudIde
 
 	Single<String> buildUserData(PlatformType platformType, Map userConfig, Map cloudConfig);
 
+	/**
+	 * Trigger a short refresh on a cloud.
+	 * @param cloud cloud to refresh
+	 * @return Boolean returns the result of the cloud refresh request.
+	 */
+	Single<Boolean> refresh(Cloud cloud);
+
+	/**
+	 * Trigger a daily (full) refresh on a cloud.
+	 * @param cloud cloud to refresh
+	 * @return Boolean returns the result of the cloud refresh request.
+	 */
+	Single<Boolean> refreshDaily(Cloud cloud);
+
 }
