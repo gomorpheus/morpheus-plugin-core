@@ -16,7 +16,6 @@
 
 package com.morpheusdata.core.providers;
 
-import com.bertramlabs.plugins.karman.CloudFile;
 import com.bertramlabs.plugins.karman.CloudFileInterface;
 import com.morpheusdata.model.*;
 import com.morpheusdata.response.ServiceResponse;
@@ -54,11 +53,11 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	boolean getRemovable();
 
 
-	ServiceResponse removeVolume(StorageVolume volume, boolean removeSnapshots, boolean force);
-	ServiceResponse<StorageVolume> createVolume(StorageVolume volume);
-	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume,StorageVolume sourceVolume);
-	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, Long newSize);
-	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume,VirtualImage virtualImage, CloudFileInterface cloudFile);
+	ServiceResponse removeVolume(StorageVolume volume, ComputeServer server, boolean removeSnapshots, boolean force);
+	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
+	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server,StorageVolume sourceVolume);
+	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, ComputeServer server, Long newSize);
+	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, VirtualImage virtualImage, CloudFileInterface cloudFile);
 
 
 	public interface SnapshotFacet {
@@ -79,7 +78,7 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	public interface MvmProvisionFacet {
 
 		ServiceResponse<StorageVolume> prepareHostForVolume(ComputeServerGroup cluster, StorageVolume volume);
-		ServiceResponse<MvmDiskConfig> buildDiskConfig(ComputeServerGroup cluster, StorageVolume volume);
+		ServiceResponse<MvmDiskConfig> buildDiskConfig(ComputeServerGroup cluster, ComputeServer server, StorageVolume volume);
 		ServiceResponse<StorageVolume> releaseVolumeFromHost(ComputeServerGroup cluster, StorageVolume volume);
 
 		public static class MvmDiskConfig {

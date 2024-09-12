@@ -62,6 +62,8 @@ public class Datastore extends DatastoreIdentityProjection {
 	protected CloudPool zonePool;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected StorageVolumeType volumeType;
+	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
+	protected DatastoreType datastoreType;
 	protected String status = "provisioned";
 	protected String statusMessage;
 	protected String rawData;
