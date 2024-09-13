@@ -63,7 +63,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected String status = "provisioned";
 	protected String uuid = java.util.UUID.randomUUID().toString();
 	protected String sourceSnapshotId;
-
+	protected String poolName;
+	protected String volumeName;
 	protected StorageServer storageServer;
 	
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
@@ -380,5 +381,23 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setStorageGroup(StorageGroup storageGroup) {
 		this.storageGroup = storageGroup;
 		markDirty("storageGroup", storageGroup);
+	}
+
+	public String getPoolName() {
+		return poolName;
+	}
+
+	public void setPoolName(String poolName) {
+		this.poolName = poolName;
+		markDirty("poolName", poolName);
+	}
+
+	public String getVolumeName() {
+		return volumeName;
+	}
+
+	public void setVolumeName(String volumeName) {
+		this.volumeName = volumeName;
+		markDirty("volumeName", volumeName);
 	}
 }
