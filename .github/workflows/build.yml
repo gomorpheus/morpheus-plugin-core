@@ -22,7 +22,7 @@ jobs:
       run: ./gradlew javadoc --no-daemon
     - name: assemble
       run: ./gradlew assemble --no-daemon
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: plugin-artifacts
         path: plugins/
