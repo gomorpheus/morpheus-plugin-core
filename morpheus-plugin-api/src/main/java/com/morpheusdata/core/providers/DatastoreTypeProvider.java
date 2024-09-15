@@ -52,13 +52,15 @@ public interface DatastoreTypeProvider extends PluginProvider {
 
 	boolean getRemovable();
 
-
 	ServiceResponse removeVolume(StorageVolume volume, ComputeServer server, boolean removeSnapshots, boolean force);
 	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server,StorageVolume sourceVolume);
 	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, ComputeServer server, Long newSize);
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, VirtualImage virtualImage, CloudFileInterface cloudFile);
 
+	ServiceResponse<Datastore> createDatastore(Datastore datastore);
+	ServiceResponse<Datastore> updateDatastore(Datastore datastore);
+	ServiceResponse removeDatastore(Datastore datastore);
 
 	public interface SnapshotFacet {
 
