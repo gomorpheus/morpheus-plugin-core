@@ -83,6 +83,11 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		ServiceResponse<MvmDiskConfig> buildDiskConfig(ComputeServerGroup cluster, ComputeServer server, StorageVolume volume);
 		ServiceResponse<StorageVolume> releaseVolumeFromHost(ComputeServerGroup cluster, StorageVolume volume);
 
+		/**
+		 * This represents a disk configuration for a virtual machine for libvirt/virsh XML specification as a disk device
+		 * This is used to allow the plugin to override any special configuration needed for the disk device
+		 * @author David Estes, Dan Devilbiss
+		 */
 		public static class MvmDiskConfig {
 			public DiskMode diskMode;
 			public String diskType; //TODO: Enum
