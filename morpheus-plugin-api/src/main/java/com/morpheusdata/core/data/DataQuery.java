@@ -46,7 +46,7 @@ import java.util.*;
  * }</pre>
  * <p>
  * As can be seen in the example, the filters is a Collection of DataFilters containing a property name (i.e. name), a property value (i.e. value), and an operator.
- * An operator can either be a "==","=","!=","&lt;","&lt;=","&gt;","&gt;=","=~","in","or,"and".
+ * An operator can either be a "==","=","!=","&lt;","&lt;=","&gt;","&gt;=","=~","in","notIn", "or","and".
  *
  * @author Brian Wheeler
  * @since 0.15.1

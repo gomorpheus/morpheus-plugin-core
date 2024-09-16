@@ -41,7 +41,7 @@ public class DataFilter<T> {
 	public String name;
 
 	/**
-	 * The operator being used for comparison (i.e. =,!=,:,=~,&lt;,&lt;=,&gt;,&gt;=,in)
+	 * The operator being used for comparison (i.e. =,!=,:,=~,&lt;,&lt;=,&gt;,&gt;=,in, notIn)
 	 */
 	public String operator;
 
