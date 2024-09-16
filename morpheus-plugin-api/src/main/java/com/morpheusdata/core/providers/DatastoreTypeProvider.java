@@ -71,6 +71,14 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	 */
 	boolean getRemovable();
 
+	/**
+	 * Flags if the {@link DatastoreType} is a local storage type, or a shared storage integration for cross host clustering.
+	 * @return if the {@link DatastoreType} is local
+	 */
+	default boolean getLocalStorage() {
+		return false;
+	}
+
 
 	ServiceResponse removeVolume(StorageVolume volume, ComputeServer server, boolean removeSnapshots, boolean force);
 	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
@@ -78,7 +86,14 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, ComputeServer server, Long newSize);
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, VirtualImage virtualImage, CloudFileInterface cloudFile);
 
+	/**
+	 * Perform any operations necessary on the target to create and register a datastore.
+	 * Most implementations iterate over the servers on the server group (hypervisors) and register a storage pool
+	 * @param datastore the current datastore being created
+	 * @return the service response containing success state or any errors upon failure
+	 */
 	ServiceResponse<Datastore> createDatastore(Datastore datastore);
+
 	ServiceResponse<Datastore> updateDatastore(Datastore datastore);
 	ServiceResponse removeDatastore(Datastore datastore);
 
