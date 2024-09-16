@@ -24,12 +24,19 @@ import java.util.List;
 
 /**
  * Represents a DatastoreType and how a {@link StorageServer} interacts with various provisioners
+ * There are several Facets related to this particular storage provider that grant certain abilities and use cases.
+ * The {@link SnapshotFacet} allows for the creation and deletion of snapshots
+ * The {@link MvmProvisionFacet} allows for MVM specific provisioning tasks for MVM/HPE Hypervisor Clusters
  * @since 1.1.18
  * @author David Estes
  */
 public interface DatastoreTypeProvider extends PluginProvider {
 
 
+	/**
+	 * Returns the {@link ProvisionProvider} code for linking the generated {@link DatastoreType} with the appropriate {@link ProvisionType}
+	 * @return the code of the relevant ProvisionProvider
+	 */
 	String getProvisionTypeCode();
 
 
@@ -46,11 +53,24 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	 */
 	List<OptionType> getOptionTypes();
 
+	/**
+	 * Flags if this datastore can be created by the user. Some datastores are system injected and cannot be created by the user
+	 * @return whether, or not this datastore can be created by the user
+	 */
 	boolean getCreatable();
 
+	/**
+	 * Flags if the datastore created for this is editable or not
+	 * @return whether, or not this datastore can be edited once added
+	 */
 	boolean getEditable();
 
+	/**
+	 * Flags if the datastore created for this is removable or not
+	 * @return whether, or not this datastore can be removed once added
+	 */
 	boolean getRemovable();
+
 
 	ServiceResponse removeVolume(StorageVolume volume, ComputeServer server, boolean removeSnapshots, boolean force);
 	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
@@ -94,12 +114,18 @@ public interface DatastoreTypeProvider extends PluginProvider {
 			public String deviceName; //sda etc
 			public DeviceType deviceType = DeviceType.DISK;
 
+			/**
+			 * Represents the type of device for the disk. Is it a disk, cdrom, or floppy
+			 */
 			public enum DeviceType {
 				DISK,
 				CDROM,
 				FLOPPY
 			}
 
+			/**
+			 * This represents the libvirt disk mode for the disk device.. VIRTIO is best for performance, but requires guest drivers
+			 */
 			public enum DiskMode {
 				VIRTIO,
 				VIRTIO_SCSI,
