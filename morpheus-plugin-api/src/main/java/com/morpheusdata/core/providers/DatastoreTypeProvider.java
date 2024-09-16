@@ -114,8 +114,33 @@ public interface DatastoreTypeProvider extends PluginProvider {
 
 	public interface MvmProvisionFacet {
 
+		/**
+		 * This is a hook call to allow the plugin to prepare the host for the volume. This could be something like forcing a rescan
+		 * or refresh if necessary on the host itself (not the vm)
+		 * @param cluster
+		 * @param volume
+		 * @return
+		 */
 		ServiceResponse<StorageVolume> prepareHostForVolume(ComputeServerGroup cluster, StorageVolume volume);
+
+		/**
+		 * When creating/defining a virtual machine in libvirt, an XML specification must be generated. Within this specificaiton are device elements corresponding
+		 * to disks. This method is called to allow the plugin to specify the disk config to be used for the disk device. It is important to factor in the
+		 * server record and check if it has uefi or virtioToolsInstalled as this may change your {@link MvmDiskConfig.DiskMode} to VIRTIO
+		 * @param cluster
+		 * @param server
+		 * @param volume
+		 * @return
+		 */
 		ServiceResponse<MvmDiskConfig> buildDiskConfig(ComputeServerGroup cluster, ComputeServer server, StorageVolume volume);
+
+		/**
+		 * This is a hook call to allow the plugin to know if a vm is being moved off of a host or removed. It should not be used to remove volume
+		 * but rather if there is work to be done to release the volume from the host. This could be something like forcing a rescan.
+		 * @param cluster
+		 * @param volume
+		 * @return
+		 */
 		ServiceResponse<StorageVolume> releaseVolumeFromHost(ComputeServerGroup cluster, StorageVolume volume);
 
 		/**
