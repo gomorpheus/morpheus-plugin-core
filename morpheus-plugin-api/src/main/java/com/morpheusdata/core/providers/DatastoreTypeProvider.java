@@ -27,8 +27,10 @@ import java.util.List;
  * There are several Facets related to this particular storage provider that grant certain abilities and use cases.
  * The {@link SnapshotFacet} allows for the creation and deletion of snapshots
  * The {@link MvmProvisionFacet} allows for MVM specific provisioning tasks for MVM/HPE Hypervisor Clusters
+ * In order to use this with an external integration, it is best to first register a {@link StorageProvider} plugin, then
+ * ensure the code used for that provider is set on the {@link DatastoreTypeProvider#getStorageProviderCode()} method.
  * @since 1.1.18
- * @author David Estes
+ * @author David Estes, Dan Devilbiss
  */
 public interface DatastoreTypeProvider extends PluginProvider {
 
@@ -80,11 +82,37 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	}
 
 
+	/**
+	 * Perform any operations necessary on the target to remove a volume. This is used to remove a volume on a storage server
+	 * It is typically called as part of server teardown.
+	 * @param volume the current volume to remove
+	 * @param server the server the volume is being removed from (may contain information such as parentServer (hypervisor) or cluster)
+	 * @param removeSnapshots whether to remove snapshots associated with the volume. In some implementations this is mandatory and not separate.
+	 * @param force whether to force the removal of the volume. This is typically used to force the removal of a volume that is in use.
+	 * @return the success state of the removal
+	 */
 	ServiceResponse removeVolume(StorageVolume volume, ComputeServer server, boolean removeSnapshots, boolean force);
+
+	/**
+	 * Perform any operations necessary on the target to create a volume. This is used to create a volume on a storage server
+	 * It is typically called as part of server provisioning.
+	 * @param volume the current volume to create
+	 * @param server the server the volume is being created on (may contain information such as parentServer (hypervisor) or cluster)
+	 * @return the success state and a copy of the volume
+	 */
 	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
+
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server,StorageVolume sourceVolume);
-	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, ComputeServer server, Long newSize);
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, VirtualImage virtualImage, CloudFileInterface cloudFile);
+
+	/**
+	 * Perform any operations necessary on the target to resize a volume. This is used to resize a volume on a storage server
+	 * @param volume the current volume to resize
+	 * @param server the server the volume is being resized on (may contain information such as parentServer (hypervisor) or cluster)
+	 * @param newSize the new size of the volume... TODO: this exists on the volume record already, is newSize needed?
+	 * @return the success state and a copy of the volume
+	 */
+	ServiceResponse<StorageVolume> resizeVolume(StorageVolume volume, ComputeServer server, Long newSize);
 
 	/**
 	 * Perform any operations necessary on the target to create and register a datastore.
@@ -94,9 +122,33 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	 */
 	ServiceResponse<Datastore> createDatastore(Datastore datastore);
 
-	ServiceResponse<Datastore> updateDatastore(Datastore datastore);
+	/**
+	 * Perform any operations necessary on the target to update a datastore. The default is not implemented
+	 * for this behavior. If {@link DatastoreTypeProvider#getEditable()} is true, this method should be implemented
+	 * @param datastore the current datastore being updated
+	 * @return the success state and a copy of the datastore
+	 */
+	default ServiceResponse<Datastore> updateDatastore(Datastore datastore) {
+		ServiceResponse<Datastore> rtn =  new ServiceResponse<>();
+		rtn.setMsg("Update not supported for this datastore type");
+		return rtn;
+	}
+
+	/**
+	 * Perform any operations necessary on the target to remove a datastore. this method should be implemented
+	 * if {@link DatastoreTypeProvider#getRemovable()} is true. otherwise return null or an error.
+	 * @param datastore the current datastore being removed
+	 * @return the success state of the removal
+	 */
 	ServiceResponse removeDatastore(Datastore datastore);
 
+	/**
+	 * Perform any operations necessary on the target to create a snapshot of a volume. In order to use this simply
+	 * implement this interface along with the {@link DatastoreTypeProvider}
+	 *
+	 * @since 1.1.18
+	 * @author David Estes, Dan Devilbiss
+	 */
 	public interface SnapshotFacet {
 
 		ServiceResponse<Snapshot> createSnapshot(StorageVolume volume);
@@ -105,6 +157,13 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		ServiceResponse<Snapshot> listSnapshots(StorageServer storageServer);
 		ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume,Snapshot sourceSnapshot);
 
+		/**
+		 * This is a more refined Snapshot facet that is used for Compute Servers. This is used to create and revert snapshots.
+		 * Sometimes snapshots have to be part of a server as a whole and cannot be per volume. This allows for that implementation style
+		 *
+		 * @since 1.1.18
+		 * @author David Estes, Dan Devilbiss
+		 */
 		public interface SnapshotServerFacet {
 			ServiceResponse<Snapshot> createSnapshot(ComputeServer server);
 			ServiceResponse<Snapshot> revertSnapshot(ComputeServer server);
@@ -112,6 +171,12 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		}
 	}
 
+	/**
+	 * This facet is used to provide additional hooks for MVM specific provisioning tasks for MVM/HPE Hypervisor Clusters
+	 * In order to use this, add it to your implementation of your {@link DatastoreTypeProvider}
+	 * @since 1.1.18
+	 * @author David Estes , Dan Devilbiss
+	 */
 	public interface MvmProvisionFacet {
 
 		/**
