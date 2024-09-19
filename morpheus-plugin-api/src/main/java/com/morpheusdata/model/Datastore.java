@@ -53,6 +53,7 @@ public class Datastore extends DatastoreIdentityProjection {
 	protected Boolean allowExpand = true;
 	@JsonSerialize(using=ModelAsIdOnlySerializer.class)
 	protected StorageVolume storageVolume;
+	protected StorageServer storageServer;
 //	StorageHostGroup hostGroup
 	protected Boolean defaultStore = false;
 	protected Boolean isExported = false; //for auto adding datastores to clouds
@@ -383,5 +384,13 @@ public class Datastore extends DatastoreIdentityProjection {
 
 	public void setAssignedZonePools(List<CloudPool> assignedZonePools) {
 		this.assignedZonePools = assignedZonePools;
+	}
+
+	public StorageServer getStorageServer() {
+		return storageServer;
+	}
+
+	public void setStorageServer(StorageServer storageServer) {
+		this.storageServer = storageServer;
 	}
 }
