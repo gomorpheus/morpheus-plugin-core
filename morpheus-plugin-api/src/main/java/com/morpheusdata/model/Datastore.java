@@ -329,6 +329,14 @@ public class Datastore extends DatastoreIdentityProjection {
 		this.volumeType = volumeType;
 	}
 
+	public DatastoreType getDatastoreType() {
+		return datastoreType;
+	}
+
+	public void setDatastoreType(DatastoreType datastoreType) {
+		this.datastoreType = datastoreType;
+	}
+
 	public String getStatus() {
 		return status;
 	}
