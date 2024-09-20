@@ -152,10 +152,10 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	public interface SnapshotFacet {
 
 		ServiceResponse<Snapshot> createSnapshot(StorageVolume volume);
-		ServiceResponse<Snapshot> deleteSnapshot(StorageVolume volume);
+		ServiceResponse removeSnapshot(StorageVolume volume);
 
 		ServiceResponse<Snapshot> listSnapshots(StorageServer storageServer);
-		ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume,Snapshot sourceSnapshot);
+		ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, Snapshot sourceSnapshot);
 
 		/**
 		 * This is a more refined Snapshot facet that is used for Compute Servers. This is used to create and revert snapshots.
@@ -166,8 +166,8 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		 */
 		public interface SnapshotServerFacet {
 			ServiceResponse<Snapshot> createSnapshot(ComputeServer server);
-			ServiceResponse<Snapshot> revertSnapshot(ComputeServer server);
-
+			ServiceResponse<Snapshot> revertSnapshot(ComputeServer server, Snapshot snapshot);
+			//ServiceResponse<Snapshot> removeSnapshot(ComputeServer server, Snapshot snapshot);
 		}
 	}
 
