@@ -47,6 +47,7 @@ public class Snapshot extends SnapshotIdentityProjection {
 	protected Long maxStorage;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected PricePlan pricePlan;
+	protected String uuid;
 
 	public Account getAccount() {
 		return account;
@@ -140,5 +141,14 @@ public class Snapshot extends SnapshotIdentityProjection {
 
 	public void setPricePlan(PricePlan pricePlan) {
 		this.pricePlan = pricePlan;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
 	}
 }
