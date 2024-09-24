@@ -16,10 +16,7 @@
 
 package com.morpheusdata.model;
 
-import com.morpheusdata.model.projection.DatastoreIdentityProjection;
-import com.morpheusdata.model.projection.SnapshotIdentityProjection;
-import com.morpheusdata.model.projection.StorageControllerIdentityProjection;
-import com.morpheusdata.model.projection.StorageVolumeIdentityProjection;
+import com.morpheusdata.model.projection.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
 import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
@@ -47,7 +44,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	protected Boolean rootVolume = false;
 	protected String internalId;
 	protected String unitNumber;
-	protected DatastoreIdentityProjection datastore;
+	protected DatastoreIdentity datastore;
 	protected Integer maxIOPS;
 	protected Boolean removable = false;
 	protected Integer diskIndex;
@@ -187,7 +184,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	 * The Datastore associated with this StorageVolume
 	 * @return datastore
 	 */
-	public DatastoreIdentityProjection getDatastore() {
+	public DatastoreIdentity getDatastore() {
 		return datastore;
 	}
 
@@ -195,7 +192,7 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	 * The Datastore associated with this StorageVolume
 	 * @param datastore datastore
 	 */
-	public void setDatastore(DatastoreIdentityProjection datastore) {
+	public void setDatastore(DatastoreIdentity datastore) {
 		this.datastore = datastore;
 	}
 
