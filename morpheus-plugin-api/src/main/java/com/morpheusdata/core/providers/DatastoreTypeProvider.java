@@ -102,7 +102,7 @@ public interface DatastoreTypeProvider extends PluginProvider {
 	 */
 	ServiceResponse<StorageVolume> createVolume(StorageVolume volume, ComputeServer server);
 
-	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server,StorageVolume sourceVolume);
+	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, StorageVolume sourceVolume);
 	ServiceResponse<StorageVolume> cloneVolume(StorageVolume volume, ComputeServer server, VirtualImage virtualImage, CloudFileInterface cloudFile);
 
 	/**
@@ -167,7 +167,7 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		public interface SnapshotServerFacet {
 			ServiceResponse<Snapshot> createSnapshot(ComputeServer server);
 			ServiceResponse<Snapshot> revertSnapshot(ComputeServer server, Snapshot snapshot);
-			//ServiceResponse<Snapshot> removeSnapshot(ComputeServer server, Snapshot snapshot);
+			ServiceResponse removeSnapshot(ComputeServer server, Snapshot snapshot);
 		}
 	}
 

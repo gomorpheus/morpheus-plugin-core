@@ -19,8 +19,11 @@ package com.morpheusdata.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.morpheusdata.model.projection.SnapshotIdentityProjection;
 import com.morpheusdata.model.serializers.ModelAsIdOnlySerializer;
+import com.morpheusdata.model.serializers.ModelCollectionAsIdsOnlySerializer;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents snapshots available on ComputeServers, StorageVolumes, etc
@@ -48,6 +51,8 @@ public class Snapshot extends SnapshotIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected PricePlan pricePlan;
 	protected String uuid;
+	@JsonSerialize(using= ModelCollectionAsIdsOnlySerializer.class)
+	protected List<SnapshotFile> snapshotFiles = new ArrayList<>();
 
 	public Account getAccount() {
 		return account;
@@ -150,5 +155,13 @@ public class Snapshot extends SnapshotIdentityProjection {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 		markDirty("uuid", uuid);
+	}
+
+	public List<SnapshotFile> getSnapshotFiles() {
+		return snapshotFiles;
+	}
+
+	public void setSnapshotFiles(List<SnapshotFile> snapshotFiles) {
+		this.snapshotFiles = snapshotFiles;
 	}
 }
