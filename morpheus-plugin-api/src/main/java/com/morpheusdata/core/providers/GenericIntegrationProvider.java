@@ -19,6 +19,8 @@ package com.morpheusdata.core.providers;
 import com.morpheusdata.model.AccountIntegration;
 import com.morpheusdata.model.Icon;
 import com.morpheusdata.model.OptionType;
+import com.morpheusdata.model.event.Event;
+import com.morpheusdata.model.event.EventType;
 import com.morpheusdata.views.HTMLResponse;
 
 import java.util.List;
@@ -67,4 +69,23 @@ public interface GenericIntegrationProvider extends PluginProvider,UIExtensionPr
 	 * @return result of rendering a template
 	 */
 	HTMLResponse renderTemplate(AccountIntegration integration);
+
+	/**
+	 *
+	 * @see 0.18.1
+	 * @param <E>
+	 */
+	public interface EventSubscriberFacet<E extends Event> {
+		/**
+		 * Gets a list of supported event types that this integration can subscribe to
+		 * @return list of supported event types
+		 */
+		List<EventType> getSupportedEventTypes();
+
+		/**
+		 *
+		 * @param event
+		 */
+		void onEvent(E event);
+	}
 }
