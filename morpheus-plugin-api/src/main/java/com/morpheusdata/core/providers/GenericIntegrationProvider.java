@@ -71,9 +71,9 @@ public interface GenericIntegrationProvider extends PluginProvider,UIExtensionPr
 	HTMLResponse renderTemplate(AccountIntegration integration);
 
 	/**
-	 *
-	 * @see 0.18.1
-	 * @param <E>
+	 *	Applying this Facet to an integration will allow it to subscribe to events and perform operations based on the event
+	 * @since 0.18.1
+	 * @author David Estes
 	 */
 	public interface EventSubscriberFacet<E extends Event> {
 		/**

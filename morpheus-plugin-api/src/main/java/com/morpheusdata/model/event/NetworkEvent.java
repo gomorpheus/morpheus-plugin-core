@@ -19,13 +19,13 @@ package com.morpheusdata.model.event;
 import com.morpheusdata.model.Network;
 
 public class NetworkEvent implements Event<NetworkEvent.NetworkEventType> {
-	String message;
-	NetworkEventType type;
-	Network network;
+	protected String message;
+	protected NetworkEventType type;
+	protected Network network;
 
 	@Override
 	public String getMessage() {
-		return "";
+		return message;
 	}
 
 	@Override
@@ -33,8 +33,23 @@ public class NetworkEvent implements Event<NetworkEvent.NetworkEventType> {
 		return type;
 	}
 
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void setType(NetworkEventType type) {
+		this.type = type;
+	}
+
+	public Network getNetwork() {
+		return network;
+	}
+
+	public void setNetwork(Network network) {
+		this.network = network;
+	}
+
 	public enum NetworkEventType implements EventType {
-		ALL,
 		CREATE,
 		DELETE,
 		UPDATE
