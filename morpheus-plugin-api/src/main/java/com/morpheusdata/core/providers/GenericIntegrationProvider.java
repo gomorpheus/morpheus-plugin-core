@@ -119,6 +119,6 @@ public interface GenericIntegrationProvider extends PluginProvider,UIExtensionPr
 		 * @see Event
 		 * @see NetworkEvent
 		 */
-		void onEvent(E event);
+		void onEvent(E event, AccountIntegration integration);
 	}
 }

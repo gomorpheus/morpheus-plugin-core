@@ -18,6 +18,7 @@ package com.morpheusdata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Estes
  */
-public class MorpheusModel {
+public class MorpheusModel implements Serializable {
 
 	static Logger log = LoggerFactory.getLogger(MorpheusModel.class);
 

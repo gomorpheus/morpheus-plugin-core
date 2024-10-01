@@ -17,8 +17,9 @@
 package com.morpheusdata.model.event;
 
 import com.morpheusdata.model.Network;
+import java.io.Serializable;
 
-public class NetworkEvent implements Event<NetworkEvent.NetworkEventType> {
+public class NetworkEvent implements Event<NetworkEvent.NetworkEventType>, Serializable {
 	protected String message;
 	protected NetworkEventType type;
 	protected Network network;

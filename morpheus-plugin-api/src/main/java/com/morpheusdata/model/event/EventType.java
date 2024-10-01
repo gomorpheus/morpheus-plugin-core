@@ -16,5 +16,7 @@
 
 package com.morpheusdata.model.event;
 
-public interface EventType {
+import java.io.Serializable;
+
+public interface EventType extends Serializable {
 }
