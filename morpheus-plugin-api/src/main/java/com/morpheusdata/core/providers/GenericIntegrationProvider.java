@@ -17,10 +17,12 @@
 package com.morpheusdata.core.providers;
 
 import com.morpheusdata.model.AccountIntegration;
+import com.morpheusdata.model.AccountIntegrationType;
 import com.morpheusdata.model.Icon;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.event.Event;
 import com.morpheusdata.model.event.EventType;
+import com.morpheusdata.model.event.NetworkEvent;
 import com.morpheusdata.views.HTMLResponse;
 
 import java.util.List;
@@ -71,8 +73,35 @@ public interface GenericIntegrationProvider extends PluginProvider,UIExtensionPr
 	HTMLResponse renderTemplate(AccountIntegration integration);
 
 	/**
+	 * Specify if this type of integration can be selectively associated with a cloud on the clouds advanced options
+	 * @since 1.1.8
+	 * @return the association type none,one, or many
+	 */
+	default AccountIntegrationType.AssociationType getCloudAssociationType() {
+		return AccountIntegrationType.AssociationType.NONE;
+	}
+
+	/**
+	 * Specify if this type of integration can be selectively associated with a cluster on the clusters advanced options
+	 * @since 1.1.8
+	 * @return the association type none,one, or many
+	 */
+	default AccountIntegrationType.AssociationType getClusterAssociationType() {
+		return AccountIntegrationType.AssociationType.NONE;
+	}
+
+	/**
+	 * Specify if this type of integration can be selectively associated with a group on the groups advanced options
+	 * @since 1.1.8
+	 * @return the association type none,one, or many
+	 */
+	default AccountIntegrationType.AssociationType getGroupAssociationType() {
+		return AccountIntegrationType.AssociationType.NONE;
+	}
+
+	/**
 	 *	Applying this Facet to an integration will allow it to subscribe to events and perform operations based on the event
-	 * @since 0.18.1
+	 * @since 1.1.8
 	 * @author David Estes
 	 */
 	public interface EventSubscriberFacet<E extends Event> {
@@ -83,8 +112,12 @@ public interface GenericIntegrationProvider extends PluginProvider,UIExtensionPr
 		List<EventType> getSupportedEventTypes();
 
 		/**
+		 * Method triggered when an event that was subscribed to is triggered. This is useful for capturing hooks like
+		 * perhaps, an action needs to be performed after a network is created or destroyed.
 		 *
-		 * @param event
+		 * @param event the event object that was triggered
+		 * @see Event
+		 * @see NetworkEvent
 		 */
 		void onEvent(E event);
 	}

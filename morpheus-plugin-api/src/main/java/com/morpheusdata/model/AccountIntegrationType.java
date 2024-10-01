@@ -31,6 +31,9 @@ public class AccountIntegrationType extends MorpheusModel {
 	protected Boolean hasCM = false;
 	protected Boolean hasDNS = false;
 	protected Boolean hasApprovals = false;
+	protected AssociationType cloudAssociationType;
+	protected AssociationType clusterAssociationType;
+	protected AssociationType groupAssociationType;
 
 	protected List<OptionType> optionTypes;
 
@@ -140,5 +143,35 @@ public class AccountIntegrationType extends MorpheusModel {
 	public void setOptionTypes(List<OptionType> optionTypes) {
 		this.optionTypes = optionTypes;
 		markDirty("optionTypes", optionTypes);
+	}
+
+	public AssociationType getCloudAssociationType() {
+		return cloudAssociationType;
+	}
+
+	public void setCloudAssociationType(AssociationType cloudAssociationType) {
+		this.cloudAssociationType = cloudAssociationType;
+	}
+
+	public AssociationType getClusterAssociationType() {
+		return clusterAssociationType;
+	}
+
+	public void setClusterAssociationType(AssociationType clusterAssociationType) {
+		this.clusterAssociationType = clusterAssociationType;
+	}
+
+	public AssociationType getGroupAssociationType() {
+		return groupAssociationType;
+	}
+
+	public void setGroupAssociationType(AssociationType groupAssociationType) {
+		this.groupAssociationType = groupAssociationType;
+	}
+
+	public enum AssociationType {
+		NONE,
+		ONE,
+		MANY
 	}
 }
