@@ -16,6 +16,8 @@
 
 package com.morpheusdata.model;
 
+import java.util.*;
+
 /**
  * Describes an Operating System at a high level
  * @see com.morpheusdata.model.ComputeServer
@@ -38,6 +40,11 @@ public class OsType extends MorpheusModel {
 	protected Integer bitCount = 64;
 	protected String description;
 	protected Boolean installAgent = false;
+	protected Account owner;
+	protected String visibility;
+	// the hasMany fields
+	protected List<OsTypeImage> images = new ArrayList<OsTypeImage>();
+
 
 	public String getCode() {
 		return code;
@@ -145,5 +152,32 @@ public class OsType extends MorpheusModel {
 	public void setInstallAgent(Boolean installAgent) {
 		this.installAgent = installAgent;
 		markDirty("installAgent", installAgent);
+	}
+
+	public Account getOwner(){
+		return owner;
+	}
+
+	public void setOwner(Account owner){
+		this.owner = owner;
+		markDirty("owner", owner);
+	}
+
+	public String getVisibility(){
+		return visibility;
+	}
+
+	public void setVisibility(String visibility){
+		this.visibility = visibility;
+		markDirty("visibility", visibility);
+	}
+
+	public List<OsTypeImage> getImages() {
+		return images;
+	}
+
+	public void setImages(List<OsTypeImage> images) {
+		this.images = images;
+		markDirty("images", images);
 	}
 }
