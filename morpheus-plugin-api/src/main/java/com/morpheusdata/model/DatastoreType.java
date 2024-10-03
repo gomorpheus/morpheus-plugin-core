@@ -15,6 +15,7 @@ public class DatastoreType extends MorpheusModel implements IModelCodeName {
 	protected Boolean removable = true;
 	protected Boolean editable = true;
 	protected Boolean localStorage = false;
+	protected Boolean imageTargetCapable = true;
 	protected List<OptionType> options;
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected StorageServerType storageServerType;
@@ -82,6 +83,15 @@ public class DatastoreType extends MorpheusModel implements IModelCodeName {
 	public void setLocalStorage(Boolean localStorage) {
 		this.localStorage = localStorage;
 		markDirty("localStorage", localStorage);
+	}
+
+	public Boolean getImageTargetCapable() {
+		return imageTargetCapable;
+	}
+
+	public void setImageTargetCapable(Boolean imageTargetCapable) {
+		this.imageTargetCapable = imageTargetCapable;
+		markDirty("imageTargetCapable", imageTargetCapable);
 	}
 
 	public List<OptionType> getOptions() {
