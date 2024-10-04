@@ -165,7 +165,7 @@ public interface DatastoreTypeProvider extends PluginProvider {
 		 * @author David Estes, Dan Devilbiss
 		 */
 		public interface SnapshotServerFacet {
-			ServiceResponse<Snapshot> createSnapshot(ComputeServer server);
+			ServiceResponse<Snapshot> createSnapshot(ComputeServer server, Boolean forBackup, Boolean forExport);
 			ServiceResponse<Snapshot> revertSnapshot(ComputeServer server, Snapshot snapshot);
 			ServiceResponse removeSnapshot(ComputeServer server, Snapshot snapshot);
 		}
