@@ -172,12 +172,23 @@ public class OsType extends MorpheusModel {
 		markDirty("visibility", visibility);
 	}
 
-	public List<OsTypeImage> getImages() {
-		return images;
-	}
+    public List<OsTypeImage> getImages() {
+        return images;
+    }
 
-	public void setImages(List<OsTypeImage> images) {
-		this.images = images;
-		markDirty("images", images);
-	}
+    public void addImage(OsTypeImage image) {
+        if (!images.contains(image)) {
+            images.add(image);
+            image.setOsType(this);
+            markDirty("images", images);
+        }
+    }
+
+    public void removeImage(OsTypeImage image) {
+        if (images.contains(image)) {
+            images.remove(image);
+            image.setOsType(null);
+            markDirty("images", images);
+        }
+    }
 }
