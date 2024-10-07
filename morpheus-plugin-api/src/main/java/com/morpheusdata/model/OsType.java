@@ -42,8 +42,6 @@ public class OsType extends MorpheusModel {
 	protected Boolean installAgent = false;
 	protected Account owner;
 	protected String visibility;
-	// the hasMany fields
-	protected List<OsTypeImage> images = new ArrayList<OsTypeImage>();
 
 
 	public String getCode() {
@@ -171,24 +169,4 @@ public class OsType extends MorpheusModel {
 		this.visibility = visibility;
 		markDirty("visibility", visibility);
 	}
-
-    public List<OsTypeImage> getImages() {
-        return images;
-    }
-
-    public void addImage(OsTypeImage image) {
-        if (!images.contains(image)) {
-            images.add(image);
-            image.setOsType(this);
-            markDirty("images", images);
-        }
-    }
-
-    public void removeImage(OsTypeImage image) {
-        if (images.contains(image)) {
-            images.remove(image);
-            image.setOsType(null);
-            markDirty("images", images);
-        }
-    }
 }
