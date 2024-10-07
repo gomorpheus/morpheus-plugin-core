@@ -32,6 +32,7 @@ public class SnapshotFile extends MorpheusModel {
 	protected String type;
 	protected String externalId;
 	protected String path;
+	protected Integer diskIndex;
 
 	public String getName() {
 		return name;
@@ -83,5 +84,14 @@ public class SnapshotFile extends MorpheusModel {
 	public void setPath(String path) {
 		this.path = path;
 		markDirty("path", path);
+	}
+
+	public Integer getDiskIndex() {
+		return diskIndex;
+	}
+
+	public void setDiskIndex(Integer diskIndex) {
+		this.diskIndex = diskIndex;
+		markDirty("diskIndex", diskIndex);
 	}
 }
