@@ -16,8 +16,8 @@
 
 package com.morpheusdata.core.util;
 
+import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 
 public class KeyUtility {
 
@@ -31,7 +31,7 @@ public class KeyUtility {
 	static String smallHexSet = LOWER_ALPHA+NUMERIC;
 	static String simpleCharSet = UPPER_ALPHA+NUMERIC;
 	static String passwordCharSet = UPPER_ALPHA+LOWER_ALPHA+NUMERIC+PASSWORD_CHARS;
-	static Random random = new Random();
+	static SecureRandom random = new SecureRandom();
 
 	public static String generateKey(int length) {
 		return _generateKey(length, charSet);
