@@ -367,4 +367,14 @@ public interface BackupProviderInterface extends PluginProvider {
 	 */
 	ServiceResponse executeBackupJob(BackupJob backupJobModel, Map opts);
 
+	/**
+	 * Filter backup jobs based on provider specific criteria. This is used to filter backup jobs based on provider
+	 * specific criteria.
+	 * @param backupJobs the backup jobs to filter
+	 * @param opts additional options
+	 * @return a collection of filtered backup jobs
+	 */
+	default Collection<BackupJob> filterBackupJobs(Collection<BackupJob> backupJobs, Map opts){
+		return backupJobs;
+	}
 }
