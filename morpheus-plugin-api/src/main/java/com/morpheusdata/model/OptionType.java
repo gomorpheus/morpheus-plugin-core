@@ -1261,6 +1261,7 @@ public class OptionType extends MorpheusModel implements IModelUuidCodeName {
 		public static final InputType TEXTAREA = new InputType("textarea");
 		public static final InputType SELECT = new InputType("select");
 		public static final InputType MULTI_SELECT = new InputType("multiSelect");
+		public static final InputType MULTI_TEXT = new InputType("multiText");
 		public static final InputType CHECKBOX = new InputType("checkbox");
 		public static final InputType RADIO = new InputType("radio");
 		public static final InputType CREDENTIAL = new InputType("credential");
