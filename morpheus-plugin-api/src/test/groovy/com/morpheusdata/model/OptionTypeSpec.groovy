@@ -17,6 +17,7 @@ class OptionTypeSpec extends Specification {
 		'select'       | OptionType.InputType.SELECT
 		'multiSelect'  | OptionType.InputType.MULTI_SELECT
 		'multiText'    | OptionType.InputType.MULTI_TEXT
+		'multiKeyValue' | OptionType.InputType.MULTI_KEY_VALUE
 		'radio'        | OptionType.InputType.RADIO
 		'code-editor'  | OptionType.InputType.CODE_EDITOR
 	}
