@@ -9,16 +9,16 @@ class OptionTypeSpec extends Specification {
 		str == inputType.toString()
 
 		where:
-		str            | inputType
-		'text'         | OptionType.InputType.TEXT
-		'textarea'     | OptionType.InputType.TEXTAREA
-		'number'       | OptionType.InputType.NUMBER
-		'checkbox'     | OptionType.InputType.CHECKBOX
-		'select'       | OptionType.InputType.SELECT
-		'multiSelect'  | OptionType.InputType.MULTI_SELECT
-		'multiText'    | OptionType.InputType.MULTI_TEXT
+		str             | inputType
+		'text'          | OptionType.InputType.TEXT
+		'textarea'      | OptionType.InputType.TEXTAREA
+		'number'        | OptionType.InputType.NUMBER
+		'checkbox'      | OptionType.InputType.CHECKBOX
+		'select'        | OptionType.InputType.SELECT
+		'multiSelect'   | OptionType.InputType.MULTI_SELECT
+		'multiText'     | OptionType.InputType.MULTI_TEXT
 		'multiKeyValue' | OptionType.InputType.MULTI_KEY_VALUE
-		'radio'        | OptionType.InputType.RADIO
-		'code-editor'  | OptionType.InputType.CODE_EDITOR
+		'radio'         | OptionType.InputType.RADIO
+		'code-editor'   | OptionType.InputType.CODE_EDITOR
 	}
 }
