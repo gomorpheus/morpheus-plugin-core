@@ -82,6 +82,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.security.KeyManagementException;
@@ -372,14 +373,14 @@ public class HttpApiClient {
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
 						mapper.setDateFormat(df);
 						mapper.registerModule(new SimpleModule().addSerializer(CharSequence.class, new GStringJsonSerializer()));
-						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
+						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body), ContentType.APPLICATION_JSON));
 					}
 				} else if (opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[]) opts.body));
 				} else if (opts.body instanceof InputStream) {
 					postRequest.setEntity(new InputStreamEntity((InputStream) (opts.body), opts.contentLength != null ? opts.contentLength : -1));
 				} else {
-					postRequest.setEntity(new StringEntity(opts.body.toString()));
+					postRequest.setEntity(new StringEntity(opts.body.toString(), StandardCharsets.UTF_8));
 				}
 			}
 
@@ -682,7 +683,7 @@ public class HttpApiClient {
 						ObjectMapper mapper = new ObjectMapper();
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
 						mapper.setDateFormat(df);
-						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body)));
+						postRequest.setEntity(new StringEntity(mapper.writeValueAsString(opts.body), ContentType.APPLICATION_JSON));
 
 					}
 				} else if (opts.body instanceof byte[]) {
@@ -690,7 +691,7 @@ public class HttpApiClient {
 				} else if (opts.body instanceof InputStream) {
 					postRequest.setEntity(new InputStreamEntity((InputStream) (opts.body), opts.contentLength != null ? opts.contentLength : -1));
 				} else {
-					postRequest.setEntity(new StringEntity(opts.body.toString()));
+					postRequest.setEntity(new StringEntity(opts.body.toString(), StandardCharsets.UTF_8));
 				}
 			}
 
