@@ -135,10 +135,10 @@ public interface MorpheusSynchronousNetworkService extends MorpheusSynchronousDa
 
 	/**
 	 * Refreshes the update status on a {@link NetworkServer}.
-	 * @deprecated use {@link MorpheusSynchronousNetworkServerService#refreshUpdate(NetworkServer)}  instead
+	 * @deprecated use {@link MorpheusSynchronousNetworkServerService#refreshUpdate(UpdateOperation, NetworkServer)}  instead
 	 */
 	@Deprecated
-	ServiceResponse refreshUpdate(NetworkServer networkServer);
+	ServiceResponse refreshUpdate(NetworkServer networkServer, UpdateOperation updateOperation);
 
 	/**
 	 * Run a configuration drift check on a {@link NetworkServer}.

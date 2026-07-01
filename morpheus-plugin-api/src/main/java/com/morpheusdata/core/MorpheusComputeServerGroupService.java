@@ -21,6 +21,7 @@ import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.ComputeServerGroup;
 import com.morpheusdata.model.ComputeTypeLayout;
 import com.morpheusdata.model.UpdateDefinition;
+import com.morpheusdata.model.UpdateOperation;
 import com.morpheusdata.request.AddServerGroupServersRequest;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
@@ -90,5 +91,5 @@ public interface MorpheusComputeServerGroupService extends MorpheusDataService<C
 	 * @return a ServiceResponse indicating success or failure
 	 * @since 1.4.0
 	 */
-	Single<ServiceResponse> refreshUpdate(ComputeServerGroup serverGroup);
+	Single<ServiceResponse> refreshUpdate(UpdateOperation updateOperation, ComputeServerGroup serverGroup);
 }

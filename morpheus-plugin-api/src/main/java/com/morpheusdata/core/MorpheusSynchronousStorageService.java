@@ -22,6 +22,7 @@ import com.morpheusdata.core.synchronous.*;
 import com.morpheusdata.model.CheckLevel;
 import com.morpheusdata.model.StorageServer;
 import com.morpheusdata.model.UpdateDefinition;
+import com.morpheusdata.model.UpdateOperation;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
 
@@ -108,10 +109,10 @@ public interface MorpheusSynchronousStorageService {
 
 	/**
 	 * Refresh the update status in a {@link StorageServer}.
-	 * @deprecated use {@link MorpheusSynchronousStorageServerService#refreshUpdate(StorageServer)}  instead
+	 * @deprecated use {@link MorpheusSynchronousStorageServerService#refreshUpdate(UpdateOperation, StorageServer)}  instead
 	 */
 	@Deprecated
-	ServiceResponse refreshUpdate(StorageServer storageServer);
+	ServiceResponse refreshUpdate(StorageServer storageServer, UpdateOperation updateOperation);
 
 	/**
 	 * Run a configuration drift check on a {@link StorageServer}.

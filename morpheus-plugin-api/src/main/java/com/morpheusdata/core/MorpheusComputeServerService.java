@@ -168,7 +168,7 @@ public interface MorpheusComputeServerService extends MorpheusDataService<Comput
 
 	Single<ServiceResponse> rollbackUpdate(UpdateDefinition updateDefinition, ComputeServer... computeServer);
 
-	Single<ServiceResponse> refreshUpdate(ComputeServer... computeServer);
+	Single<ServiceResponse> refreshUpdate(UpdateOperation updateOperation, ComputeServer... computeServer);
 
 	Single<ServiceResponse> runConfigurationDriftCheck(CheckLevel checkLevel, ComputeServer... computeServer);
 

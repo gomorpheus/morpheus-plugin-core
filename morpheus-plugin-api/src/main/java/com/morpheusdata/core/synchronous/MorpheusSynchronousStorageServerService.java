@@ -21,6 +21,7 @@ import com.morpheusdata.core.MorpheusSynchronousDataService;
 import com.morpheusdata.model.CheckLevel;
 import com.morpheusdata.model.StorageServer;
 import com.morpheusdata.model.UpdateDefinition;
+import com.morpheusdata.model.UpdateOperation;
 import com.morpheusdata.model.projection.StorageServerIdentityProjection;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
@@ -35,7 +36,7 @@ public interface MorpheusSynchronousStorageServerService extends MorpheusSynchro
 
 	Single<ServiceResponse> rollbackUpdate(UpdateDefinition updateDefinition, StorageServer storageServer);
 
-	Single<ServiceResponse> refreshUpdate(StorageServer storageServer);
+	Single<ServiceResponse> refreshUpdate(UpdateOperation updateOperation, StorageServer storageServer);
 
 	Single<ServiceResponse> runConfigurationDriftCheck(CheckLevel checkLevel, StorageServer storageServer);
 

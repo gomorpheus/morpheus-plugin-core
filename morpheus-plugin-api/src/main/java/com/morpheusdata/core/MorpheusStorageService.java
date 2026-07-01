@@ -21,6 +21,7 @@ import com.morpheusdata.model.CheckLevel;
 import com.morpheusdata.model.NetworkServer;
 import com.morpheusdata.model.StorageServer;
 import com.morpheusdata.model.UpdateDefinition;
+import com.morpheusdata.model.UpdateOperation;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
 
@@ -103,10 +104,10 @@ public interface MorpheusStorageService {
 
 	/**
 	 * Refresh the update status in a {@link StorageServer}.
-	 * @deprecated use {@link MorpheusStorageServerService#refreshUpdate(StorageServer)}  instead
+	 * @deprecated use {@link MorpheusStorageServerService#refreshUpdate(UpdateOperation, StorageServer)}  instead
 	 */
 	@Deprecated
-	Single<ServiceResponse> refreshUpdate(StorageServer storageServer);
+	Single<ServiceResponse> refreshUpdate(UpdateOperation updateOperation, StorageServer storageServer);
 
 	/**
 	 * Run a configuration drift check on a {@link StorageServer}.
