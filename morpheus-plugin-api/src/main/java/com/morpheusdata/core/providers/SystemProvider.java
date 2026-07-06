@@ -5,6 +5,9 @@ import com.morpheusdata.model.SystemCatalogItemUpdate;
 import com.morpheusdata.model.system.*;
 import com.morpheusdata.model.system.System;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.model.DriftState;
+import com.morpheusdata.model.CheckLevel;
+
 
 import java.util.Collection;
 
@@ -161,4 +164,13 @@ public interface SystemProvider extends PluginProvider {
 		 */
 		ServiceResponse onCatalogItemUpdate(SystemCatalogItemUpdate item);
 	}
+	
+	/**
+	 * This method is called for executing Drift Checker checks
+	 * @param system
+	 * @param systemRequest
+	 * @return
+	 */
+	default ServiceResponse executeDriftChecker(System system, SystemRequest systemRequest) {return ServiceResponse.success();}
+	
 }
