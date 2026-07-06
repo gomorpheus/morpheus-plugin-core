@@ -7,6 +7,8 @@ import com.morpheusdata.model.ProcessStepType;
 import com.morpheusdata.model.ProcessStepUpdate;
 import com.morpheusdata.model.User;
 import com.morpheusdata.model.Workload;
+import com.morpheusdata.model.system.System;
+import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.process.InsertProcessStepRequest;
 import com.morpheusdata.model.process.InsertProcessStepResponse;
 import com.morpheusdata.model.process.RunProcessStepRequest;
@@ -36,6 +38,31 @@ public interface MorpheusSynchronousProcessService extends MorpheusSynchronousDa
 	 * @return Boolean indicating success
 	 */
 	Process startProcess(Workload workload, ProcessStepType stepType, User user, String timerCategory, String eventTitle);
+
+	/**
+	 * Start a new Process for the System. Unlike the Workload-based overloads, this associates the Process
+	 * to a System ({@code refType='system'}, {@code refId=system.id}) and does not require a Workload.
+	 * @param system the System to associate the Process to
+	 * @param stepType the ProcessStepType to start
+	 * @param user the User that starts the process (optional)
+	 * @param timerCategory a category to associate with this Process. The category is used to provide estimated
+	 *                      durations for a Process based on previous run of processes with this same category.
+	 * @return a {@link ServiceResponse} wrapping the started {@link Process}
+	 */
+	ServiceResponse<Process> startProcess(System system, ProcessStepType stepType, User user, String timerCategory);
+
+	/**
+	 * Start a new Process for the System. Unlike the Workload-based overloads, this associates the Process
+	 * to a System ({@code refType='system'}, {@code refId=system.id}) and does not require a Workload.
+	 * @param system the System to associate the Process to
+	 * @param stepType the ProcessStepType to start
+	 * @param user the User that starts the process (optional)
+	 * @param timerCategory a category to associate with this Process. The category is used to provide estimated
+	 *                      durations for a Process based on previous run of processes with this same category.
+	 * @param eventTitle an event title to associate with this Process
+	 * @return a {@link ServiceResponse} wrapping the started {@link Process}
+	 */
+	ServiceResponse<Process> startProcess(System system, ProcessStepType stepType, User user, String timerCategory, String eventTitle);
 
 	/**
 	 * Start a new ProcessEvent associated to the Process. This will end any currently running
