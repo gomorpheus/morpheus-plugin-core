@@ -154,10 +154,18 @@ public interface KubernetesClusterProvider extends ClusterProvider {
 	 *
 	 * <p>This is the seam currently represented by {@code updateServerGroup} (EKS, AKS, GKE), where each
 	 * managed offering reassigns its own provider-specific master/worker types.</p>
+	 *
+	 * <p>When this facet returns success and the cluster is now managed, the host service enqueues a
+	 * {@code serverGroupRefresh} job so any regenerated credentials are picked up immediately &mdash; the
+	 * facet does not need to (and cannot) trigger that refresh itself.</p>
 	 */
 	interface ServerGroupUpdateFacet {
 		/**
-		 * Reconcile cluster-level state after a server group update.
+		 * Reconcile cluster-level state after a server group update. Runs after the inherited core update.
+		 * A managed offering typically swaps the master/worker {@code ComputeServerType}s (and the cluster
+		 * layout/type set) between their managed and unmanaged variants, reconciles any namespace-pool
+		 * {@code ResourcePermission}, and, when switching to managed, clears the cluster service token so
+		 * credentials are regenerated on the follow-up refresh.
 		 *
 		 * @param cluster the cluster that was updated
 		 * @param opts    the update options that were applied
