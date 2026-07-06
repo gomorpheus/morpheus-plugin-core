@@ -17,6 +17,7 @@ public class SystemTypeLayout extends MorpheusModel {
 	protected List<TaskSet> initializeWorkflows = new ArrayList<>();
 	protected List<TaskSet> updateWorkflows = new ArrayList<>();
 	protected Boolean enabled = true;
+	protected Boolean importable = false;
 	protected SystemType systemType;
 	@com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.morpheusdata.model.serializers.ModelAsIdOnlySerializer.class)
 	protected com.morpheusdata.model.ConfigurationWorkflow configurationWorkflow;
@@ -93,6 +94,15 @@ public class SystemTypeLayout extends MorpheusModel {
 		this.enabled = enabled;
 	}
 
+	public Boolean getImportable() {
+		return importable;
+	}
+
+	public void setImportable(Boolean importable) {
+		markDirty("importable", importable);
+		this.importable = importable;
+	}
+
 	public SystemType getSystemType() {
 		return systemType;
 	}
@@ -120,4 +130,6 @@ public class SystemTypeLayout extends MorpheusModel {
 				.filter(component -> component.getCode().equals(code))
 				.collect(Collectors.toList());
 	}
+
+
 }
