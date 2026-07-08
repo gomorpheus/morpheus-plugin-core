@@ -37,6 +37,11 @@ public class PrepareCloneInstanceResponse {
 	protected String cloneVmExternalId;
 
 	/**
+	 * id of container to be cloned, if it exists; default otherwise
+	 */
+	protected Long cloneContainerId;
+
+	/**
 	 * A map of snapshot external ids for each workload associated with the instance
 	 */
 	protected  Map<Workload, String> snapshotToWorkloadMap;
@@ -65,6 +70,10 @@ public class PrepareCloneInstanceResponse {
 	public void setCloneVmExternalId(String cloneVmExternalId) {
 		this.cloneVmExternalId = cloneVmExternalId;
 	}
+
+	public Long getCloneContainerId() { return cloneContainerId; }
+
+	public void setCloneContainerId(Long cloneContainerId) { this.cloneContainerId = cloneContainerId; }
 
 	public Map<Workload, String> getSnapshotToWorkloadMap() {
 		return snapshotToWorkloadMap;

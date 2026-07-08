@@ -75,6 +75,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -226,12 +227,12 @@ public class RestApiUtil {
 							request.setHeader("Content-Type", newValue);
 						}
 					} else {
-						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body)));
+						postRequest.setEntity(new StringEntity(JsonOutput.toJson(opts.body), ContentType.APPLICATION_JSON));
 					}
 				} else if(opts.body instanceof byte[]) {
 					postRequest.setEntity(new ByteArrayEntity((byte[])opts.body));
 				} else {
-					postRequest.setEntity(new StringEntity(opts.body.toString()));
+					postRequest.setEntity(new StringEntity(opts.body.toString(), StandardCharsets.UTF_8));
 				}
 			}
 

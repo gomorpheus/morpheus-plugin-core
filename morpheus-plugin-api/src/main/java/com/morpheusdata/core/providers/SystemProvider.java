@@ -5,6 +5,9 @@ import com.morpheusdata.model.SystemCatalogItemUpdate;
 import com.morpheusdata.model.system.*;
 import com.morpheusdata.model.system.System;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.model.DriftState;
+import com.morpheusdata.model.CheckLevel;
+
 
 import java.util.Collection;
 
@@ -101,6 +104,22 @@ public interface SystemProvider extends PluginProvider {
 	default ServiceResponse updateSystemConfiguration(System system, SystemRequest request) { return ServiceResponse.success(); }
 
 	/**
+	 * Called when the user imports an existing system into Morpheus.
+	 * The system record has already been persisted with the name, type, and layout selected
+	 * by the user. The provider should discover/validate the system and populate any
+	 * additional fields or components as needed.
+	 *
+	 * <p>The default implementation is a no-op returning {@code ServiceResponse.success()}.
+	 * Providers that do not support import may leave this default in place.</p>
+	 *
+	 * @param system  the persisted plugin model for the system being imported
+	 * @param systemRequest carries configOptions from the import request payload
+	 * @return {@link ServiceResponse#success()} if the import succeeded;
+	 *         {@link ServiceResponse#error(String)} with a human-readable message otherwise
+	 */
+	default ServiceResponse importSystem(System system, SystemRequest systemRequest) { return ServiceResponse.success(); }
+
+	/**
 	 * Perform any cleanup/state reset operations required on removal of a system
 	 * @param system
 	 * @return
@@ -161,4 +180,13 @@ public interface SystemProvider extends PluginProvider {
 		 */
 		ServiceResponse onCatalogItemUpdate(SystemCatalogItemUpdate item);
 	}
+	
+	/**
+	 * This method is called for executing Drift Checker checks
+	 * @param system
+	 * @param systemRequest
+	 * @return
+	 */
+	default ServiceResponse executeDriftChecker(System system, SystemRequest systemRequest) {return ServiceResponse.success();}
+	
 }
