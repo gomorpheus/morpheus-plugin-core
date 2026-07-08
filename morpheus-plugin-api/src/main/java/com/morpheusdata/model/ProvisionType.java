@@ -83,6 +83,12 @@ public class ProvisionType extends MorpheusModel implements IModelCodeName {
 	 * @since 1.2.13
 	 */
 	protected Boolean canChangeServicePlanOnReconfigure = true;
+	/**
+	 * Indicates whether a service plan can be changed when converting a pre-provisioned server of this
+	 * provision type to a managed instance (the "Convert to Instance" flow). Default is true.
+	 * @since 1.5.0
+	 */
+	protected Boolean canChangeServicePlanOnConvertToManaged = true;
 
 	public String getCode() {
 		return code;
@@ -320,6 +326,12 @@ public class ProvisionType extends MorpheusModel implements IModelCodeName {
 	 * @return true to allow service plan to be changed when reconfiguring an instance of this provision type.
 	 */
 	public Boolean getCanChangeServicePlanOnReconfigure() { return canChangeServicePlanOnReconfigure; }
+
+	/**
+	 * @return true to allow service plan to be changed when converting a pre-provisioned server of this
+	 * provision type to a managed instance.
+	 */
+	public Boolean getCanChangeServicePlanOnConvertToManaged() { return canChangeServicePlanOnConvertToManaged; }
 
 	public void setCode(String code) {
 		this.code = code;
@@ -618,5 +630,15 @@ public class ProvisionType extends MorpheusModel implements IModelCodeName {
 	public void setCanChangeServicePlanOnReconfigure(Boolean canChangeServicePlanOnReconfigure) {
 		this.canChangeServicePlanOnReconfigure = canChangeServicePlanOnReconfigure;
 		markDirty("canChangeServicePlanOnReconfigure", canChangeServicePlanOnReconfigure);
+	}
+
+	/**
+	 * Indicates whether a service plan can be changed when converting a pre-provisioned server of this
+	 * provision type to a managed instance.
+	 * @param canChangeServicePlanOnConvertToManaged true to allow changing the service plan on convert to managed.
+	 */
+	public void setCanChangeServicePlanOnConvertToManaged(Boolean canChangeServicePlanOnConvertToManaged) {
+		this.canChangeServicePlanOnConvertToManaged = canChangeServicePlanOnConvertToManaged;
+		markDirty("canChangeServicePlanOnConvertToManaged", canChangeServicePlanOnConvertToManaged);
 	}
 }
