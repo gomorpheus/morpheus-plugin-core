@@ -16,6 +16,8 @@
 
 package com.morpheusdata.model;
 
+import java.util.Date;
+
 public class Process extends MorpheusModel {
 
 	public ProcessStepType stepType;
@@ -27,6 +29,42 @@ public class Process extends MorpheusModel {
 	public ProcessEvent.ProcessType type;
 
 	public String username;
+
+	/**
+	 * The process status (e.g. 'pending', 'running', 'complete', 'failed').
+	 * @since 1.5.0
+	 */
+	public String status;
+
+	/**
+	 * The process-level message. Shown in the history detail when the process status is not 'failed'.
+	 * @since 1.5.0
+	 */
+	public String message;
+
+	/**
+	 * The process-level error. Shown in the history detail when the process status is 'failed'.
+	 * @since 1.5.0
+	 */
+	public String error;
+
+	/**
+	 * Progress percentage (0-100).
+	 * @since 1.5.0
+	 */
+	public Double percent;
+
+	/**
+	 * When the process was started.
+	 * @since 1.5.0
+	 */
+	public Date startDate;
+
+	/**
+	 * When the process ended. Null if still active.
+	 * @since 1.5.0
+	 */
+	public Date endDate;
 
 	/**
 	 * @deprecated Use {@link #getStepType() } instead.
