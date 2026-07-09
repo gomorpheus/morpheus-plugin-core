@@ -69,7 +69,7 @@ public interface MorpheusSynchronousComputeServerService extends MorpheusSynchro
 
 	ServiceResponse rollbackUpdate(UpdateDefinition updateDefinition, ComputeServer... computeServer);
 
-	ServiceResponse refreshUpdate(ComputeServer... computeServer);
+	ServiceResponse refreshUpdate(UpdateOperation updateOperation, ComputeServer... computeServer);
 
 	ServiceResponse runConfigurationDriftCheck(CheckLevel checkLevel, ComputeServer... computeServer);
 

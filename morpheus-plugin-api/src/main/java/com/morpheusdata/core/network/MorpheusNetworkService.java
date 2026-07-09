@@ -310,10 +310,10 @@ public interface MorpheusNetworkService extends MorpheusDataService<Network, Net
 
 	/**
 	 * Refresh update status on a {@link NetworkServer}.
-	 * @deprecated use {@link MorpheusNetworkServerService#refreshUpdate(NetworkServer)}  instead
+	 * @deprecated use {@link MorpheusNetworkServerService#refreshUpdate(UpdateOperation, NetworkServer)}  instead
 	 */
 	@Deprecated
-	Single<ServiceResponse> refreshUpdate(NetworkServer networkServer);
+	Single<ServiceResponse> refreshUpdate(NetworkServer networkServer, UpdateOperation updateOperation);
 
 	/**
 	 * Run a configuration drift check on a {@link NetworkServer}.

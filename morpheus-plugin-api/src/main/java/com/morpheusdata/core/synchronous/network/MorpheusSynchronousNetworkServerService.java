@@ -41,7 +41,7 @@ public interface MorpheusSynchronousNetworkServerService extends MorpheusSynchro
 
 	Single<ServiceResponse> rollbackUpdate(UpdateDefinition updateDefinition, NetworkServer networkServer);
 
-	Single<ServiceResponse> refreshUpdate(NetworkServer networkServer);
+	Single<ServiceResponse> refreshUpdate(UpdateOperation updateOperation, NetworkServer networkServer);
 
 	Single<ServiceResponse> runConfigurationDriftCheck(CheckLevel checkLevel, NetworkServer networkServer);
 
