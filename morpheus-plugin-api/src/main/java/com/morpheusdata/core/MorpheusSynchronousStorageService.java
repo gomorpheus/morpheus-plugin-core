@@ -17,7 +17,6 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.storage.MorpheusDatastoreTypeService;
-import com.morpheusdata.core.storage.MorpheusGfs2FilesystemService;
 import com.morpheusdata.core.storage.MorpheusVmeQcow2DatastoreService;
 import com.morpheusdata.core.synchronous.*;
 import com.morpheusdata.model.CheckLevel;
@@ -79,18 +78,6 @@ public interface MorpheusSynchronousStorageService {
 	 * @return An instance of the DatastoreType Service
 	 */
 	MorpheusDatastoreTypeService getDatastoreType();
-
-	/**
-	 * Returns the GFS2 Filesystem Service for shared storage operations.
-	 * <p>
-	 * This service provides operations for setting up and managing GFS2 filesystems
-	 * on shared block storage devices, including filesystem creation, mounting,
-	 * and libvirt storage pool management.
-	 *
-	 * @return An instance of the GFS2 Filesystem Service
-	 * @since 1.5.0
-	 */
-	MorpheusGfs2FilesystemService getGfs2Filesystem();
 
 	/**
 	 * Validates an update on a {@link StorageServer} before executing the update.
