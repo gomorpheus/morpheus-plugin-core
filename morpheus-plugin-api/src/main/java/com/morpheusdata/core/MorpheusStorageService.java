@@ -17,6 +17,7 @@
 package com.morpheusdata.core;
 
 import com.morpheusdata.core.network.MorpheusNetworkServerService;
+import com.morpheusdata.core.storage.MorpheusGfs2FilesystemService;
 import com.morpheusdata.model.CheckLevel;
 import com.morpheusdata.model.NetworkServer;
 import com.morpheusdata.model.StorageServer;
@@ -73,6 +74,18 @@ public interface MorpheusStorageService {
 	 * @since 1.3.0
 	 */
 	MorpheusStorageAggregateService getAggregate();
+
+	/**
+	 * Returns the GFS2 Filesystem Service for shared storage operations.
+	 * <p>
+	 * This service provides operations for setting up and managing GFS2 filesystems
+	 * on shared block storage devices, including filesystem creation, mounting,
+	 * and libvirt storage pool management.
+	 *
+	 * @return An instance of the GFS2 Filesystem Service
+	 * @since 1.5.0
+	 */
+	MorpheusGfs2FilesystemService getGfs2Filesystem();
 
 	/**
 	 * Validates an update on a {@link StorageServer} before executing the update.
