@@ -33,6 +33,27 @@ public class ProcessJobExecutionResponse {
 	 */
 	public Map<String, Object> nextOpts;
 
+	/**
+	 * Optional message to record on the completed process step. Shown in the history detail pane
+	 * when the step status is not 'failed'.
+	 * @since 1.5.0
+	 */
+	public String message;
+
+	/**
+	 * Optional output to record on the completed process step. Shown in the output pane of the
+	 * history detail modal.
+	 * @since 1.5.0
+	 */
+	public String output;
+
+	/**
+	 * Optional error to record on the failed process step. Shown in the history detail pane
+	 * when the step status is 'failed'. Only applied during failure handling.
+	 * @since 1.5.0
+	 */
+	public String error;
+
 	public ProcessJobExecutionResponse() {}
 
 	public ProcessJobExecutionResponse(Map<String, Object> nextOpts) {
