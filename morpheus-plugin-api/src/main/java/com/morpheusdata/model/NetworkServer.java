@@ -56,6 +56,7 @@ public class NetworkServer extends MorpheusModel {
 	protected Date lastUpdated;
 	protected Boolean enabled = true;
 	protected Boolean visible = true;
+	protected String uuid;
 
 	public String getName() {
 		return name;
@@ -179,6 +180,10 @@ public class NetworkServer extends MorpheusModel {
 
 	public Boolean getVisible() {
 		return visible;
+	}
+
+	public String getUuid() {
+		return uuid;
 	}
 
 	public void setName(String name) {
@@ -334,6 +339,11 @@ public class NetworkServer extends MorpheusModel {
 	public void setVisible(Boolean visible) {
 		this.visible = visible;
 		markDirty("visible", visible);
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+		markDirty("uuid", uuid);
 	}
 
 }

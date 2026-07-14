@@ -39,6 +39,23 @@ public class AccountCredentialType extends MorpheusModel {
 	protected String authType;
 	protected String externalType;
 
+	/**
+	 * The storage backend for credentials of this type. When set to {@code "cypher"},
+	 * the credential service routes persistence through the Cypher system using the
+	 * mount path specified in {@link #backendConfig}.
+	 * @since 1.4.x
+	 */
+	protected String backend;
+
+	/**
+	 * JSON configuration for the storage backend. When {@link #backend} is {@code "cypher"},
+	 * this should contain a JSON object with a {@code mountPath} key that maps to a
+	 * registered {@link com.morpheusdata.core.providers.CypherModuleProvider} mount point.
+	 * Example: {@code {"mountPath": "device-pwd"}}
+	 * @since 1.4.x
+	 */
+	protected String backendConfig;
+
 	public String getCode() {
 		return code;
 	}
@@ -117,5 +134,21 @@ public class AccountCredentialType extends MorpheusModel {
 
 	public void setExternalType(String externalType) {
 		this.externalType = externalType;
+	}
+
+	public String getBackend() {
+		return backend;
+	}
+
+	public void setBackend(String backend) {
+		this.backend = backend;
+	}
+
+	public String getBackendConfig() {
+		return backendConfig;
+	}
+
+	public void setBackendConfig(String backendConfig) {
+		this.backendConfig = backendConfig;
 	}
 }
