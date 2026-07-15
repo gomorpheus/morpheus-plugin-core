@@ -149,7 +149,9 @@ public class MorpheusModel implements Serializable {
 				Object value = null;
 				try {
 					value = field.get(this);
-				} catch (IllegalAccessException ignore) { }
+				} catch (IllegalAccessException e) {
+					log.debug("unable to read field {} via reflection - {}", name, e.getMessage(), e);
+				}
 				map.put(name, value);
 			}
 		}

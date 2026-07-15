@@ -25,12 +25,15 @@ import com.morpheusdata.views.ViewModel;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dispatcher provides a way for a plugin to handle routes from morpheus-ui to a plugin.
  * A Plugin may render html or json response back to the client.
  */
 public class Dispatcher {
+	static Logger log = LoggerFactory.getLogger(Dispatcher.class);
 	private final PluginManager pluginManager;
 
 	public Dispatcher(PluginManager pluginManager) {
@@ -102,7 +105,7 @@ public class Dispatcher {
 			}
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error dispatching to {}.{} - {}", controller.getClass().getName(), methodName, e.getMessage(), e);
 		}
 		return null;
 	}

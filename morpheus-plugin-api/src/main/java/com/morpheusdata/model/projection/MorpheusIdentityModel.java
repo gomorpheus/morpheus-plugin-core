@@ -18,6 +18,8 @@ package com.morpheusdata.model.projection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.morpheusdata.model.MorpheusModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -27,6 +29,7 @@ import java.util.*;
  * @author bdwheeler
  */
 public class MorpheusIdentityModel extends MorpheusModel {
+	static Logger log = LoggerFactory.getLogger(MorpheusIdentityModel.class);
 
 	static final String CONFIG_FIELD = "config";
 
@@ -44,7 +47,9 @@ public class MorpheusIdentityModel extends MorpheusModel {
 					Object value = null;
 					try {
 						value = field.get(this);
-					} catch(IllegalAccessException ignore) { }
+					} catch(IllegalAccessException e) {
+						log.debug("unable to read field {} via reflection - {}", name, e.getMessage(), e);
+					}
 					map.put(name, value);
 				}
 			}

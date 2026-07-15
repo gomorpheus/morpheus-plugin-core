@@ -28,12 +28,15 @@ import com.morpheusdata.core.web.MorpheusWebRequestService;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * HandlebarsRenderer implements the Renderer interface.
  * It uses a Dynamic template loader and Handlebars engine to render templates.
  */
 public class HandlebarsRenderer implements Renderer<Handlebars> {
+	static Logger log = LoggerFactory.getLogger(HandlebarsRenderer.class);
 	private final Handlebars engine;
 	private DynamicTemplateLoader loader;
 
@@ -150,7 +153,7 @@ public class HandlebarsRenderer implements Renderer<Handlebars> {
 	 * @return 400 HTTP response
 	 */
 	private HTMLResponse handleError(Exception e) {
-		e.printStackTrace();
+		log.error("Error rendering template: {}", e.getMessage(), e);
 		HTMLResponse response  = new HTMLResponse();
 		if (FileNotFoundException.class.equals(e.getClass())) {
 			response.html = "Template file not found: " + e.getMessage();
