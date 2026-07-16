@@ -16,6 +16,7 @@
 
 package com.morpheusdata.model;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -37,6 +38,60 @@ public class ProcessEvent extends MorpheusModel {
 	public String eventTitle;
 	public String jobName;
 	public Map jobConfig;
+
+	/**
+	 * The event status (e.g. 'pending', 'queued', 'running', 'complete', 'failed').
+	 * @since 1.5.0
+	 */
+	public String status;
+
+	/**
+	 * The event message. Shown in the history detail when the event status is not 'failed'.
+	 * @since 1.5.0
+	 */
+	public String message;
+
+	/**
+	 * Process event output text (e.g. command output, log content).
+	 * @since 1.5.0
+	 */
+	public String output;
+
+	/**
+	 * Error text for the event. Shown in the history detail when the event status is 'failed'.
+	 * @since 1.5.0
+	 */
+	public String error;
+
+	/**
+	 * When the event was started.
+	 * @since 1.5.0
+	 */
+	public Date startDate;
+
+	/**
+	 * When the event ended. Null if still active.
+	 * @since 1.5.0
+	 */
+	public Date endDate;
+
+	/**
+	 * Display name for the event.
+	 * @since 1.5.0
+	 */
+	public String name;
+
+	/**
+	 * Whether this event step can be retried on failure.
+	 * @since 1.5.0
+	 */
+	public Boolean retryable;
+
+	/**
+	 * Whether this event step can be cancelled.
+	 * @since 1.5.0
+	 */
+	public Boolean cancelable;
 
 	/**
 	 * @deprecated Use {@link #getStepType()} instead.
@@ -96,6 +151,78 @@ public class ProcessEvent extends MorpheusModel {
 
 	public void setJobConfig(Map jobConfig) {
 		this.jobConfig = jobConfig;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Boolean getRetryable() {
+		return retryable;
+	}
+
+	public void setRetryable(Boolean retryable) {
+		this.retryable = retryable;
+	}
+
+	public Boolean getCancelable() {
+		return cancelable;
+	}
+
+	public void setCancelable(Boolean cancelable) {
+		this.cancelable = cancelable;
 	}
 
 	/**

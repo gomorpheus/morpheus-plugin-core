@@ -17,6 +17,7 @@
 package com.morpheusdata.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Process extends MorpheusModel {
 
@@ -65,6 +66,77 @@ public class Process extends MorpheusModel {
 	 * @since 1.5.0
 	 */
 	public Date endDate;
+
+	/**
+	 * Display name for this process (e.g. instance name, server name).
+	 * @since 1.5.0
+	 */
+	public String displayName;
+
+	/**
+	 * The event title for this process (e.g. "Configuring Networking").
+	 * @since 1.5.0
+	 */
+	public String eventTitle;
+
+	/**
+	 * The name of the process.
+	 * @since 1.5.0
+	 */
+	public String name;
+
+	/**
+	 * Description of this process.
+	 * @since 1.5.0
+	 */
+	public String description;
+
+	/**
+	 * The process events (steps) associated with this process.
+	 * Populated when loading a process with its full detail.
+	 * @since 1.5.0
+	 */
+	public List<ProcessEvent> processEvents;
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getEventTitle() {
+		return eventTitle;
+	}
+
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<ProcessEvent> getProcessEvents() {
+		return processEvents;
+	}
+
+	public void setProcessEvents(List<ProcessEvent> processEvents) {
+		this.processEvents = processEvents;
+	}
 
 	/**
 	 * @deprecated Use {@link #getStepType() } instead.
