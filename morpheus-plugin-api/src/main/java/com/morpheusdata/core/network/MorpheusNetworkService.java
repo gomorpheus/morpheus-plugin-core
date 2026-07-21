@@ -96,6 +96,14 @@ public interface MorpheusNetworkService extends MorpheusDataService<Network, Net
 	MorpheusNetworkRouterService getRouter();
 
 	/**
+	 * Returns the {@link MorpheusVirtualSwitchService} used for performing updates/queries on
+	 * {@link com.morpheusdata.model.VirtualSwitch} related assets within Morpheus.
+	 * @return An instance of the {@link MorpheusVirtualSwitchService}
+	 * @since 1.5.0
+	 */
+	MorpheusVirtualSwitchService getVirtualSwitch();
+
+	/**
 	 * Returns the {@link MorpheusNetworkRouteTableService} used for performing updates/queries on {@link NetworkRouteTable} related assets
 	 * within Morpheus
 	 * @return An instance of the {@link MorpheusNetworkRouteTableService}
