@@ -24,6 +24,7 @@ public class ComputeTypeLayout extends MorpheusModel {
 	protected String name;
 	protected Integer sortOrder;
 	protected String computeVersion;
+	protected String clusterVersion;
 	protected String description;
 	protected ComputeServerType type;
 	protected Integer serverCount;
@@ -65,6 +66,14 @@ public class ComputeTypeLayout extends MorpheusModel {
 
 	public void setComputeVersion(String computeVersion) {
 		this.computeVersion = computeVersion;
+	}
+
+	public String getClusterVersion() {
+		return clusterVersion;
+	}
+
+	public void setClusterVersion(String clusterVersion) {
+		this.clusterVersion = clusterVersion;
 	}
 
 	public String getDescription() {
