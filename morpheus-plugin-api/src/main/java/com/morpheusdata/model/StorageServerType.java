@@ -50,7 +50,7 @@ public class StorageServerType extends MorpheusModel {
 	// Collection<OptionType> groupOptionTypes;
 	Collection<StorageVolumeType> volumeTypes;
 	Collection<OptionType> bucketOptionTypes;
-	// Collection<OptionType> shareOptionTypes;
+	Collection<OptionType> shareOptionTypes;
 	// Collection<OptionType> shareAccessOptionTypes;
 
 	public String getCode() {
@@ -294,5 +294,14 @@ public class StorageServerType extends MorpheusModel {
 	public void setBucketOptionTypes(Collection<OptionType> bucketOptionTypes) {
 		markDirty("bucketOptionTypes", this.bucketOptionTypes);
 		this.bucketOptionTypes = bucketOptionTypes;
+	}
+
+	public Collection<OptionType> getShareOptionTypes() {
+		return shareOptionTypes;
+	}
+
+	public void setShareOptionTypes(Collection<OptionType> shareOptionTypes) {
+		markDirty("shareOptionTypes", this.shareOptionTypes);
+		this.shareOptionTypes = shareOptionTypes;
 	}
 }
