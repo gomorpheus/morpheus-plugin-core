@@ -2,7 +2,7 @@ package com.morpheusdata.core.action;
 
 
 import com.morpheusdata.core.providers.ActionProvider;
-import com.morpheusdata.model.User;
+import com.morpheusdata.model.projection.UserIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class ActionRequest {
 	public String refType;
 	public Long refId;
 	public List<Long> refIds = new ArrayList<>();
-	public User user;
+	public UserIdentity user;
 	public Map data;
 
 	public String getNamespace() {
@@ -67,11 +67,11 @@ public class ActionRequest {
 		this.refIds = refIds;
 	}
 
-	public User getUser() {
+	public UserIdentity getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserIdentity user) {
 		this.user = user;
 	}
 

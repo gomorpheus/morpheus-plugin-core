@@ -8,7 +8,7 @@ public class ActionInfo {
 	public String messageCode;
 	public ActionState state = ActionState.ENABLED;
 
-	boolean isEnabled() {
+	public boolean isEnabled() {
 		return state == ActionState.ENABLED;
 	}
 
@@ -19,6 +19,14 @@ public class ActionInfo {
 		DISABLED,
 		NA
 
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public String getNamespace() {
