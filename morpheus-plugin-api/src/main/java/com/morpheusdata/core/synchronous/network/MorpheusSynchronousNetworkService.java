@@ -106,6 +106,14 @@ public interface MorpheusSynchronousNetworkService extends MorpheusSynchronousDa
 	MorpheusSynchronousNetworkLocationService getLocation();
 
 	/**
+	 * Returns the {@link MorpheusSynchronousVirtualSwitchService} used for performing updates/queries on
+	 * {@link com.morpheusdata.model.VirtualSwitch} related assets within Morpheus.
+	 * @return An instance of the {@link MorpheusSynchronousVirtualSwitchService}
+	 * @since 1.5.0
+	 */
+	MorpheusSynchronousVirtualSwitchService getVirtualSwitch();
+
+	/**
 	 * Validates an update on a {@link NetworkServer} before executing the update.
 	 * @deprecated use {@link MorpheusSynchronousNetworkServerService#validateUpdate(UpdateDefinition, NetworkServer)}  instead
 	 */
