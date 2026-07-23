@@ -17,7 +17,6 @@
 package com.morpheusdata.core.providers;
 
 
-import com.morpheusdata.core.action.ActionInfo;
 import com.morpheusdata.core.action.ActionInfo.ActionState;
 import com.morpheusdata.core.action.ActionRequest;
 import com.morpheusdata.core.action.ActionResponse;
@@ -30,12 +29,6 @@ import com.morpheusdata.response.ServiceResponse;
  * @since 1.5.0
  */
 public interface ActionProvider extends PluginProvider {
-
-	/**
-	 * {{@link ActionInfo }} about this provider
-	 * @return a ActionInfo object
-	 */
-	ActionInfo getInfo();
 
 	/**
 	 * The identifier used to access the action.
