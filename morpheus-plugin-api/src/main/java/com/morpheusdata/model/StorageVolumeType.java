@@ -55,6 +55,10 @@ public class StorageVolumeType extends MorpheusModel {
 	protected Long maxIOPS = null;
 	protected Boolean multiAttachSupported = false;
 	protected Boolean hasActiveReplica = false;
+	// Whether this volume type represents externally attachable storage.
+	// Defaults to true (external storage). Set to false for internal/server-bound storage
+	// (for example local disks) so instance reconfigure can ignore those types.
+	protected Boolean portable = true;
 
 	// associations
 	Collection<OptionType> optionTypes;
@@ -292,5 +296,13 @@ public class StorageVolumeType extends MorpheusModel {
 	}
 	public void setHasActiveReplica(Boolean hasActiveReplica) {
 		this.hasActiveReplica = hasActiveReplica;
+	}
+
+	public Boolean getPortable() {
+		return portable;
+	}
+
+	public void setPortable(Boolean portable) {
+		this.portable = portable;
 	}
 }
