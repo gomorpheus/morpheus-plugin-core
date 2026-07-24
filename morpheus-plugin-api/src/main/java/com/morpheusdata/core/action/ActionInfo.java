@@ -7,6 +7,7 @@ public class ActionInfo {
 	public String name;
 	public String messageCode;
 	public ActionState state = ActionState.ENABLED;
+	public String wizardCode;
 
 	public boolean isEnabled() {
 		return state == ActionState.ENABLED;
@@ -37,6 +38,10 @@ public class ActionInfo {
 		this.namespace = namespace;
 	}
 
+	public String getProviderCode() {
+		return namespace != null ? namespace + "." + key : key;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -60,4 +65,12 @@ public class ActionInfo {
 	public void setState(ActionState state) {
 		this.state = state;
 	}
+	public String getWizardCode() {
+		return wizardCode;
+	}
+
+	public void setWizardCode(String wizardCode) {
+		this.wizardCode = wizardCode;
+	}
+	
 }

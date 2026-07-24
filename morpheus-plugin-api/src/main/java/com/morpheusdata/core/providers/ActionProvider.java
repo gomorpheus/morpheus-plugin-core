@@ -18,6 +18,9 @@ package com.morpheusdata.core.providers;
 
 
 import com.morpheusdata.core.action.ActionInfo.ActionState;
+
+import java.util.HashMap;
+
 import com.morpheusdata.core.action.ActionRequest;
 import com.morpheusdata.core.action.ActionResponse;
 import com.morpheusdata.response.ServiceResponse;
@@ -48,5 +51,7 @@ public interface ActionProvider extends PluginProvider {
 	ActionState getState(ActionRequest request);
 
 	ServiceResponse<ActionResponse> runAction(ActionRequest request);
+
+	ServiceResponse<HashMap<String, Object>> prepare(ActionRequest request);
 
 }
