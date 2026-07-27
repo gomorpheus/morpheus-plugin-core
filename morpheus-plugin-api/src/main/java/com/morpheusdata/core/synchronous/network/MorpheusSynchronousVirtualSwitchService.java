@@ -28,4 +28,18 @@ import com.morpheusdata.model.projection.VirtualSwitchIdentityProjection;
  * @since 1.5.0
  */
 public interface MorpheusSynchronousVirtualSwitchService extends MorpheusSynchronousDataService<VirtualSwitch, VirtualSwitchIdentityProjection>, MorpheusSynchronousIdentityService<VirtualSwitchIdentityProjection> {
+
+	/**
+	 * Returns the {@link MorpheusSynchronousVirtualSwitchSegmentService} for managing traffic segments.
+	 * @return An instance of the Segment service
+	 * @since 1.5.0
+	 */
+	MorpheusSynchronousVirtualSwitchSegmentService getSegment();
+
+	/**
+	 * Returns the {@link MorpheusSynchronousVirtualSwitchUplinkService} for managing per-host uplinks.
+	 * @return An instance of the Uplink service
+	 * @since 1.5.0
+	 */
+	MorpheusSynchronousVirtualSwitchUplinkService getUplink();
 }
