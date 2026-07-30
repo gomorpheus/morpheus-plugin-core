@@ -30,6 +30,19 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: rel-${{ steps.release_version.outputs.value }}
+      - name: "Verify project version matches the release tag"
+        env:
+          RELEASE_VERSION: ${{ steps.release_version.outputs.value }}
+        run: |
+          PROJECT_VERSION="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' gradle.properties | tr -d '[:space:]')"
+          echo "Tag version:     ${RELEASE_VERSION}"
+          echo "Project version: ${PROJECT_VERSION}"
+          if [ "${PROJECT_VERSION}" != "${RELEASE_VERSION}" ]; then
+            echo "::error::gradle.properties declares version '${PROJECT_VERSION}' but the release tag is 'rel-${RELEASE_VERSION}'."
+            echo "::error::Bump 'version' in gradle.properties to '${RELEASE_VERSION}' and re-cut the tag on that commit."
+            echo "::error::A '-SNAPSHOT' version disables the nexus-publish plugin in build.gradle, so the Sonatype publish tasks are never created."
+            exit 1
+          fi
       - name: "Ensure Common Build Date"
         run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> "$GITHUB_ENV"
       - name: "Ensure source files use common date"
