@@ -25,6 +25,7 @@ import org.gradle.language.jvm.tasks.ProcessResources
  * task: sribePackage - builds a manifest of your scribe packages
  * task: sribeResources - builds a manifest of your scribe resources
  * task: morpheusI18n - packages i18n properties files for localization efforts
+ * task: generatePluginVersionProperties - generates morpheus-plugin.properties with version and gitHash
  * @author bdwheeler
  */
 class MorpheusPlugin implements Plugin<Project> {
@@ -38,6 +39,8 @@ class MorpheusPlugin implements Plugin<Project> {
 		project.tasks.create('scribeResources', MorpheusScribeResources)
 		//setup i18n task
 		project.tasks.create('i18nPackage',MorpheusI18nPackage)
+		//setup version properties task
+		def generateVersionTask = project.tasks.create('generatePluginVersionProperties')
 		//get the package task
 		def scribePackageTask = project.tasks.getByName('scribePackage')
 		def scribeResourcesTask = project.tasks.getByName('scribeResources')
@@ -69,6 +72,19 @@ class MorpheusPlugin implements Plugin<Project> {
 				i18nTarget = project.file("${processResources?.destinationDir}/${morpheusPluginConfig.i18nTarget}")
 			}
 
+			//configure version properties task: generate morpheus-plugin.properties into a build directory
+			//and add it as a resource source so every plugin automatically gets version+gitHash at runtime
+			def generatedResDir = new File(project.buildDir, 'generated-resources/morpheus-plugin')
+			generateVersionTask.configure {
+				outputs.upToDateWhen { false }
+				outputs.dir generatedResDir
+				doLast {
+					def gitHash = ['git', 'rev-parse', '--short=5', 'HEAD'].execute().text.trim() ?: 'unknown'
+					generatedResDir.mkdirs()
+					new File(generatedResDir, 'morpheus-plugin.properties').text =
+						"version=${project.version}\ngitHash=${gitHash}\n"
+				}
+			}
 
 			//add task dependencies
 			
@@ -82,6 +98,11 @@ class MorpheusPlugin implements Plugin<Project> {
 
 			if(project.file(morpheusPluginConfig.i18nDir).exists()) {
 				processResources.dependsOn(morpheusI18nPackageTask)
+			}
+
+			if(processResources) {
+				processResources.from(generatedResDir)
+				processResources.dependsOn(generateVersionTask)
 			}
 			
 		}
