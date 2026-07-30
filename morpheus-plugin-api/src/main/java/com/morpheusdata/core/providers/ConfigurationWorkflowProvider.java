@@ -18,6 +18,7 @@ package com.morpheusdata.core.providers;
 
 import com.morpheusdata.response.ServiceResponse;
 import com.morpheusdata.model.ConfigurationWorkflow;
+import com.morpheusdata.model.ConfigurationWorkflowProgress;
 import com.morpheusdata.model.ConfigurationWorkflowStep;
 import com.morpheusdata.model.User;
 import java.util.List;
@@ -255,6 +256,26 @@ public interface ConfigurationWorkflowProvider extends PluginProvider {
 			Object parentObject,
 			Map<String, Object> opts) {
 		// Default implementation does nothing
+	}
+
+	/**
+	 * Optional method to retrieve the progress of a running configuration workflow.
+	 * This is used to track the execution status after the workflow has been submitted.
+	 * Returns a standardized {@link ConfigurationWorkflowProgress} structure containing
+	 * activities and their individual steps with completion percentages.
+	 *
+	 * <p>All system types that support progress tracking should override this method
+	 * and return a {@link ConfigurationWorkflowProgress} populated with the current
+	 * activity and step states.
+	 *
+	 * @param parentObject the parent object (e.g., System) that the workflow operates on
+	 * @param opts         additional options or context
+	 * @return ServiceResponse containing a {@link ConfigurationWorkflowProgress} with
+	 *         activity and step-level progress details
+	 */
+	default ServiceResponse<ConfigurationWorkflowProgress> getConfigurationWorkflowProgress(Object parentObject,
+			Map<String, Object> opts) {
+		return ServiceResponse.error("Progress tracking not supported");
 	}
 
 	/**
