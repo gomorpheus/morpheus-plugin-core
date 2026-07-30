@@ -152,11 +152,10 @@ public class PluginManager {
 		try {
 			Class<Plugin> pluginClass = (Class<Plugin>) pluginLoader.loadClass(pluginClassName);
 
-			System.out.println("Loading Plugin " + pluginClassName + ":" + pluginVersion + " from " +  pathToJar);
+			log.info("Loading Plugin {}:{} from {}", pluginClassName, pluginVersion, pathToJar);
 			return registerPlugin(pluginClass, jarFile, pluginVersion);
 		} catch (Throwable e) {
-			System.out.println("Unable to load plugin class from " + pathToJar);
-			e.printStackTrace();
+			log.error("Unable to load plugin class from {} - {}", pathToJar, e.getMessage(), e);
 			return null;
 		}
 	}

@@ -438,7 +438,7 @@ public class MorpheusUtils {
 
 	static BigDecimal parseStringBigDecimal(String str, BigDecimal defaultValue) {
 		BigDecimal rtn = defaultValue;
-		try { rtn = new BigDecimal(str); } catch(Exception e) {}
+		try { rtn = new BigDecimal(str); } catch(Exception e) { log.debug("unable to parse '{}' as BigDecimal - {}", str, e.getMessage(), e); }
 		return rtn;
 	}
 }

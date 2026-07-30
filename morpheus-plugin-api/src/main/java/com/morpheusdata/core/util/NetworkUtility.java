@@ -452,7 +452,9 @@ public class NetworkUtility {
 		String address = ipv6String.toSequentialRange().getUpper().toCanonicalString();
 		try {
 			address = normalizeIpAddress(address);
-		} catch(UnknownHostException ignored) {}
+		} catch(UnknownHostException e) {
+			log.debug("unable to normalize ip end address from cidr {} - {}", cidr, e.getMessage(), e);
+		}
 		return address;
 	}
 
@@ -461,7 +463,9 @@ public class NetworkUtility {
 		String address = ipv6String.toSequentialRange().getLower().toCanonicalString();
 		try {
 			address = normalizeIpAddress(address);
-		} catch(UnknownHostException ignored) {}
+		} catch(UnknownHostException e) {
+			log.debug("unable to normalize ip start address from cidr {} - {}", cidr, e.getMessage(), e);
+		}
 		return address;
 	}
 

@@ -17,6 +17,8 @@
 package com.morpheusdata.core.util;
 
 import com.morpheusdata.model.NetworkProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.Proxy;
 import java.net.InetSocketAddress;
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.8.0
  */
 public class ConnectionUtils {
+	static Logger log = LoggerFactory.getLogger(ConnectionUtils.class);
 	static Boolean testHostConnectivity(String hostname) {
 		return testHostConnectivity(hostname,null,true,true,null);
 	}
@@ -58,7 +61,7 @@ public class ConnectionUtils {
 				}
 
 			} catch(Exception e) {
-//				log.warn("test host connection failed: ${hostname} ${e.message}")
+				log.debug("test host connection failed: {} {}", hostname, e.getMessage(), e);
 			}
 		}
 		if(!rtn && doSocketTest && port != null) {
@@ -76,8 +79,8 @@ public class ConnectionUtils {
 					testSocket.setSoTimeout(soTimeout);
 					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout);
 					rtn = true;
-				} catch(Exception ignored) {
-//					log.debug("host connectivity proxy check failed ${hostname} ${port} - ${ex.getMessage()}")
+				} catch(Exception e) {
+					log.debug("host connectivity proxy check failed {} {} - {}", hostname, port, e.getMessage(), e);
 				} finally {
 					if(testSocket != null) { try{ testSocket.close();} catch(Exception eb){}}
 				}
@@ -89,8 +92,8 @@ public class ConnectionUtils {
 					testSocket.setSoTimeout(soTimeout);
 					testSocket.connect(new InetSocketAddress(hostname, port), soTimeout);
 					rtn = true;
-				} catch(Exception ignored) {
-//					log.debug("host connectivity check failed ${hostname} ${port} - ${ex.getMessage()}")
+				} catch(Exception e) {
+					log.debug("host connectivity check failed {} {} - {}", hostname, port, e.getMessage(), e);
 				} finally {
 					if(testSocket != null) { try{ testSocket.close();} catch(Exception eb){}}
 				}

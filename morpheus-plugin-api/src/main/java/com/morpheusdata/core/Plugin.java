@@ -25,6 +25,8 @@ import com.morpheusdata.views.Renderer;
 import com.morpheusdata.web.PluginController;
 
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the base class for all Plugins that are instantiated within the Morpheus Environment. It contains both
@@ -48,6 +50,7 @@ import java.util.*;
  * @author David Estes
  */
 public abstract class Plugin implements PluginInterface {
+	static Logger log = LoggerFactory.getLogger(Plugin.class);
 
 	/**
 	 * All registered plugin providers by provider code.
@@ -465,10 +468,10 @@ public abstract class Plugin implements PluginInterface {
 		try {
 			PluginProvider existingProvider = pluginProviders.get(provider.getCode());
 			if(existingProvider != null && provider.getClass() != existingProvider.getClass()) {
-				System.out.println("Plugin Provider Code Overlap Detected: " + provider.getCode() + ". Provider \"" + provider.getName() + "\" with type " + provider.getClass().getSimpleName() + " will replace provider \"" + existingProvider.getName() + "\" with type " + existingProvider.getClass().getSimpleName() + ".");
+				log.warn("Plugin Provider Code Overlap Detected: {}. Provider \"{}\" with type {} will replace provider \"{}\" with type {}.", provider.getCode(), provider.getName(), provider.getClass().getSimpleName(), existingProvider.getName(), existingProvider.getClass().getSimpleName());
 			}
 		} catch (Exception e) {
-			System.out.println("Error checking for provider conflict: " + e.getMessage());
+			log.error("Error checking for provider conflict: {}", e.getMessage(), e);
 		}
 	}
 
