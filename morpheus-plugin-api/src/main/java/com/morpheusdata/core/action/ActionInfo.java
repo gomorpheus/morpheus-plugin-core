@@ -8,6 +8,7 @@ public class ActionInfo {
 	public String messageCode;
 	public ActionState state = ActionState.ENABLED;
 	public String wizardCode;
+	public Integer sortOrder = 0;
 
 	public boolean isEnabled() {
 		return state == ActionState.ENABLED;
@@ -72,5 +73,18 @@ public class ActionInfo {
 	public void setWizardCode(String wizardCode) {
 		this.wizardCode = wizardCode;
 	}
-	
+
+	/**
+	 * Relative position of this action within a menu. Lower values sort first; actions sharing a
+	 * sortOrder fall back to alphabetical ordering by name.
+	 * @return the sort order, defaulting to 0
+	 */
+	public Integer getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(Integer sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
 }
