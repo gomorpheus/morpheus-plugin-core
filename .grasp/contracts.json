@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:31.239Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-contracts.mjs"
+  },
+  "service": {
+    "id": "morpheus-plugin-core",
+    "idSource": "git-remote",
+    "modulePath": null
+  },
+  "summary": {
+    "provides": 0,
+    "consumes": 0,
+    "dependencies": 0,
+    "providesStyle": null
+  },
+  "provides": [],
+  "consumes": [],
+  "dependencies": [],
+  "note": "No provided endpoints (run /grasp-api) or consumed APIs (run /grasp-mock-server / build-external-apis) detected yet."
+}

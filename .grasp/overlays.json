@@ -1,0 +1,337 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:45.229Z",
+    "atCommit": "dadd75be",
+    "graspVersion": "1.0.0",
+    "source": "build-overlays-manifest.mjs",
+    "stale_warning": null
+  },
+  "groups": [
+    "Understand",
+    "Quality",
+    "Deliver",
+    "Operate",
+    "Ecosystem"
+  ],
+  "overlays": [
+    {
+      "id": "knowledge-graph.json",
+      "label": "Code Graph",
+      "skill": "/grasp",
+      "group": "Understand",
+      "freshness": "foundation",
+      "route": "deep-dive",
+      "foundation": true,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "overview-stats.json",
+      "label": "Overview Stats",
+      "skill": "/grasp",
+      "group": "Understand",
+      "freshness": "foundation",
+      "route": "overview",
+      "foundation": true,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "health-report.json",
+      "label": "Code Health",
+      "skill": "/grasp-health",
+      "group": "Quality",
+      "freshness": "foundation",
+      "route": "health",
+      "foundation": true,
+      "summarySection": "Risk Hotspots",
+      "ttlHours": null
+    },
+    {
+      "id": "domain-graph.json",
+      "label": "Domain",
+      "skill": "/grasp-domain",
+      "group": "Understand",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "product-knowledge.json",
+      "label": "Product Knowledge",
+      "skill": "/grasp-knowledge",
+      "group": "Understand",
+      "freshness": "docs",
+      "route": "knowledge",
+      "foundation": false,
+      "summarySection": "Product Context",
+      "ttlHours": null
+    },
+    {
+      "id": "diagram-report.json",
+      "label": "Diagrams",
+      "skill": "/grasp-diagram",
+      "group": "Understand",
+      "freshness": "code",
+      "route": "diagrams",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "api-report.json",
+      "label": "API Docs",
+      "skill": "/grasp-api",
+      "group": "Understand",
+      "freshness": "code",
+      "route": "api",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "data-model.json",
+      "label": "Data Model",
+      "skill": "/grasp-data",
+      "group": "Understand",
+      "freshness": "code",
+      "route": "data",
+      "foundation": false,
+      "summarySection": "Data Model",
+      "ttlHours": null
+    },
+    {
+      "id": "debt-report.json",
+      "label": "Tech Debt",
+      "skill": "/grasp-debt",
+      "group": "Quality",
+      "freshness": "code",
+      "route": "debt",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "refactor-plans.json",
+      "label": "Refactoring",
+      "skill": "/grasp-refactor",
+      "group": "Quality",
+      "freshness": "code",
+      "route": "refactor",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "security-report.json",
+      "label": "Security",
+      "skill": "/grasp-security",
+      "group": "Quality",
+      "freshness": "security",
+      "route": "security",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "cve-triage.json",
+      "label": "CVE Triage",
+      "skill": "/grasp-cve",
+      "group": "Quality",
+      "freshness": "code",
+      "route": "cve",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "review-report.json",
+      "label": "Review",
+      "skill": "/grasp-review",
+      "group": "Quality",
+      "freshness": "code",
+      "route": "review",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "test-report.json",
+      "label": "Tests",
+      "skill": "/grasp-test",
+      "group": "Quality",
+      "freshness": "tests",
+      "route": "test",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "coverage-map.json",
+      "label": "Coverage",
+      "skill": "/grasp-coverage",
+      "group": "Quality",
+      "freshness": "tests",
+      "route": "coverage",
+      "foundation": false,
+      "summarySection": "Coverage Gaps",
+      "ttlHours": null
+    },
+    {
+      "id": "health-trend.json",
+      "label": "Health Trend",
+      "skill": "/grasp-health --trend",
+      "group": "Quality",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "risk-report.json",
+      "label": "Change Risk",
+      "skill": "/grasp-risk",
+      "group": "Deliver",
+      "freshness": "per-range",
+      "route": "risk",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "config-map.json",
+      "label": "Config",
+      "skill": "/grasp-config",
+      "group": "Deliver",
+      "freshness": "code",
+      "route": "config",
+      "foundation": false,
+      "summarySection": "Config Surface",
+      "ttlHours": null
+    },
+    {
+      "id": "external-apis.json",
+      "label": "External APIs",
+      "skill": "/grasp-mock-server",
+      "group": "Deliver",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": "External APIs",
+      "ttlHours": null
+    },
+    {
+      "id": "decisions.json",
+      "label": "Decisions (ADRs)",
+      "skill": "/grasp-decisions",
+      "group": "Deliver",
+      "freshness": "docs",
+      "route": null,
+      "foundation": false,
+      "summarySection": "Decisions",
+      "ttlHours": null
+    },
+    {
+      "id": "repo-health-report.json",
+      "label": "Repo Health",
+      "skill": "/grasp-repo",
+      "group": "Operate",
+      "freshness": "code",
+      "route": "repo",
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "runtime-context.json",
+      "label": "Runtime",
+      "skill": "/grasp-observe",
+      "group": "Operate",
+      "freshness": "runtime",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": 24
+    },
+    {
+      "id": "experience.json",
+      "label": "Experience",
+      "skill": "/grasp-experience",
+      "group": "Operate",
+      "freshness": "docs",
+      "route": "experience",
+      "foundation": false,
+      "summarySection": "Operational Notes",
+      "ttlHours": null
+    },
+    {
+      "id": "provenance.json",
+      "label": "Agent Provenance",
+      "skill": "/grasp-health --provenance",
+      "group": "Operate",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "contracts.json",
+      "label": "Contracts",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "ecosystem-map.json",
+      "label": "Ecosystem",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "freshness": "code",
+      "route": "ecosystem",
+      "foundation": false,
+      "summarySection": "Ecosystem",
+      "ttlHours": null
+    },
+    {
+      "id": "breaking-change.json",
+      "label": "Breaking Changes",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "product-map.json",
+      "label": "Product Map",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    },
+    {
+      "id": "call-chains.json",
+      "label": "Call Chains",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "freshness": "code",
+      "route": null,
+      "foundation": false,
+      "summarySection": null,
+      "ttlHours": null
+    }
+  ]
+}

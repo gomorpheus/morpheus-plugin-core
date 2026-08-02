@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:31.233Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-decisions.mjs"
+  },
+  "summary": {
+    "total": 0,
+    "accepted": 0,
+    "superseded": 0,
+    "proposed": 0,
+    "rejected": 0
+  },
+  "byStatus": {},
+  "decisions": [],
+  "note": "No ADRs found. Add records under docs/adr/ (MADR or Nygard format) to capture architectural decisions."
+}

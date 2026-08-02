@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:38.571Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-product-map.mjs"
+  },
+  "product": "morpheus-plugin-core",
+  "hub": "morpheus-plugin-core",
+  "manifestSource": null,
+  "summary": {
+    "services": 1,
+    "resolvedServices": 1,
+    "edges": 0,
+    "repos": 1
+  },
+  "services": [
+    {
+      "id": "morpheus-plugin-core",
+      "role": null,
+      "provides": 0,
+      "consumes": 0,
+      "modulePath": null,
+      "graspPath": "(self)",
+      "resolved": true
+    }
+  ],
+  "edges": [],
+  "note": "No ecosystem manifest — product map contains only this repo. Declare the product's repos in ecosystem.siblings to aggregate them."
+}

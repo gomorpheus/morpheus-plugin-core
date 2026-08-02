@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:38.558Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-ecosystem-map.mjs"
+  },
+  "thisRepo": "morpheus-plugin-core",
+  "role": "No detected interface surface yet",
+  "manifestSource": null,
+  "summary": {
+    "provides": 0,
+    "consumes": 0,
+    "siblingsDeclared": 0,
+    "siblingsResolved": 0,
+    "edges": 0,
+    "gaps": 0
+  },
+  "services": [],
+  "gaps": [],
+  "note": "No ecosystem manifest — showing this repo only. Add ecosystem.siblings to .grasp/config.json or ~/.grasp-it/ecosystem.json (each with a graspPath) to stitch neighbors."
+}

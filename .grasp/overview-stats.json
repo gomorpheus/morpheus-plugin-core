@@ -1,0 +1,311 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:31.127Z",
+    "atCommit": "dadd75be",
+    "graspVersion": "1.0.0",
+    "source": "build-overview-stats.mjs",
+    "stale_warning": null
+  },
+  "project": {
+    "name": "morpheus-plugin-core",
+    "languages": [
+      "java",
+      "javascript"
+    ],
+    "frameworks": [],
+    "analyzedAt": "2026-08-02T12:07:14.985Z"
+  },
+  "kpis": {
+    "nodes": 15239,
+    "edges": 14179,
+    "layers": 9,
+    "files": 1060,
+    "functions": 12767,
+    "classes": 1412,
+    "endpoints": 0,
+    "entryPoints": 27,
+    "tours": 10,
+    "hotspots": 0
+  },
+  "languages": [
+    {
+      "label": "Java",
+      "count": 15238
+    },
+    {
+      "label": "JavaScript",
+      "count": 1
+    }
+  ],
+  "frameworks": [],
+  "nodeTypes": [
+    {
+      "label": "function",
+      "count": 12767
+    },
+    {
+      "label": "class",
+      "count": 1412
+    },
+    {
+      "label": "file",
+      "count": 1060
+    }
+  ],
+  "layerDistribution": [
+    {
+      "label": "Data Models",
+      "count": 439
+    },
+    {
+      "label": "Context & Services (Morpheus API)",
+      "count": 110
+    },
+    {
+      "label": "Provider Interfaces",
+      "count": 72
+    },
+    {
+      "label": "Request / Response API",
+      "count": 53
+    },
+    {
+      "label": "Backup Domain",
+      "count": 30
+    },
+    {
+      "label": "Views & Web",
+      "count": 11
+    },
+    {
+      "label": "Plugin Framework",
+      "count": 4
+    },
+    {
+      "label": "Sample Plugins",
+      "count": 2
+    },
+    {
+      "label": "Build Tooling",
+      "count": 0
+    }
+  ],
+  "hotspots": [],
+  "sdlcCoverage": [
+    {
+      "id": "knowledge-graph.json",
+      "label": "Code Graph",
+      "skill": "/grasp",
+      "group": "Understand",
+      "present": true
+    },
+    {
+      "id": "overview-stats.json",
+      "label": "Overview Stats",
+      "skill": "/grasp",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "health-report.json",
+      "label": "Code Health",
+      "skill": "/grasp-health",
+      "group": "Quality",
+      "present": true
+    },
+    {
+      "id": "domain-graph.json",
+      "label": "Domain",
+      "skill": "/grasp-domain",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "product-knowledge.json",
+      "label": "Product Knowledge",
+      "skill": "/grasp-knowledge",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "diagram-report.json",
+      "label": "Diagrams",
+      "skill": "/grasp-diagram",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "api-report.json",
+      "label": "API Docs",
+      "skill": "/grasp-api",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "data-model.json",
+      "label": "Data Model",
+      "skill": "/grasp-data",
+      "group": "Understand",
+      "present": false
+    },
+    {
+      "id": "debt-report.json",
+      "label": "Tech Debt",
+      "skill": "/grasp-debt",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "refactor-plans.json",
+      "label": "Refactoring",
+      "skill": "/grasp-refactor",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "security-report.json",
+      "label": "Security",
+      "skill": "/grasp-security",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "cve-triage.json",
+      "label": "CVE Triage",
+      "skill": "/grasp-cve",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "review-report.json",
+      "label": "Review",
+      "skill": "/grasp-review",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "test-report.json",
+      "label": "Tests",
+      "skill": "/grasp-test",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "coverage-map.json",
+      "label": "Coverage",
+      "skill": "/grasp-coverage",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "health-trend.json",
+      "label": "Health Trend",
+      "skill": "/grasp-health --trend",
+      "group": "Quality",
+      "present": false
+    },
+    {
+      "id": "risk-report.json",
+      "label": "Change Risk",
+      "skill": "/grasp-risk",
+      "group": "Deliver",
+      "present": false
+    },
+    {
+      "id": "config-map.json",
+      "label": "Config",
+      "skill": "/grasp-config",
+      "group": "Deliver",
+      "present": false
+    },
+    {
+      "id": "external-apis.json",
+      "label": "External APIs",
+      "skill": "/grasp-mock-server",
+      "group": "Deliver",
+      "present": false
+    },
+    {
+      "id": "decisions.json",
+      "label": "Decisions (ADRs)",
+      "skill": "/grasp-decisions",
+      "group": "Deliver",
+      "present": false
+    },
+    {
+      "id": "repo-health-report.json",
+      "label": "Repo Health",
+      "skill": "/grasp-repo",
+      "group": "Operate",
+      "present": false
+    },
+    {
+      "id": "runtime-context.json",
+      "label": "Runtime",
+      "skill": "/grasp-observe",
+      "group": "Operate",
+      "present": false
+    },
+    {
+      "id": "experience.json",
+      "label": "Experience",
+      "skill": "/grasp-experience",
+      "group": "Operate",
+      "present": false
+    },
+    {
+      "id": "provenance.json",
+      "label": "Agent Provenance",
+      "skill": "/grasp-health --provenance",
+      "group": "Operate",
+      "present": false
+    },
+    {
+      "id": "contracts.json",
+      "label": "Contracts",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "present": false
+    },
+    {
+      "id": "ecosystem-map.json",
+      "label": "Ecosystem",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "present": false
+    },
+    {
+      "id": "breaking-change.json",
+      "label": "Breaking Changes",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "present": false
+    },
+    {
+      "id": "product-map.json",
+      "label": "Product Map",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "present": false
+    },
+    {
+      "id": "call-chains.json",
+      "label": "Call Chains",
+      "skill": "/grasp-ecosystem",
+      "group": "Ecosystem",
+      "present": false
+    }
+  ],
+  "coveragePct": 0.06896551724137931,
+  "optional": {
+    "health": {
+      "filesScored": 1060,
+      "avgDefectRisk": 2.2,
+      "avgMaintainability": 2.9,
+      "highRiskFiles": 0,
+      "filesInCycles": 0,
+      "hubs": 0,
+      "untestedHotspots": 363
+    }
+  }
+}

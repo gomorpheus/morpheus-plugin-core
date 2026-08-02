@@ -1,0 +1,181 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:31.396Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-external-apis.mjs"
+  },
+  "summary": {
+    "services": 5,
+    "restServices": 0,
+    "envEndpoints": 0,
+    "mockable": 5
+  },
+  "services": [
+    {
+      "name": "developer.mozilla.org",
+      "host": "developer.mozilla.org",
+      "schemes": [
+        "https"
+      ],
+      "baseUrls": [
+        "https://developer.mozilla.org"
+      ],
+      "paths": [
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy",
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src",
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src",
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src",
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src",
+        "/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src"
+      ],
+      "kind": "unknown",
+      "clientCallSites": 0,
+      "openapiHint": false,
+      "envVars": [],
+      "references": [
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 22,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy\">Content Security Policy Header</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 29,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src\">frame-src directive</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 35,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src\">img-src directive</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 41,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src\">script-src directive</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 47,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src\">style-src directive</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/model/ContentSecurityPolicy.java",
+          "line": 53,
+          "snippet": "* @see <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src\">style-src directive</a>"
+        }
+      ],
+      "mockable": true
+    },
+    {
+      "name": "jknack.github.io",
+      "host": "jknack.github.io",
+      "schemes": [
+        "https"
+      ],
+      "baseUrls": [
+        "https://jknack.github.io"
+      ],
+      "paths": [
+        "/handlebars.java/helpers.html"
+      ],
+      "kind": "unknown",
+      "clientCallSites": 0,
+      "openapiHint": false,
+      "envVars": [],
+      "references": [
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/views/HandlebarsRenderer.java",
+          "line": 128,
+          "snippet": "* @see <a href=\"https://jknack.github.io/handlebars.java/helpers.html\">Handlebars Helpers</a>"
+        }
+      ],
+      "mockable": true
+    },
+    {
+      "name": "jqueryui.com",
+      "host": "jqueryui.com",
+      "schemes": [
+        "https"
+      ],
+      "baseUrls": [
+        "https://jqueryui.com"
+      ],
+      "paths": [],
+      "kind": "unknown",
+      "clientCallSites": 0,
+      "openapiHint": false,
+      "envVars": [],
+      "references": [
+        {
+          "file": "morpheus-plugin-site/bin/main/javadoc/script-dir/jquery-ui.min.js",
+          "line": 2,
+          "snippet": "* https://jqueryui.com"
+        },
+        {
+          "file": "morpheus-plugin-site/src/main/resources/javadoc/script-dir/jquery-ui.min.js",
+          "line": 2,
+          "snippet": "* https://jqueryui.com"
+        }
+      ],
+      "mockable": true
+    },
+    {
+      "name": "libvirt.org",
+      "host": "libvirt.org",
+      "schemes": [
+        "https"
+      ],
+      "baseUrls": [
+        "https://libvirt.org"
+      ],
+      "paths": [
+        "/formatdomain.html"
+      ],
+      "kind": "unknown",
+      "clientCallSites": 0,
+      "openapiHint": false,
+      "envVars": [],
+      "references": [
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/core/providers/DatastoreTypeProvider.java",
+          "line": 456,
+          "snippet": "*     <a href=\"https://libvirt.org/formatdomain.html#devices\">https://libvirt.org/formatdomain.html#devices</a>"
+        },
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/core/providers/DatastoreTypeProvider.java",
+          "line": 456,
+          "snippet": "*     <a href=\"https://libvirt.org/formatdomain.html#devices\">https://libvirt.org/formatdomain.html#devices</a>"
+        }
+      ],
+      "mockable": true
+    },
+    {
+      "name": "stackoverflow.com",
+      "host": "stackoverflow.com",
+      "schemes": [
+        "https"
+      ],
+      "baseUrls": [
+        "https://stackoverflow.com"
+      ],
+      "paths": [
+        "/questions/{id}/converting-a-string-to-hexadecimal-in-java"
+      ],
+      "kind": "unknown",
+      "clientCallSites": 0,
+      "openapiHint": false,
+      "envVars": [],
+      "references": [
+        {
+          "file": "morpheus-plugin-api/src/main/java/com/morpheusdata/core/util/OauthUtility.java",
+          "line": 163,
+          "snippet": "//THIS IS THE COOLEST STACK OVERFLOW ANSWER I HAVE EVER FOUND https://stackoverflow.com/questions/923863/converting-a-string-to-hexadecimal-in-java"
+        }
+      ],
+      "mockable": true
+    }
+  ],
+  "envEndpoints": [],
+  "note": null
+}

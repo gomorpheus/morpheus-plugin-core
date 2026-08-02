@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:38.561Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-call-chains.mjs"
+  },
+  "product": null,
+  "roots": [],
+  "summary": {
+    "services": 0,
+    "edges": 0,
+    "chains": 0,
+    "cycles": 0,
+    "longest": 0,
+    "truncated": false
+  },
+  "longest": null,
+  "chains": [],
+  "cycles": [],
+  "note": "No product-map.json — run build-product-map.mjs (/grasp-ecosystem) first."
+}

@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-02T12:13:38.575Z",
+    "atCommit": "dadd75be",
+    "stale_warning": null,
+    "source": "build-breaking-change.mjs"
+  },
+  "thisRepo": "morpheus-plugin-core",
+  "summary": {
+    "providedContracts": 0,
+    "atRisk": 0,
+    "safe": 0,
+    "consumerRepos": 0,
+    "highRisk": 0
+  },
+  "consumerRepos": [],
+  "matrix": [],
+  "safeToChange": [],
+  "note": "No ecosystem-map.json — run /grasp-ecosystem first so consumers can be resolved."
+}
