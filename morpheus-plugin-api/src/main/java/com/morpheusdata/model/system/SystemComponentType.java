@@ -1,5 +1,6 @@
 package com.morpheusdata.model.system;
 
+import com.morpheusdata.model.ActionType;
 import com.morpheusdata.model.MorpheusModel;
 import com.morpheusdata.model.OptionType;
 import com.morpheusdata.model.TaskSet;
@@ -20,6 +21,7 @@ public class SystemComponentType extends MorpheusModel {
 	protected List<OptionType> optionTypes = new ArrayList<>();
 	protected List<TaskSet> initializeWorkflows = new ArrayList<>();
 	protected List<TaskSet> updateWorkflows = new ArrayList<>();
+	protected List<ActionType> actions = new ArrayList<>();
 	protected Class<? extends MorpheusModel> modelType;
 
 	public String getName() {
@@ -92,6 +94,21 @@ public class SystemComponentType extends MorpheusModel {
 	public void setUpdateWorkflows(List<TaskSet> updateWorkflows) {
 		markDirty("updateWorkflows", updateWorkflows);
 		this.updateWorkflows = updateWorkflows;
+	}
+
+	/**
+	 * Actions surfaced on components built from this type. Each {@link ActionType} is a stored
+	 * definition whose {@code providerCode} joins it to the runtime {@code ActionProvider}
+	 * (the provider's {@code key}, or dotted {@code namespace.key}).
+	 * @return the action types available on this component type
+	 */
+	public List<ActionType> getActions() {
+		return actions;
+	}
+
+	public void setActions(List<ActionType> actions) {
+		markDirty("actions", actions);
+		this.actions = actions;
 	}
 
 	public Class<? extends MorpheusModel> getModelType() {
