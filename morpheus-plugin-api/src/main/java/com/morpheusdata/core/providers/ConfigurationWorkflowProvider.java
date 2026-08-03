@@ -272,4 +272,49 @@ public interface ConfigurationWorkflowProvider extends PluginProvider {
 			Object parentObject, Map<String, Object> opts) {
 		return ServiceResponse.error("Cancellation not supported");
 	}
+
+	/**
+	 * Returns optional configuration for a "Modify Setup" confirmation modal shown
+	 * before the user can edit configuration or retry installation on a failed system.
+	 * <p>
+	 * When this method returns {@code null} (the default), no modal is shown and
+	 * the modify/retry action proceeds immediately. Plugins that need a dismantle
+	 * confirmation step should override this to return a map describing the modal
+	 * content.
+	 * <p>
+	 * Expected map structure:
+	 * <pre>
+	 * {
+	 *   "title": "Modify Setup",
+	 *   "description": "By default, only failed steps will be retried...",
+	 *   "dismantleOption": {
+	 *     "enabled": true,
+	 *     "label": "Dismantle and reconfigure the entire system",
+	 *     "confirmationRequired": true,
+	 *     "confirmationKeyword": "DISMANTLE",
+	 *     "confirmationHint": "Case sensitive - must be all caps",
+	 *     "warning": {
+	 *       "message": "This will roll back all completed steps...",
+	 *       "details": ["All existing configurations will be removed", ...],
+	 *       "note": "Required if you're changing the server list..."
+	 *     }
+	 *   },
+	 *   "sections": [
+	 *     {
+	 *       "type": "collapsible",
+	 *       "title": "Changing VLAN IDs? Click for additional steps",
+	 *       "contentHeader": "If changing VLAN IDs:",
+	 *       "steps": ["Step 1", "Step 2", ...]
+	 *     }
+	 *   ]
+	 * }
+	 * </pre>
+	 *
+	 * @param parentObject the parent object (e.g. System) for context
+	 * @param opts         additional options (e.g. systemId, user)
+	 * @return a Map describing the modal config, or {@code null} to skip the modal
+	 */
+	default Map<String, Object> getModifySetupConfig(Object parentObject, Map<String, Object> opts) {
+		return null;
+	}
 }
