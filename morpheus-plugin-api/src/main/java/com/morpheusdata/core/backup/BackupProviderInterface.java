@@ -388,4 +388,23 @@ public interface BackupProviderInterface extends PluginProvider, UIExtensionProv
 	default HTMLResponse renderTemplate(com.morpheusdata.model.BackupProvider backupProvider) {
 		return null;
 	}
+
+	/**
+	 * The backup provider supports editing an existing job.
+	 * @return true if the backup provider supports editing an existing job, false otherwise
+	 */
+	default Boolean getHasEditJob() { return true; }
+
+	/**
+	 * The backup provider supports running a job directly.
+	 * @return true if the backup provider supports running a job, false otherwise
+	 */
+	default Boolean getHasRunJob() { return true; }
+
+	/**
+	 * The backup job code may be defined and edited by the user. Providers that own the job code externally, such as
+	 * integrations that mirror jobs from a remote system, should return false so the field is rendered read-only.
+	 * @return true if the job code is user editable, false if the provider owns it
+	 */
+	default Boolean getHasEditableJobCode() { return true; }
 }
