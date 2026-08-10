@@ -29,7 +29,7 @@ public class AccountCredentialLink extends AccountCredentialIdentityProjection {
 	protected User user;
 	protected UserGroup group;
 	protected Role role;
-	protected Boolean defaultCredential;
+	protected Boolean defaultCredential = false;
 
 	//ref
 	protected String refType;
@@ -39,5 +39,93 @@ public class AccountCredentialLink extends AccountCredentialIdentityProjection {
 	//audit
 	protected Date dateCreated;
 	protected Date lastUpdated;
+
+	public AccountCredential getCredential() {
+		return credential;
+	}
+
+	public void setCredential(AccountCredential newCredential) {
+		credential = newCredential;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account newAccount){
+		account = newAccount;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User newUser){
+		user = newUser;
+	}
+
+	public UserGroup getGroup() {
+		return group;
+	}
+
+	public void setGroup(UserGroup newGroup){
+		group = newGroup;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role newRole){
+		role = newRole;
+	}
+
+	public Boolean getDefaultCredential() {
+		return defaultCredential;
+	}
+
+	public void setDefaultCredential(Boolean newDefaultCredential) {
+		defaultCredential = newDefaultCredential;
+	}
+
+	public String getRefType() {
+		return refType;
+	}
+
+	public void setRefType(String newRefType) {
+		refType = newRefType;
+	}
+
+	public String getRefUuid() {
+		return refUuid;
+	}
+
+	public void setRefUuid(String newRefUuid) {
+		refUuid = newRefUuid;
+	}
+
+	public String getRefName() {
+		return refName;
+	}
+
+	public void setRefName(String newRefName) {
+		refName = newRefName;
+	}
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Date newDateCreated) {
+		dateCreated = newDateCreated;
+	}
+
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(Date newLastUpdated) {
+		lastUpdated = newLastUpdated;
+	}
 
 }
