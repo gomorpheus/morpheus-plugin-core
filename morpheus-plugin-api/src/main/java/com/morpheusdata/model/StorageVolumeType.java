@@ -55,6 +55,11 @@ public class StorageVolumeType extends MorpheusModel {
 	protected Long maxIOPS = null;
 	protected Boolean multiAttachSupported = false;
 	protected Boolean hasActiveReplica = false;
+	// Whether this volume type is physically tied to a specific server (for example
+	// local/RAID disks on bare metal). Defaults to false since most volume types
+	// (SAN/networked storage) can be reattached to different servers. Set to true
+	// for native storage so instance reconfigure can ignore those types.
+	protected Boolean nativeVolume = false;
 
 	// associations
 	Collection<OptionType> optionTypes;
@@ -292,5 +297,13 @@ public class StorageVolumeType extends MorpheusModel {
 	}
 	public void setHasActiveReplica(Boolean hasActiveReplica) {
 		this.hasActiveReplica = hasActiveReplica;
+	}
+
+	public Boolean getNativeVolume() {
+		return nativeVolume;
+	}
+
+	public void setNativeVolume(Boolean nativeVolume) {
+		this.nativeVolume = nativeVolume;
 	}
 }
