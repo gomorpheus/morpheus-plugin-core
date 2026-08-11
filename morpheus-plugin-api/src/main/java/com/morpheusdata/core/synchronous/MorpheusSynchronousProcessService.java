@@ -157,18 +157,6 @@ public interface MorpheusSynchronousProcessService extends MorpheusSynchronousDa
 	RunProcessStepResponse runProcessStep(RunProcessStepRequest request);
 
 	/**
-	 * Update the message on a Process, verifying it belongs to the given System.
-	 * The process is validated against {@code refType='system'} and {@code refId=systemId}
-	 * to guard against updating the wrong process.
-	 * @param process The Process to update (as returned by {@link #startProcess(System, ProcessStepType, User, String)})
-	 * @param systemId The ID of the System the process should belong to
-	 * @param message The message to set on the process
-	 * @return true if the process was found, validated, and updated; false otherwise
-	 * @since 1.5.0
-	 */
-	Boolean updateProcessMessage(Process process, Long systemId, String message);
-
-	/**
 	 * Update the message on a Process, verifying it matches the given refType and refId.
 	 * @param process The Process to update
 	 * @param refType The expected reference type (e.g. 'system', 'instance', 'computeServer')
@@ -178,18 +166,6 @@ public interface MorpheusSynchronousProcessService extends MorpheusSynchronousDa
 	 * @since 1.5.0
 	 */
 	Boolean updateProcessMessage(Process process, String refType, Long refId, String message);
-
-	/**
-	 * Update the error on a Process, verifying it belongs to the given System.
-	 * The process is validated against {@code refType='system'} and {@code refId=systemId}
-	 * to guard against updating the wrong process.
-	 * @param process The Process to update (as returned by {@link #startProcess(System, ProcessStepType, User, String)})
-	 * @param systemId The ID of the System the process should belong to
-	 * @param error The error to set on the process
-	 * @return true if the process was found, validated, and updated; false otherwise
-	 * @since 1.5.0
-	 */
-	Boolean updateProcessError(Process process, Long systemId, String error);
 
 	/**
 	 * Update the error on a Process, verifying it matches the given refType and refId.
