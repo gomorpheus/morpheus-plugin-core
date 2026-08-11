@@ -30,6 +30,7 @@ public class WizardStep extends MorpheusModel {
 	protected String code;
 	protected String name;
 	protected String description;
+	protected Boolean hideStepName = false;
 	protected List<OptionType> optionTypes;
 	protected List<OptionTypeFieldGroup> optionTypeFieldGroups;
 
@@ -97,6 +98,27 @@ public class WizardStep extends MorpheusModel {
 	public void setDescription(String description) {
 		this.description = description;
 		markDirty("description", description);
+	}
+
+	/**
+	 * Returns whether the in-step heading should be hidden in content rendering.
+	 * This does not affect wizard navigation labels.
+	 *
+	 * @return true when the step heading should be hidden, false otherwise
+	 */
+	public Boolean getHideStepName() {
+		return hideStepName;
+	}
+
+	/**
+	 * Sets whether the in-step heading should be hidden in content rendering.
+	 * This does not affect wizard navigation labels.
+	 *
+	 * @param hideStepName true to hide the in-step heading
+	 */
+	public void setHideStepName(Boolean hideStepName) {
+		this.hideStepName = hideStepName;
+		markDirty("hideStepName", hideStepName);
 	}
 
 	/**
