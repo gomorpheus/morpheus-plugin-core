@@ -2,6 +2,11 @@
 
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API `1.3.x` requires a minimum Morpheus version of `8.1.x`. Morpheus Plugin API `1.2.x` requires Morpheus `8.0.x`, and Morpheus `7.0.x` runs on Core version `1.1.x`.
 
+* **1.4.0**
+** *Option Type Enhancements*
+*** Added `MULTI_TEXT` to `OptionType.InputType` so plugins can define multi-value text inputs (MORPH-6011).
+*** Added `MULTI_KEY_VALUE` to `OptionType.InputType` so plugins can define multiple key-value pair inputs.
+
 * **1.3.4**
 ** *File Copy Enhancements*
 *** Added `FileCopyRequest` support and new `generateUrl` overloads for file copy operations with Cloud context.

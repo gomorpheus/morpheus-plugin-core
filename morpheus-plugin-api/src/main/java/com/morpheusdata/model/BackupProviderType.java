@@ -53,6 +53,9 @@ public class BackupProviderType extends MorpheusModel {
 	protected Boolean hasStorageProvider = true;
 	protected Boolean hasRetentionCount = true;
 	protected Boolean hasCancelBackup = true;
+	protected Boolean hasEditJob = true;
+	protected Boolean hasRunJob = true;
+	protected Boolean hasEditableJobCode = true;
 
 	protected Boolean isPlugin;
 
@@ -308,6 +311,33 @@ public class BackupProviderType extends MorpheusModel {
 	public void setHasCancelBackup(Boolean hasCancelBackup) {
 		markDirty("hasCancelBackup", hasCancelBackup, this.hasCancelBackup);
 		this.hasCancelBackup = hasCancelBackup;
+	}
+
+	public Boolean getHasEditJob() {
+		return hasEditJob;
+	}
+
+	public void setHasEditJob(Boolean hasEditJob) {
+		markDirty("hasEditJob", hasEditJob, this.hasEditJob);
+		this.hasEditJob = hasEditJob;
+	}
+
+	public Boolean getHasRunJob() {
+		return hasRunJob;
+	}
+
+	public void setHasRunJob(Boolean hasRunJob) {
+		markDirty("hasRunJob", hasRunJob, this.hasRunJob);
+		this.hasRunJob = hasRunJob;
+	}
+
+	public Boolean getHasEditableJobCode() {
+		return hasEditableJobCode;
+	}
+
+	public void setHasEditableJobCode(Boolean hasEditableJobCode) {
+		markDirty("hasEditableJobCode", hasEditableJobCode, this.hasEditableJobCode);
+		this.hasEditableJobCode = hasEditableJobCode;
 	}
 
 	public Boolean getPlugin() {
