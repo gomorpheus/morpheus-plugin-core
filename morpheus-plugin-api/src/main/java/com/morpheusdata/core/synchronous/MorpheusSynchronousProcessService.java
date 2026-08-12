@@ -155,4 +155,26 @@ public interface MorpheusSynchronousProcessService extends MorpheusSynchronousDa
 	 * @return A RunProcessStepResponse indicating whether the dispatch was successful
 	 */
 	RunProcessStepResponse runProcessStep(RunProcessStepRequest request);
+
+	/**
+	 * Update the message on a Process, verifying it matches the given refType and refId.
+	 * @param process The Process to update
+	 * @param refType The expected reference type (e.g. 'system', 'instance', 'computeServer')
+	 * @param refId The expected reference ID of the associated entity
+	 * @param message The message to set on the process
+	 * @return true if the process was found, validated, and updated; false otherwise
+	 * @since 1.5.0
+	 */
+	Boolean updateProcessMessage(Process process, String refType, Long refId, String message);
+
+	/**
+	 * Update the error on a Process, verifying it matches the given refType and refId.
+	 * @param process The Process to update
+	 * @param refType The expected reference type (e.g. 'system', 'instance', 'computeServer')
+	 * @param refId The expected reference ID of the associated entity
+	 * @param error The error to set on the process
+	 * @return true if the process was found, validated, and updated; false otherwise
+	 * @since 1.5.0
+	 */
+	Boolean updateProcessError(Process process, String refType, Long refId, String error);
 }
