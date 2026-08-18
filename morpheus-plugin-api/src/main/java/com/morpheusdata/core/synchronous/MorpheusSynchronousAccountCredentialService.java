@@ -18,13 +18,8 @@ package com.morpheusdata.core.synchronous;
 
 import com.morpheusdata.core.MorpheusSynchronousIdentityService;
 import com.morpheusdata.core.MorpheusSynchronousDataService;
-import com.morpheusdata.model.AccountCredential;
-import com.morpheusdata.model.AccountIntegration;
-import com.morpheusdata.model.BackupProvider;
-import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.NetworkServer;
-import com.morpheusdata.model.StorageServer;
+import com.morpheusdata.model.*;
+import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 
@@ -53,4 +48,6 @@ public interface MorpheusSynchronousAccountCredentialService extends MorpheusSyn
 	AccountCredential loadCredentials(StorageServer storageServer);
 
 	AccountCredential loadCredentials(NetworkServer networkServer);
+
+	ServiceResponse<AccountCredentialLink> createCredentialLink(AccountCredential credential, String refType, String refUuid, String refName);
 }
