@@ -16,14 +16,9 @@
 
 package com.morpheusdata.core;
 
-import com.morpheusdata.model.AccountCredential;
-import com.morpheusdata.model.AccountIntegration;
-import com.morpheusdata.model.BackupProvider;
-import com.morpheusdata.model.Cloud;
-import com.morpheusdata.model.ComputeServer;
-import com.morpheusdata.model.NetworkServer;
-import com.morpheusdata.model.StorageServer;
+import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
+import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.Maybe;
 
@@ -77,4 +72,14 @@ public interface MorpheusAccountCredentialService extends MorpheusDataService<Ac
 	 * @return Maybe emitting the AccountCredential with data populated, or empty if no link exists
 	 */
 	Maybe<AccountCredential> loadCredentials(NetworkServer networkServer);
+
+	/**
+	 * Creates a credential link for a specified credential and associated ref information and returns the created link.
+	 * @param credential the credential to create the link for.
+	 * @param refType The resource type the link will be used by.
+	 * @param refUuid The uuid for the resource the link will be used by.
+	 * @param refName The name of the resource the link will be used by.
+	 * @return ServiceResponse possibly containing a created AccountCredentialLink.
+	 */
+	Single<ServiceResponse<AccountCredentialLink>> createCredentialLink(AccountCredential credential, String refType, String refUuid, String refName);
 }
