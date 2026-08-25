@@ -31,6 +31,22 @@ import java.util.Map;
  * @see StorageProvider
  */
 public interface StorageProviderFileShares {
+
+	/**
+	 * Validates the submitted information when saving a file share.
+	 * This is invoked before both {@link #createFileShare} and {@link #updateFileShare}.
+	 * @param storageShare Storage Bucket (file share) information
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} object. The errors field of the ServiceResponse is used to send validation
+	 * results back to the interface in the format of {@code errors['fieldName'] = 'validation message' }. The msg
+	 * property can be used to send generic validation text that is not related to a specific field on the model.
+	 * A ServiceResponse with a success value of 'false' will halt the create/update process.
+	 * Defaults to a no-op success response so existing implementations do not need to override it.
+	 */
+	default ServiceResponse validateFileShare(StorageBucket storageShare, Map opts) {
+		return ServiceResponse.success();
+	}
+
 	ServiceResponse createFileShare(StorageBucket storageShare, Map opts);
 
 	ServiceResponse updateFileShare(StorageBucket storageShare, Map opts);
