@@ -16,6 +16,7 @@
 
 package com.morpheusdata.core.providers;
 
+import com.morpheusdata.model.ReferenceData;
 import com.morpheusdata.model.StorageBucket;
 import com.morpheusdata.response.ServiceResponse;
 
@@ -52,6 +53,43 @@ public interface StorageProviderFileShares {
 	ServiceResponse updateFileShare(StorageBucket storageShare, Map opts);
 
 	ServiceResponse deleteFileShare(StorageBucket storageShare, Map opts);
+
+	/**
+	 * Synchronizes the state of a file share with the external provider system. This is invoked periodically to
+	 * reconcile any drift between the local record and the external system.
+	 * @param storageShare Storage Bucket (file share) information
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} indicating the results of the sync operation.
+	 * Defaults to a no-op success response so existing implementations do not need to override it.
+	 */
+	default ServiceResponse syncFileShare(StorageBucket storageShare, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Creates an access rule (e.g. a host or network allowed to mount the share) on the external provider system.
+	 * @param storageShare Storage Bucket (file share) information
+	 * @param config the submitted access rule configuration
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} object. The {@code data} property can be populated with details about the
+	 * created access rule to be stored locally.
+	 * Defaults to a no-op success response so existing implementations do not need to override it.
+	 */
+	default ServiceResponse createFileShareAccess(StorageBucket storageShare, Map config, Map opts) {
+		return ServiceResponse.success();
+	}
+
+	/**
+	 * Deletes an access rule on the external provider system.
+	 * @param storageShare Storage Bucket (file share) information
+	 * @param fileShareAccess the access rule to be removed
+	 * @param opts additional options
+	 * @return a {@link ServiceResponse} indicating the results of the deletion on the external provider system.
+	 * Defaults to a no-op success response so existing implementations do not need to override it.
+	 */
+	default ServiceResponse deleteFileShareAccess(StorageBucket storageShare, ReferenceData fileShareAccess, Map opts) {
+		return ServiceResponse.success();
+	}
 
 	Collection<String> getFileShareProviderTypes();
 }
