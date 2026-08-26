@@ -1,0 +1,44 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+group = 'com.morpheusdata.sample'
+version = '0.1.0-SNAPSHOT'
+
+java {
+	sourceCompatibility = JavaVersion.toVersion('1.11')
+	targetCompatibility = JavaVersion.toVersion('1.11')
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compileOnly project(':morpheus-plugin-api')
+}
+
+jar {
+	manifest {
+		attributes(
+			'Plugin-Class': 'com.morpheusdata.sample.centralaction.SampleCentralActionPlugin',
+			'Plugin-Version': version,
+			'Morpheus-Name': 'Sample Central Action Plugin',
+			'Morpheus-Organization': 'morpheusdata',
+			'Morpheus-Code': 'sample-central-action-plugin',
+			'Morpheus-Description': 'Sample Morpheus plugin demonstrating a custom CentralActionProvider.',
+			'Morpheus-Labels': 'Plugin,Sample,Central Action',
+			'Morpheus-Repo': 'https://github.com/gomorpheus/morpheus-plugin-core',
+			'Morpheus-Min-Appliance-Version': '8.0.0'
+		)
+	}
+}
+
+tasks.named('shadowJar') {
+	archiveClassifier.set('all')
+}
+
+tasks.named('assemble') {
+	dependsOn tasks.named('shadowJar')
+}

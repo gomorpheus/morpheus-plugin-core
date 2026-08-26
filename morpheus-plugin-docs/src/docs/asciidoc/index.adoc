@@ -63,6 +63,8 @@ include::CatalogLayout.adoc[]
 
 include::CloudPlugins.adoc[]
 
+include::CentralActionProviderPlugin.adoc[]
+
 include::DatastoreTypeProviders.adoc[]
 
 include::GenericIntegrationPlugin.adoc[]

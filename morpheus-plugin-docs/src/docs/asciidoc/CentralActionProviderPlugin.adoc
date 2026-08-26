@@ -1,0 +1,158 @@
+[#central-action-provider]
+=== Central Action Provider Plugin
+
+Add a handler for a Morpheus Central Service *push action* to your plugin, without a core release.
+See the reference sample `samples/morpheus-central-action-plugin` in this repository.
+
+==== Overview
+
+A `com.morpheusdata.core.providers.CentralActionProvider` lets a plugin handle a Morpheus Central
+Service push action. When Central pushes an action targeted at a plugin, core dispatches it to the
+registered provider whose code matches the action, invokes the provider, and returns an
+acknowledgement ("ack") to Central based on the provider's response.
+
+Use a `CentralActionProvider` when you want Central to be able to trigger plugin-defined behavior on
+an appliance and (optionally) receive structured data back — without waiting for that behavior to
+ship in a core release.
+
+The interface adds a single method to the standard `PluginProvider` contract:
+
+[source,java]
+----
+public interface CentralActionProvider extends PluginProvider {
+    ServiceResponse handle(Map payload);
+}
+----
+
+==== The envelope
+
+A Central push action arrives as an envelope with a top-level `type`. A *plugin-bound* action is
+denoted by:
+
+[source,text]
+----
+type == "plugin-provider-push-action"
+----
+
+The target provider is identified by a *nested* field under `payload`:
+
+[source,text]
+----
+payload.code   // matches CentralActionProvider.getCode()
+----
+
+Core reads the top-level `type` to select the plugin branch, then resolves `payload.code` to a
+registered `CentralActionProvider` and invokes its `handle(payload)`. There is *no*
+`isPluginProvider` flag anywhere in the envelope or on the provider — the `type` value alone selects
+the plugin branch, and `payload.code` alone selects the provider.
+
+==== Implementing `handle(Map)`
+
+[source,java]
+----
+@Override
+public ServiceResponse handle(Map payload) {
+    Object message = payload != null ? payload.get("message") : null;
+    Map<String, Object> data = new LinkedHashMap<>();
+    data.put("echoed", message);
+    return ServiceResponse.success(data);
+}
+----
+
+Contract:
+
+* The handler receives *only the raw `payload` Map* carried by the envelope (including
+  `payload.code`). It does *not* receive the action `id`, `headers`, or `ackRequired`.
+* Return a `com.morpheusdata.response.ServiceResponse` (success flag, message, data).
+* The provider *never acks*. Returning from `handle` does not itself send an ack — core's
+  `CentralServicesActionService` owns all ack behavior and decides what ack (if any) is sent back to
+  Central based on the returned `ServiceResponse`.
+
+==== Ack data semantics
+
+Core maps your `ServiceResponse` to the ack sent to Central:
+
+[cols="1,1", options="header"]
+|===
+| Provider outcome | Ack to Central
+
+| `ServiceResponse.success(data)` where `data` is Map-shaped
+| `ok` ack whose `data` is that Map. Core coerces a Map-like `data` to the `Map` carried on the ack
+  (Map-like → `Map`, otherwise `null`), matching how built-in handlers pass `data as Map`.
+
+| `success` with non-Map or absent `data`
+| `ok` ack with no data. Non-Map `data` is not guaranteed to propagate to the ack payload.
+
+| `!success` (e.g. `ServiceResponse.error(msg)`) or a thrown exception
+| `handler_failed` ack.
+
+| `payload.code` matches no registered `CentralActionProvider`
+| `unknown_type` ack.
+|===
+
+The `unknown_type` case is how a *missing registration* is diagnosed: if you deploy an action whose
+`payload.code` has no matching provider on the appliance, Central receives a clear `unknown_type`
+ack rather than a silent drop. Make sure your provider's `getCode()` exactly matches the
+`payload.code` Central will send.
+
+==== Registration
+
+Register the provider from your `Plugin` subclass in `initialize()`, using `registerProvider()`:
+
+[source,java]
+----
+public class SampleCentralActionPlugin extends Plugin {
+    @Override
+    public String getCode() {
+        return "sample-central-action-plugin";
+    }
+
+    @Override
+    public void initialize() {
+        this.setName("Sample Central Action Plugin");
+        this.registerProvider(new SampleCentralActionProvider(this, this.morpheus));
+    }
+
+    @Override
+    public void onDestroy() { }
+}
+----
+
+The provider is constructed with the plugin and the `MorpheusContext` (`this.morpheus`), the same
+way every other sample provider is registered. See the reference sample at
+`samples/morpheus-central-action-plugin` for the complete, buildable module.
+
+==== Eligibility
+
+*Any* registered `CentralActionProvider` is eligible to be selected — regardless of whether it was
+loaded from a verified (public) plugin or a private/unverified plugin. There is *no* verified-only
+filter: private plugins are fully supported. You do not need a verified plugin to use this extension
+point.
+
+==== Transaction semantics
+
+`handle` runs *inside the consumer's message transaction* and does *not* open its own — there is no
+`withNewTransaction` around plugin dispatch.
+
+Author-facing consequence: any persistence your handler performs is *not independently committed*. A
+failure or rollback in the surrounding message transaction can roll back your handler's writes. Do
+not assume an independent commit inside `handle`.
+
+==== Naming your `payload.code`
+
+Provide a unique, namespaced `getCode()` of the form:
+
+[source,text]
+----
+<pluginCode>.<action>
+----
+
+For example `acme-backup.trigger-snapshot`, or `sample-central-action.echo` in the reference sample.
+Namespacing the code by your plugin makes it globally unique, so it will not collide with a built-in
+action type or with another plugin's provider, and it reliably matches the dispatched envelope's
+`payload.code`.
+
+NOTE: This naming convention is a *recommendation only*. Core does *not* enforce it — there is no
+validation of the `payload.code` format. A mismatched or duplicated `getCode()` simply means your
+handler is never invoked (and core acks `unknown_type` for an unmatched code); the guidance exists to
+help you avoid collisions, not because core requires the format.
