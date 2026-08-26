@@ -60,6 +60,7 @@ public class StorageVolumeType extends MorpheusModel {
 	// (SAN/networked storage) can be reattached to different servers. Set to true
 	// for native storage so instance reconfigure can ignore those types.
 	protected Boolean nativeVolume = false;
+	protected Boolean supportsVolumeSet = false;
 
 	// associations
 	Collection<OptionType> optionTypes;
@@ -305,5 +306,13 @@ public class StorageVolumeType extends MorpheusModel {
 
 	public void setNativeVolume(Boolean nativeVolume) {
 		this.nativeVolume = nativeVolume;
+	}
+
+	public Boolean getSupportsVolumeSet() {
+		return supportsVolumeSet;
+	}
+
+	public void setSupportsVolumeSet(Boolean supportsVolumeSet) {
+		this.supportsVolumeSet = supportsVolumeSet;
 	}
 }
