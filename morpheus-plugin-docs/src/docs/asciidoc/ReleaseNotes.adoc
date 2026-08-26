@@ -3,8 +3,8 @@
 **Note:** Morpheus Plugin API is now 1.0! This means calls that are used will be supported for a longer period of time and given appropriate deprecation warnings when necessary. Morpheus Plugin API `1.3.x` requires a minimum Morpheus version of `8.1.x`. Morpheus Plugin API `1.2.x` requires Morpheus `8.0.x`, and Morpheus `7.0.x` runs on Core version `1.1.x`.
 
 * **1.5.1**
-** *Storage Provider File Share Validation*
-*** Added a `validateFileShare` default method to `StorageProviderFileShares`, defaulting to a no-op success response so existing implementations do not need to override it.
+** *Storage Provider File Share Enhancements*
+*** Added `validateFileShare`, `syncFileShare`, `createFileShareAccess`, and `deleteFileShareAccess` default methods to `StorageProviderFileShares`, each defaulting to a no-op success response so existing implementations do not need to override them.
 
 * **1.4.0**
 ** *Option Type Enhancements*
