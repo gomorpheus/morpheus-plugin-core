@@ -22,50 +22,45 @@ import com.morpheusdata.model.NetworkServer;
 import com.morpheusdata.model.StorageServer;
 import com.morpheusdata.model.UpdateDefinition;
 import com.morpheusdata.response.ServiceResponse;
+import com.morpheusdata.core.MorpheusStorageReplicationPartnerService;
+import com.morpheusdata.core.MorpheusStorageReplicationGroupService;
 import io.reactivex.rxjava3.core.Single;
 
-/**
  * Provides a top level interface for interacting with Storage related services in Morpheus
  * @since 1.2.5
  * @author David Estes
  */
 public interface MorpheusStorageService {
-	/**
 	 * Returns the StorageVolume Service
 	 *
 	 * @return An instance of the StorageVolume Service
 	 */
 	MorpheusStorageVolumeService getVolume();
 
-	/**
 	 * Returns the StorageController Service
 	 *
 	 * @return An instance of the StorageController Service
 	 */
 	MorpheusStorageControllerService getController();
 
-	/**
 	 * Returns the StorageServer Service
 	 *
 	 * @return An instance of the StorageServer Service
 	 */
 	MorpheusStorageServerService getServer();
 
-	/**
 	 * Returns the StorageBucket Service
 	 *
 	 * @return An instance of the StorageBucket Service
 	 */
 	MorpheusStorageBucketService getBucket();
 
-	/**
 	 * Returns the StorageGroup Service
 	 *
 	 * @return An instance of the StorageGroup Service
 	 */
 	MorpheusStorageGroupService getGroup();
 
-	/**
 	 * Returns the StorageAggregate Service
 	 *
 	 * @return An instance of the StorageAggregate Service
@@ -73,49 +68,42 @@ public interface MorpheusStorageService {
 	 */
 	MorpheusStorageAggregateService getAggregate();
 
-	/**
 	 * Validates an update on a {@link StorageServer} before executing the update.
 	 * @deprecated use {@link MorpheusStorageServerService#validateUpdate(UpdateDefinition, StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> validateUpdate(StorageServer storageServer, UpdateDefinition updateDefinition);
 
-	/**
 	 * Executes an update on a {@link StorageServer}.
 	 * @deprecated use {@link MorpheusStorageServerService#executeUpdate(UpdateDefinition, StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> executeUpdate(StorageServer storageServer, UpdateDefinition updateDefinition);
 
-	/**
 	 * Post processes an update on a {@link StorageServer} after executing the update.
 	 * @deprecated use {@link MorpheusStorageServerService#postUpdate(UpdateDefinition, StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> postUpdate(StorageServer storageServer, UpdateDefinition updateDefinition);
 
-	/**
 	 * Rolls back an update on a {@link StorageServer} if the update failed.
 	 * @deprecated use {@link MorpheusStorageServerService#rollbackUpdate(UpdateDefinition, StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> rollbackUpdate(StorageServer storageServer, UpdateDefinition updateDefinition);
 
-	/**
 	 * Refresh the update status in a {@link StorageServer}.
 	 * @deprecated use {@link MorpheusStorageServerService#refreshUpdate(StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> refreshUpdate(StorageServer storageServer);
 
-	/**
 	 * Run a configuration drift check on a {@link StorageServer}.
 	 * @deprecated use {@link MorpheusStorageServerService#runConfigurationDriftCheck(CheckLevel, StorageServer)}  instead
 	 */
 	@Deprecated
 	Single<ServiceResponse> runConfigurationDriftCheck(StorageServer storageServer, CheckLevel checkLevel);
 
-	/**
 	 * Get configuration drift details on a {@link StorageServer}.
 	 * @deprecated use {@link MorpheusStorageServerService#getConfigurationDriftDetails(StorageServer)}  instead
 	 */
