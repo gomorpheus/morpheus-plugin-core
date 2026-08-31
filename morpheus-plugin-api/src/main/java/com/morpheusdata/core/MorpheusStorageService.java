@@ -75,6 +75,15 @@ public interface MorpheusStorageService {
 	MorpheusStorageAggregateService getAggregate();
 
 	/**
+	 * Returns the StorageVolumeGroup Service for managing volume groups
+	 * used in consistent snapshot and replication operations.
+	 *
+	 * @return An instance of the StorageVolumeGroup Service
+	 * @since 1.4.0
+	 */
+	MorpheusStorageVolumeGroupService getVolumeGroup();
+
+	/**
 	 * Validates an update on a {@link StorageServer} before executing the update.
 	 * @deprecated use {@link MorpheusStorageServerService#validateUpdate(UpdateDefinition, StorageServer)}  instead
 	 */
