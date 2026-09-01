@@ -43,8 +43,7 @@ public class StorageVolumeGroupIdentityProjection extends MorpheusIdentityModel 
 	}
 
 	/**
-	 * Gets the name of the volume group. Name is limited to 22 characters for
-	 * Remote Copy compatibility with HPE storage systems.
+	 * Gets the name of the volume group.
 	 * @return the current name of the volume group
 	 */
 	public String getName() {
@@ -52,8 +51,9 @@ public class StorageVolumeGroupIdentityProjection extends MorpheusIdentityModel 
 	}
 
 	/**
-	 * Sets the name of the volume group.
-	 * @param name the name of the volume group (max 22 characters)
+	 * Sets the name of the volume group. Name length/format constraints are
+	 * vendor-specific and enforced by the storage provider plugin.
+	 * @param name the name of the volume group
 	 */
 	public void setName(String name) {
 		this.name = name;
