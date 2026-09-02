@@ -18,6 +18,7 @@ package com.morpheusdata.core;
 
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.AccountCredentialIdentityProjection;
+import com.morpheusdata.request.AccountCredentialRequest;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.Maybe;
@@ -82,4 +83,14 @@ public interface MorpheusAccountCredentialService extends MorpheusDataService<Ac
 	 * @return ServiceResponse possibly containing a created AccountCredentialLink.
 	 */
 	Single<ServiceResponse<AccountCredentialLink>> createCredentialLink(AccountCredential credential, String refType, String refUuid, String refName);
+
+	/**
+	 * Creates an account credential based on a prepared model AccountCredential. The details of the AccountCredential
+	 * will ultimately be verified in CredentialService, so the model AccountCredential needs to have all necessary
+	 * details provided.
+	 * @param credRequest the AccountCredentialRequest object containing all relevant details for creating the desired
+	 *                       AccountCredential.
+	 * @return a ServiceResponse, possibly containing a created AccountCredential
+	 */
+	Single<ServiceResponse<AccountCredential>> createCredential(AccountCredentialRequest credRequest);
 }
