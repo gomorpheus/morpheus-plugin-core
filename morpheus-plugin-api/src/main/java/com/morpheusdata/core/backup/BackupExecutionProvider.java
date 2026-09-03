@@ -73,6 +73,23 @@ public interface BackupExecutionProvider {
 	ServiceResponse createBackup(Backup backupModel, Map opts);
 
 	/**
+	 * Add additional configurations to a backup being edited. Morpheus will handle all basic configuration details,
+	 * this is a convenient way to validate/apply additional configuration details specific to this backup provider
+	 * when an existing backup is edited and saved. This mirrors {@link #createBackup(Backup, Map)} for the create flow.
+	 * <p>
+	 * The default implementation is a no-op success, preserving prior behavior for providers implemented before
+	 * this method was introduced (it was never invoked previously). Override this method to add provider-specific
+	 * validation/behavior on edit-save.
+	 * @param backupModel the backup being updated.
+	 * @param opts additional options used during backup update
+	 * @return a {@link ServiceResponse} object. A ServiceResponse with a success value of 'false' will indicate the
+	 * update failed and will halt the backup update process.
+	 */
+	default ServiceResponse updateBackup(Backup backupModel, Map opts) {
+		return ServiceResponse.success(backupModel);
+	}
+
+	/**
 	 * Delete the backup resources on the external provider system.
 	 * @param backupModel the backup details
 	 * @param opts additional options used during the backup deletion process
