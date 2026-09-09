@@ -190,18 +190,6 @@ public interface BackupTypeProvider extends PluginProvider {
 	ServiceResponse createBackup(Backup backup, Map opts);
 
 	/**
-	 * Add additional configurations to a backup being edited. Morpheus will handle all basic configuration details,
-	 * this is a convenient way to validate/apply additional configuration details specific to this backup provider
-	 * when an existing backup is edited and saved. This mirrors {@link #configureBackup(Backup, Map, Map)} for the
-	 * create flow.
-	 * @param backup the backup being updated.
-	 * @param opts optional parameters used for configuration.
-	 * @return a {@link ServiceResponse} object. A ServiceResponse with a false success will indicate a failed
-	 * configuration and will halt the backup update process.
-	 */
-	ServiceResponse updateBackup(Backup backup, Map opts);
-
-	/**
 	 * Delete the backup resources on the external provider system.
 	 * @param backup the backup details
 	 * @param opts additional options used during the backup deletion process

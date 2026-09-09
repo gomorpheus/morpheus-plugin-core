@@ -284,14 +284,6 @@ public interface MorpheusAsyncServices {
 	 * @return An instance of the StorageHostGroup Service
 	 */
 	MorpheusStorageHostGroupService getStorageHostGroup();
-
-	/**
-	 * Returns the StoragePolicy Service
-	 *
-	 * @return An instance of the StoragePolicy Service
-	 */
-	MorpheusStoragePolicyService getStoragePolicy();
-
 	/**
 	 * Returns the Usage Service
 	 *

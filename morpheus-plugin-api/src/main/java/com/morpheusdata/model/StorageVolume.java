@@ -66,13 +66,8 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected StorageGroup storageGroup;
 
-	/**
-	 * The volume group this volume belongs to for consistent snapshot operations.
-	 * A volume can belong to at most one volume group.
-	 * @since 1.4.0
-	 */
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected StorageVolumeGroup volumeGroup;
+	protected StoragePolicy storagePolicy;
 
 	/**
 	 * The storage policy (named QoS/performance tier) selected for this volume.
@@ -435,26 +430,6 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setStorageGroup(StorageGroup storageGroup) {
 		this.storageGroup = storageGroup;
 		markDirty("storageGroup", storageGroup);
-	}
-
-	/**
-	 * Gets the volume group this volume belongs to for consistent snapshots.
-	 * @return the volume group, or null if not in a group
-	 * @since 1.4.0
-	 */
-	public StorageVolumeGroup getVolumeGroup() {
-		return volumeGroup;
-	}
-
-	/**
-	 * Sets the volume group this volume belongs to.
-	 * A volume can belong to at most one volume group.
-	 * @param volumeGroup the volume group
-	 * @since 1.4.0
-	 */
-	public void setVolumeGroup(StorageVolumeGroup volumeGroup) {
-		this.volumeGroup = volumeGroup;
-		markDirty("volumeGroup", volumeGroup);
 	}
 
 	public String getPoolName() {

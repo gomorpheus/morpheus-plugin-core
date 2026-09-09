@@ -3,8 +3,6 @@ package com.morpheusdata.request;
 import com.morpheusdata.model.ComputeServer;
 import com.morpheusdata.model.Instance;
 
-import java.util.Map;
-
 public class BeforeConvertToManagedRequest {
 	public ComputeServer server;
 
@@ -14,13 +12,6 @@ public class BeforeConvertToManagedRequest {
 	 * Plugins can use the presence of this field to distinguish between the two operations.
 	 */
 	public Instance instance;
-
-	/**
-	 * Submitted opts for the conversion request (e.g. any custom option type values collected during the
-	 * convert-to-managed / add-node wizard), so a plugin can read them before the server is finalized as managed.
-	 * @since 1.5.1
-	 */
-	public Map<String, Object> opts;
 
 	public ComputeServer getServer() {
 		return server;
@@ -36,13 +27,5 @@ public class BeforeConvertToManagedRequest {
 
 	public void setInstance(Instance instance) {
 		this.instance = instance;
-	}
-
-	public Map<String, Object> getOpts() {
-		return opts;
-	}
-
-	public void setOpts(Map<String, Object> opts) {
-		this.opts = opts;
 	}
 }
