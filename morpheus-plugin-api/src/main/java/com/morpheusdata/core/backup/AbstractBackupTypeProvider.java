@@ -111,11 +111,6 @@ public abstract class AbstractBackupTypeProvider implements BackupTypeProvider {
 	}
 
 	@Override
-	public ServiceResponse updateBackup(Backup backupModel, Map opts) {
-		return getExecutionProvider().updateBackup(backupModel, opts);
-	}
-
-	@Override
 	public ServiceResponse deleteBackup(Backup backupModel, Map opts) {
 		return getExecutionProvider().deleteBackup(backupModel, opts);
 	}

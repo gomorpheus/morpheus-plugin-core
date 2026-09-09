@@ -60,11 +60,6 @@ public abstract class AbstractMorpheusBackupTypeProvider implements BackupTypePr
 	}
 
 	@Override
-	public ServiceResponse updateBackup(Backup backup, Map opts) {
-		return ServiceResponse.success(backup);
-	}
-
-	@Override
 	public ServiceResponse deleteBackup(Backup backup, Map opts) {
 		return ServiceResponse.success(backup);
 	}

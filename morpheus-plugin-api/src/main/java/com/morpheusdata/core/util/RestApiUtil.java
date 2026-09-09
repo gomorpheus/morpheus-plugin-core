@@ -465,6 +465,13 @@ public class RestApiUtil {
 				sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER) {
 
 					@Override
+					protected void prepareSocket(SSLSocket socket) {
+						List<SNIServerName> serverNames  = Collections.<SNIServerName> emptyList();
+						SSLParameters sslParams = socket.getSSLParameters();
+						sslParams.setServerNames(serverNames);
+						socket.setSSLParameters(sslParams);
+					}
+					@Override
 					public Socket connectSocket(int connectTimeout, Socket socket, HttpHost host, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context) throws IOException, ConnectTimeoutException {
 						if(socket instanceof SSLSocket) {
 							try {

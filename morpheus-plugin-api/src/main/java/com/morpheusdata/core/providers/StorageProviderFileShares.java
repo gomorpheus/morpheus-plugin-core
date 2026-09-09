@@ -16,7 +16,6 @@
 
 package com.morpheusdata.core.providers;
 
-import com.morpheusdata.model.ReferenceData;
 import com.morpheusdata.model.StorageBucket;
 import com.morpheusdata.response.ServiceResponse;
 
@@ -32,64 +31,11 @@ import java.util.Map;
  * @see StorageProvider
  */
 public interface StorageProviderFileShares {
-
-	/**
-	 * Validates the submitted information when saving a file share.
-	 * This is invoked before both {@link #createFileShare} and {@link #updateFileShare}.
-	 * @param storageShare Storage Bucket (file share) information
-	 * @param opts additional options
-	 * @return a {@link ServiceResponse} object. The errors field of the ServiceResponse is used to send validation
-	 * results back to the interface in the format of {@code errors['fieldName'] = 'validation message' }. The msg
-	 * property can be used to send generic validation text that is not related to a specific field on the model.
-	 * A ServiceResponse with a success value of 'false' will halt the create/update process.
-	 * Defaults to a no-op success response so existing implementations do not need to override it.
-	 */
-	default ServiceResponse validateFileShare(StorageBucket storageShare, Map opts) {
-		return ServiceResponse.success();
-	}
-
 	ServiceResponse createFileShare(StorageBucket storageShare, Map opts);
 
 	ServiceResponse updateFileShare(StorageBucket storageShare, Map opts);
 
 	ServiceResponse deleteFileShare(StorageBucket storageShare, Map opts);
-
-	/**
-	 * Synchronizes the state of a file share with the external provider system. This is invoked periodically to
-	 * reconcile any drift between the local record and the external system.
-	 * @param storageShare Storage Bucket (file share) information
-	 * @param opts additional options
-	 * @return a {@link ServiceResponse} indicating the results of the sync operation.
-	 * Defaults to a no-op success response so existing implementations do not need to override it.
-	 */
-	default ServiceResponse syncFileShare(StorageBucket storageShare, Map opts) {
-		return ServiceResponse.success();
-	}
-
-	/**
-	 * Creates an access rule (e.g. a host or network allowed to mount the share) on the external provider system.
-	 * @param storageShare Storage Bucket (file share) information
-	 * @param config the submitted access rule configuration
-	 * @param opts additional options
-	 * @return a {@link ServiceResponse} object. The {@code data} property can be populated with details about the
-	 * created access rule to be stored locally.
-	 * Defaults to a no-op success response so existing implementations do not need to override it.
-	 */
-	default ServiceResponse createFileShareAccess(StorageBucket storageShare, Map config, Map opts) {
-		return ServiceResponse.success();
-	}
-
-	/**
-	 * Deletes an access rule on the external provider system.
-	 * @param storageShare Storage Bucket (file share) information
-	 * @param fileShareAccess the access rule to be removed
-	 * @param opts additional options
-	 * @return a {@link ServiceResponse} indicating the results of the deletion on the external provider system.
-	 * Defaults to a no-op success response so existing implementations do not need to override it.
-	 */
-	default ServiceResponse deleteFileShareAccess(StorageBucket storageShare, ReferenceData fileShareAccess, Map opts) {
-		return ServiceResponse.success();
-	}
 
 	Collection<String> getFileShareProviderTypes();
 }
