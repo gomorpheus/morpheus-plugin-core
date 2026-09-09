@@ -66,8 +66,13 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected StorageGroup storageGroup;
 
+	/**
+	 * The volume group this volume belongs to for consistent snapshot operations.
+	 * A volume can belong to at most one volume group.
+	 * @since 1.4.0
+	 */
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected StoragePolicy storagePolicy;
+	protected StorageVolumeGroup volumeGroup;
 
 	protected String volumeType = "disk";
 	protected String volumePath;
@@ -426,6 +431,26 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 		markDirty("storageGroup", storageGroup);
 	}
 
+	/**
+	 * Gets the volume group this volume belongs to for consistent snapshots.
+	 * @return the volume group, or null if not in a group
+	 * @since 1.4.0
+	 */
+	public StorageVolumeGroup getVolumeGroup() {
+		return volumeGroup;
+	}
+
+	/**
+	 * Sets the volume group this volume belongs to.
+	 * A volume can belong to at most one volume group.
+	 * @param volumeGroup the volume group
+	 * @since 1.4.0
+	 */
+	public void setVolumeGroup(StorageVolumeGroup volumeGroup) {
+		this.volumeGroup = volumeGroup;
+		markDirty("volumeGroup", volumeGroup);
+	}
+
 	public String getPoolName() {
 		return poolName;
 	}
@@ -744,25 +769,5 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setIsMultiAttach(Boolean isMultiAttach) {
 		this.isMultiAttach = isMultiAttach;
 		markDirty("isMultiAttach", this.isMultiAttach, this.isMultiAttach);
-	}
-
-	/**
-	 * Gets the storage policy (named QoS/performance tier, e.g. Gold) selected for this
-	 * volume, or {@code null} when the user made no selection or the provisioning technology
-	 * offers none. Resolved to a specific {@link StoragePolicy} record rather than a bare
-	 * code, since a policy code is only unique per owning producer.
-	 * @return the currently selected storage policy, or null
-	 */
-	public StoragePolicy getStoragePolicy() {
-		return storagePolicy;
-	}
-
-	/**
-	 * Sets the storage policy selected for this volume.
-	 * @param storagePolicy the storage policy to be assigned.
-	 */
-	public void setStoragePolicy(StoragePolicy storagePolicy) {
-		this.storagePolicy = storagePolicy;
-		markDirty("storagePolicy", storagePolicy);
 	}
 }
