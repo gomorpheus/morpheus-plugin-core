@@ -74,6 +74,12 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected StorageVolumeGroup volumeGroup;
 
+	/**
+	 * The storage policy (named QoS/performance tier) selected for this volume.
+	 */
+	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
+	protected StoragePolicy storagePolicy;
+
 	protected String volumeType = "disk";
 	protected String volumePath;
 	protected String diskType;
@@ -769,5 +775,25 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	public void setIsMultiAttach(Boolean isMultiAttach) {
 		this.isMultiAttach = isMultiAttach;
 		markDirty("isMultiAttach", this.isMultiAttach, this.isMultiAttach);
+	}
+
+	/**
+	 * Gets the storage policy (named QoS/performance tier, e.g. Gold) selected for this
+	 * volume, or {@code null} when the user made no selection or the provisioning technology
+	 * offers none. Resolved to a specific {@link StoragePolicy} record rather than a bare
+	 * code, since a policy code is only unique per owning producer.
+	 * @return the currently selected storage policy, or null
+	 */
+	public StoragePolicy getStoragePolicy() {
+		return storagePolicy;
+	}
+
+	/**
+	 * Sets the storage policy selected for this volume.
+	 * @param storagePolicy the storage policy to be assigned.
+	 */
+	public void setStoragePolicy(StoragePolicy storagePolicy) {
+		this.storagePolicy = storagePolicy;
+		markDirty("storagePolicy", storagePolicy);
 	}
 }
