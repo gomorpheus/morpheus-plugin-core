@@ -29,7 +29,9 @@ import com.morpheusdata.core.compute.MorpheusComputeServerNetworkInterfaceConfig
 import com.morpheusdata.model.*;
 import com.morpheusdata.model.projection.ComputeServerIdentityProjection;
 import com.morpheusdata.request.AddHostRequest;
+import com.morpheusdata.request.GetGpuDevicesRequest;
 import com.morpheusdata.request.RemoveHostRequest;
+import com.morpheusdata.response.GetGpuDevicesResponse;
 import com.morpheusdata.response.ServiceResponse;
 import io.reactivex.rxjava3.core.Single;
 
@@ -100,7 +102,6 @@ public interface MorpheusSynchronousComputeServerService extends MorpheusSynchro
 	 */
 	ServiceResponse removeHost(ComputeServer server, RemoveHostRequest request);
 
-
 	/**
 	 * Stop a ComputeServer. This is an async operation and the server may not be stopped immediately.
 	 * @param computeServerId ComputeServer id to stop
@@ -132,4 +133,13 @@ public interface MorpheusSynchronousComputeServerService extends MorpheusSynchro
 	 * @return A ComputeServerInterface instance
 	 */
 	ComputeServerInterface buildComputeServerInterface(Account account, Instance instance, ComputeServer server, MorpheusComputeServerNetworkInterfaceConfig networkInterfaceConfig);
+
+	/**
+	 * Retrieves the live GPU inventory reported by the target compute server.
+	 *
+	 * @param request the GPU inventory request
+	 * @return a {@link ServiceResponse} containing the reported GPU devices
+	 * @since 1.5.1
+	 */
+	ServiceResponse<GetGpuDevicesResponse> getGpuDevices(GetGpuDevicesRequest request);
 }
