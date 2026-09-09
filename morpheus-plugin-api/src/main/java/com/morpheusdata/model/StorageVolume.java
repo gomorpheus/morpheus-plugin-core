@@ -69,12 +69,6 @@ public class StorageVolume extends StorageVolumeIdentityProjection {
 	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
 	protected StoragePolicy storagePolicy;
 
-	/**
-	 * The storage policy (named QoS/performance tier) selected for this volume.
-	 */
-	@JsonSerialize(using= ModelAsIdOnlySerializer.class)
-	protected StoragePolicy storagePolicy;
-
 	protected String volumeType = "disk";
 	protected String volumePath;
 	protected String diskType;
