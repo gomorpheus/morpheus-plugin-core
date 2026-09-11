@@ -88,6 +88,22 @@ public interface MorpheusSynchronousStorageService {
 	MorpheusDatastoreTypeService getDatastoreType();
 
 	/**
+	 * Returns the StorageReplicationGroup Service
+	 *
+	 * @return An instance of the StorageReplicationGroup Service
+	 * @since 1.5.0
+	 */
+	MorpheusSynchronousStorageReplicationGroupService getReplicationGroup();
+
+	/**
+	 * Returns the StorageReplicationPartner Service
+	 *
+	 * @return An instance of the StorageReplicationPartner Service
+	 * @since 1.5.0
+	 */
+	MorpheusSynchronousStorageReplicationPartnerService getReplicationPartner();
+
+	/**
 	 * Validates an update on a {@link StorageServer} before executing the update.
 	 * @deprecated use {@link MorpheusSynchronousStorageServerService#validateUpdate(UpdateDefinition, StorageServer)}instead
 	 */
