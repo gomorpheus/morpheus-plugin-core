@@ -280,6 +280,13 @@ public interface MorpheusServices {
 	 */
 	MorpheusSynchronousStorageHostGroupService getStorageHostGroup();
 
+	/**
+	 * Returns the StoragePolicy Service
+	 *
+	 * @return An instance of the StoragePolicy Service
+	 */
+	MorpheusSynchronousStoragePolicyService getStoragePolicy();
+
 
 	/**
 	 * Returns the Instance Service
