@@ -404,6 +404,16 @@ public interface ProvisionProvider extends PluginProvider {
 	}
 
 	/**
+	 * Indicates if the current service plan can be changed when converting a pre-provisioned server to a
+	 * managed instance (the "Convert to Instance" flow)
+	 * @since 1.5.0
+	 * @return Boolean
+	 */
+	default public Boolean canChangeServicePlanOnConvertToManaged() {
+		return true;
+	}
+
+	/**
 	 * Indicates if StorageControllers are utilized
 	 * @return Boolean
 	 */
